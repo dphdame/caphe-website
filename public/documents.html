@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Member Login - CAPHE</title>
-  <meta name="description" content="Login to the CAPHE member area.">
+  <title>Document Feedback - CAPHE</title>
+  <meta name="description" content="Review and provide feedback on CAPHE working group documents.">
   <link rel="stylesheet" href="/src/frontend/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
   <div class="nav-top-bar">
     <div class="container">
       <a href="/contact.html">Contact Us</a>
-      <a href="/login.html">Member Login</a>
+      <a href="#" id="logout-link">Sign Out</a>
     </div>
   </div>
 
@@ -33,7 +33,7 @@
         <a href="/" class="nav-link">Home</a>
         <a href="/about.html" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs.html" class="nav-link">Programs ▾</a>
+          <a href="/programs.html" class="nav-link">Programs</a>
           <div class="nav-dropdown-menu">
             <a href="/programs.html#workshops">Workshops</a>
             <a href="/programs.html#webinars">Webinars</a>
@@ -41,14 +41,14 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources.html" class="nav-link">Resources ▾</a>
+          <a href="/resources.html" class="nav-link">Resources</a>
           <div class="nav-dropdown-menu">
             <a href="/resources.html#white-papers">White Papers</a>
             <a href="/resources.html#code">Code & Tools</a>
           </div>
         </div>
         <a href="/membership.html" class="nav-link">Membership</a>
-        <a href="/programs.html" class="nav-link nav-link-cta">Upcoming Events</a>
+        <a href="/dashboard.html" class="nav-link nav-link-cta">My Dashboard</a>
       </div>
       <button class="nav-mobile-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -56,64 +56,31 @@
     </div>
   </nav>
 
-  <!-- Login Section -->
-  <section class="section" style="min-height: 60vh; display: flex; align-items: center;">
+  <!-- Page Header -->
+  <section class="page-header">
     <div class="container">
-      <div class="auth-container">
-        <div class="auth-card">
-          <h1 class="auth-title">Member Login</h1>
-          <p class="text-muted text-center mb-lg">
-            Access exclusive resources, webinar recordings, and the member directory.
+      <nav class="breadcrumb">
+        <a href="/dashboard.html">Dashboard</a> / Documents
+      </nav>
+      <h1 class="page-title">Document Feedback</h1>
+      <p class="page-subtitle">
+        Review working group documents and share your feedback to improve our shared resources.
+      </p>
+    </div>
+  </section>
+
+  <!-- Documents List -->
+  <section class="section">
+    <div class="container">
+      <div id="documents-list" class="documents-grid">
+        <!-- Placeholder while documents load -->
+        <div class="card" style="text-align: center; padding: var(--space-2xl); grid-column: 1 / -1;">
+          <div style="font-size: var(--font-size-3xl); margin-bottom: var(--space-md);">📄</div>
+          <h3 class="card-title">Documents Coming Soon</h3>
+          <p class="card-text" style="max-width: 500px; margin: 0 auto;">
+            Working groups are developing documents for member review.
+            Check back soon for drafts that need your feedback.
           </p>
-
-          <form id="login-form">
-            <div class="form-group">
-              <label class="form-label" for="email">Email</label>
-              <input type="email" id="email" name="email" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="password">Password</label>
-              <input type="password" id="password" name="password" class="form-input" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
-              Sign In
-            </button>
-
-            <div id="login-status" class="mt-lg text-center hidden"></div>
-          </form>
-
-          <div class="auth-footer">
-            <p>Don't have an account? <a href="/contact.html">Contact us</a> to join.</p>
-            <p class="mt-md"><a href="#" id="forgot-password">Forgot password?</a></p>
-          </div>
-        </div>
-
-        <div class="auth-benefits">
-          <h3>Member Benefits</h3>
-          <ul>
-            <li>
-              <span class="benefit-icon">📹</span>
-              <span>Access to past webinar recordings</span>
-            </li>
-            <li>
-              <span class="benefit-icon">👥</span>
-              <span>Member directory for networking</span>
-            </li>
-            <li>
-              <span class="benefit-icon">💼</span>
-              <span>Working group collaboration tools</span>
-            </li>
-            <li>
-              <span class="benefit-icon">💰</span>
-              <span>Discounted workshop registration</span>
-            </li>
-            <li>
-              <span class="benefit-icon">📊</span>
-              <span>Exclusive datasets and code repositories</span>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
@@ -148,7 +115,7 @@
           <h4>Connect</h4>
           <a href="/about.html">About Us</a>
           <a href="/contact.html">Contact</a>
-          <a href="/login.html">Member Portal</a>
+          <a href="/membership.html">Membership</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -163,5 +130,6 @@
   <script src="/src/frontend/js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/frontend/js/auth.js"></script>
+  <script src="/src/frontend/js/documents.js"></script>
 </body>
 </html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peer Review Sessions - CAPHE</title>
+  <meta name="description" content="Request a slot at CAPHE's monthly peer review sessions.">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact Us</a>
+      <a href="#" id="logout-link">Sign Out</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          CAPHE
+          <span>Public Health Economists</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources</a>
+          <div class="nav-dropdown-menu">
+            <a href="/resources.html#white-papers">White Papers</a>
+            <a href="/resources.html#code">Code & Tools</a>
+          </div>
+        </div>
+        <a href="/membership.html" class="nav-link">Membership</a>
+        <a href="/dashboard.html" class="nav-link nav-link-cta">My Dashboard</a>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/dashboard.html">Dashboard</a> / Peer Review
+      </nav>
+      <h1 class="page-title">Peer Review Sessions</h1>
+      <p class="page-subtitle">
+        Present your work-in-progress and receive constructive feedback from fellow health economists.
+      </p>
+    </div>
+  </section>
+
+  <!-- Peer Review Content -->
+  <section class="section">
+    <div class="container">
+      <div class="peer-review-layout">
+        <!-- Request Form -->
+        <div class="peer-review-form-container">
+          <div class="card">
+            <h2 style="margin-bottom: var(--space-lg);">Request a Session Slot</h2>
+
+            <form id="peer-review-form">
+              <div class="form-group">
+                <label class="form-label" for="meeting-date">Meeting Date</label>
+                <select id="meeting-date" name="meeting_date" class="form-input" required>
+                  <option value="">Select a meeting date...</option>
+                  <!-- Populated dynamically -->
+                </select>
+                <small class="text-muted">Meetings are held the 3rd Wednesday of each month</small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="slots">Number of Slots</label>
+                <select id="slots" name="slots_requested" class="form-input" required>
+                  <option value="1">1 slot (15 minutes)</option>
+                  <option value="2">2 slots (30 minutes)</option>
+                </select>
+                <small class="text-muted">Each meeting has limited slots available</small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="topic">Topic/Title</label>
+                <input type="text" id="topic" name="topic" class="form-input" required
+                       placeholder="e.g., Cost-effectiveness of diabetes prevention program">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea id="description" name="description" class="form-input" rows="4"
+                          placeholder="Brief description of your work and the type of feedback you're seeking..."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                Submit Request
+              </button>
+
+              <div id="form-status" class="mt-lg text-center hidden"></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="peer-review-info">
+          <div class="card">
+            <h3>How It Works</h3>
+            <ol class="peer-review-steps">
+              <li>
+                <strong>Request a slot</strong>
+                <p>Submit your request at least one week before the meeting</p>
+              </li>
+              <li>
+                <strong>Confirmation</strong>
+                <p>You'll receive an email confirming your slot</p>
+              </li>
+              <li>
+                <strong>Prepare materials</strong>
+                <p>Share slides or documents 48 hours before the meeting</p>
+              </li>
+              <li>
+                <strong>Present & discuss</strong>
+                <p>15-30 minutes of presentation and Q&A</p>
+              </li>
+            </ol>
+          </div>
+
+          <div class="card mt-lg">
+            <h3>Your Requests</h3>
+            <div id="my-requests">
+              <p class="text-muted">No pending requests</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: var(--color-text-light);">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A learning collaborative dedicated to applying data-driven methods to public health
+            challenges across California's 57 counties.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs.html#workshops">Workshops</a>
+          <a href="/programs.html#webinars">Webinars</a>
+          <a href="/programs.html#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/resources.html#white-papers">White Papers</a>
+          <a href="/resources.html#code">Code & Tools</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/membership.html">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 California Association of Public Health Economists. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://linkedin.com/company/caphe" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/src/frontend/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/frontend/js/auth.js"></script>
+  <script src="/src/frontend/js/peer-review.js"></script>
+</body>
+</html>

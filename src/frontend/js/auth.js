@@ -3,9 +3,9 @@
  * Uses Supabase for member authentication
  */
 
-// Supabase configuration (will be set from environment)
-const SUPABASE_URL = ''; // Set this when Supabase is configured
-const SUPABASE_ANON_KEY = ''; // Set this when Supabase is configured
+// Supabase configuration
+const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_RTbRMFp9FI28M1DZso47Qw_KBsCAGzn';
 
 let supabase = null;
 

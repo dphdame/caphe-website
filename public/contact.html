@@ -6,19 +6,49 @@
   <title>Contact Us - CAPHE</title>
   <meta name="description" content="Get in touch with the California Association of Public Health Economists.">
   <link rel="stylesheet" href="/src/frontend/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact Us</a>
+      <a href="/login.html">Member Login</a>
+    </div>
+  </div>
+
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-container">
-      <a href="/" class="nav-logo">CAPHE</a>
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          CAPHE
+          <span>Public Health Economists</span>
+        </div>
+      </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/tools.html" class="nav-link">Tools</a>
-        <a href="/contact.html" class="nav-link active">Contact</a>
-        <a href="/login.html" class="nav-link nav-link-cta">Member Login</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/resources.html#vignettes">Educational Vignettes</a>
+            <a href="/resources.html#articles">Articles</a>
+            <a href="/tools.html">ROI Calculator</a>
+          </div>
+        </div>
+        <a href="/programs.html" class="nav-link nav-link-cta">Upcoming Events</a>
       </div>
       <button class="nav-mobile-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -26,55 +56,111 @@
     </div>
   </nav>
 
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <div class="section-eyebrow">Contact</div>
+      <h1 class="page-title">Get in Touch</h1>
+      <p class="page-subtitle">
+        Have questions about CAPHE or want to get involved? We'd love to hear from you.
+      </p>
+    </div>
+  </section>
+
   <!-- Contact Section -->
   <section class="section">
     <div class="container">
-      <h1 class="section-title">Contact Us</h1>
-      <p class="section-subtitle">
-        Have questions about CAPHE or want to get involved? We'd love to hear from you.
-      </p>
+      <div class="contact-grid">
+        <div class="contact-form-container">
+          <h2 style="margin-bottom: var(--space-lg);">Send Us a Message</h2>
+          <form id="contact-form">
+            <div class="form-group">
+              <label class="form-label" for="name">Name</label>
+              <input type="text" id="name" name="name" class="form-input" required>
+            </div>
 
-      <div style="max-width: 600px; margin: 0 auto;">
-        <form id="contact-form">
-          <div class="form-group">
-            <label class="form-label" for="name">Name</label>
-            <input type="text" id="name" name="name" class="form-input" required>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="organization">Organization (optional)</label>
+              <input type="text" id="organization" name="organization" class="form-input" placeholder="e.g., Alameda County Public Health">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="subject">Subject</label>
+              <select id="subject" name="subject" class="form-select" required>
+                <option value="">Select a topic...</option>
+                <option value="Membership Inquiry">Membership Inquiry</option>
+                <option value="Workshop Registration">Workshop Registration</option>
+                <option value="Speaking Invitation">Speaking Invitation</option>
+                <option value="Research Collaboration">Research Collaboration</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="message">Message</label>
+              <textarea id="message" name="message" class="form-textarea" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+              Send Message
+            </button>
+
+            <div id="form-status" class="mt-lg text-center hidden"></div>
+          </form>
+        </div>
+
+        <div class="contact-info">
+          <div class="contact-card">
+            <h3>Other Ways to Reach Us</h3>
+
+            <div class="contact-method">
+              <div class="contact-method-icon">📧</div>
+              <div class="contact-method-content">
+                <h4>Email</h4>
+                <a href="mailto:info@caphegroup.org">info@caphegroup.org</a>
+              </div>
+            </div>
+
+            <div class="contact-method">
+              <div class="contact-method-icon">💼</div>
+              <div class="contact-method-content">
+                <h4>LinkedIn</h4>
+                <a href="https://linkedin.com/company/caphe" target="_blank" rel="noopener">Follow us on LinkedIn</a>
+              </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--color-border); margin: var(--space-lg) 0;">
+
+            <h4 style="margin-bottom: var(--space-sm);">Response Time</h4>
+            <p class="text-muted" style="font-size: var(--font-size-sm);">
+              We typically respond within 2-3 business days. For urgent workshop
+              registration questions, please mention "URGENT" in your subject line.
+            </p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-input" required>
+          <div class="contact-card contact-card-highlight">
+            <h3>Interested in Membership?</h3>
+            <p class="text-muted mb-md">
+              CAPHE membership is open to economists working in public health across California.
+              Benefits include:
+            </p>
+            <ul class="membership-benefits">
+              <li>Access to monthly peer review sessions</li>
+              <li>Discounts on paid workshops</li>
+              <li>Working group participation</li>
+              <li>Webinar recording archive</li>
+              <li>Member directory access</li>
+            </ul>
+            <p class="text-muted mt-md" style="font-size: var(--font-size-sm);">
+              Select "Membership Inquiry" in the form to learn more about joining.
+            </p>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="subject">Subject</label>
-            <select id="subject" name="subject" class="form-select" required>
-              <option value="">Select a topic...</option>
-              <option value="Membership Inquiry">Membership Inquiry</option>
-              <option value="Research Collaboration">Research Collaboration</option>
-              <option value="Webinar Question">Webinar Question</option>
-              <option value="General Inquiry">General Inquiry</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="message">Message</label>
-            <textarea id="message" name="message" class="form-textarea" required></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
-            Send Message
-          </button>
-
-          <div id="form-status" class="mt-lg text-center hidden"></div>
-        </form>
-
-        <div class="mt-lg text-center">
-          <p class="text-muted">Or email us directly at:</p>
-          <a href="mailto:info@caphegroup.org" style="font-size: var(--font-size-lg); font-weight: 600;">
-            info@caphegroup.org
-          </a>
         </div>
       </div>
     </div>
@@ -83,24 +169,41 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-content">
+      <div class="footer-grid">
         <div class="footer-brand">
-          <h3>CAPHE</h3>
-          <p>California Association of Public Health Economists</p>
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: var(--color-text-light);">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A learning collaborative dedicated to applying data-driven methods to public health
+            challenges across California's 57 counties.
+          </p>
         </div>
-        <div class="footer-links">
-          <h4>Quick Links</h4>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs.html#workshops">Workshops</a>
+          <a href="/programs.html#webinars">Webinars</a>
+          <a href="/programs.html#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/resources.html#vignettes">Educational Vignettes</a>
+          <a href="/resources.html#articles">Articles</a>
+          <a href="/tools.html">ROI Calculator</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
           <a href="/about.html">About Us</a>
-          <a href="/tools.html">Tools</a>
           <a href="/contact.html">Contact</a>
-        </div>
-        <div class="footer-contact">
-          <h4>Contact</h4>
-          <a href="mailto:info@caphegroup.org">info@caphegroup.org</a>
+          <a href="/login.html">Member Portal</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 CAPHE. All rights reserved.</p>
+        <p>&copy; 2024 California Association of Public Health Economists. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://linkedin.com/company/caphe" aria-label="LinkedIn">in</a>
+        </div>
       </div>
     </div>
   </footer>

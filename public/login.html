@@ -6,19 +6,49 @@
   <title>Member Login - CAPHE</title>
   <meta name="description" content="Login to the CAPHE member area.">
   <link rel="stylesheet" href="/src/frontend/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact Us</a>
+      <a href="/login.html">Member Login</a>
+    </div>
+  </div>
+
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-container">
-      <a href="/" class="nav-logo">CAPHE</a>
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">
+          CAPHE
+          <span>Public Health Economists</span>
+        </div>
+      </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/tools.html" class="nav-link">Tools</a>
-        <a href="/contact.html" class="nav-link">Contact</a>
-        <a href="/login.html" class="nav-link nav-link-cta active">Member Login</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/resources.html#vignettes">Educational Vignettes</a>
+            <a href="/resources.html#articles">Articles</a>
+            <a href="/tools.html">ROI Calculator</a>
+          </div>
+        </div>
+        <a href="/programs.html" class="nav-link nav-link-cta">Upcoming Events</a>
       </div>
       <button class="nav-mobile-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -27,40 +57,106 @@
   </nav>
 
   <!-- Login Section -->
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1 class="auth-title">Member Login</h1>
+  <section class="section" style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">Member Login</h1>
+          <p class="text-muted text-center mb-lg">
+            Access exclusive resources, webinar recordings, and the member directory.
+          </p>
 
-      <form id="login-form">
-        <div class="form-group">
-          <label class="form-label" for="email">Email</label>
-          <input type="email" id="email" name="email" class="form-input" required>
+          <form id="login-form">
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <input type="password" id="password" name="password" class="form-input" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+              Sign In
+            </button>
+
+            <div id="login-status" class="mt-lg text-center hidden"></div>
+          </form>
+
+          <div class="auth-footer">
+            <p>Don't have an account? <a href="/contact.html">Contact us</a> to join.</p>
+            <p class="mt-md"><a href="#" id="forgot-password">Forgot password?</a></p>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="password">Password</label>
-          <input type="password" id="password" name="password" class="form-input" required>
+        <div class="auth-benefits">
+          <h3>Member Benefits</h3>
+          <ul>
+            <li>
+              <span class="benefit-icon">📹</span>
+              <span>Access to past webinar recordings</span>
+            </li>
+            <li>
+              <span class="benefit-icon">👥</span>
+              <span>Member directory for networking</span>
+            </li>
+            <li>
+              <span class="benefit-icon">💼</span>
+              <span>Working group collaboration tools</span>
+            </li>
+            <li>
+              <span class="benefit-icon">💰</span>
+              <span>Discounted workshop registration</span>
+            </li>
+            <li>
+              <span class="benefit-icon">📊</span>
+              <span>Exclusive datasets and code repositories</span>
+            </li>
+          </ul>
         </div>
-
-        <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
-          Sign In
-        </button>
-
-        <div id="login-status" class="mt-lg text-center hidden"></div>
-      </form>
-
-      <div class="auth-footer">
-        <p>Don't have an account? <a href="/contact.html">Contact us</a> to join.</p>
-        <p class="mt-lg"><a href="#" id="forgot-password">Forgot password?</a></p>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-bottom" style="border-top: none; padding-top: 0;">
-        <p>&copy; 2024 CAPHE. All rights reserved.</p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: var(--color-text-light);">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A learning collaborative dedicated to applying data-driven methods to public health
+            challenges across California's 57 counties.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs.html#workshops">Workshops</a>
+          <a href="/programs.html#webinars">Webinars</a>
+          <a href="/programs.html#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/resources.html#vignettes">Educational Vignettes</a>
+          <a href="/resources.html#articles">Articles</a>
+          <a href="/tools.html">ROI Calculator</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/login.html">Member Portal</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 California Association of Public Health Economists. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://linkedin.com/company/caphe" aria-label="LinkedIn">in</a>
+        </div>
       </div>
     </div>
   </footer>

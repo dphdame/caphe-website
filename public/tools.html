@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Health ROI Calculator - CAPHE</title>
+  <meta name="description" content="Estimate the return on investment for public health spending in California counties.">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">CAPHE</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/tools.html" class="nav-link active">Tools</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+        <a href="/login.html" class="nav-link nav-link-cta">Member Login</a>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Calculator Section -->
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Public Health ROI Calculator</h1>
+      <p class="section-subtitle">
+        Estimate the return on investment for public health spending in your California county.
+        Based on peer-reviewed research using causal inference methods.
+      </p>
+
+      <div class="calculator">
+        <form id="roi-form" class="calculator-form">
+          <!-- County Selection -->
+          <div class="form-group county-search">
+            <label class="form-label" for="county">Select Your County</label>
+            <input
+              type="text"
+              id="county"
+              class="form-input"
+              placeholder="Start typing a county name..."
+              autocomplete="off"
+              required
+            >
+            <div id="county-suggestions" class="county-suggestions"></div>
+            <input type="hidden" id="county-selected" name="county">
+          </div>
+
+          <!-- Investment Amount -->
+          <div class="form-group">
+            <label class="form-label" for="investment">Investment Amount ($)</label>
+            <input
+              type="number"
+              id="investment"
+              class="form-input"
+              placeholder="1000000"
+              value="1000000"
+              min="10000"
+              step="10000"
+              required
+            >
+            <small class="text-muted">Enter the amount of additional public health investment</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+            Calculate ROI
+          </button>
+        </form>
+
+        <!-- Results -->
+        <div id="results" class="calculator-results hidden">
+          <h3 class="text-center mb-lg">Results for <span id="result-county"></span></h3>
+
+          <div class="result-grid">
+            <div class="result-item result-highlight">
+              <div class="result-value" id="result-lives"></div>
+              <div class="result-label">Lives Saved Per Year</div>
+            </div>
+            <div class="result-item">
+              <div class="result-value" id="result-roi"></div>
+              <div class="result-label">Return on Investment</div>
+            </div>
+            <div class="result-item">
+              <div class="result-value" id="result-bcr"></div>
+              <div class="result-label">Benefit-Cost Ratio</div>
+            </div>
+            <div class="result-item">
+              <div class="result-value" id="result-value"></div>
+              <div class="result-label">Economic Value</div>
+            </div>
+          </div>
+
+          <div class="mt-lg" style="background: var(--color-bg-alt); padding: var(--space-lg); border-radius: var(--radius-md);">
+            <h4 style="margin-bottom: var(--space-sm);">How This Works</h4>
+            <p class="text-muted" style="font-size: var(--font-size-sm);">
+              This calculator uses the coefficient from Brown (2016), which found that a
+              <strong>$10 per capita increase</strong> in public health spending reduces mortality by
+              <strong>9.16 deaths per 100,000</strong> population. The economic value is calculated using
+              the EPA's Value of Statistical Life ($10 million).
+            </p>
+            <p class="text-muted" style="font-size: var(--font-size-sm); margin-top: var(--space-sm);">
+              <strong>Source:</strong> Brown, T.T. (2016). "How effective are public health departments
+              at preventing mortality?" <em>Economics & Human Biology</em>, 20, 159-172.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology Section -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">Methodology</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">Causal Inference</h3>
+          <p class="card-text">
+            Uses Lewbel instrumental variables to address endogeneity and identify the causal
+            effect of public health spending on mortality.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <h3 class="card-title">Panel Data</h3>
+          <p class="card-text">
+            Based on California county-level panel data from 2003-2023, covering all 57 counties
+            with controls for demographics and economic conditions.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✅</div>
+          <h3 class="card-title">Peer-Reviewed</h3>
+          <p class="card-text">
+            The underlying methodology was published in Economics & Human Biology and has been
+            replicated with 99.4% accuracy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>CAPHE</h3>
+          <p>California Association of Public Health Economists</p>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <a href="/about.html">About Us</a>
+          <a href="/tools.html">Tools</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact</h4>
+          <a href="mailto:info@caphegroup.org">info@caphegroup.org</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 CAPHE. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/src/frontend/js/main.js"></script>
+  <script src="/src/frontend/js/calculator.js"></script>
+</body>
+</html>

@@ -449,19 +449,21 @@
               throw new Error(data.error || 'Failed to submit application');
             }
 
+            // Hide the entire form and show only success message
+            form.style.display = 'none';
+            if (linkedinSuccess) linkedinSuccess.style.display = 'none';
+            if (linkedinSignin) linkedinSignin.style.display = 'none';
+
             statusDiv.innerHTML = `
-              <div style="background: #d4edda; color: #155724; padding: var(--space-lg); border-radius: var(--radius-md);">
-                <strong>Application Submitted!</strong><br>
+              <div style="background: #d4edda; color: #155724; padding: var(--space-xl); border-radius: var(--radius-md); text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: var(--space-md);">✓</div>
+                <strong style="font-size: var(--font-size-lg);">Application Submitted!</strong><br><br>
                 Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.<br>
-                <span style="font-size: var(--font-size-sm); margin-top: var(--space-sm); display: block;">
+                <span style="font-size: var(--font-size-sm); margin-top: var(--space-md); display: block; color: #155724;">
                   You'll receive a confirmation email at ${formData.email}.
                 </span>
               </div>
             `;
-            form.reset();
-            submitBtn.textContent = 'Application Submitted';
-            if (linkedinSuccess) linkedinSuccess.style.display = 'none';
-            if (profileSummary) profileSummary.style.display = 'none';
 
           } catch (error) {
             console.error('Application error:', error);

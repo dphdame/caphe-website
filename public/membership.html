@@ -138,7 +138,7 @@
 
       <div class="eligibility-content" style="max-width: 800px; margin: 0 auto;">
         <p style="font-size: var(--font-size-lg); line-height: 1.8; color: var(--color-text-secondary); margin-bottom: var(--space-xl);">
-          CAPHE membership is specifically designed for <strong>trained economists</strong> working in
+          CAPHE membership is specifically designed for trained economists working in
           public health. This focus ensures our peer review sessions, working groups, and discussions
           operate at the appropriate technical level.
         </p>
@@ -366,6 +366,11 @@
         document.getElementById('summary-name').textContent = `${firstName} ${lastName}`;
         document.getElementById('summary-email').textContent = email;
 
+        // Disable required on hidden inputs to prevent form validation issues
+        document.getElementById('firstName-input').removeAttribute('required');
+        document.getElementById('lastName-input').removeAttribute('required');
+        document.getElementById('email-input').removeAttribute('required');
+
         // Show success banner, hide sign-in button
         linkedinSuccess.style.display = 'block';
         linkedinSignin.style.display = 'none';
@@ -392,6 +397,10 @@
           document.getElementById('firstName-input').value = document.getElementById('firstName').value;
           document.getElementById('lastName-input').value = document.getElementById('lastName').value;
           document.getElementById('email-input').value = document.getElementById('email').value;
+          // Restore required attributes
+          document.getElementById('firstName-input').setAttribute('required', '');
+          document.getElementById('lastName-input').setAttribute('required', '');
+          document.getElementById('email-input').setAttribute('required', '');
           linkedinMode = false;
         });
       }

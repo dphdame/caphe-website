@@ -353,10 +353,45 @@ img {
   opacity: 0.5;
 }
 
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 700px;
+}
+
+.hero-image {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-image {
+    order: -1;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .hero-cta {
+    justify-content: center;
+  }
 }
 
 .hero-eyebrow {
@@ -1525,6 +1560,13 @@ img {
 .activity-icon {
   font-size: 2rem;
   line-height: 1;
+}
+
+.activity-icon-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .activity-content h3 {

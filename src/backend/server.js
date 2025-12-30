@@ -629,7 +629,7 @@ app.get('/api/counties/:countyName/roi', (req, res) => {
 
 const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
 const LINKEDIN_CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET;
-const LINKEDIN_REDIRECT_URI = 'https://caphegroup.org/api/auth/linkedin/callback';
+const LINKEDIN_REDIRECT_URI = 'https://www.caphegroup.org/api/auth/linkedin/callback';
 
 // Initiate LinkedIn OAuth
 app.get('/api/auth/linkedin', (req, res) => {

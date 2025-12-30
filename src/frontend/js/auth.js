@@ -132,3 +132,14 @@ async function logout() {
   }
   window.location.href = '/login.html';
 }
+
+// Check session for protected pages (used by admin.js, dashboard.js)
+async function checkSession() {
+  if (!initSupabase()) {
+    console.log('Supabase not configured');
+    return null;
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  return session;
+}

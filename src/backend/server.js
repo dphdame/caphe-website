@@ -215,9 +215,10 @@ app.post('/api/membership/apply', async (req, res) => {
     degree, degreeField, institution, currentRole, economicsWork, linkedin
   } = req.body;
 
-  if (!email || !firstName || !lastName || !degree || !degreeField || !institution) {
+  // Simplified validation - only require name, email, and economics work description
+  if (!email || !firstName || !lastName || !economicsWork) {
     return res.status(400).json({
-      error: 'Please complete all required fields'
+      error: 'Please complete all required fields (name, email, and economics work description)'
     });
   }
 
@@ -620,6 +621,110 @@ app.get('/api/counties/:countyName/roi', (req, res) => {
       note: 'Based on Lewbel IV estimation using California county panel data 2003-2023'
     }
   });
+});
+
+// =============================================
+// LINKEDIN OAUTH (for membership applications)
+// =============================================
+
+const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
+const LINKEDIN_CLIENT_SECRET = process.env.LINKEDIN_CLIENT_SECRET;
+const LINKEDIN_REDIRECT_URI = 'https://caphegroup.org/api/auth/linkedin/callback';
+
+// Initiate LinkedIn OAuth
+app.get('/api/auth/linkedin', (req, res) => {
+  if (!LINKEDIN_CLIENT_ID) {
+    return res.status(500).json({ error: 'LinkedIn OAuth not configured' });
+  }
+
+  const state = Buffer.from(Math.random().toString()).toString('base64').slice(0, 16);
+
+  const authUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('client_id', LINKEDIN_CLIENT_ID);
+  authUrl.searchParams.set('redirect_uri', LINKEDIN_REDIRECT_URI);
+  authUrl.searchParams.set('state', state);
+  authUrl.searchParams.set('scope', 'openid profile email');
+
+  res.redirect(authUrl.toString());
+});
+
+// LinkedIn OAuth callback
+app.get('/api/auth/linkedin/callback', async (req, res) => {
+  const { code, error, error_description } = req.query;
+
+  if (error) {
+    console.error('LinkedIn OAuth error:', error, error_description);
+    return res.redirect('/membership.html?error=' + encodeURIComponent(error_description || error));
+  }
+
+  if (!code) {
+    return res.redirect('/membership.html?error=No authorization code received');
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        client_id: LINKEDIN_CLIENT_ID,
+        client_secret: LINKEDIN_CLIENT_SECRET,
+        redirect_uri: LINKEDIN_REDIRECT_URI,
+      }).toString(),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.text();
+      console.error('Token exchange failed:', errorData);
+      throw new Error('Failed to exchange authorization code');
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // Fetch user profile using OpenID Connect userinfo endpoint
+    const profileResponse = await fetch('https://api.linkedin.com/v2/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      const errorData = await profileResponse.text();
+      console.error('Profile fetch failed:', errorData);
+      throw new Error('Failed to fetch LinkedIn profile');
+    }
+
+    const profile = await profileResponse.json();
+
+    // Build profile data to pass to the membership form
+    const profileData = {
+      firstName: profile.given_name || '',
+      lastName: profile.family_name || '',
+      email: profile.email || '',
+      picture: profile.picture || '',
+      linkedinId: profile.sub || ''
+    };
+
+    // Redirect to membership page with profile data in URL params
+    const params = new URLSearchParams();
+    params.set('linkedin', 'true');
+    params.set('firstName', profileData.firstName);
+    params.set('lastName', profileData.lastName);
+    params.set('email', profileData.email);
+    if (profileData.picture) params.set('picture', profileData.picture);
+
+    res.redirect('/membership.html?' + params.toString() + '#apply');
+
+  } catch (error) {
+    console.error('LinkedIn OAuth callback error:', error);
+    res.redirect('/membership.html?error=' + encodeURIComponent(error.message));
+  }
 });
 
 // =============================================

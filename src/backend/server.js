@@ -30,9 +30,10 @@ const transporter = nodemailer.createTransport({
 
 let brevoContactsApi = null;
 let brevoListIds = {
-  general: null,   // General listserv (public updates)
-  members: null,   // Members-only communications
-  events: null     // Event registrants
+  general: null,      // General listserv (public updates)
+  members: null,      // Members-only communications
+  events: null,       // Event registrants
+  applications: null  // Membership applications (pending review)
 };
 
 if (process.env.BREVO_API_KEY) {
@@ -42,6 +43,7 @@ if (process.env.BREVO_API_KEY) {
   brevoListIds.general = parseInt(process.env.BREVO_LIST_ID) || 9;
   brevoListIds.members = parseInt(process.env.BREVO_MEMBERS_LIST_ID) || 13;
   brevoListIds.events = parseInt(process.env.BREVO_EVENTS_LIST_ID) || 14;
+  brevoListIds.applications = parseInt(process.env.BREVO_APPLICATIONS_LIST_ID) || 15;
   console.log('Brevo API initialized with lists:', brevoListIds);
 }
 
@@ -55,11 +57,41 @@ async function subscribeToBrevoList(listId, contactData) {
     LASTNAME: contactData.lastName || '',
     ORGANIZATION: contactData.organization || '',
     EVENT_NAME: contactData.eventName || '',
-    EVENT_DATE: contactData.eventDate || ''
+    EVENT_DATE: contactData.eventDate || '',
+    DEGREE: contactData.degree || '',
+    DEGREE_FIELD: contactData.degreeField || '',
+    INSTITUTION: contactData.institution || '',
+    CURRENT_ROLE: contactData.currentRole || '',
+    ECONOMICS_WORK: contactData.economicsWork || '',
+    LINKEDIN: contactData.linkedin || ''
   };
   createContact.updateEnabled = true;
 
   return brevoContactsApi.createContact(createContact);
+}
+
+// Helper function to get contacts from a Brevo list
+async function getBrevoListContacts(listId) {
+  const result = await brevoContactsApi.getContactsFromList(listId, {
+    limit: 500,
+    offset: 0
+  });
+  return result.contacts || [];
+}
+
+// Helper function to remove contact from a list
+async function removeFromBrevoList(email, listId) {
+  const updateContact = new Brevo.UpdateContact();
+  updateContact.unlinkListIds = [listId];
+  return brevoContactsApi.updateContact(encodeURIComponent(email), updateContact);
+}
+
+// Helper function to move contact between lists
+async function moveBrevoContact(email, fromListId, toListId) {
+  const updateContact = new Brevo.UpdateContact();
+  updateContact.unlinkListIds = [fromListId];
+  updateContact.listIds = [toListId];
+  return brevoContactsApi.updateContact(encodeURIComponent(email), updateContact);
 }
 
 // Subscribe to general listserv (public updates)
@@ -167,6 +199,283 @@ app.post('/api/events/register', async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to register for event',
+      details: error.message
+    });
+  }
+});
+
+// =============================================
+// MEMBERSHIP APPLICATION SYSTEM
+// =============================================
+
+// Submit membership application
+app.post('/api/membership/apply', async (req, res) => {
+  const {
+    email, firstName, lastName, organization,
+    degree, degreeField, institution, currentRole, economicsWork, linkedin
+  } = req.body;
+
+  if (!email || !firstName || !lastName || !degree || !degreeField || !institution) {
+    return res.status(400).json({
+      error: 'Please complete all required fields'
+    });
+  }
+
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Application service not configured' });
+  }
+
+  try {
+    await subscribeToBrevoList(brevoListIds.applications, {
+      email,
+      firstName,
+      lastName,
+      organization,
+      degree,
+      degreeField,
+      institution,
+      currentRole,
+      economicsWork,
+      linkedin
+    });
+
+    // Send notification email to admin
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'info@caphegroup.org',
+      to: process.env.ADMIN_EMAIL || 'info@caphegroup.org',
+      subject: '[CAPHE] New Membership Application',
+      html: `
+        <h3>New Membership Application</h3>
+        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Organization:</strong> ${organization || 'Not provided'}</p>
+        <p><strong>Degree:</strong> ${degree} in ${degreeField}</p>
+        <p><strong>Institution:</strong> ${institution}</p>
+        <p><strong>Current Role:</strong> ${currentRole || 'Not provided'}</p>
+        <p><strong>Economics Work:</strong> ${economicsWork || 'Not provided'}</p>
+        <p><strong>LinkedIn:</strong> ${linkedin || 'Not provided'}</p>
+        <hr>
+        <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailErr) {
+      console.error('Failed to send admin notification:', emailErr);
+    }
+
+    res.json({
+      success: true,
+      message: 'Application submitted successfully. We will review your application and be in touch soon.'
+    });
+  } catch (error) {
+    console.error('Membership application error:', error);
+
+    if (error.response?.body?.code === 'duplicate_parameter') {
+      return res.json({
+        success: true,
+        message: 'Your application is already on file. We will be in touch soon.'
+      });
+    }
+
+    res.status(500).json({
+      error: 'Failed to submit application',
+      details: error.message
+    });
+  }
+});
+
+// Admin middleware - check if user is admin
+async function verifyAdmin(req, res, next) {
+  if (!supabase) {
+    return res.status(500).json({ error: 'Authentication not configured' });
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+
+  if (error || !user) {
+    return res.status(401).json({ error: 'Invalid authentication' });
+  }
+
+  // Check if user is admin
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail || user.email !== adminEmail) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  req.user = user;
+  next();
+}
+
+// Get pending applications (admin only)
+app.get('/api/admin/applications', verifyAdmin, async (req, res) => {
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Service not configured' });
+  }
+
+  try {
+    const contacts = await getBrevoListContacts(brevoListIds.applications);
+
+    const applications = contacts.map(contact => ({
+      email: contact.email,
+      firstName: contact.attributes?.FIRSTNAME || '',
+      lastName: contact.attributes?.LASTNAME || '',
+      organization: contact.attributes?.ORGANIZATION || '',
+      degree: contact.attributes?.DEGREE || '',
+      degreeField: contact.attributes?.DEGREE_FIELD || '',
+      institution: contact.attributes?.INSTITUTION || '',
+      currentRole: contact.attributes?.CURRENT_ROLE || '',
+      economicsWork: contact.attributes?.ECONOMICS_WORK || '',
+      linkedin: contact.attributes?.LINKEDIN || '',
+      createdAt: contact.createdAt
+    }));
+
+    res.json({ success: true, applications });
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ error: 'Failed to fetch applications' });
+  }
+});
+
+// Approve application (admin only)
+app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  if (!brevoContactsApi || !supabase) {
+    return res.status(500).json({ error: 'Service not configured' });
+  }
+
+  try {
+    // Get applicant info from Brevo
+    const contactInfo = await brevoContactsApi.getContactInfo(encodeURIComponent(email));
+    const firstName = contactInfo.attributes?.FIRSTNAME || '';
+    const lastName = contactInfo.attributes?.LASTNAME || '';
+
+    // Send Supabase invite
+    const { data, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
+      data: {
+        full_name: `${firstName} ${lastName}`.trim()
+      }
+    });
+
+    if (inviteError) {
+      // If user already exists, that's okay
+      if (!inviteError.message.includes('already been registered')) {
+        throw inviteError;
+      }
+    }
+
+    // Move from applications list to members list
+    await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
+
+    // Send approval email
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'info@caphegroup.org',
+      to: email,
+      subject: 'Welcome to CAPHE - Membership Approved!',
+      html: `
+        <h2>Welcome to CAPHE!</h2>
+        <p>Dear ${firstName || 'Member'},</p>
+        <p>Your membership application has been approved. You should receive a separate email
+        with a link to set up your member account.</p>
+        <p>Once you've set up your account, you can access:</p>
+        <ul>
+          <li>Webinar recordings archive</li>
+          <li>Peer review session scheduling</li>
+          <li>Working group documents</li>
+          <li>Member directory</li>
+        </ul>
+        <p>We look forward to collaborating with you!</p>
+        <p>Best regards,<br>CAPHE Team</p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailErr) {
+      console.error('Failed to send approval email:', emailErr);
+    }
+
+    res.json({
+      success: true,
+      message: `Approved ${email}. Invite sent.`
+    });
+  } catch (error) {
+    console.error('Error approving application:', error);
+    res.status(500).json({
+      error: 'Failed to approve application',
+      details: error.message
+    });
+  }
+});
+
+// Reject application (admin only)
+app.post('/api/admin/reject', verifyAdmin, async (req, res) => {
+  const { email, reason } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Service not configured' });
+  }
+
+  try {
+    // Get applicant info
+    const contactInfo = await brevoContactsApi.getContactInfo(encodeURIComponent(email));
+    const firstName = contactInfo.attributes?.FIRSTNAME || '';
+
+    // Remove from applications list
+    await removeFromBrevoList(email, brevoListIds.applications);
+
+    // Send polite decline email
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'info@caphegroup.org',
+      to: email,
+      subject: 'CAPHE Membership Application Update',
+      html: `
+        <p>Dear ${firstName || 'Applicant'},</p>
+        <p>Thank you for your interest in CAPHE. After reviewing your application,
+        we've determined that our membership may not be the best fit at this time.</p>
+        <p>CAPHE membership is specifically designed for economists with doctoral-level
+        training in econometrics and causal inference methods.</p>
+        ${reason ? `<p><em>${reason}</em></p>` : ''}
+        <p>You're welcome to:</p>
+        <ul>
+          <li>Join our public listserv to receive updates on free webinars and resources</li>
+          <li>Attend our public events</li>
+          <li>Reapply in the future if your qualifications change</li>
+        </ul>
+        <p>Best regards,<br>CAPHE Team</p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailErr) {
+      console.error('Failed to send rejection email:', emailErr);
+    }
+
+    res.json({
+      success: true,
+      message: `Application from ${email} has been declined.`
+    });
+  } catch (error) {
+    console.error('Error rejecting application:', error);
+    res.status(500).json({
+      error: 'Failed to process rejection',
       details: error.message
     });
   }

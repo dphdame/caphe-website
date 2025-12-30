@@ -32,7 +32,7 @@ async function checkDashboardAuth() {
     return false;
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
     window.location.href = '/login.html';
@@ -45,11 +45,11 @@ async function checkDashboardAuth() {
 // Load member profile
 async function loadMemberProfile() {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
       // Try to get profile from profiles table
-      const { data: profile } = await supabase
+      const { data: profile } = await supabaseClient
         .from('profiles')
         .select('full_name, organization')
         .eq('id', user.id)
@@ -78,14 +78,14 @@ async function loadDashboardData() {
 
   try {
     // Load recent recordings count
-    const { count: recordingsCount } = await supabase
+    const { count: recordingsCount } = await supabaseClient
       .from('recordings')
       .select('*', { count: 'exact', head: true });
 
     // Load user's peer review requests
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
-      const { data: peerReviews } = await supabase
+      const { data: peerReviews } = await supabaseClient
         .from('peer_review_requests')
         .select('*')
         .eq('user_id', user.id)
@@ -99,7 +99,7 @@ async function loadDashboardData() {
     }
 
     // Load documents awaiting feedback
-    const { data: documents } = await supabase
+    const { data: documents } = await supabaseClient
       .from('documents')
       .select('*')
       .eq('feedback_enabled', true)

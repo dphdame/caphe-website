@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Distinguishing Signal from Selection: Food Insecurity and Diabetes Outcomes | CAPHE</title>
-  <meta name="description" content="Interactive vignette exploring causal inference in the relationship between food insecurity and diabetes hospitalizations in California.">
+  <title>Is It Real or Just Related? Food Access and Diabetes | CAPHE</title>
+  <meta name="description" content="An interactive guide exploring whether food access actually affects diabetes hospitalizations, or whether poverty drives both.">
   <style>
     /* ============================================
        CSS RESET & BASE STYLES
@@ -1196,14 +1196,13 @@
   <header class="header" role="banner">
     <div class="container">
       <div class="eyebrow">CAPHE Interactive Vignette</div>
-      <h1>Distinguishing Signal from Selection</h1>
+      <h1>Is It Real or Just Related?</h1>
       <p class="subtitle">
-        Food Insecurity and Diabetes Outcomes in California Counties:
-        An Interactive Exploration of Causal Inference
+        Food Access and Diabetes Hospital Visits in California:
+        An Interactive Guide to Cause and Effect
       </p>
       <div class="policy-question">
-        <strong>The Policy Question:</strong> Will funding food prescription programs reduce diabetes hospitalizations,
-        or is the observed relationship driven by poverty acting as a confounder?
+        <strong>The Question:</strong> If we fund programs that help people get healthy food, will fewer people end up in the hospital for diabetes—or are both problems just symptoms of poverty?
       </div>
     </div>
   </header>
@@ -1211,11 +1210,11 @@
   <!-- Panel Navigation -->
   <nav class="panel-nav" role="navigation" aria-label="Vignette panels">
     <ul>
-      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">1. Data Exploration</button></li>
-      <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. Identification Problem</button></li>
-      <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. Regression Analysis</button></li>
-      <li><button class="panel-btn" data-panel="4" aria-pressed="false">4. Sensitivity Analysis</button></li>
-      <li><button class="panel-btn" data-panel="5" aria-pressed="false">5. Policy Recommendations</button></li>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">1. The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. The Problem</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. The Test</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">4. How Sure?</button></li>
+      <li><button class="panel-btn" data-panel="5" aria-pressed="false">5. What To Do</button></li>
     </ul>
   </nav>
 
@@ -1228,12 +1227,10 @@
         <div class="panel-header">
           <h2 id="panel-1-heading">
             <span class="panel-number">1</span>
-            Data Exploration
+            The Data: What Do We See?
           </h2>
           <p class="panel-intro">
-            We observe a strong correlation between county-level food insecurity rates and diabetes
-            hospitalization rates across California's 58 counties. Hover over points to explore
-            individual counties.
+            Counties where more people struggle to afford food also tend to have more diabetes hospitalizations. Each dot below represents one of California's 58 counties. Hover over any dot to see that county's details.
           </p>
         </div>
 
@@ -1263,31 +1260,29 @@
 
           <aside class="stats-sidebar" aria-label="Correlation statistics">
             <div class="stats-box">
-              <h3 style="margin-bottom: var(--space-md); font-size: 1rem;">Correlation Statistics</h3>
+              <h3 style="margin-bottom: var(--space-md); font-size: 1rem;">How Strong Is the Pattern?</h3>
               <div class="stat-row">
-                <span class="stat-label">Pearson r</span>
+                <span class="stat-label">Correlation (r)</span>
                 <span class="stat-value" id="stat-correlation">0.61</span>
               </div>
               <div class="stat-row">
-                <span class="stat-label">p-value</span>
-                <span class="stat-value significant" id="stat-pvalue">&lt; 0.001</span>
+                <span class="stat-label">Statistically significant?</span>
+                <span class="stat-value significant" id="stat-pvalue">Yes (p &lt; 0.001)</span>
               </div>
               <div class="stat-row">
-                <span class="stat-label">R-squared</span>
-                <span class="stat-value" id="stat-rsquared">0.37</span>
+                <span class="stat-label">Variance explained</span>
+                <span class="stat-value" id="stat-rsquared">37%</span>
               </div>
               <div class="stat-row">
-                <span class="stat-label">N (counties)</span>
+                <span class="stat-label">Counties included</span>
                 <span class="stat-value">58</span>
               </div>
             </div>
 
             <div class="stats-box mt-lg">
-              <h3 style="margin-bottom: var(--space-md); font-size: 1rem;">Key Observation</h3>
+              <h3 style="margin-bottom: var(--space-md); font-size: 1rem;">The Big Question</h3>
               <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-                Counties with higher food insecurity rates tend to have higher diabetes
-                hospitalization rates. But is this a <strong>causal</strong> relationship,
-                or are both driven by a common cause like poverty?
+                These two things clearly go together. But does lack of food access actually <strong>cause</strong> more hospitalizations? Or does poverty cause <strong>both</strong> problems at the same time?
               </p>
             </div>
           </aside>
@@ -1299,45 +1294,47 @@
         <div class="panel-header">
           <h2 id="panel-2-heading">
             <span class="panel-number">2</span>
-            The Identification Problem
+            The Problem: Why Correlation Isn't Proof
           </h2>
           <p class="panel-intro">
-            A Directed Acyclic Graph (DAG) helps us visualize the causal structure.
-            Click on nodes to learn definitions, and click edges to "block" confounding pathways.
+            This diagram shows how different factors might connect. The arrows show which things might cause which. The dashed line with the question mark is what we're trying to figure out: does improving food access actually reduce hospitalizations?
           </p>
         </div>
 
         <div class="dag-container">
           <div class="dag-wrapper">
-            <svg class="dag-svg" id="dag-chart" role="img" aria-label="Causal directed acyclic graph">
-              <!-- DAG will be rendered by JavaScript -->
-            </svg>
+            <img
+              src="/assets/images/vignettes/dag-food-diabetes.png"
+              alt="Causal diagram showing four boxes connected by arrows: Poverty at the top connects to both Food Access (left) and Hospitalizations (right). Healthcare at the bottom also connects to both. A dashed arrow with a question mark connects Food Access to Hospitalizations, representing the causal relationship we're trying to test."
+              class="dag-image"
+              style="max-width: 100%; height: auto;"
+            >
           </div>
 
           <aside class="dag-sidebar">
             <div class="dag-info">
-              <h4>Selected Element</h4>
+              <h4>Reading This Diagram</h4>
               <div class="definition" id="dag-definition">
-                <p style="color: var(--color-text-muted); font-style: italic;">
-                  Click a node or edge to see its definition and role in the causal structure.
-                </p>
+                <p><strong style="color: var(--color-success);">Food Access</strong> (green) — What we want to change through food programs.</p>
+                <p><strong style="color: var(--color-accent);">Hospitalizations</strong> (rust) — What we want to reduce.</p>
+                <p><strong>Poverty & Healthcare</strong> (gray) — Alternative explanations that might create a fake connection.</p>
+                <p style="margin-top: 1rem;"><strong>The dashed arrow with "?"</strong> — This is the relationship we're testing. Is it real, or just created by the gray boxes?</p>
               </div>
 
-              <h4>Back-Door Paths</h4>
+              <h4>The Two "Back Doors"</h4>
               <div class="paths-status" id="paths-status">
                 <div class="path-item">
-                  <span class="path-status open" aria-label="Open">!</span>
-                  <span>Food Insecurity ← Poverty → Diabetes Hosp.</span>
+                  <span class="path-status open" aria-label="Alternative explanation">!</span>
+                  <span>Food Access ← <strong>Poverty</strong> → Hospitalizations</span>
                 </div>
                 <div class="path-item">
-                  <span class="path-status open" aria-label="Open">!</span>
-                  <span>Food Insecurity ← Health Access → Diabetes Hosp.</span>
+                  <span class="path-status open" aria-label="Alternative explanation">!</span>
+                  <span>Food Access ← <strong>Healthcare</strong> → Hospitalizations</span>
                 </div>
               </div>
 
               <div class="dag-instructions">
-                <strong>Goal:</strong> Block all back-door paths to isolate the causal effect.
-                Click on confounding edges to toggle blocking.
+                <strong>The Key Insight:</strong> If poverty causes both food problems AND hospitalizations, it creates a fake-looking connection between them. We need to "block" these back doors by accounting for poverty and healthcare in our analysis. That's what Panel 3 does.
               </div>
             </div>
           </aside>
@@ -1349,11 +1346,10 @@
         <div class="panel-header">
           <h2 id="panel-3-heading">
             <span class="panel-number">3</span>
-            Regression Specification Table
+            The Test: What Happens When We Account for Other Factors?
           </h2>
           <p class="panel-intro">
-            Watch how the coefficient on Food Insecurity changes as we add controls.
-            This "coefficient stability" test helps assess causal credibility.
+            If food access truly causes hospitalizations, the effect should stay strong even after we account for poverty and healthcare access. Watch what happens to the numbers when you add these controls.
           </p>
         </div>
 
@@ -1361,78 +1357,77 @@
           <div class="regression-table-wrapper">
             <table class="regression-table" aria-describedby="regression-caption">
               <caption id="regression-caption" class="sr-only">
-                Regression results showing effect of food insecurity on diabetes hospitalizations
+                Statistical results showing the effect of food access on diabetes hospitalizations
               </caption>
               <thead>
                 <tr>
-                  <th scope="col">Model</th>
-                  <th scope="col">Food Insecurity Coefficient</th>
-                  <th scope="col">Standard Error</th>
-                  <th scope="col">R²</th>
+                  <th scope="col">Analysis</th>
+                  <th scope="col">Effect Size</th>
+                  <th scope="col">Uncertainty</th>
+                  <th scope="col">Fit</th>
                 </tr>
               </thead>
               <tbody id="regression-tbody">
                 <tr class="active" data-model="1">
-                  <td class="model-name">Model 1: Naive OLS</td>
+                  <td class="model-name">Simple comparison (no controls)</td>
                   <td><span class="coefficient">2.45</span><span class="stars">***</span></td>
-                  <td class="se">(0.31)</td>
-                  <td class="r-squared">0.37</td>
+                  <td class="se">(± 0.31)</td>
+                  <td class="r-squared">37%</td>
                 </tr>
                 <tr data-model="2" class="hidden">
-                  <td class="model-name">Model 2: + Poverty Controls</td>
+                  <td class="model-name">Accounting for poverty</td>
                   <td><span class="coefficient shrunk">1.47</span><span class="stars">***</span></td>
-                  <td class="se">(0.28)</td>
-                  <td class="r-squared">0.52</td>
+                  <td class="se">(± 0.28)</td>
+                  <td class="r-squared">52%</td>
                 </tr>
                 <tr data-model="3" class="hidden">
-                  <td class="model-name">Model 3: + Health Access FE</td>
+                  <td class="model-name">+ Accounting for healthcare access</td>
                   <td><span class="coefficient shrunk">0.89</span><span class="stars">**</span></td>
-                  <td class="se">(0.34)</td>
-                  <td class="r-squared">0.61</td>
+                  <td class="se">(± 0.34)</td>
+                  <td class="r-squared">61%</td>
                 </tr>
               </tbody>
             </table>
             <div class="table-notes">
-              <p>*** p < 0.001, ** p < 0.01, * p < 0.05</p>
-              <p>Dependent variable: Diabetes Hospitalizations per 10,000 population</p>
+              <p>*** Very confident (p < 0.001), ** Confident (p < 0.01), * Somewhat confident (p < 0.05)</p>
+              <p>Effect size = additional hospitalizations per 10,000 people for each 1% increase in food insecurity</p>
             </div>
           </div>
 
           <aside class="regression-sidebar">
             <div class="regression-controls">
               <div class="control-group">
-                <h4>Add Controls</h4>
+                <h4>Account for Other Factors</h4>
                 <div class="checkbox-item">
                   <input type="checkbox" id="ctrl-poverty" aria-describedby="poverty-desc">
                   <div>
-                    <label for="ctrl-poverty">Poverty Rate Controls</label>
+                    <label for="ctrl-poverty">Poverty measures</label>
                     <p class="control-desc" id="poverty-desc">
-                      Median income, % below poverty line, unemployment rate
+                      Income levels, poverty rate, unemployment
                     </p>
                   </div>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="ctrl-health" disabled aria-describedby="health-desc">
                   <div>
-                    <label for="ctrl-health">Health Access Fixed Effects</label>
+                    <label for="ctrl-health">Healthcare access</label>
                     <p class="control-desc" id="health-desc">
-                      Physicians per capita, % uninsured, hospital beds
+                      Doctors per person, insurance rates, hospital capacity
                     </p>
                   </div>
                 </div>
               </div>
 
               <div class="coefficient-change">
-                <div class="label">Current Food Insecurity Effect</div>
-                <div class="value" id="current-coef">β = 2.45</div>
+                <div class="label">Current Effect of Food Access</div>
+                <div class="value" id="current-coef">2.45</div>
                 <div class="delta" id="coef-delta"></div>
               </div>
 
               <div class="stats-box">
-                <h4 style="margin-bottom: var(--space-sm);">Interpretation</h4>
+                <h4 style="margin-bottom: var(--space-sm);">What This Means</h4>
                 <p id="regression-interpretation" style="font-size: 0.9rem; color: var(--color-text-secondary);">
-                  Without controls, a 1 percentage point increase in food insecurity
-                  is associated with 2.45 additional diabetes hospitalizations per 10,000.
+                  Without accounting for anything else, each 1% increase in food insecurity is linked to 2.45 more hospitalizations per 10,000 people.
                 </p>
               </div>
             </div>
@@ -1445,18 +1440,17 @@
         <div class="panel-header">
           <h2 id="panel-4-heading">
             <span class="panel-number">4</span>
-            Sensitivity Analysis: The E-Value
+            How Sure Can We Be? Testing Our Confidence
           </h2>
           <p class="panel-intro">
-            How strong would an unmeasured confounder need to be to explain away our finding?
-            The E-value quantifies the robustness of our estimate to hidden bias.
+            What if we missed something important? Use the slider below to test how strong a hidden factor would need to be to completely explain away our finding.
           </p>
         </div>
 
         <div class="sensitivity-container">
           <div class="sensitivity-visual">
-            <h3>Confounding Strength Required</h3>
-            <svg class="sensitivity-chart" id="evalue-chart" role="img" aria-label="E-value sensitivity visualization">
+            <h3>How Strong Would a Hidden Factor Need to Be?</h3>
+            <svg class="sensitivity-chart" id="evalue-chart" role="img" aria-label="Chart showing how strong a hidden factor would need to be to explain away the effect">
               <!-- E-value chart will be rendered by JavaScript -->
             </svg>
           </div>
@@ -1464,37 +1458,30 @@
           <aside class="sensitivity-sidebar">
             <div class="sensitivity-controls">
               <div class="slider-group">
-                <h4>Hypothetical Unmeasured Confounder</h4>
+                <h4>Imagine We Missed Something</h4>
                 <p class="slider-desc">
-                  Suppose we missed a confounder like "Health Literacy."
-                  How strongly would it need to be associated with both food insecurity
-                  and diabetes hospitalizations to explain our result?
+                  Suppose there's a factor we didn't measure—like how much people know about healthy eating. How strongly connected to both food access AND hospitalizations would it need to be to fully explain what we're seeing?
                 </p>
                 <div class="slider-wrapper">
                   <input type="range" id="confounder-strength"
                          min="1" max="5" step="0.1" value="1"
-                         aria-label="Unmeasured confounder strength">
+                         aria-label="Strength of hidden factor">
                   <span class="slider-value" id="slider-value">1.0</span>
                 </div>
               </div>
 
               <div class="evalue-result">
-                <div class="result-label">E-Value for Current Estimate</div>
+                <div class="result-label">Threshold to Explain Away Our Finding</div>
                 <div class="result-value" id="evalue-display">2.14</div>
                 <div class="result-interpretation robust" id="evalue-interpretation">
-                  An unmeasured confounder would need to be associated with both
-                  food insecurity and diabetes hospitalizations by a risk ratio of
-                  <strong>2.14</strong> to explain away the observed effect.
+                  A hidden factor would need to more than double the risk of both food insecurity and hospitalization (strength of <strong>2.14</strong>) to fully explain what we found.
                 </div>
               </div>
 
               <div class="evalue-explanation">
-                <h4>What Does This Mean?</h4>
+                <h4>Putting This in Perspective</h4>
                 <p>
-                  The E-value provides a threshold: if no plausible unmeasured confounder
-                  could have this strong a relationship with both variables, our finding
-                  is robust. Compare to known confounders: smoking and lung cancer have
-                  a risk ratio around 10; obesity and diabetes around 3.
+                  For comparison: Smoking increases lung cancer risk by about 10x. Obesity increases diabetes risk by about 3x. So a hidden factor would need to be fairly strong—but not impossibly strong—to explain our results.
                 </p>
               </div>
             </div>
@@ -1507,45 +1494,41 @@
         <div class="panel-header">
           <h2 id="panel-5-heading">
             <span class="panel-number">5</span>
-            Policy Recommendation Generator
+            From Evidence to Action: What Should We Do?
           </h2>
           <p class="panel-intro">
-            Based on your interpretation of the analysis, select your belief about the
-            relationship to generate a tailored policy recommendation.
+            Reasonable people can look at the same data and reach different conclusions. The right policy depends on how you interpret the evidence. Select your conclusion below to see how it changes the recommended action.
           </p>
         </div>
 
         <div class="policy-container">
           <div class="policy-selector">
-            <h3>Your Assessment</h3>
-            <div class="belief-options" role="radiogroup" aria-label="Causal interpretation">
+            <h3>Based on What You've Seen, What Do You Think?</h3>
+            <div class="belief-options" role="radiogroup" aria-label="Your interpretation of the evidence">
               <div class="belief-option">
                 <input type="radio" id="belief-causal" name="belief" value="causal">
                 <label for="belief-causal">
-                  <div class="option-title">Likely Causal</div>
+                  <div class="option-title">Food access probably does affect hospitalizations</div>
                   <div class="option-desc">
-                    The residual effect after controlling for confounders represents a true
-                    causal impact of food insecurity on diabetes hospitalizations.
+                    The effect stayed significant even after accounting for poverty and healthcare access. This suggests food programs could genuinely reduce hospitalizations.
                   </div>
                 </label>
               </div>
               <div class="belief-option">
                 <input type="radio" id="belief-confounded" name="belief" value="confounded">
                 <label for="belief-confounded">
-                  <div class="option-title">Likely Confounded</div>
+                  <div class="option-title">Poverty is probably the real driver</div>
                   <div class="option-desc">
-                    The relationship is primarily driven by unmeasured confounders like
-                    health literacy, stress, or other poverty-related factors.
+                    The effect dropped by 64% when we accounted for other factors. There's likely something else we didn't measure—like stress or health knowledge—that explains the rest.
                   </div>
                 </label>
               </div>
               <div class="belief-option">
                 <input type="radio" id="belief-ambiguous" name="belief" value="ambiguous" checked>
                 <label for="belief-ambiguous">
-                  <div class="option-title">Ambiguous</div>
+                  <div class="option-title">We can't tell from this data alone</div>
                   <div class="option-desc">
-                    The evidence is insufficient to determine causality.
-                    More rigorous evaluation is needed before committing resources.
+                    The evidence points in different directions. Before investing significant resources, we need a more rigorous study.
                   </div>
                 </label>
               </div>
@@ -1801,6 +1784,15 @@
         // Update panels
         panels.forEach(p => p.classList.remove('active'));
         document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Re-render charts when their panels become visible
+        // (SVGs need to be visible to get correct dimensions)
+        if (panelNum === '4') {
+          setTimeout(() => {
+            renderEvalueChart();
+            updateEvalue();
+          }, 50);
+        }
       });
     });
 
@@ -2018,197 +2010,6 @@
     }
 
     /* ============================================
-       PANEL 2: CAUSAL DAG
-       ============================================ */
-
-    const dagNodes = {
-      foodInsecurity: {
-        label: 'Food Insecurity',
-        x: 150, y: 200,
-        type: 'treatment',
-        definition: 'Food Insecurity (Treatment): The proportion of households reporting inadequate access to nutritious food. Measured via CHIS survey data at the county level.'
-      },
-      diabetesHosp: {
-        label: 'Diabetes Hosp.',
-        x: 550, y: 200,
-        type: 'outcome',
-        definition: 'Diabetes Hospitalizations (Outcome): Rate of hospital admissions with diabetes as primary diagnosis, per 10,000 population. Source: HCAI/OSHPD discharge data.'
-      },
-      poverty: {
-        label: 'Poverty',
-        x: 350, y: 80,
-        type: 'confounder',
-        definition: 'Poverty (Confounder): Economic deprivation affects both food access and health outcomes. Includes income, employment, and wealth measures.'
-      },
-      healthAccess: {
-        label: 'Health Access',
-        x: 350, y: 320,
-        type: 'confounder',
-        definition: 'Health Access (Confounder): Availability of healthcare services including physicians, hospitals, and insurance coverage. Affects both food program participation and hospitalization rates.'
-      }
-    };
-
-    const dagEdges = [
-      { from: 'foodInsecurity', to: 'diabetesHosp', type: 'causal', blocked: false },
-      { from: 'poverty', to: 'foodInsecurity', type: 'confounding', blocked: false },
-      { from: 'poverty', to: 'diabetesHosp', type: 'confounding', blocked: false },
-      { from: 'healthAccess', to: 'foodInsecurity', type: 'confounding', blocked: false },
-      { from: 'healthAccess', to: 'diabetesHosp', type: 'confounding', blocked: false }
-    ];
-
-    function renderDAG() {
-      const svg = document.getElementById('dag-chart');
-      const width = svg.clientWidth;
-      const height = svg.clientHeight;
-
-      svg.innerHTML = '';
-
-      // Arrow marker
-      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-
-      ['normal', 'blocked', 'causal'].forEach(type => {
-        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-        marker.setAttribute('id', `arrowhead-${type}`);
-        marker.setAttribute('markerWidth', '10');
-        marker.setAttribute('markerHeight', '7');
-        marker.setAttribute('refX', '9');
-        marker.setAttribute('refY', '3.5');
-        marker.setAttribute('orient', 'auto');
-
-        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
-        polygon.setAttribute('class', 'dag-arrowhead');
-        marker.appendChild(polygon);
-        defs.appendChild(marker);
-      });
-
-      svg.appendChild(defs);
-
-      // Scale positions to SVG size
-      const scaleX = (x) => (x / 700) * width;
-      const scaleY = (y) => (y / 400) * height;
-
-      // Edges
-      dagEdges.forEach((edge, i) => {
-        const from = dagNodes[edge.from];
-        const to = dagNodes[edge.to];
-
-        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        group.setAttribute('class', `dag-edge ${edge.type} ${edge.blocked ? 'blocked' : ''}`);
-        group.setAttribute('data-edge', i);
-        group.setAttribute('tabindex', '0');
-        group.setAttribute('role', 'button');
-        group.setAttribute('aria-label', `Edge from ${from.label} to ${to.label}`);
-
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', scaleX(from.x) + 60);
-        line.setAttribute('y1', scaleY(from.y));
-        line.setAttribute('x2', scaleX(to.x) - 60);
-        line.setAttribute('y2', scaleY(to.y));
-        line.setAttribute('marker-end', `url(#arrowhead-${edge.blocked ? 'blocked' : edge.type})`);
-
-        group.appendChild(line);
-
-        if (edge.type === 'confounding') {
-          group.addEventListener('click', () => toggleEdge(i));
-          group.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') toggleEdge(i);
-          });
-        }
-
-        svg.appendChild(group);
-      });
-
-      // Nodes
-      Object.entries(dagNodes).forEach(([key, node]) => {
-        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        group.setAttribute('class', `dag-node ${node.type}`);
-        group.setAttribute('data-node', key);
-        group.setAttribute('tabindex', '0');
-        group.setAttribute('role', 'button');
-        group.setAttribute('aria-label', node.label);
-        group.setAttribute('transform', `translate(${scaleX(node.x)}, ${scaleY(node.y)})`);
-
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', -60);
-        rect.setAttribute('y', -22);
-        rect.setAttribute('width', 120);
-        rect.setAttribute('height', 44);
-
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('dominant-baseline', 'middle');
-        text.textContent = node.label;
-
-        group.appendChild(rect);
-        group.appendChild(text);
-
-        group.addEventListener('click', () => showNodeDefinition(key));
-        group.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') showNodeDefinition(key);
-        });
-
-        svg.appendChild(group);
-      });
-
-      updatePathsStatus();
-    }
-
-    function showNodeDefinition(nodeKey) {
-      const node = dagNodes[nodeKey];
-      const defDiv = document.getElementById('dag-definition');
-
-      // Clear previous selection
-      document.querySelectorAll('.dag-node').forEach(n => n.classList.remove('selected'));
-      document.querySelector(`[data-node="${nodeKey}"]`).classList.add('selected');
-
-      defDiv.innerHTML = `
-        <div class="definition-title">${node.label}</div>
-        <p>${node.definition}</p>
-      `;
-    }
-
-    function toggleEdge(edgeIndex) {
-      dagEdges[edgeIndex].blocked = !dagEdges[edgeIndex].blocked;
-
-      const edgeGroup = document.querySelector(`[data-edge="${edgeIndex}"]`);
-      edgeGroup.classList.toggle('blocked', dagEdges[edgeIndex].blocked);
-
-      // Update arrow marker
-      const line = edgeGroup.querySelector('line');
-      line.setAttribute('marker-end', `url(#arrowhead-${dagEdges[edgeIndex].blocked ? 'blocked' : dagEdges[edgeIndex].type})`);
-
-      updatePathsStatus();
-    }
-
-    function updatePathsStatus() {
-      // Check if poverty path is blocked
-      const povertyPath1 = dagEdges.find(e => e.from === 'poverty' && e.to === 'foodInsecurity');
-      const povertyPath2 = dagEdges.find(e => e.from === 'poverty' && e.to === 'diabetesHosp');
-      const povertyBlocked = povertyPath1.blocked || povertyPath2.blocked;
-
-      // Check if health access path is blocked
-      const healthPath1 = dagEdges.find(e => e.from === 'healthAccess' && e.to === 'foodInsecurity');
-      const healthPath2 = dagEdges.find(e => e.from === 'healthAccess' && e.to === 'diabetesHosp');
-      const healthBlocked = healthPath1.blocked || healthPath2.blocked;
-
-      const pathsDiv = document.getElementById('paths-status');
-      pathsDiv.innerHTML = `
-        <div class="path-item">
-          <span class="path-status ${povertyBlocked ? 'blocked' : 'open'}" aria-label="${povertyBlocked ? 'Blocked' : 'Open'}">
-            ${povertyBlocked ? '✓' : '!'}
-          </span>
-          <span>Food Insecurity ← <strong>Poverty</strong> → Diabetes Hosp.</span>
-        </div>
-        <div class="path-item">
-          <span class="path-status ${healthBlocked ? 'blocked' : 'open'}" aria-label="${healthBlocked ? 'Blocked' : 'Open'}">
-            ${healthBlocked ? '✓' : '!'}
-          </span>
-          <span>Food Insecurity ← <strong>Health Access</strong> → Diabetes Hosp.</span>
-        </div>
-      `;
-    }
-
-    /* ============================================
        PANEL 3: REGRESSION TABLE
        ============================================ */
 
@@ -2290,17 +2091,17 @@
       if (currentModel === regressionModels[0]) {
         deltaEl.textContent = '';
       } else {
-        deltaEl.textContent = `${change}% change from naive estimate`;
+        deltaEl.textContent = `${change}% change from the simple comparison`;
       }
 
       // Update interpretation
       const interpEl = document.getElementById('regression-interpretation');
       if (currentModel === regressionModels[0]) {
-        interpEl.textContent = 'Without controls, a 1 percentage point increase in food insecurity is associated with 2.45 additional diabetes hospitalizations per 10,000. This likely overstates the true causal effect.';
+        interpEl.textContent = 'Without accounting for anything else, each 1% increase in food insecurity is linked to 2.45 more hospitalizations per 10,000 people. But this number is probably too high—it includes effects that are really about poverty.';
       } else if (currentModel === regressionModels[1]) {
-        interpEl.textContent = 'After controlling for poverty, the coefficient shrinks by 40%. This suggests poverty was confounding the raw relationship. The remaining effect of 1.47 may be closer to the true causal impact.';
+        interpEl.textContent = 'Once we account for poverty, the effect drops by 40%. This tells us poverty was making the food-hospitalization connection look stronger than it really is. The remaining effect (1.47) might be closer to the truth.';
       } else {
-        interpEl.textContent = 'With full controls, the coefficient shrinks by 64% from the naive estimate but remains statistically significant. This residual effect (0.89) represents our best estimate of the causal impact, though unmeasured confounding may remain.';
+        interpEl.textContent = 'With everything accounted for, the effect drops by 64% total—but it\'s still there (0.89) and still statistically meaningful. This is our best guess at the real effect of food access, though we might still be missing something.';
       }
     }
 
@@ -2340,13 +2141,13 @@
 
       if (strength >= evalue) {
         interpEl.className = 'result-interpretation fragile';
-        interpEl.innerHTML = `Your hypothetical confounder (RR = ${strength.toFixed(1)}) <strong>exceeds</strong> the E-value threshold. An unmeasured confounder this strong could explain away the observed effect.`;
+        interpEl.innerHTML = `A hidden factor with strength ${strength.toFixed(1)}x <strong>would be strong enough</strong> to explain away our finding. This means our result is somewhat fragile—a plausible hidden factor could be the real explanation.`;
       } else if (strength >= evalue * 0.7) {
         interpEl.className = 'result-interpretation moderate';
-        interpEl.innerHTML = `Your hypothetical confounder (RR = ${strength.toFixed(1)}) is approaching the threshold. The result is <strong>moderately sensitive</strong> to unmeasured confounding.`;
+        interpEl.innerHTML = `A hidden factor with strength ${strength.toFixed(1)}x is getting close to the threshold. Our finding is <strong>moderately robust</strong>—a fairly strong hidden factor would be needed, but it's not impossible.`;
       } else {
         interpEl.className = 'result-interpretation robust';
-        interpEl.innerHTML = `Your hypothetical confounder (RR = ${strength.toFixed(1)}) is below the E-value. A confounder would need to be <strong>much stronger</strong> to explain away the effect.`;
+        interpEl.innerHTML = `A hidden factor with strength ${strength.toFixed(1)}x <strong>wouldn't be strong enough</strong> to explain our finding. A much stronger hidden factor would be needed—which makes our result more trustworthy.`;
       }
 
       updateEvalueChart(strength, evalue);
@@ -2545,103 +2346,76 @@
       const memos = {
         causal: `
           <div class="memo-recommendation causal">
-            <h4>Recommendation: Food Prescription Programs</h4>
-            <p>Implement Medically Tailored Meal Programs for Diabetic Patients</p>
+            <h4>Recommendation: Invest in Food Programs</h4>
+            <p>Help people access healthy food through prescriptions and meal programs</p>
           </div>
 
-          <h4>Rationale</h4>
+          <h4>Why This Makes Sense</h4>
           <p>
-            Based on our analysis, food insecurity appears to have a genuine causal effect on
-            diabetes hospitalizations. The coefficient remains significant even after controlling
-            for poverty and health access, and the E-value suggests robustness to unmeasured
-            confounding.
+            The evidence suggests that helping people access healthy food could genuinely reduce hospitalizations. Even after accounting for poverty and healthcare access, food access still matters.
           </p>
 
-          <h4>Recommended Actions</h4>
+          <h4>What To Do</h4>
           <ul>
-            <li><strong>Food Prescription Programs:</strong> Partner with healthcare systems to "prescribe"
-            produce for diabetic patients, with vouchers redeemable at participating grocers.</li>
-            <li><strong>Medically Tailored Meals:</strong> Fund home-delivered, nutrition-optimized meals
-            for high-risk diabetic patients, particularly those recently discharged from hospitals.</li>
-            <li><strong>SNAP Incentives:</strong> Advocate for state-level CalFresh (SNAP) incentives
-            for fruits and vegetables in high-burden counties.</li>
+            <li><strong>Food prescriptions:</strong> Partner with doctors to "prescribe" produce for diabetic patients, with vouchers they can use at grocery stores.</li>
+            <li><strong>Medically-designed meals:</strong> Deliver healthy, diabetes-friendly meals to high-risk patients, especially those just out of the hospital.</li>
+            <li><strong>CalFresh bonuses:</strong> Give people extra purchasing power when they buy fruits and vegetables.</li>
           </ul>
 
-          <h4>Expected Impact</h4>
+          <h4>What We Might Expect</h4>
           <p>
-            Based on our coefficient estimate, a 5 percentage point reduction in food insecurity
-            could reduce diabetes hospitalizations by approximately 4.5 per 10,000 population—
-            a meaningful reduction in both human suffering and healthcare costs.
+            Based on the numbers, if we could improve food access by 5 percentage points, we might see about 4-5 fewer hospitalizations per 10,000 people. That's real lives improved and real healthcare costs avoided.
           </p>
         `,
         confounded: `
           <div class="memo-recommendation confounded">
-            <h4>Recommendation: Address Root Causes</h4>
-            <p>Focus on Income Support and Poverty Reduction</p>
+            <h4>Recommendation: Address Poverty Directly</h4>
+            <p>Focus on income support rather than food-specific programs</p>
           </div>
 
-          <h4>Rationale</h4>
+          <h4>Why This Makes Sense</h4>
           <p>
-            The substantial attenuation of the food insecurity coefficient when controlling for
-            poverty suggests the relationship is largely driven by confounding. Targeting food
-            access specifically may miss the larger issue: poverty affects health through
-            multiple pathways simultaneously.
+            The effect of food access dropped by 64% once we accounted for poverty. This suggests poverty is the real driver—it causes both food problems AND health problems at the same time. Fixing just the food piece might miss the bigger picture.
           </p>
 
-          <h4>Recommended Actions</h4>
+          <h4>What To Do</h4>
           <ul>
-            <li><strong>Cash Transfer Programs:</strong> Support expanded Earned Income Tax Credit
-            (EITC) at the state level and unconditional cash transfer pilots for low-income households.</li>
-            <li><strong>Housing First Approaches:</strong> Invest in housing stability programs,
-            as housing insecurity is closely linked to both food insecurity and poor health outcomes.</li>
-            <li><strong>Comprehensive Benefits Navigation:</strong> Fund benefits navigators to help
-            eligible households access the full range of social programs (CalFresh, Medi-Cal, CalWORKs).</li>
+            <li><strong>Cash support:</strong> Expand tax credits for working families and consider direct cash payments for low-income households.</li>
+            <li><strong>Housing stability:</strong> Help people stay housed—housing problems are connected to both food problems and health problems.</li>
+            <li><strong>Benefits navigators:</strong> Make sure eligible families actually get all the help available to them (CalFresh, Medi-Cal, CalWORKs).</li>
           </ul>
 
-          <h4>Caution</h4>
+          <h4>Important Note</h4>
           <p>
-            This does not mean food programs are without value—they provide essential nutrition.
-            However, expectations for reducing hospitalizations specifically should be tempered,
-            and food programs should be part of a broader anti-poverty strategy.
+            This doesn't mean food programs are worthless—people still need to eat! But if the goal is specifically to reduce diabetes hospitalizations, food programs alone may not be the most effective approach.
           </p>
         `,
         ambiguous: `
           <div class="memo-recommendation ambiguous">
-            <h4>Recommendation: Pilot Study</h4>
-            <p>Conduct a Cluster RCT or Staggered Rollout Pilot</p>
+            <h4>Recommendation: Test It Before Scaling</h4>
+            <p>Run a pilot program with careful measurement</p>
           </div>
 
-          <h4>Rationale</h4>
+          <h4>Why This Makes Sense</h4>
           <p>
-            Given the ambiguity in the causal evidence, we recommend a rigorous
-            pilot study before scaling interventions. This approach allows for:
-          </p>
-          <ul>
-            <li>Causal identification through randomization or quasi-experimental design</li>
-            <li>Cost-effectiveness estimation with credible counterfactuals</li>
-            <li>Learning about implementation challenges before full rollout</li>
-          </ul>
-
-          <h4>Proposed Design</h4>
-          <p>
-            Implement a <strong>staggered rollout</strong> of food prescription programs
-            across willing counties, with careful documentation of timing to enable
-            difference-in-differences analysis.
+            The data points in different directions. Before investing millions, it's wise to run a careful test. This way we can learn whether food programs actually reduce hospitalizations.
           </p>
 
-          <h4>Data Requirements</h4>
+          <h4>How To Test It</h4>
+          <p>
+            Roll out food programs to some counties first, then others later. By comparing what happens in each group over time, we can get a clearer answer.
+          </p>
+
+          <h4>What We'd Need to Track</h4>
           <ul>
-            <li>Pre-intervention baseline on diabetes hospitalizations (minimum 2 years)</li>
-            <li>Food prescription program enrollment and utilization data</li>
-            <li>Individual-level linkage to hospital discharge data where possible</li>
-            <li>County-level controls for concurrent policy changes</li>
+            <li>Hospitalization rates before and after the program (at least 2 years of baseline data)</li>
+            <li>Who enrolled in the program and how much they used it</li>
+            <li>What else changed in each county during the same time period</li>
           </ul>
 
-          <h4>Timeline</h4>
+          <h4>How Long This Takes</h4>
           <p>
-            A 3-year pilot with 1-year pre-period, 18-month intervention, and 6-month
-            analysis period would provide sufficient power to detect effects of the
-            magnitude suggested by our observational analysis.
+            A proper test takes about 3 years: one year to establish the baseline, 18 months running the program, and 6 months to analyze results. It's not fast, but it gives us a real answer.
           </p>
         `
       };
@@ -2655,7 +2429,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       renderScatterPlot();
-      renderDAG();
       initRegressionPanel();
       initSensitivityPanel();
       initPolicyPanel();
@@ -2666,7 +2439,6 @@
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
           renderScatterPlot();
-          renderDAG();
           renderEvalueChart();
           updateEvalue();
         }, 250);

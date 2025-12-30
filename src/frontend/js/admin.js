@@ -2,15 +2,30 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('applications-container');
 
-  // Check if user is authenticated and admin
-  const session = await checkSession();
-  if (!session) {
-    window.location.href = '/login.html?redirect=/admin.html';
-    return;
-  }
+  try {
+    // Check if user is authenticated and admin
+    const session = await checkSession();
+    console.log('Session check result:', session);
 
-  // Load applications
-  await loadApplications();
+    if (!session) {
+      console.log('No session, redirecting to login...');
+      window.location.href = '/login.html?redirect=/admin.html';
+      return;
+    }
+
+    console.log('Session found, loading applications...');
+    // Load applications
+    await loadApplications();
+  } catch (error) {
+    console.error('Admin page error:', error);
+    container.innerHTML = `
+      <div class="error-state">
+        <strong>Authentication Error</strong><br>
+        ${error.message}<br><br>
+        <a href="/login.html?redirect=/admin.html">Go to Login</a>
+      </div>
+    `;
+  }
 });
 
 async function loadApplications() {

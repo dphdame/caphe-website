@@ -7,12 +7,12 @@
 const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
 
-let supabase = null;
+let supabaseClient = null;
 
 // Initialize Supabase client
 function initSupabase() {
   if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return true;
   }
   return false;
@@ -45,7 +45,7 @@ async function checkAuth() {
     return;
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (session) {
     // User is logged in - redirect to dashboard
@@ -81,7 +81,7 @@ async function handleLogin(e) {
   submitBtn.textContent = 'Signing in...';
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
@@ -123,7 +123,7 @@ async function handleForgotPassword(e) {
   }
 
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password.html'
     });
 
@@ -139,8 +139,8 @@ async function handleForgotPassword(e) {
 
 // Logout function (for use on dashboard)
 async function logout() {
-  if (supabase) {
-    await supabase.auth.signOut();
+  if (supabaseClient) {
+    await supabaseClient.auth.signOut();
   }
   window.location.href = '/login.html';
 }
@@ -152,6 +152,6 @@ async function checkSession() {
     return null;
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
   return session;
 }

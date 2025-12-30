@@ -275,7 +275,7 @@ app.post('/api/membership/apply', async (req, res) => {
         <h2>Thank you for applying to CAPHE!</h2>
         <p>Dear ${firstName},</p>
         <p>We've received your membership application for the California Association of Public Health Economists.</p>
-        <p>Our team will review your application and respond within 5 business days.</p>
+        <p>Our team will review your application and respond within 5 business days. If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
         <p>In the meantime, feel free to explore our <a href="https://www.caphegroup.org/resources.html">public resources</a> and learn more about our <a href="https://www.caphegroup.org/programs.html">upcoming programs</a>.</p>
         <p>Best regards,<br>The CAPHE Team</p>
         <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">

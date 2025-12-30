@@ -266,6 +266,30 @@ app.post('/api/membership/apply', async (req, res) => {
       console.error('Failed to send admin notification:', emailErr);
     }
 
+    // Send confirmation email to applicant
+    const confirmationEmail = {
+      from: process.env.EMAIL_USER || 'info@caphegroup.org',
+      to: email,
+      subject: 'CAPHE Membership Application Received',
+      html: `
+        <h2>Thank you for applying to CAPHE!</h2>
+        <p>Dear ${firstName},</p>
+        <p>We've received your membership application for the California Association of Public Health Economists.</p>
+        <p>Our team will review your application and respond within 5 business days.</p>
+        <p>In the meantime, feel free to explore our <a href="https://www.caphegroup.org/resources.html">public resources</a> and learn more about our <a href="https://www.caphegroup.org/programs.html">upcoming programs</a>.</p>
+        <p>Best regards,<br>The CAPHE Team</p>
+        <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
+        <a href="https://www.caphegroup.org">www.caphegroup.org</a></p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(confirmationEmail);
+    } catch (emailErr) {
+      console.error('Failed to send applicant confirmation:', emailErr);
+    }
+
     res.json({
       success: true,
       message: 'Application submitted successfully. We will review your application and be in touch soon.'

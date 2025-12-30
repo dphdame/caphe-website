@@ -19,10 +19,14 @@ function initSupabase() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Auth.js loaded');
+  console.log('window.supabase available:', !!window.supabase);
+
   const loginForm = document.getElementById('login-form');
   const forgotPassword = document.getElementById('forgot-password');
 
   if (loginForm) {
+    console.log('Login form found, attaching handler');
     loginForm.addEventListener('submit', handleLogin);
   }
 
@@ -54,6 +58,7 @@ async function checkAuth() {
 // Handle login
 async function handleLogin(e) {
   e.preventDefault();
+  console.log('handleLogin called');
 
   const form = e.target;
   const statusDiv = document.getElementById('login-status');
@@ -61,14 +66,17 @@ async function handleLogin(e) {
 
   const email = form.email.value;
   const password = form.password.value;
+  console.log('Attempting login for:', email);
 
   // Check if Supabase is configured
   if (!initSupabase()) {
+    console.log('Supabase init failed');
     statusDiv.innerHTML = '<p style="color: var(--color-warning);">Member login is not yet configured. Please contact us to join.</p>';
     statusDiv.classList.remove('hidden');
     return;
   }
 
+  console.log('Supabase initialized, calling signInWithPassword...');
   submitBtn.disabled = true;
   submitBtn.textContent = 'Signing in...';
 
@@ -78,11 +86,15 @@ async function handleLogin(e) {
       password
     });
 
+    console.log('Supabase response - data:', data, 'error:', error);
+
     if (error) throw error;
 
     // Success - redirect to dashboard
+    console.log('Login successful, redirecting...');
     window.location.href = '/dashboard.html';
   } catch (error) {
+    console.error('Login error:', error);
     statusDiv.innerHTML = `<p style="color: var(--color-error);">${error.message}</p>`;
     statusDiv.classList.remove('hidden');
   } finally {

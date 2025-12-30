@@ -3,6 +3,12 @@
  * Handles member dashboard functionality
  */
 
+// Admin emails - users with these emails will see admin panel
+const ADMIN_EMAILS = [
+  'info@caphegroup.org',
+  'victoriaeperez@gmail.com'
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Check if user is authenticated
   if (!await checkDashboardAuth()) {
@@ -18,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Load member profile
+  // Load member profile and check admin status
   await loadMemberProfile();
 
   // Load dashboard data
@@ -63,6 +69,14 @@ async function loadMemberProfile() {
           memberNameEl.textContent = user.user_metadata.full_name;
         } else {
           memberNameEl.textContent = user.email.split('@')[0];
+        }
+      }
+
+      // Check if user is admin and show admin card
+      if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        const adminCard = document.getElementById('admin-card');
+        if (adminCard) {
+          adminCard.style.display = '';
         }
       }
     }

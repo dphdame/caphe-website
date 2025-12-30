@@ -29,17 +29,40 @@ const transporter = nodemailer.createTransport({
 // =============================================
 
 let brevoContactsApi = null;
-let brevoListId = null;
+let brevoListIds = {
+  general: null,   // General listserv (public updates)
+  members: null,   // Members-only communications
+  events: null     // Event registrants
+};
 
 if (process.env.BREVO_API_KEY) {
   const brevoApiInstance = new Brevo.ContactsApi();
   brevoApiInstance.setApiKey(Brevo.ContactsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
   brevoContactsApi = brevoApiInstance;
-  brevoListId = parseInt(process.env.BREVO_LIST_ID) || 2; // Default list ID
-  console.log('Brevo API initialized');
+  brevoListIds.general = parseInt(process.env.BREVO_LIST_ID) || 9;
+  brevoListIds.members = parseInt(process.env.BREVO_MEMBERS_LIST_ID) || 13;
+  brevoListIds.events = parseInt(process.env.BREVO_EVENTS_LIST_ID) || 14;
+  console.log('Brevo API initialized with lists:', brevoListIds);
 }
 
-// Subscribe to listserv
+// Helper function to subscribe to a Brevo list
+async function subscribeToBrevoList(listId, contactData) {
+  const createContact = new Brevo.CreateContact();
+  createContact.email = contactData.email;
+  createContact.listIds = [listId];
+  createContact.attributes = {
+    FIRSTNAME: contactData.firstName || '',
+    LASTNAME: contactData.lastName || '',
+    ORGANIZATION: contactData.organization || '',
+    EVENT_NAME: contactData.eventName || '',
+    EVENT_DATE: contactData.eventDate || ''
+  };
+  createContact.updateEnabled = true;
+
+  return brevoContactsApi.createContact(createContact);
+}
+
+// Subscribe to general listserv (public updates)
 app.post('/api/listserv/subscribe', async (req, res) => {
   const { email, firstName, lastName, organization } = req.body;
 
@@ -52,17 +75,7 @@ app.post('/api/listserv/subscribe', async (req, res) => {
   }
 
   try {
-    const createContact = new Brevo.CreateContact();
-    createContact.email = email;
-    createContact.listIds = [brevoListId];
-    createContact.attributes = {
-      FIRSTNAME: firstName || '',
-      LASTNAME: lastName || '',
-      ORGANIZATION: organization || ''
-    };
-    createContact.updateEnabled = true; // Update if contact exists
-
-    await brevoContactsApi.createContact(createContact);
+    await subscribeToBrevoList(brevoListIds.general, { email, firstName, lastName, organization });
 
     res.json({
       success: true,
@@ -71,7 +84,6 @@ app.post('/api/listserv/subscribe', async (req, res) => {
   } catch (error) {
     console.error('Brevo subscription error:', error);
 
-    // Handle "already exists" gracefully
     if (error.response?.body?.code === 'duplicate_parameter') {
       return res.json({
         success: true,
@@ -81,6 +93,80 @@ app.post('/api/listserv/subscribe', async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to subscribe',
+      details: error.message
+    });
+  }
+});
+
+// Add member to members list (called when member account is created)
+app.post('/api/members/subscribe', verifyUser, async (req, res) => {
+  const { email, firstName, lastName, organization } = req.body;
+
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Email list service not configured' });
+  }
+
+  try {
+    await subscribeToBrevoList(brevoListIds.members, {
+      email: email || req.user.email,
+      firstName,
+      lastName,
+      organization
+    });
+
+    res.json({
+      success: true,
+      message: 'Added to members list'
+    });
+  } catch (error) {
+    console.error('Brevo member subscription error:', error);
+
+    if (error.response?.body?.code === 'duplicate_parameter') {
+      return res.json({ success: true, message: 'Already on members list' });
+    }
+
+    res.status(500).json({ error: 'Failed to add to members list' });
+  }
+});
+
+// Register for an event (webinar, workshop, etc.)
+app.post('/api/events/register', async (req, res) => {
+  const { email, firstName, lastName, organization, eventName, eventDate } = req.body;
+
+  if (!email || !eventName) {
+    return res.status(400).json({ error: 'Email and event name are required' });
+  }
+
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Email list service not configured' });
+  }
+
+  try {
+    await subscribeToBrevoList(brevoListIds.events, {
+      email,
+      firstName,
+      lastName,
+      organization,
+      eventName,
+      eventDate
+    });
+
+    res.json({
+      success: true,
+      message: `Successfully registered for ${eventName}`
+    });
+  } catch (error) {
+    console.error('Brevo event registration error:', error);
+
+    if (error.response?.body?.code === 'duplicate_parameter') {
+      return res.json({
+        success: true,
+        message: `You are already registered for ${eventName}`
+      });
+    }
+
+    res.status(500).json({
+      error: 'Failed to register for event',
       details: error.message
     });
   }

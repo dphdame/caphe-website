@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (contactForm) {
     contactForm.addEventListener('submit', handleContactSubmit);
   }
+
+  // Listserv form handling
+  const listservForm = document.getElementById('listserv-form');
+  if (listservForm) {
+    listservForm.addEventListener('submit', handleListservSubmit);
+  }
 });
 
 // Contact form submission
@@ -62,6 +68,51 @@ async function handleContactSubmit(e) {
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send Message';
+  }
+}
+
+// Listserv form submission
+async function handleListservSubmit(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const statusDiv = document.getElementById('listserv-status');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  // Get form data
+  const formData = {
+    email: document.getElementById('listserv-email').value,
+    firstName: document.getElementById('listserv-firstName').value,
+    lastName: document.getElementById('listserv-lastName').value,
+    organization: document.getElementById('listserv-organization').value
+  };
+
+  // Disable button
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Subscribing...';
+
+  try {
+    const response = await fetch('/api/listserv/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      statusDiv.innerHTML = `<p style="color: var(--color-success);">${result.message}</p>`;
+      statusDiv.classList.remove('hidden');
+      form.reset();
+    } else {
+      throw new Error(result.error || 'Failed to subscribe');
+    }
+  } catch (error) {
+    statusDiv.innerHTML = `<p style="color: var(--color-error);">Error: ${error.message}</p>`;
+    statusDiv.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Subscribe to Updates';
   }
 }
 

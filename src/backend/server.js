@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const Brevo = require('@getbrevo/brevo');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -14,12 +15,74 @@ app.use('/src', express.static(path.join(__dirname, '../../src')));
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/data', express.static(path.join(__dirname, '../../data')));
 
-// Email configuration
+// Email configuration (Nodemailer for contact form)
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER || 'info@caphegroup.org',
     pass: process.env.EMAIL_PASS
+  }
+});
+
+// =============================================
+// BREVO EMAIL LIST INTEGRATION
+// =============================================
+
+let brevoContactsApi = null;
+let brevoListId = null;
+
+if (process.env.BREVO_API_KEY) {
+  const brevoApiInstance = new Brevo.ContactsApi();
+  brevoApiInstance.setApiKey(Brevo.ContactsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+  brevoContactsApi = brevoApiInstance;
+  brevoListId = parseInt(process.env.BREVO_LIST_ID) || 2; // Default list ID
+  console.log('Brevo API initialized');
+}
+
+// Subscribe to listserv
+app.post('/api/listserv/subscribe', async (req, res) => {
+  const { email, firstName, lastName, organization } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  if (!brevoContactsApi) {
+    return res.status(500).json({ error: 'Email list service not configured' });
+  }
+
+  try {
+    const createContact = new Brevo.CreateContact();
+    createContact.email = email;
+    createContact.listIds = [brevoListId];
+    createContact.attributes = {
+      FIRSTNAME: firstName || '',
+      LASTNAME: lastName || '',
+      ORGANIZATION: organization || ''
+    };
+    createContact.updateEnabled = true; // Update if contact exists
+
+    await brevoContactsApi.createContact(createContact);
+
+    res.json({
+      success: true,
+      message: 'Successfully subscribed to CAPHE updates'
+    });
+  } catch (error) {
+    console.error('Brevo subscription error:', error);
+
+    // Handle "already exists" gracefully
+    if (error.response?.body?.code === 'duplicate_parameter') {
+      return res.json({
+        success: true,
+        message: 'You are already subscribed to CAPHE updates'
+      });
+    }
+
+    res.status(500).json({
+      error: 'Failed to subscribe',
+      details: error.message
+    });
   }
 });
 

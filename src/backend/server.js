@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const nodemailer = require('nodemailer');
 const Brevo = require('@getbrevo/brevo');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,20 +14,12 @@ app.use('/src', express.static(path.join(__dirname, '../../src')));
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/data', express.static(path.join(__dirname, '../../data')));
 
-// Email configuration (Nodemailer for contact form)
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER || 'info@caphegroup.org',
-    pass: process.env.EMAIL_PASS
-  }
-});
-
 // =============================================
-// BREVO EMAIL LIST INTEGRATION
+// BREVO EMAIL INTEGRATION
 // =============================================
 
 let brevoContactsApi = null;
+let brevoEmailApi = null;
 let brevoListIds = {
   general: null,      // General listserv (public updates)
   members: null,      // Members-only communications
@@ -37,14 +28,40 @@ let brevoListIds = {
 };
 
 if (process.env.BREVO_API_KEY) {
+  // Contacts API (for list management)
   const brevoApiInstance = new Brevo.ContactsApi();
   brevoApiInstance.setApiKey(Brevo.ContactsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
   brevoContactsApi = brevoApiInstance;
+
+  // Transactional Email API (for sending emails)
+  const brevoTransactionalApi = new Brevo.TransactionalEmailsApi();
+  brevoTransactionalApi.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+  brevoEmailApi = brevoTransactionalApi;
+
   brevoListIds.general = parseInt(process.env.BREVO_LIST_ID) || 9;
   brevoListIds.members = parseInt(process.env.BREVO_MEMBERS_LIST_ID) || 13;
   brevoListIds.events = parseInt(process.env.BREVO_EVENTS_LIST_ID) || 14;
   brevoListIds.applications = parseInt(process.env.BREVO_APPLICATIONS_LIST_ID) || 15;
   console.log('Brevo API initialized with lists:', brevoListIds);
+}
+
+// Helper function to send email via Brevo
+async function sendEmail({ to, subject, html, replyTo }) {
+  if (!brevoEmailApi) {
+    console.error('Brevo email API not configured');
+    return;
+  }
+
+  const sendSmtpEmail = new Brevo.SendSmtpEmail();
+  sendSmtpEmail.sender = { name: 'CAPHE', email: 'info@caphegroup.org' };
+  sendSmtpEmail.to = [{ email: to }];
+  sendSmtpEmail.subject = subject;
+  sendSmtpEmail.htmlContent = html;
+  if (replyTo) {
+    sendSmtpEmail.replyTo = { email: replyTo };
+  }
+
+  return brevoEmailApi.sendTransacEmail(sendSmtpEmail);
 }
 
 // Helper function to subscribe to a Brevo list
@@ -241,51 +258,45 @@ app.post('/api/membership/apply', async (req, res) => {
     });
 
     // Send notification email to admin
-    const mailOptions = {
-      from: process.env.EMAIL_USER || 'info@caphegroup.org',
-      to: process.env.ADMIN_EMAIL || 'info@caphegroup.org',
-      subject: '[CAPHE] New Membership Application',
-      html: `
-        <h3>New Membership Application</h3>
-        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Organization:</strong> ${organization || 'Not provided'}</p>
-        <p><strong>Degree:</strong> ${degree} in ${degreeField}</p>
-        <p><strong>Institution:</strong> ${institution}</p>
-        <p><strong>Current Role:</strong> ${currentRole || 'Not provided'}</p>
-        <p><strong>Economics Work:</strong> ${economicsWork || 'Not provided'}</p>
-        <p><strong>LinkedIn:</strong> ${linkedin || 'Not provided'}</p>
-        <hr>
-        <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>
-      `
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
+      await sendEmail({
+        to: process.env.ADMIN_EMAIL || 'info@caphegroup.org',
+        subject: '[CAPHE] New Membership Application',
+        html: `
+          <h3>New Membership Application</h3>
+          <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Organization:</strong> ${organization || 'Not provided'}</p>
+          <p><strong>Degree:</strong> ${degree} in ${degreeField}</p>
+          <p><strong>Institution:</strong> ${institution}</p>
+          <p><strong>Current Role:</strong> ${currentRole || 'Not provided'}</p>
+          <p><strong>Economics Work:</strong> ${economicsWork || 'Not provided'}</p>
+          <p><strong>LinkedIn:</strong> ${linkedin || 'Not provided'}</p>
+          <hr>
+          <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>
+        `
+      });
     } catch (emailErr) {
       console.error('Failed to send admin notification:', emailErr);
     }
 
     // Send confirmation email to applicant
-    const confirmationEmail = {
-      from: process.env.EMAIL_USER || 'info@caphegroup.org',
-      to: email,
-      subject: 'CAPHE Membership Application Received',
-      html: `
-        <h2>Thank you for applying to CAPHE!</h2>
-        <p>Dear ${firstName},</p>
-        <p>We've received your membership application for the California Association of Public Health Economists.</p>
-        <p>Our team will review your application and respond within 5 business days. If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
-        <p>In the meantime, feel free to explore our <a href="https://www.caphegroup.org/resources.html">public resources</a> and learn more about our <a href="https://www.caphegroup.org/programs.html">upcoming programs</a>.</p>
-        <p>Best regards,<br>The CAPHE Team</p>
-        <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
-        <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
-        <a href="https://www.caphegroup.org">www.caphegroup.org</a></p>
-      `
-    };
-
     try {
-      await transporter.sendMail(confirmationEmail);
+      await sendEmail({
+        to: email,
+        subject: 'CAPHE Membership Application Received',
+        html: `
+          <h2>Thank you for applying to CAPHE!</h2>
+          <p>Dear ${firstName},</p>
+          <p>We've received your membership application for the California Association of Public Health Economists.</p>
+          <p>Our team will review your application and respond within 5 business days. If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
+          <p>In the meantime, feel free to explore our <a href="https://www.caphegroup.org/resources.html">public resources</a> and learn more about our <a href="https://www.caphegroup.org/programs.html">upcoming programs</a>.</p>
+          <p>Best regards,<br>The CAPHE Team</p>
+          <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
+          <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
+          <a href="https://www.caphegroup.org">www.caphegroup.org</a></p>
+        `
+      });
     } catch (emailErr) {
       console.error('Failed to send applicant confirmation:', emailErr);
     }
@@ -405,29 +416,26 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
 
     // Send approval email
-    const mailOptions = {
-      from: process.env.EMAIL_USER || 'info@caphegroup.org',
-      to: email,
-      subject: 'Welcome to CAPHE - Membership Approved!',
-      html: `
-        <h2>Welcome to CAPHE!</h2>
-        <p>Dear ${firstName || 'Member'},</p>
-        <p>Your membership application has been approved. You should receive a separate email
-        with a link to set up your member account.</p>
-        <p>Once you've set up your account, you can access:</p>
-        <ul>
-          <li>Webinar recordings archive</li>
-          <li>Peer review session scheduling</li>
-          <li>Working group documents</li>
-          <li>Member directory</li>
-        </ul>
-        <p>We look forward to collaborating with you!</p>
-        <p>Best regards,<br>CAPHE Team</p>
-      `
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to CAPHE - Membership Approved!',
+        html: `
+          <h2>Welcome to CAPHE!</h2>
+          <p>Dear ${firstName || 'Member'},</p>
+          <p>Your membership application has been approved. You should receive a separate email
+          with a link to set up your member account.</p>
+          <p>Once you've set up your account, you can access:</p>
+          <ul>
+            <li>Webinar recordings archive</li>
+            <li>Peer review session scheduling</li>
+            <li>Working group documents</li>
+            <li>Member directory</li>
+          </ul>
+          <p>We look forward to collaborating with you!</p>
+          <p>Best regards,<br>CAPHE Team</p>
+        `
+      });
     } catch (emailErr) {
       console.error('Failed to send approval email:', emailErr);
     }
@@ -466,29 +474,26 @@ app.post('/api/admin/reject', verifyAdmin, async (req, res) => {
     await removeFromBrevoList(email, brevoListIds.applications);
 
     // Send polite decline email
-    const mailOptions = {
-      from: process.env.EMAIL_USER || 'info@caphegroup.org',
-      to: email,
-      subject: 'CAPHE Membership Application Update',
-      html: `
-        <p>Dear ${firstName || 'Applicant'},</p>
-        <p>Thank you for your interest in CAPHE. After reviewing your application,
-        we've determined that our membership may not be the best fit at this time.</p>
-        <p>CAPHE membership is specifically designed for economists with doctoral-level
-        training in econometrics and causal inference methods.</p>
-        ${reason ? `<p><em>${reason}</em></p>` : ''}
-        <p>You're welcome to:</p>
-        <ul>
-          <li>Join our public listserv to receive updates on free webinars and resources</li>
-          <li>Attend our public events</li>
-          <li>Reapply in the future if your qualifications change</li>
-        </ul>
-        <p>Best regards,<br>CAPHE Team</p>
-      `
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
+      await sendEmail({
+        to: email,
+        subject: 'CAPHE Membership Application Update',
+        html: `
+          <p>Dear ${firstName || 'Applicant'},</p>
+          <p>Thank you for your interest in CAPHE. After reviewing your application,
+          we've determined that our membership may not be the best fit at this time.</p>
+          <p>CAPHE membership is specifically designed for economists with doctoral-level
+          training in econometrics and causal inference methods.</p>
+          ${reason ? `<p><em>${reason}</em></p>` : ''}
+          <p>You're welcome to:</p>
+          <ul>
+            <li>Join our public listserv to receive updates on free webinars and resources</li>
+            <li>Attend our public events</li>
+            <li>Reapply in the future if your qualifications change</li>
+          </ul>
+          <p>Best regards,<br>CAPHE Team</p>
+        `
+      });
     } catch (emailErr) {
       console.error('Failed to send rejection email:', emailErr);
     }
@@ -514,25 +519,21 @@ app.post('/api/contact', async (req, res) => {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER || 'info@caphegroup.org',
-    to: 'info@caphegroup.org',
-    subject: `[CAPHE Website] ${subject}`,
-    text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    html: `
-      <h3>New Contact Form Submission</h3>
-      <p><strong>From:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Subject:</strong> ${subject}</p>
-      <hr>
-      <p><strong>Message:</strong></p>
-      <p>${message.replace(/\n/g, '<br>')}</p>
-    `,
-    replyTo: email
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail({
+      to: 'info@caphegroup.org',
+      subject: `[CAPHE Website] ${subject}`,
+      html: `
+        <h3>New Contact Form Submission</h3>
+        <p><strong>From:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
+      replyTo: email
+    });
     res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
     console.error('Email error:', error);

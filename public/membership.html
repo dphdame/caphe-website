@@ -17,6 +17,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Mobile responsive table */
+    @media (max-width: 500px) {
+      .comparison-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .comparison-table-wrapper table {
+        min-width: 320px;
+      }
+      #profile-fields .form-group,
+      #profile-summary {
+        padding: var(--space-md);
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Top Bar -->
@@ -83,6 +99,10 @@
             Full membership is for trained economists working in public health. Members get access to
             peer review sessions, working groups, and the member directory.
           </p>
+          <div style="background: rgba(0,0,0,0.03); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-lg); font-size: var(--font-size-sm);">
+            <strong>Eligibility:</strong> PhD in economics (or related field), Master's with econometrics training, or current PhD student.
+            <a href="#eligibility" style="white-space: nowrap;">See details &#8595;</a>
+          </div>
           <h4 style="margin-bottom: var(--space-sm);">Member Benefits:</h4>
           <ul style="margin-bottom: var(--space-lg); padding-left: var(--space-lg);">
             <li>Peer Review Sessions (present your work, get feedback)</li>
@@ -100,6 +120,9 @@
             Affiliates are public health professionals, researchers, policymakers, and others interested
             in health economics. Stay connected to CAPHE's public work and events.
           </p>
+          <div style="background: rgba(0,0,0,0.03); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-lg); font-size: var(--font-size-sm);">
+            <strong>No eligibility requirements.</strong> Just provide your email to receive updates.
+          </div>
           <h4 style="margin-bottom: var(--space-sm);">Affiliate Benefits:</h4>
           <ul style="margin-bottom: var(--space-lg); padding-left: var(--space-lg);">
             <li>Public webinar invitations</li>
@@ -107,14 +130,14 @@
             <li>Tool release notifications</li>
             <li>Event updates (1-2 emails/month)</li>
           </ul>
-          <a href="/contact.html#affiliate" class="btn btn-outline-dark">Join as Affiliate</a>
+          <a href="/contact.html#affiliate" class="btn btn-outline-dark">Subscribe to Updates</a>
         </div>
       </div>
 
       <!-- Comparison Table -->
       <div style="max-width: 700px; margin: var(--space-xxl) auto 0;">
         <h3 style="text-align: center; margin-bottom: var(--space-lg);">Member vs. Affiliate Comparison</h3>
-        <div class="card" style="padding: var(--space-lg);">
+        <div class="card comparison-table-wrapper" style="padding: var(--space-lg);">
           <table style="width: 100%; font-size: var(--font-size-sm);">
             <thead>
               <tr style="border-bottom: 2px solid var(--color-border);">
@@ -253,29 +276,47 @@
         </div>
 
         <form id="membership-form" style="background: white; padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-          <div class="form-group">
-            <label class="form-label" for="firstName">First Name *</label>
-            <input type="text" id="firstName" name="firstName" class="form-input" required>
+          <!-- Profile summary (shown after LinkedIn auth) -->
+          <div id="profile-summary" style="display: none; background: var(--color-surface); padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong id="summary-name"></strong><br>
+                <span id="summary-email" class="text-muted" style="font-size: var(--font-size-sm);"></span>
+              </div>
+              <button type="button" id="edit-profile" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: var(--font-size-sm);">Edit</button>
+            </div>
+            <!-- Hidden inputs to preserve values -->
+            <input type="hidden" id="firstName" name="firstName">
+            <input type="hidden" id="lastName" name="lastName">
+            <input type="hidden" id="email" name="email">
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="lastName">Last Name *</label>
-            <input type="text" id="lastName" name="lastName" class="form-input" required>
-          </div>
+          <!-- Editable fields (shown by default, hidden after LinkedIn auth) -->
+          <div id="profile-fields">
+            <div class="form-group">
+              <label class="form-label" for="firstName-input">First Name *</label>
+              <input type="text" id="firstName-input" name="firstName" class="form-input" required>
+            </div>
 
-          <div class="form-group">
-            <label class="form-label" for="email">Email *</label>
-            <input type="email" id="email" name="email" class="form-input" required>
-          </div>
+            <div class="form-group">
+              <label class="form-label" for="lastName-input">Last Name *</label>
+              <input type="text" id="lastName-input" name="lastName" class="form-input" required>
+            </div>
 
-          <div class="form-group">
-            <label class="form-label" for="linkedin">LinkedIn Profile URL (optional)</label>
-            <input type="url" id="linkedin" name="linkedin" class="form-input">
-            <small class="text-muted">Helps us verify your economics background</small>
+            <div class="form-group">
+              <label class="form-label" for="email-input">Email *</label>
+              <input type="email" id="email-input" name="email" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="linkedin">LinkedIn Profile URL (optional)</label>
+              <input type="url" id="linkedin" name="linkedin" class="form-input">
+              <small class="text-muted">Helps us verify your economics background</small>
+            </div>
           </div>
 
           <!-- Prominent Economics Work Question -->
-          <div id="economics-question" style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-lg); margin-top: var(--space-lg); border-left: 4px solid var(--color-accent);">
+          <div id="economics-question" style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-lg); border-left: 4px solid var(--color-accent);">
             <label class="form-label" for="economicsWork" style="font-size: var(--font-size-lg); margin-bottom: var(--space-md); display: block;">
               Tell us about your economics work and research interests *
             </label>
@@ -359,27 +400,39 @@
       const linkedinSuccess = document.getElementById('linkedin-success');
       const linkedinError = document.getElementById('linkedin-error');
       const economicsQuestion = document.getElementById('economics-question');
+      const profileSummary = document.getElementById('profile-summary');
+      const profileFields = document.getElementById('profile-fields');
+      const editProfileBtn = document.getElementById('edit-profile');
+
+      // Track if LinkedIn auth was used
+      let linkedinMode = false;
 
       // Check for LinkedIn callback data in URL
       const urlParams = new URLSearchParams(window.location.search);
 
       if (urlParams.get('linkedin') === 'true') {
-        // LinkedIn auth successful - auto-fill form
+        linkedinMode = true;
         const firstName = urlParams.get('firstName') || '';
         const lastName = urlParams.get('lastName') || '';
         const email = urlParams.get('email') || '';
 
+        // Set hidden field values
         document.getElementById('firstName').value = firstName;
         document.getElementById('lastName').value = lastName;
         document.getElementById('email').value = email;
+
+        // Show profile summary, hide editable fields
+        profileSummary.style.display = 'block';
+        profileFields.style.display = 'none';
+        document.getElementById('summary-name').textContent = `${firstName} ${lastName}`;
+        document.getElementById('summary-email').textContent = email;
 
         // Show success banner, hide sign-in button
         linkedinSuccess.style.display = 'block';
         linkedinSignin.style.display = 'none';
 
         // Highlight the economics question
-        economicsQuestion.style.animation = 'pulse 0.5s ease-in-out';
-        economicsQuestion.style.boxShadow = '0 0 0 3px rgba(var(--color-accent-rgb), 0.3)';
+        economicsQuestion.style.boxShadow = '0 0 0 3px #c9a227';
 
         // Clean up URL
         window.history.replaceState({}, document.title, '/membership.html#apply');
@@ -391,12 +444,22 @@
         }, 300);
       }
 
+      // Edit profile button
+      if (editProfileBtn) {
+        editProfileBtn.addEventListener('click', () => {
+          profileSummary.style.display = 'none';
+          profileFields.style.display = 'block';
+          // Copy values to visible inputs
+          document.getElementById('firstName-input').value = document.getElementById('firstName').value;
+          document.getElementById('lastName-input').value = document.getElementById('lastName').value;
+          document.getElementById('email-input').value = document.getElementById('email').value;
+          linkedinMode = false;
+        });
+      }
+
       if (urlParams.get('error')) {
-        // LinkedIn auth failed
         linkedinError.style.display = 'block';
         linkedinError.innerHTML = `<strong>LinkedIn Error:</strong> ${urlParams.get('error')}. Please fill out the form manually.`;
-
-        // Clean up URL
         window.history.replaceState({}, document.title, '/membership.html#apply');
       }
 
@@ -412,10 +475,11 @@
           statusDiv.textContent = '';
 
           try {
+            // Get values from appropriate fields based on mode
             const formData = {
-              firstName: document.getElementById('firstName').value.trim(),
-              lastName: document.getElementById('lastName').value.trim(),
-              email: document.getElementById('email').value.trim(),
+              firstName: linkedinMode ? document.getElementById('firstName').value.trim() : document.getElementById('firstName-input').value.trim(),
+              lastName: linkedinMode ? document.getElementById('lastName').value.trim() : document.getElementById('lastName-input').value.trim(),
+              email: linkedinMode ? document.getElementById('email').value.trim() : document.getElementById('email-input').value.trim(),
               economicsWork: document.getElementById('economicsWork').value.trim(),
               linkedin: document.getElementById('linkedin').value.trim() || undefined
             };
@@ -440,14 +504,16 @@
             statusDiv.innerHTML = `
               <div style="background: #d4edda; color: #155724; padding: var(--space-lg); border-radius: var(--radius-md);">
                 <strong>Application Submitted!</strong><br>
-                Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.
+                Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.<br>
+                <span style="font-size: var(--font-size-sm); margin-top: var(--space-sm); display: block;">
+                  You'll receive a confirmation email at ${formData.email}.
+                </span>
               </div>
             `;
             form.reset();
             submitBtn.textContent = 'Application Submitted';
-
-            // Hide LinkedIn success banner after submission
             if (linkedinSuccess) linkedinSuccess.style.display = 'none';
+            if (profileSummary) profileSummary.style.display = 'none';
 
           } catch (error) {
             console.error('Application error:', error);

@@ -322,6 +322,123 @@ app.post('/api/membership/apply', async (req, res) => {
   }
 });
 
+// =============================================
+// COMMUNITY MEMBERSHIP (AFFILIATE TIER)
+// =============================================
+
+// Create a Supabase admin client for user management
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+let supabaseAdmin = null;
+if (supabaseUrl && supabaseServiceKey) {
+  supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+  console.log('Supabase admin client initialized');
+}
+
+// Community membership signup (creates affiliate-tier account)
+app.post('/api/membership/community', async (req, res) => {
+  const { name, email, organization } = req.body;
+
+  if (!email || !name) {
+    return res.status(400).json({ error: 'Name and email are required' });
+  }
+
+  // Generate temporary password (user will reset via email)
+  const tempPassword = require('crypto').randomBytes(16).toString('hex');
+
+  try {
+    // Create Supabase user with affiliate tier
+    if (supabaseAdmin) {
+      const { data: userData, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        password: tempPassword,
+        email_confirm: false, // Will send confirmation email
+        user_metadata: {
+          full_name: name,
+          membership_tier: 'affiliate'
+        }
+      });
+
+      if (createError) {
+        // If user already exists, that's okay
+        if (!createError.message.includes('already been registered')) {
+          console.error('Supabase user creation error:', createError);
+          throw createError;
+        }
+      }
+
+      // Send password reset email so user can set their own password
+      if (userData?.user) {
+        await supabaseAdmin.auth.admin.generateLink({
+          type: 'recovery',
+          email: email
+        });
+      }
+    }
+
+    // Also add to Brevo general listserv
+    if (brevoContactsApi) {
+      const nameParts = name.split(' ');
+      await subscribeToBrevoList(brevoListIds.general, {
+        email,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        organization: organization || ''
+      });
+    }
+
+    // Send welcome email
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to CAPHE Community!',
+        html: `
+          <h2>Welcome to CAPHE!</h2>
+          <p>Dear ${name.split(' ')[0]},</p>
+          <p>Thank you for joining the CAPHE community! You now have access to:</p>
+          <ul>
+            <li>Community-level Methods Lab tutorials</li>
+            <li>Public webinar invitations</li>
+            <li>White paper and resource announcements</li>
+            <li>Monthly event updates</li>
+          </ul>
+          <p>Check your inbox for a separate email to set up your account password and log in.</p>
+          <p>Explore our <a href="https://www.caphegroup.org/methods-lab/">Methods Lab</a> to start learning health economics methods!</p>
+          <p>Best regards,<br>The CAPHE Team</p>
+          <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
+          <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
+          <a href="https://www.caphegroup.org">www.caphegroup.org</a></p>
+        `
+      });
+    } catch (emailErr) {
+      console.error('Failed to send community welcome email:', emailErr);
+    }
+
+    res.json({
+      success: true,
+      message: 'Welcome to CAPHE! Check your email to set up your account.'
+    });
+  } catch (error) {
+    console.error('Community signup error:', error);
+
+    if (error.message?.includes('already been registered')) {
+      return res.json({
+        success: true,
+        message: 'You already have an account. Please log in or reset your password.'
+      });
+    }
+
+    res.status(500).json({
+      error: 'Failed to create account',
+      details: error.message
+    });
+  }
+});
+
 // Admin middleware - check if user is admin
 async function verifyAdmin(req, res, next) {
   if (!supabase) {
@@ -398,16 +515,26 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     const firstName = contactInfo.attributes?.FIRSTNAME || '';
     const lastName = contactInfo.attributes?.LASTNAME || '';
 
-    // Send Supabase invite
+    // Send Supabase invite with member tier
     const { data, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
       data: {
-        full_name: `${firstName} ${lastName}`.trim()
+        full_name: `${firstName} ${lastName}`.trim(),
+        membership_tier: 'member'
       }
     });
 
     if (inviteError) {
-      // If user already exists, that's okay
-      if (!inviteError.message.includes('already been registered')) {
+      // If user already exists, upgrade their tier
+      if (inviteError.message.includes('already been registered') && supabaseAdmin) {
+        // Find user and update their tier
+        const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+        const existingUser = users?.find(u => u.email === email);
+        if (existingUser) {
+          await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+            user_metadata: { membership_tier: 'member' }
+          });
+        }
+      } else if (!inviteError.message.includes('already been registered')) {
         throw inviteError;
       }
     }
@@ -798,6 +925,39 @@ app.get('/api/member/profile', verifyUser, (req, res) => {
       email: req.user.email
     }
   });
+});
+
+// Get user auth status and tier (for Methods Lab access control)
+app.get('/api/auth/status', async (req, res) => {
+  if (!supabase) {
+    return res.json({ authenticated: false, tier: null });
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.json({ authenticated: false, tier: null });
+  }
+
+  try {
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return res.json({ authenticated: false, tier: null });
+    }
+
+    // Get tier from user metadata or profile
+    const tier = user.user_metadata?.membership_tier || 'affiliate';
+
+    res.json({
+      authenticated: true,
+      tier: tier,
+      email: user.email
+    });
+  } catch (error) {
+    console.error('Auth status check error:', error);
+    res.json({ authenticated: false, tier: null });
+  }
 });
 
 // =============================================

@@ -787,7 +787,81 @@
   </footer>
 
   <script src="/src/frontend/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Auth state
+    let userAuth = { authenticated: false, tier: null };
+    const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
+
+    // Initialize Supabase client
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Check auth status and update UI
+    async function checkAuthAndUpdateUI() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session?.user) {
+          userAuth.authenticated = true;
+          userAuth.tier = session.user.user_metadata?.membership_tier || 'affiliate';
+
+          // Update top bar to show logged in state
+          const topBar = document.querySelector('.nav-top-bar .container');
+          if (topBar) {
+            topBar.innerHTML = `
+              <span style="color: rgba(255,255,255,0.8);">Welcome, ${session.user.email}</span>
+              <a href="#" id="logout-link">Log Out</a>
+            `;
+            document.getElementById('logout-link')?.addEventListener('click', async (e) => {
+              e.preventDefault();
+              await supabase.auth.signOut();
+              window.location.reload();
+            });
+          }
+
+          // Show affiliate labs
+          showAffiliateLabs();
+        } else {
+          // Not logged in - hide affiliate labs and show login prompts
+          hideAffiliateLabs();
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        hideAffiliateLabs();
+      }
+    }
+
+    // Hide affiliate labs and replace with login prompts
+    function hideAffiliateLabs() {
+      document.querySelectorAll('.lab-card.affiliate').forEach(card => {
+        card.style.opacity = '0.6';
+        card.style.pointerEvents = 'none';
+        card.innerHTML = `
+          <div class="lab-card-header">
+            <span class="lab-title">${card.dataset.title}</span>
+            <span class="lab-badge badge-affiliate">Login Required</span>
+          </div>
+          <p class="lab-description" style="color: var(--color-affiliate);">
+            <a href="/membership/community.html" style="color: inherit; text-decoration: underline;">Join as Community Member</a> to access this lab.
+          </p>
+        `;
+        card.style.pointerEvents = 'auto';
+      });
+    }
+
+    // Show affiliate labs (restore original content)
+    function showAffiliateLabs() {
+      // Labs are already rendered with full content - just ensure they're clickable
+      document.querySelectorAll('.lab-card.affiliate').forEach(card => {
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+      });
+    }
+
+    // Check auth on page load
+    checkAuthAndUpdateUI();
+
     // Filter state
     let activeAccess = 'all';
     let activeTrack = 'all';

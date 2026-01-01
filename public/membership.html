@@ -18,11 +18,75 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* Mobile responsive form */
-    @media (max-width: 500px) {
-      #profile-fields .form-group,
-      #profile-summary {
-        padding: var(--space-md);
+    .membership-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-xl);
+    }
+    .membership-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .membership-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .membership-card.featured {
+      border: 2px solid var(--color-accent);
+      position: relative;
+    }
+    .membership-card .badge {
+      position: absolute;
+      top: -12px;
+      right: var(--space-lg);
+      background: var(--color-accent);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .membership-card h3 {
+      margin-bottom: var(--space-sm);
+    }
+    .membership-card .description {
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      flex-grow: 1;
+    }
+    .membership-card ul {
+      margin: 0 0 var(--space-lg);
+      padding-left: var(--space-lg);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+    .membership-card ul li {
+      margin-bottom: var(--space-xs);
+    }
+    .newsletter-inline {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+    .newsletter-inline form {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .newsletter-inline input {
+      flex: 1;
+    }
+    @media (max-width: 600px) {
+      .newsletter-inline form {
+        flex-direction: column;
       }
     }
   </style>
@@ -58,8 +122,7 @@
           <a href="/resources.html" class="nav-link">Resources ▾</a>
           <div class="nav-dropdown-menu">
             <a href="/methods-lab/">Methods Lab</a>
-            <a href="/resources.html">External Resources</a>
-            
+            <a href="/resources.html#external-resources">External Resources</a>
           </div>
         </div>
       </div>
@@ -75,313 +138,80 @@
       <div class="section-eyebrow">Join Us</div>
       <h1 class="page-title">Join the CAPHE Community</h1>
       <p class="page-subtitle">
-        There are two ways to engage with CAPHE: as a <strong>Professional Member</strong> (for trained economists)
-        or as a <strong>Community Member</strong> (for everyone interested in public health economics).
+        Choose how you want to engage with California's public health economics community.
       </p>
     </div>
   </section>
 
-  <!-- Two Paths: Professional Member vs Community Member -->
+  <!-- Membership Options -->
   <section class="section">
     <div class="container">
-      <div class="featured-grid" style="align-items: stretch;">
-        <div class="card" style="padding: var(--space-xl); display: flex; flex-direction: column; border: 2px solid var(--color-accent); position: relative;">
-          <span style="position: absolute; top: -12px; right: var(--space-lg); background: var(--color-accent); color: white; padding: 4px 12px; border-radius: 12px; font-size: var(--font-size-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Full Access</span>
-          <div class="section-eyebrow" style="color: var(--color-accent);">For Economists</div>
-          <h2 style="margin-bottom: var(--space-md);">Become a Professional Member</h2>
-          <p class="text-muted mb-lg">
-            Professional membership is for trained economists working in public health. Members get access to
-            peer review sessions, working groups, and the webinar archive.
-          </p>
-          <div style="background: rgba(0,0,0,0.03); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-lg); font-size: var(--font-size-sm);">
-            <strong>Eligibility:</strong> PhD in economics (or related field), Master's with econometrics training, or current PhD student.
-            <a href="#eligibility" style="white-space: nowrap;">See details &#8595;</a>
-          </div>
-          <h4 style="margin-bottom: var(--space-sm);">Professional Member Benefits:</h4>
-          <ul style="margin-bottom: var(--space-lg); padding-left: var(--space-lg); flex-grow: 1;">
-            <li>Peer Review Sessions (present your work, get feedback)</li>
-            <li>Working Groups (collaborate on shared resources)</li>
-            <li>Member-only webinar sessions and learning labs</li>
-            <li>Webinar archive and all Community Member benefits</li>
-          </ul>
-          <a href="#apply" class="btn btn-primary" style="text-align: center;">Join CAPHE</a>
-        </div>
-        <div class="card" style="padding: var(--space-xl); background: var(--color-surface); display: flex; flex-direction: column;">
+      <div class="membership-grid">
+
+        <!-- Community Member -->
+        <div class="membership-card">
           <div class="section-eyebrow">For Everyone</div>
-          <h2 style="margin-bottom: var(--space-md);">Become a Community Member</h2>
-          <p class="text-muted mb-lg">
-            Community Members are public health professionals, researchers, policymakers, and others interested
-            in health economics. Stay connected to CAPHE's public work and events.
+          <h3>Community Member</h3>
+          <p class="description">
+            For public health professionals, researchers, policymakers, and anyone interested
+            in health economics. Stay connected to CAPHE's public work.
           </p>
-          <div style="background: rgba(0,0,0,0.03); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-lg); font-size: var(--font-size-sm);">
-            <strong>No eligibility requirements.</strong> Just provide your email to receive updates.
-          </div>
-          <h4 style="margin-bottom: var(--space-sm);">Community Member Benefits:</h4>
-          <ul style="margin-bottom: var(--space-lg); padding-left: var(--space-lg); flex-grow: 1;">
-            <li>Access to Community learning labs</li>
+          <ul>
+            <li>Community learning labs</li>
             <li>Public webinar invitations</li>
-            <li>White paper and resource announcements</li>
+            <li>White paper announcements</li>
             <li>Tool release notifications</li>
             <li>Monthly event updates</li>
           </ul>
-          <a href="#community-signup" class="btn btn-primary" style="text-align: center;">Join the Community</a>
+          <div style="background: rgba(76, 175, 80, 0.1); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); font-size: var(--font-size-xs); color: #2e7d32;">
+            Open to all
+          </div>
+          <a href="/membership/community.html" class="btn btn-primary" style="text-align: center;">Join the Community</a>
         </div>
-      </div>
 
-      <!-- Collapsible Comparison Table -->
-      <details style="margin-top: var(--space-xl); background: white; border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-        <summary style="padding: var(--space-lg); cursor: pointer; font-weight: 600; color: var(--color-text-secondary); display: flex; align-items: center; gap: var(--space-sm);">
-          <span style="transition: transform 0.2s;">&#9654;</span> Compare all benefits side-by-side
-        </summary>
-        <div style="padding: 0 var(--space-lg) var(--space-lg);">
-          <table style="width: 100%; border-collapse: collapse; font-size: var(--font-size-sm);">
-            <thead>
-              <tr style="border-bottom: 2px solid var(--color-border);">
-                <th style="text-align: left; padding: var(--space-sm) var(--space-md);">Benefit</th>
-                <th style="text-align: center; padding: var(--space-sm) var(--space-md); background: rgba(201, 162, 39, 0.1);">Professional</th>
-                <th style="text-align: center; padding: var(--space-sm) var(--space-md);">Community</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Community learning labs</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm);">&#10003;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Public webinar invitations</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm);">&#10003;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">White paper & resource announcements</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm);">&#10003;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Tool release notifications</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm);">&#10003;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Monthly event updates</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm);">&#10003;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Peer Review Sessions</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm); color: var(--color-text-muted);">&#8212;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Working Groups</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm); color: var(--color-text-muted);">&#8212;</td>
-              </tr>
-              <tr style="border-bottom: 1px solid var(--color-border);">
-                <td style="padding: var(--space-sm) var(--space-md);">Member-only webinars & learning labs</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm); color: var(--color-text-muted);">&#8212;</td>
-              </tr>
-              <tr>
-                <td style="padding: var(--space-sm) var(--space-md);">Webinar archive</td>
-                <td style="text-align: center; padding: var(--space-sm); background: rgba(201, 162, 39, 0.05);">&#10003;</td>
-                <td style="text-align: center; padding: var(--space-sm); color: var(--color-text-muted);">&#8212;</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
-    </div>
-  </section>
-
-  <!-- Eligibility Requirements -->
-  <section class="section section-alt" id="eligibility">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-eyebrow">Who Can Join as a Member</div>
-        <h2 class="section-title">Membership Eligibility</h2>
-      </div>
-
-      <div class="eligibility-content" style="max-width: 800px; margin: 0 auto;">
-        <p style="font-size: var(--font-size-lg); line-height: 1.8; color: var(--color-text-secondary); margin-bottom: var(--space-xl);">
-          CAPHE membership is specifically designed for trained economists working in
-          public health. This focus ensures our peer review sessions, working groups, and discussions
-          operate at the appropriate technical level.
-        </p>
-
-        <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-xl); border: 1px solid var(--color-border);">
-          <h3 style="margin-bottom: var(--space-lg);">To be eligible, you must meet at least one of the following:</h3>
-          <ul style="list-style: none; padding: 0; margin: 0;">
-            <li style="padding: var(--space-sm) 0; display: flex; align-items: flex-start; gap: var(--space-sm);">
-              <span style="color: var(--color-accent); font-weight: bold;">1.</span>
-              <span><strong>PhD in Economics</strong> or a related quantitative field (health economics, agricultural economics, public policy with economics focus)</span>
-            </li>
-            <li style="padding: var(--space-sm) 0; display: flex; align-items: flex-start; gap: var(--space-sm);">
-              <span style="color: var(--color-accent); font-weight: bold;">2.</span>
-              <span><strong>Master's degree with formal training</strong> in econometrics, causal inference, or economic evaluation methods</span>
-            </li>
-            <li style="padding: var(--space-sm) 0; display: flex; align-items: flex-start; gap: var(--space-sm);">
-              <span style="color: var(--color-accent); font-weight: bold;">3.</span>
-              <span><strong>Current enrollment</strong> in a PhD program in economics or a related field</span>
-            </li>
+        <!-- Professional Member -->
+        <div class="membership-card">
+          <div class="section-eyebrow">For Economists</div>
+          <h3>Professional Member</h3>
+          <p class="description">
+            For trained economists working in public health. Access peer review sessions,
+            working groups, and collaborate with colleagues across California.
+          </p>
+          <ul>
+            <li>Peer Review Sessions</li>
+            <li>Working Groups</li>
+            <li>Member-only webinars & labs</li>
+            <li>Webinar archive</li>
+            <li>All Community Member benefits</li>
           </ul>
+          <div style="background: rgba(0,0,0,0.03); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); font-size: var(--font-size-xs); color: var(--color-text-muted);">
+            Requires: PhD, Master's with econometrics, or current PhD student
+          </div>
+          <a href="/membership/professional.html" class="btn btn-primary" style="text-align: center;">Apply for Membership</a>
         </div>
 
-        <p style="margin-top: var(--space-lg); color: var(--color-text-secondary);">
-          <strong>Don't meet these criteria?</strong> You can still stay connected by
-          <a href="#community-signup">joining as a Community Member</a> to receive updates on public events and new resources.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Community Member Signup -->
-  <section class="section" id="community-signup">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-eyebrow">For Everyone</div>
-        <h2 class="section-title">Join as a Community Member</h2>
-      </div>
-
-      <div style="max-width: 500px; margin: 0 auto;">
-        <p class="text-muted text-center mb-lg">
-          Stay connected to CAPHE's public work: community learning labs, webinars, white papers, and tools.
-        </p>
-
-        <form id="community-form" style="background: white; padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-          <div class="form-group">
-            <label class="form-label" for="community-name">Name *</label>
-            <input type="text" id="community-name" name="name" class="form-input" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="community-email">Email *</label>
-            <input type="email" id="community-email" name="email" class="form-input" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="community-org">Organization (optional)</label>
-            <input type="text" id="community-org" name="organization" class="form-input">
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-large" style="width: 100%; margin-top: var(--space-md);">
-            Join the Community
-          </button>
-
-          <div id="community-form-status" class="mt-lg text-center hidden"></div>
-        </form>
-
-        <p style="margin-top: var(--space-lg); text-align: center; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
-          Are you a trained economist? <a href="#apply">Apply for Professional Membership</a> instead.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Professional Member Application Form -->
-  <section class="section section-alt" id="apply">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-eyebrow">For Economists</div>
-        <h2 class="section-title">Apply for Professional Membership</h2>
-      </div>
-
-      <div style="max-width: 600px; margin: 0 auto;">
-        <p class="text-muted text-center mb-xl">
-          Applications are reviewed within 5 business days. Approved members will receive
-          an email invitation to create their account.
-        </p>
-
-        <!-- LinkedIn Sign-In Button -->
-        <div id="linkedin-signin" style="background: white; padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-bottom: var(--space-lg); text-align: center;">
-          <p style="margin-bottom: var(--space-md); color: var(--color-text-secondary);">
-            Use LinkedIn to auto-fill your name and email
+        <!-- Newsletter Only -->
+        <div class="membership-card" style="background: var(--color-surface);">
+          <div class="section-eyebrow">Stay Informed</div>
+          <h3>Newsletter Only</h3>
+          <p class="description">
+            Just want updates? Subscribe to our newsletter for event announcements,
+            new resources, and highlights from the public health economics community.
           </p>
-          <a href="/api/auth/linkedin" class="btn btn-large" style="background: #0077B5; color: white; display: inline-flex; align-items: center; gap: var(--space-sm);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-            Apply with LinkedIn
-          </a>
-          <p style="margin-top: var(--space-md); font-size: var(--font-size-sm); color: var(--color-text-muted);">
-            Or fill out the form below manually
-          </p>
-        </div>
-
-        <!-- LinkedIn Success Banner (hidden by default) -->
-        <div id="linkedin-success" style="background: #e8f5e9; border: 1px solid #4caf50; padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg); display: none;">
-          <div style="display: flex; align-items: center; gap: var(--space-sm);">
-            <span style="color: #4caf50; font-size: 1.5rem;">&#10003;</span>
-            <div>
-              <strong>LinkedIn connected!</strong>
-              <span style="color: var(--color-text-muted);">Your name and email have been filled in. Please answer the question below.</span>
-            </div>
+          <ul>
+            <li>Monthly newsletter</li>
+            <li>Event announcements</li>
+            <li>New resource alerts</li>
+          </ul>
+          <div class="newsletter-inline">
+            <form id="newsletter-form">
+              <input type="email" id="newsletter-email" class="form-input" placeholder="your@email.com" required>
+              <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+            <div id="newsletter-status" style="margin-top: var(--space-sm); font-size: var(--font-size-sm);"></div>
           </div>
         </div>
 
-        <!-- Error Banner (hidden by default) -->
-        <div id="linkedin-error" style="background: #ffebee; border: 1px solid #f44336; padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg); display: none;">
-        </div>
-
-        <form id="membership-form" style="background: white; padding: var(--space-xl); border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-          <!-- Profile summary (shown after LinkedIn auth) -->
-          <div id="profile-summary" style="display: none; background: var(--color-surface); padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <strong id="summary-name"></strong><br>
-                <span id="summary-email" class="text-muted" style="font-size: var(--font-size-sm);"></span>
-              </div>
-              <button type="button" id="edit-profile" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: var(--font-size-sm);">Edit</button>
-            </div>
-            <!-- Hidden inputs to preserve values -->
-            <input type="hidden" id="firstName" name="firstName">
-            <input type="hidden" id="lastName" name="lastName">
-            <input type="hidden" id="email" name="email">
-          </div>
-
-          <!-- Editable fields (shown by default, hidden after LinkedIn auth) -->
-          <div id="profile-fields">
-            <div class="form-group">
-              <label class="form-label" for="firstName-input">First Name *</label>
-              <input type="text" id="firstName-input" name="firstName" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="lastName-input">Last Name *</label>
-              <input type="text" id="lastName-input" name="lastName" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="email-input">Email *</label>
-              <input type="email" id="email-input" name="email" class="form-input" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="linkedin">LinkedIn Profile URL (optional)</label>
-              <input type="url" id="linkedin" name="linkedin" class="form-input">
-              <small class="text-muted">Helps us verify your economics background</small>
-            </div>
-          </div>
-
-          <!-- Prominent Economics Work Question -->
-          <div id="economics-question" style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-lg); border-left: 4px solid var(--color-accent);">
-            <label class="form-label" for="economicsWork" style="font-size: var(--font-size-lg); margin-bottom: var(--space-md); display: block;">
-              Tell us about your economics work and research interests *
-            </label>
-            <textarea id="economicsWork" name="economicsWork" class="form-textarea" rows="5" style="background: white;" required></textarea>
-            <small class="text-muted" style="display: block; margin-top: var(--space-sm);">
-              What are you currently working on? What aspects of public health economics interest you most?
-              What methods do you use (e.g., causal inference, cost-effectiveness analysis, program evaluation)?
-            </small>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-large" style="width: 100%; margin-top: var(--space-xl);">
-            Submit Application
-          </button>
-
-          <div id="form-status" class="mt-lg text-center hidden"></div>
-        </form>
       </div>
     </div>
   </section>
@@ -414,14 +244,13 @@
         <div>
           <h4>Programs</h4>
           <a href="/programs.html#workshops">Workshops</a>
-          <a href="/programs.html#peer-review">Peer Review Sessions</a>
-          <a href="/programs.html#peer-review">Peer Review Sessions</a>
+          <a href="/programs.html#webinars">Webinars</a>
+          <a href="/programs.html#working-groups">Working Groups</a>
         </div>
         <div>
           <h4>Resources</h4>
           <a href="/methods-lab/">Methods Lab</a>
-          <a href="/resources.html">External Resources</a>
-          
+          <a href="/resources.html#external-resources">External Resources</a>
         </div>
         <div>
           <h4>Connect</h4>
@@ -437,219 +266,58 @@
           <a href="/privacy.html" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> ·
           <a href="/terms.html" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
         </p>
-        <div class="footer-social">
-          <a href="https://linkedin.com/company/caphe" aria-label="LinkedIn">in</a>
-        </div>
       </div>
     </div>
   </footer>
 
   <script src="/src/frontend/js/main.js"></script>
   <script>
-    // Membership application form handling
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('membership-form');
-      const statusDiv = document.getElementById('form-status');
-      const linkedinSignin = document.getElementById('linkedin-signin');
-      const linkedinSuccess = document.getElementById('linkedin-success');
-      const linkedinError = document.getElementById('linkedin-error');
-      const economicsQuestion = document.getElementById('economics-question');
-      const profileSummary = document.getElementById('profile-summary');
-      const profileFields = document.getElementById('profile-fields');
-      const editProfileBtn = document.getElementById('edit-profile');
+      const newsletterForm = document.getElementById('newsletter-form');
+      const newsletterStatus = document.getElementById('newsletter-status');
 
-      // Track if LinkedIn auth was used
-      let linkedinMode = false;
-
-      // Check for LinkedIn callback data in URL
-      const urlParams = new URLSearchParams(window.location.search);
-
-      if (urlParams.get('linkedin') === 'true') {
-        linkedinMode = true;
-        const firstName = urlParams.get('firstName') || '';
-        const lastName = urlParams.get('lastName') || '';
-        const email = urlParams.get('email') || '';
-
-        // Set hidden field values
-        document.getElementById('firstName').value = firstName;
-        document.getElementById('lastName').value = lastName;
-        document.getElementById('email').value = email;
-
-        // Show profile summary, hide editable fields
-        profileSummary.style.display = 'block';
-        profileFields.style.display = 'none';
-        document.getElementById('summary-name').textContent = `${firstName} ${lastName}`;
-        document.getElementById('summary-email').textContent = email;
-
-        // Disable required on hidden inputs to prevent form validation issues
-        document.getElementById('firstName-input').removeAttribute('required');
-        document.getElementById('lastName-input').removeAttribute('required');
-        document.getElementById('email-input').removeAttribute('required');
-
-        // Show success banner, hide sign-in button
-        linkedinSuccess.style.display = 'block';
-        linkedinSignin.style.display = 'none';
-
-        // Highlight the economics question
-        economicsQuestion.style.boxShadow = '0 0 0 3px #c9a227';
-
-        // Clean up URL
-        window.history.replaceState({}, document.title, '/membership.html#apply');
-
-        // Scroll to and focus on the economics work field
-        setTimeout(() => {
-          document.getElementById('economicsWork').focus();
-          economicsQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
-      }
-
-      // Edit profile button
-      if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', () => {
-          profileSummary.style.display = 'none';
-          profileFields.style.display = 'block';
-          // Copy values to visible inputs
-          document.getElementById('firstName-input').value = document.getElementById('firstName').value;
-          document.getElementById('lastName-input').value = document.getElementById('lastName').value;
-          document.getElementById('email-input').value = document.getElementById('email').value;
-          // Restore required attributes
-          document.getElementById('firstName-input').setAttribute('required', '');
-          document.getElementById('lastName-input').setAttribute('required', '');
-          document.getElementById('email-input').setAttribute('required', '');
-          linkedinMode = false;
-        });
-      }
-
-      if (urlParams.get('error')) {
-        linkedinError.style.display = 'block';
-        linkedinError.innerHTML = `<strong>LinkedIn Error:</strong> ${urlParams.get('error')}. Please fill out the form manually.`;
-        window.history.replaceState({}, document.title, '/membership.html#apply');
-      }
-
-      if (form) {
-        form.addEventListener('submit', async (e) => {
+      if (newsletterForm) {
+        newsletterForm.addEventListener('submit', async (e) => {
           e.preventDefault();
 
-          const submitBtn = form.querySelector('button[type="submit"]');
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Submitting...';
+          const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+          const emailInput = document.getElementById('newsletter-email');
 
-          statusDiv.className = 'mt-lg text-center';
-          statusDiv.textContent = '';
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Subscribing...';
+          newsletterStatus.textContent = '';
 
           try {
-            // Get values from appropriate fields based on mode
-            const formData = {
-              firstName: linkedinMode ? document.getElementById('firstName').value.trim() : document.getElementById('firstName-input').value.trim(),
-              lastName: linkedinMode ? document.getElementById('lastName').value.trim() : document.getElementById('lastName-input').value.trim(),
-              email: linkedinMode ? document.getElementById('email').value.trim() : document.getElementById('email-input').value.trim(),
-              economicsWork: document.getElementById('economicsWork').value.trim(),
-              linkedin: document.getElementById('linkedin').value.trim() || undefined
-            };
+            const email = emailInput.value.trim();
 
-            // Validation
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.economicsWork) {
-              throw new Error('Please fill in all required fields');
+            if (!email) {
+              throw new Error('Please enter your email');
             }
 
-            const response = await fetch('/api/membership/apply', {
+            const response = await fetch('/api/newsletter/subscribe', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formData)
+              body: JSON.stringify({ email })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-              throw new Error(data.error || 'Failed to submit application');
+              throw new Error(data.error || 'Failed to subscribe');
             }
 
-            // Hide the entire form and show only success message
-            form.style.display = 'none';
-            if (linkedinSuccess) linkedinSuccess.style.display = 'none';
-            if (linkedinSignin) linkedinSignin.style.display = 'none';
-
-            statusDiv.innerHTML = `
-              <div style="background: #d4edda; color: #155724; padding: var(--space-xl); border-radius: var(--radius-md); text-align: center;">
-                <div style="font-size: 2rem; margin-bottom: var(--space-md);">✓</div>
-                <strong style="font-size: var(--font-size-lg);">Application Submitted!</strong><br><br>
-                Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.<br>
-                <span style="font-size: var(--font-size-sm); margin-top: var(--space-md); display: block; color: #155724;">
-                  A confirmation email has been sent to the address you provided.
-                </span>
-              </div>
+            newsletterForm.style.display = 'none';
+            newsletterStatus.innerHTML = `
+              <span style="color: #2e7d32;">&#10003; Subscribed! Check your email for confirmation.</span>
             `;
 
           } catch (error) {
-            console.error('Application error:', error);
-            statusDiv.innerHTML = `
-              <div style="background: #f8d7da; color: #721c24; padding: var(--space-lg); border-radius: var(--radius-md);">
-                <strong>Error:</strong> ${error.message}
-              </div>
+            console.error('Newsletter error:', error);
+            newsletterStatus.innerHTML = `
+              <span style="color: #c62828;">Error: ${error.message}</span>
             `;
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Application';
-          }
-        });
-      }
-
-      // Community Member signup form handling
-      const communityForm = document.getElementById('community-form');
-      const communityStatus = document.getElementById('community-form-status');
-
-      if (communityForm) {
-        communityForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const submitBtn = communityForm.querySelector('button[type="submit"]');
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Joining...';
-
-          communityStatus.className = 'mt-lg text-center';
-          communityStatus.textContent = '';
-
-          try {
-            const formData = {
-              name: document.getElementById('community-name').value.trim(),
-              email: document.getElementById('community-email').value.trim(),
-              organization: document.getElementById('community-org').value.trim() || undefined,
-              membershipType: 'community'
-            };
-
-            if (!formData.name || !formData.email) {
-              throw new Error('Please fill in all required fields');
-            }
-
-            const response = await fetch('/api/membership/community', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.error || 'Failed to join community');
-            }
-
-            communityForm.style.display = 'none';
-            communityStatus.innerHTML = `
-              <div style="background: #d4edda; color: #155724; padding: var(--space-xl); border-radius: var(--radius-md); text-align: center;">
-                <div style="font-size: 2rem; margin-bottom: var(--space-md);">&#10003;</div>
-                <strong style="font-size: var(--font-size-lg);">Welcome to CAPHE!</strong><br><br>
-                You're now a Community Member. Check your email for a confirmation and information about upcoming events.
-              </div>
-            `;
-
-          } catch (error) {
-            console.error('Community signup error:', error);
-            communityStatus.innerHTML = `
-              <div style="background: #f8d7da; color: #721c24; padding: var(--space-lg); border-radius: var(--radius-md);">
-                <strong>Error:</strong> ${error.message}
-              </div>
-            `;
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Join the Community';
+            submitBtn.textContent = 'Subscribe';
           }
         });
       }

@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cost-Effectiveness Ratio | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how the Incremental Cost-Effectiveness Ratio (ICER) transforms 'Does it work?' into 'Is it worth it?' The ICER is the core metric of economic evaluation in health policy.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    code, .mono { font-family: var(--font-mono); }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DATA CONTAINER (Panel 1)
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--space-md);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+
+    .comparison-table td {
+      font-size: 1rem;
+    }
+
+    .comparison-table .program-name {
+      font-weight: 600;
+      color: var(--color-primary-dark);
+    }
+
+    .comparison-table .value-cell {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+    }
+
+    .comparison-table .program-a {
+      color: var(--color-secondary);
+    }
+
+    .comparison-table .program-b {
+      color: var(--color-accent);
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* Bridging question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       7. CALCULATING ICER (Panel 2)
+       ============================================ */
+    .icer-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .icer-container { grid-template-columns: 1fr; }
+    }
+
+    .formula-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .formula-display {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-xl);
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .formula-main {
+      font-size: 1.5rem;
+      font-family: var(--font-serif);
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-md);
+    }
+
+    .formula-fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+    }
+
+    .formula-numerator,
+    .formula-denominator {
+      padding: var(--space-xs) var(--space-md);
+    }
+
+    .formula-numerator {
+      border-bottom: 2px solid var(--color-primary);
+    }
+
+    .formula-equals {
+      margin: 0 var(--space-md);
+      font-size: 1.5rem;
+    }
+
+    .formula-result {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .calculation-steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .calc-step {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .step-value {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .icer-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .icer-result-card {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      text-align: center;
+    }
+
+    .icer-result-card h4 {
+      color: white;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: var(--space-md);
+    }
+
+    .icer-value-large {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-sm);
+    }
+
+    .icer-unit {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .interpretation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .interpretation-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .interpretation-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       8. INTERPRETING ICER (Panel 3)
+       ============================================ */
+    .interpret-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .interpret-container { grid-template-columns: 1fr; }
+    }
+
+    .threshold-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .threshold-card h3 {
+      margin-bottom: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .threshold-card h3::before {
+      content: "";
+      width: 4px;
+      height: 24px;
+      border-radius: 2px;
+    }
+
+    .threshold-card.accept h3::before {
+      background: var(--color-success);
+    }
+
+    .threshold-card.reject h3::before {
+      background: var(--color-warning);
+    }
+
+    .threshold-range {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .threshold-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-sm);
+    }
+
+    .threshold-card.accept .threshold-value {
+      color: var(--color-success);
+    }
+
+    .threshold-card.reject .threshold-value {
+      color: var(--color-warning);
+    }
+
+    .threshold-label {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+
+    .threshold-examples {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .example-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .example-icon {
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .threshold-card.accept .example-icon {
+      color: var(--color-success);
+    }
+
+    .threshold-card.reject .example-icon {
+      color: var(--color-warning);
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       9. CE-PLANE (Panel 4)
+       ============================================ */
+    .plane-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .plane-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 450px;
+    }
+
+    .quadrant-legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+
+    .quadrant-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.85rem;
+    }
+
+    .quadrant-color {
+      width: 16px;
+      height: 16px;
+      border-radius: var(--radius-sm);
+    }
+
+    .plane-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .quadrant-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid;
+    }
+
+    .quadrant-card.dominant { border-left-color: var(--color-success); }
+    .quadrant-card.dominated { border-left-color: #D32F2F; }
+    .quadrant-card.tradeoff-ne { border-left-color: var(--color-accent); }
+    .quadrant-card.tradeoff-sw { border-left-color: var(--color-primary); }
+
+    .quadrant-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .quadrant-card.dominant h4 { color: var(--color-success); }
+    .quadrant-card.dominated h4 { color: #D32F2F; }
+    .quadrant-card.tradeoff-ne h4 { color: var(--color-accent); }
+    .quadrant-card.tradeoff-sw h4 { color: var(--color-primary); }
+
+    .quadrant-card p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .slider-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .slider-container label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .slider-container input[type="range"] {
+      width: 100%;
+      margin-bottom: var(--space-sm);
+    }
+
+    .slider-value {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    /* ============================================
+       10. KEY INSIGHT (Panel 5)
+       ============================================ */
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 240px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .program-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Economic Evaluation</div>
+      <h1>The Cost-Effectiveness Ratio</h1>
+      <p class="subtitle">A large effect size tells us a program works. But what is the effect size per dollar spent? The ICER (incremental cost-effectiveness ratio) answers this question and is the core metric of economic evaluation.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Calculating ICER</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Interpreting ICER</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">The CE Plane</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A county health department is choosing between two diabetes prevention programs. Both programs reduce diabetes incidence, but they differ in costs and effects. Which should they fund? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 style="margin-bottom: var(--space-lg);">Comparing Two Diabetes Prevention Programs</h3>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Standard Care</th>
+                  <th>Program A (Lifestyle)</th>
+                  <th>Program B (Medication)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="program-name">Annual Cost per Person</td>
+                  <td class="value-cell">$500</td>
+                  <td class="value-cell program-a">$2,800</td>
+                  <td class="value-cell program-b">$4,200</td>
+                </tr>
+                <tr>
+                  <td class="program-name">QALYs Gained (10 years)</td>
+                  <td class="value-cell">8.2</td>
+                  <td class="value-cell program-a">8.9</td>
+                  <td class="value-cell program-b">9.1</td>
+                </tr>
+                <tr>
+                  <td class="program-name">Diabetes Cases Prevented</td>
+                  <td class="value-cell">--</td>
+                  <td class="value-cell program-a">28 per 100</td>
+                  <td class="value-cell program-b">32 per 100</td>
+                </tr>
+                <tr>
+                  <td class="program-name">Program Components</td>
+                  <td class="value-cell" style="font-size: 0.9rem;">Routine monitoring</td>
+                  <td class="value-cell program-a" style="font-size: 0.9rem;">Diet, exercise, coaching</td>
+                  <td class="value-cell program-b" style="font-size: 0.9rem;">Metformin + monitoring</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top: var(--space-xl); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md);">
+              <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
+                <strong>QALY (Quality-Adjusted Life Year):</strong> A measure that combines length of life with quality of life. One QALY equals one year of life in perfect health. A year lived with chronic illness might count as 0.7 QALYs.
+              </p>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Program A vs Standard Care</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" style="color: var(--color-secondary);">+$2,300</div>
+                  <div class="stat-label">Added Cost</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" style="color: var(--color-secondary);">+0.7</div>
+                  <div class="stat-label">QALYs Gained</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Program B vs Standard Care</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" style="color: var(--color-accent);">+$3,700</div>
+                  <div class="stat-label">Added Cost</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" style="color: var(--color-accent);">+0.9</div>
+                  <div class="stat-label">QALYs Gained</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>The dilemma:</strong> Program B produces more health benefit than Program A. But Program B also costs more. Is the extra benefit worth the extra cost?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do we compare programs that differ in both costs and effects? We need a ratio that expresses value: the cost per unit of health gained.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: CALCULATING ICER
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Calculating the ICER</h2>
+          <p class="panel-intro">
+            The Incremental Cost-Effectiveness Ratio (ICER) answers a specific question: How much additional cost does it take to gain one additional unit of health (usually a QALY)?
+          </p>
+        </div>
+
+        <div class="icer-container">
+          <div class="formula-box">
+            <div class="formula-display">
+              <div class="formula-main">
+                ICER <span class="formula-equals">=</span>
+                <span class="formula-fraction">
+                  <span class="formula-numerator">Cost<sub>New</sub> - Cost<sub>Comparator</sub></span>
+                  <span class="formula-denominator">Effect<sub>New</sub> - Effect<sub>Comparator</sub></span>
+                </span>
+                <span class="formula-equals">=</span>
+                <span class="formula-fraction">
+                  <span class="formula-numerator">Incremental Cost</span>
+                  <span class="formula-denominator">Incremental Effect</span>
+                </span>
+              </div>
+            </div>
+
+            <h3 style="margin-bottom: var(--space-lg);">Program A vs Standard Care</h3>
+            <div class="calculation-steps">
+              <div class="calc-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                  <div class="step-label">Incremental Cost</div>
+                  <div class="step-value">$2,800 - $500 = <strong>$2,300</strong></div>
+                </div>
+              </div>
+              <div class="calc-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                  <div class="step-label">Incremental Effect (QALYs)</div>
+                  <div class="step-value">8.9 - 8.2 = <strong>0.7 QALYs</strong></div>
+                </div>
+              </div>
+              <div class="calc-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                  <div class="step-label">ICER Calculation</div>
+                  <div class="step-value">$2,300 / 0.7 = <strong style="color: var(--color-secondary);">$3,286 per QALY</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--space-xl); padding-top: var(--space-xl); border-top: 1px solid var(--color-border);">
+              <h3 style="margin-bottom: var(--space-lg);">Program B vs Standard Care</h3>
+              <div class="calculation-steps">
+                <div class="calc-step">
+                  <div class="step-number">1</div>
+                  <div class="step-content">
+                    <div class="step-label">Incremental Cost</div>
+                    <div class="step-value">$4,200 - $500 = <strong>$3,700</strong></div>
+                  </div>
+                </div>
+                <div class="calc-step">
+                  <div class="step-number">2</div>
+                  <div class="step-content">
+                    <div class="step-label">Incremental Effect (QALYs)</div>
+                    <div class="step-value">9.1 - 8.2 = <strong>0.9 QALYs</strong></div>
+                  </div>
+                </div>
+                <div class="calc-step">
+                  <div class="step-number">3</div>
+                  <div class="step-content">
+                    <div class="step-label">ICER Calculation</div>
+                    <div class="step-value">$3,700 / 0.9 = <strong style="color: var(--color-accent);">$4,111 per QALY</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="icer-sidebar">
+            <div class="icer-result-card" aria-live="polite">
+              <h4>Program A ICER</h4>
+              <div class="icer-value-large" style="color: #4DB6AC;">$3,286</div>
+              <div class="icer-unit">per QALY gained</div>
+            </div>
+
+            <div class="icer-result-card" aria-live="polite" style="background: linear-gradient(135deg, var(--color-accent) 0%, #E65100 100%);">
+              <h4>Program B ICER</h4>
+              <div class="icer-value-large">$4,111</div>
+              <div class="icer-unit">per QALY gained</div>
+            </div>
+
+            <div class="interpretation-card">
+              <h4>What Do These Numbers Mean?</h4>
+              <p>
+                Program A costs <strong>$3,286</strong> for each additional year of healthy life it produces compared to standard care.
+              </p>
+              <p style="margin-top: var(--space-md);">
+                Program B costs <strong>$4,111</strong> per QALY. It produces more health, but at a higher cost per unit of health.
+              </p>
+            </div>
+
+            <div class="observation-box">
+              <strong>Insight:</strong> Lower ICER means better value. Program A delivers health gains more efficiently than Program B.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> We know Program A has a lower ICER. But is $3,286 per QALY a good deal? How do decision-makers decide what's "worth it"?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: INTERPRETING ICER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Interpreting the ICER</h2>
+          <p class="panel-intro">
+            An ICER alone is meaningless without context. We need a benchmark: how much is society willing to pay for one additional year of healthy life? This is called the willingness-to-pay (WTP) threshold.
+          </p>
+        </div>
+
+        <div class="interpret-container">
+          <div class="threshold-card accept">
+            <h3>Cost-Effective</h3>
+            <div class="threshold-range">
+              <div class="threshold-value">ICER &lt; WTP Threshold</div>
+              <div class="threshold-label">The program delivers good value for money</div>
+            </div>
+            <div class="threshold-examples">
+              <div class="example-item">
+                <span class="example-icon">+</span>
+                <span>Program A at $3,286/QALY is cost-effective if WTP = $50,000</span>
+              </div>
+              <div class="example-item">
+                <span class="example-icon">+</span>
+                <span>Program B at $4,111/QALY is also cost-effective at WTP = $50,000</span>
+              </div>
+              <div class="example-item">
+                <span class="example-icon">+</span>
+                <span>Both programs represent reasonable value compared to what we typically pay for health</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="threshold-card reject">
+            <h3>Not Cost-Effective</h3>
+            <div class="threshold-range">
+              <div class="threshold-value">ICER &gt; WTP Threshold</div>
+              <div class="threshold-label">The program costs too much for the health it delivers</div>
+            </div>
+            <div class="threshold-examples">
+              <div class="example-item">
+                <span class="example-icon">!</span>
+                <span>A cancer drug at $500,000/QALY exceeds most thresholds</span>
+              </div>
+              <div class="example-item">
+                <span class="example-icon">!</span>
+                <span>Resources could produce more health elsewhere</span>
+              </div>
+              <div class="example-item">
+                <span class="example-icon">!</span>
+                <span>Rejection doesn't mean the drug doesn't work; it means the price is too high</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>Common WTP Thresholds</h3>
+          <p>Different countries and organizations use different thresholds. These reflect societal values and budget constraints.</p>
+          <ul style="margin-top: var(--space-md);">
+            <li><strong>United States:</strong> $50,000 - $150,000 per QALY (informal, varies by context)</li>
+            <li><strong>United Kingdom (NICE):</strong> ~$30,000 - $45,000 per QALY (explicit threshold)</li>
+            <li><strong>World Health Organization:</strong> 1-3x GDP per capita as a reference point</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">
+            <strong>Important:</strong> These thresholds represent opportunity cost. Money spent on one program cannot be spent on another. A threshold of $50,000/QALY implies we could typically produce one QALY for $50,000 through other health investments.
+          </p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> The ICER gives us a number, but real-world decisions are more complex. How do we visualize the full landscape of cost-effectiveness trade-offs?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: THE CE PLANE
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">The Cost-Effectiveness Plane</h2>
+          <p class="panel-intro">
+            The CE plane plots incremental costs (y-axis) against incremental effects (x-axis). This visualization reveals four distinct scenarios, each requiring different decision logic.
+          </p>
+        </div>
+
+        <div class="plane-container">
+          <div class="chart-wrapper">
+            <svg id="ce-plane-chart" class="chart-svg" role="img" aria-label="Cost-effectiveness plane showing incremental costs versus incremental effects with four quadrants"></svg>
+
+            <div class="quadrant-legend">
+              <div class="quadrant-item">
+                <div class="quadrant-color" style="background: var(--color-success);"></div>
+                <span>Southeast: Dominant (more effect, less cost)</span>
+              </div>
+              <div class="quadrant-item">
+                <div class="quadrant-color" style="background: #D32F2F;"></div>
+                <span>Northwest: Dominated (less effect, more cost)</span>
+              </div>
+              <div class="quadrant-item">
+                <div class="quadrant-color" style="background: var(--color-accent);"></div>
+                <span>Northeast: Trade-off (more effect, more cost)</span>
+              </div>
+              <div class="quadrant-item">
+                <div class="quadrant-color" style="background: var(--color-primary);"></div>
+                <span>Southwest: Trade-off (less effect, less cost)</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="plane-sidebar">
+            <div class="slider-container">
+              <label for="wtp-slider">Willingness-to-Pay Threshold</label>
+              <input type="range" id="wtp-slider" min="10000" max="200000" value="50000" step="5000" aria-label="Adjust willingness-to-pay threshold">
+              <div class="slider-value" aria-live="polite" aria-atomic="true">$<span id="wtp-value">50,000</span> per QALY</div>
+            </div>
+
+            <div class="quadrant-card dominant">
+              <h4>Southeast Quadrant</h4>
+              <p>Always adopt. More effective AND less costly than comparator. This is rare in practice.</p>
+            </div>
+
+            <div class="quadrant-card dominated">
+              <h4>Northwest Quadrant</h4>
+              <p>Always reject. Less effective AND more costly. No reasonable scenario favors adoption.</p>
+            </div>
+
+            <div class="quadrant-card tradeoff-ne">
+              <h4>Northeast Quadrant</h4>
+              <p>Most common scenario. Adopt if ICER is below your WTP threshold (the slope of the line).</p>
+            </div>
+
+            <div class="quadrant-card tradeoff-sw">
+              <h4>Southwest Quadrant</h4>
+              <p>Less common. Adopt if savings justify the loss in effect. Relevant for cost-saving alternatives.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What are the key lessons? How does the ICER transform the way economists think about program effectiveness?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            The ICER transforms program evaluation from "Does it work?" to "Is it worth it?" This shift recognizes that health budgets are finite and every dollar has an opportunity cost.
+          </p>
+        </div>
+
+        <div class="dag-wrapper">
+          <img
+            src="assets/cost-effectiveness-ratio-dag.png"
+            alt="Conceptual diagram showing how the ICER compares incremental costs to incremental effects, with the WTP threshold determining adoption decisions"
+            class="dag-image"
+          >
+          <p class="dag-caption">The ICER translates clinical effectiveness into economic value by expressing health gains in terms of the resources required to achieve them.</p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Questions Economists Ask That Others Might Not</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Incremental thinking:</strong> What is the additional benefit of this intervention compared to the next best alternative?</div>
+            <div class="concept-item"><strong>Opportunity cost:</strong> What health gains are we giving up by spending money here instead of elsewhere?</div>
+            <div class="concept-item"><strong>Value for money:</strong> Is this the most efficient way to produce health improvement?</div>
+            <div class="concept-item"><strong>Threshold thinking:</strong> At what price does this intervention stop being worthwhile?</div>
+            <div class="concept-item"><strong>Budget impact:</strong> Can we afford this at scale, even if the ICER is favorable?</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Effectiveness is not the same as value.</strong> A program can be highly effective yet not cost-effective if it consumes resources that could produce more health elsewhere. The ICER forces us to think in terms of health produced per dollar spent, not just health produced. This is what economists mean by efficiency: maximizing total health outcomes within budget constraints. <strong>Every funding decision is also a decision not to fund something else.</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program costs or outcomes.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA FOR CE PLANE
+       ============================================ */
+    const programs = [
+      { name: 'Program A (Lifestyle)', deltaCost: 2300, deltaQALY: 0.7, color: '#0D9488' },
+      { name: 'Program B (Medication)', deltaCost: 3700, deltaQALY: 0.9, color: '#F9A825' },
+      { name: 'Program C (Intensive)', deltaCost: 8500, deltaQALY: 1.2, color: '#1565C0' },
+      { name: 'Program D (Combo)', deltaCost: 12000, deltaQALY: 1.1, color: '#7B1FA2' },
+      { name: 'Program E (Budget)', deltaCost: -500, deltaQALY: 0.3, color: '#00796B' },
+      { name: 'Program F (Failed)', deltaCost: 4000, deltaQALY: -0.2, color: '#D32F2F' }
+    ];
+
+    /* ============================================
+       2. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let cePlaneInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render CE plane when panel 4 becomes visible
+        if (panelNum === '4') {
+          setTimeout(() => {
+            if (!cePlaneInitialized) {
+              renderCEPlane();
+              cePlaneInitialized = true;
+            } else {
+              renderCEPlane();
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       3. CE PLANE CHART
+       ============================================ */
+    let currentWTP = 50000;
+
+    function renderCEPlane() {
+      const svg = document.getElementById('ce-plane-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 450;
+      const margin = { top: 40, right: 40, bottom: 70, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Scale ranges
+      const xMin = -0.5, xMax = 1.5;
+      const yMin = -3000, yMax = 15000;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Background quadrants
+      const quadrants = [
+        { x1: xMin, x2: 0, y1: 0, y2: yMax, fill: 'rgba(211, 47, 47, 0.08)' },  // NW - dominated
+        { x1: 0, x2: xMax, y1: 0, y2: yMax, fill: 'rgba(249, 168, 37, 0.08)' }, // NE - tradeoff
+        { x1: xMin, x2: 0, y1: yMin, y2: 0, fill: 'rgba(0, 65, 165, 0.08)' },   // SW - tradeoff
+        { x1: 0, x2: xMax, y1: yMin, y2: 0, fill: 'rgba(46, 125, 50, 0.08)' }   // SE - dominant
+      ];
+
+      quadrants.forEach(q => {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', xScale(q.x1));
+        rect.setAttribute('y', yScale(q.y2));
+        rect.setAttribute('width', xScale(q.x2) - xScale(q.x1));
+        rect.setAttribute('height', yScale(q.y1) - yScale(q.y2));
+        rect.setAttribute('fill', q.fill);
+        svg.appendChild(rect);
+      });
+
+      // Axes
+      // X-axis (horizontal at y=0)
+      const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxisLine.setAttribute('x1', margin.left);
+      xAxisLine.setAttribute('x2', width - margin.right);
+      xAxisLine.setAttribute('y1', yScale(0));
+      xAxisLine.setAttribute('y2', yScale(0));
+      xAxisLine.setAttribute('stroke', 'var(--color-text)');
+      xAxisLine.setAttribute('stroke-width', '2');
+      svg.appendChild(xAxisLine);
+
+      // Y-axis (vertical at x=0)
+      const yAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxisLine.setAttribute('x1', xScale(0));
+      yAxisLine.setAttribute('x2', xScale(0));
+      yAxisLine.setAttribute('y1', margin.top);
+      yAxisLine.setAttribute('y2', height - margin.bottom);
+      yAxisLine.setAttribute('stroke', 'var(--color-text)');
+      yAxisLine.setAttribute('stroke-width', '2');
+      svg.appendChild(yAxisLine);
+
+      // Grid lines
+      for (let x = -0.5; x <= 1.5; x += 0.5) {
+        if (x !== 0) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', xScale(x));
+          line.setAttribute('x2', xScale(x));
+          line.setAttribute('y1', margin.top);
+          line.setAttribute('y2', height - margin.bottom);
+          line.setAttribute('stroke', 'var(--color-border-light)');
+          line.setAttribute('stroke-dasharray', '3,3');
+          svg.appendChild(line);
+        }
+
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      for (let y = -2000; y <= 14000; y += 4000) {
+        if (y !== 0) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', margin.left);
+          line.setAttribute('x2', width - margin.right);
+          line.setAttribute('y1', yScale(y));
+          line.setAttribute('y2', yScale(y));
+          line.setAttribute('stroke', 'var(--color-border-light)');
+          line.setAttribute('stroke-dasharray', '3,3');
+          svg.appendChild(line);
+        }
+
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y >= 0 ? `$${(y/1000).toFixed(0)}k` : `-$${Math.abs(y/1000).toFixed(0)}k`;
+        svg.appendChild(tick);
+      }
+
+      // WTP threshold line (slope = WTP)
+      const wtpX1 = 0;
+      const wtpY1 = 0;
+      const wtpX2 = xMax;
+      const wtpY2 = currentWTP * xMax;
+
+      const wtpLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      wtpLine.setAttribute('x1', xScale(wtpX1));
+      wtpLine.setAttribute('y1', yScale(wtpY1));
+      wtpLine.setAttribute('x2', xScale(wtpX2));
+      wtpLine.setAttribute('y2', yScale(Math.min(wtpY2, yMax)));
+      wtpLine.setAttribute('stroke', 'var(--color-primary)');
+      wtpLine.setAttribute('stroke-width', '2');
+      wtpLine.setAttribute('stroke-dasharray', '8,4');
+      svg.appendChild(wtpLine);
+
+      // WTP label
+      const wtpLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      wtpLabel.setAttribute('x', xScale(1.2));
+      wtpLabel.setAttribute('y', yScale(Math.min(currentWTP * 1.2, yMax - 1500)));
+      wtpLabel.setAttribute('font-size', '11');
+      wtpLabel.setAttribute('fill', 'var(--color-primary)');
+      wtpLabel.textContent = `WTP = $${(currentWTP/1000).toFixed(0)}k/QALY`;
+      svg.appendChild(wtpLabel);
+
+      // Origin point
+      const origin = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      origin.setAttribute('cx', xScale(0));
+      origin.setAttribute('cy', yScale(0));
+      origin.setAttribute('r', 6);
+      origin.setAttribute('fill', 'white');
+      origin.setAttribute('stroke', 'var(--color-text)');
+      origin.setAttribute('stroke-width', '2');
+      svg.appendChild(origin);
+
+      // Data points
+      programs.forEach(p => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(p.deltaQALY));
+        circle.setAttribute('cy', yScale(p.deltaCost));
+        circle.setAttribute('r', 10);
+        circle.setAttribute('fill', p.color);
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('style', 'cursor: pointer;');
+
+        // Determine if cost-effective
+        const icer = p.deltaQALY > 0 ? p.deltaCost / p.deltaQALY : Infinity;
+        const isCE = p.deltaQALY > 0 && (p.deltaCost <= 0 || icer <= currentWTP);
+
+        circle.addEventListener('mouseenter', (e) => showProgramTooltip(e, p, icer, isCE));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+
+        // Label
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(p.deltaQALY) + 14);
+        label.setAttribute('y', yScale(p.deltaCost) + 4);
+        label.setAttribute('font-size', '10');
+        label.setAttribute('fill', 'var(--color-text-secondary)');
+        label.textContent = p.name.split(' ')[1];
+        svg.appendChild(label);
+      });
+
+      // Axis labels
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 15);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '13');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Incremental QALYs (vs Standard Care)';
+      svg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '13');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Incremental Cost ($)';
+      svg.appendChild(yLabel);
+
+      // Quadrant labels
+      const quadrantLabels = [
+        { x: 0.75, y: 10000, text: 'NE: Trade-off', color: 'var(--color-accent)' },
+        { x: -0.25, y: 10000, text: 'NW: Dominated', color: '#D32F2F' },
+        { x: 0.75, y: -1500, text: 'SE: Dominant', color: 'var(--color-success)' },
+        { x: -0.25, y: -1500, text: 'SW: Trade-off', color: 'var(--color-primary)' }
+      ];
+
+      quadrantLabels.forEach(q => {
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(q.x));
+        label.setAttribute('y', yScale(q.y));
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('font-weight', '600');
+        label.setAttribute('fill', q.color);
+        label.setAttribute('opacity', '0.7');
+        label.textContent = q.text;
+        svg.appendChild(label);
+      });
+    }
+
+    /* ============================================
+       4. TOOLTIP
+       ============================================ */
+    function showProgramTooltip(event, program, icer, isCE) {
+      const tooltip = document.getElementById('tooltip');
+
+      let icerText = '';
+      if (program.deltaQALY <= 0) {
+        icerText = 'N/A (no QALY gain)';
+      } else if (program.deltaCost <= 0) {
+        icerText = 'Dominant (cost-saving)';
+      } else {
+        icerText = `$${Math.round(icer).toLocaleString()}/QALY`;
+      }
+
+      const status = isCE ? '<span style="color: #2E7D32;">Cost-effective</span>' : '<span style="color: #D32F2F;">Not cost-effective</span>';
+
+      tooltip.innerHTML = `
+        <div class="program-name">${program.name}</div>
+        <div class="metric">Incremental Cost: $${program.deltaCost.toLocaleString()}</div>
+        <div class="metric">Incremental QALYs: ${program.deltaQALY.toFixed(2)}</div>
+        <div class="metric">ICER: ${icerText}</div>
+        <div class="metric" style="margin-top: 4px;">${status}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       5. WTP SLIDER
+       ============================================ */
+    const wtpSlider = document.getElementById('wtp-slider');
+    const wtpValueDisplay = document.getElementById('wtp-value');
+
+    if (wtpSlider) {
+      wtpSlider.addEventListener('input', () => {
+        currentWTP = parseInt(wtpSlider.value);
+        wtpValueDisplay.textContent = currentWTP.toLocaleString();
+        if (cePlaneInitialized) {
+          renderCEPlane();
+        }
+      });
+    }
+
+    /* ============================================
+       6. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initial render if panel 4 is active (unlikely on load)
+      if (document.getElementById('panel-4').classList.contains('active')) {
+        renderCEPlane();
+        cePlaneInitialized = true;
+      }
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-4').classList.contains('active') && cePlaneInitialized) {
+            renderCEPlane();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

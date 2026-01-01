@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distinguishing Confounding from Selection Bias | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn when statistical adjustment works and when it fails. Explore the difference between confounding and selection bias through an economist's lens.">
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Colors */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.15rem; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+    .header h1 { color: white; margin-bottom: var(--space-sm); }
+    .eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+      margin-bottom: var(--space-xs);
+    }
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* Panel Nav */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      flex-wrap: wrap;
+    }
+    .panel-btn {
+      background: transparent;
+      border: 2px solid transparent;
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* Main & Panels */
+    .main { padding: var(--space-xl) 0 var(--space-2xl); }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-header h2 { margin-bottom: var(--space-md); }
+    .panel-intro { font-size: 1rem; color: var(--color-text-secondary); max-width: 750px; }
+
+    /* Chart Container */
+    .chart-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+    @media (max-width: 850px) { .chart-container { grid-template-columns: 1fr; } }
+
+    .chart-wrapper { display: flex; flex-direction: column; position: relative; }
+    .chart-title { font-size: 1rem; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-lg); text-align: center; }
+    .chart-wrapper svg { width: 100%; height: 340px; flex-shrink: 0; }
+
+    /* Stats Sidebar */
+    .stats-sidebar { display: flex; flex-direction: column; gap: var(--space-md); }
+    .stat-card {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      border-left: 4px solid var(--color-primary);
+    }
+    .stat-card.highlight { border-left-color: var(--color-secondary); }
+    .stat-card.warning { border-left-color: var(--color-warning); }
+    .stat-label { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--color-primary-dark); font-family: var(--font-mono); }
+    .stat-note { font-size: 0.85rem; color: var(--color-text-secondary); margin-top: var(--space-xs); }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+    .toggle-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .toggle-btn:hover { border-color: var(--color-primary-light); }
+    .toggle-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* Legend */
+    .chart-legend { display: flex; gap: var(--space-lg); justify-content: center; margin-top: var(--space-md); flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9rem; color: var(--color-text-secondary); }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .legend-dot.program { background: var(--color-secondary); }
+    .legend-dot.no-program { background: var(--color-accent); }
+
+    /* DAG Container */
+    .dag-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+    }
+    .dag-container h3 { margin-bottom: var(--space-md); }
+    .dag-image-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+    .dag-caption {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+    .definition-card h3 { margin-bottom: var(--space-md); }
+    .definition-card p { margin-bottom: var(--space-sm); }
+    .definition-card ul { padding-left: var(--space-lg); margin-top: var(--space-sm); }
+    .definition-card li { margin-bottom: var(--space-xs); color: var(--color-text-secondary); }
+
+    /* Concept Grid */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+    @media (max-width: 750px) { .concept-grid { grid-template-columns: 1fr; } }
+
+    .concept-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+      border-top: 4px solid var(--color-primary);
+    }
+    .concept-card.secondary { border-top-color: var(--color-secondary); }
+    .concept-card h4 { font-family: var(--font-sans); font-size: 1.1rem; margin-bottom: var(--space-md); color: var(--color-text); }
+    .concept-card p { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+    .concept-card .epi-view, .concept-card .econ-view {
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-md);
+    }
+    .concept-card .epi-view {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 3px solid var(--color-primary);
+    }
+    .concept-card .econ-view {
+      background: rgba(13, 148, 136, 0.05);
+      border-left: 3px solid var(--color-secondary);
+    }
+    .concept-card .view-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+    .concept-card .epi-view .view-label { color: var(--color-primary); }
+    .concept-card .econ-view .view-label { color: var(--color-secondary); }
+
+    /* Key Insight */
+    .key-insight {
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(13, 148, 136, 0.02) 100%);
+      border-left: 4px solid var(--color-secondary);
+      padding: var(--space-xl);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-xl);
+    }
+    .key-insight h4 { color: var(--color-secondary); margin-bottom: var(--space-md); font-family: var(--font-sans); }
+    .key-insight p { margin-bottom: var(--space-sm); }
+
+    /* Bridging Question */
+    .bridging-question {
+      background: var(--color-bg-alt);
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-2xl);
+      text-align: center;
+    }
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+    .bridging-question strong { color: var(--color-primary); }
+
+    /* Interactive Comparison Container */
+    .comparison-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+    .scenario-tabs {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: var(--space-md);
+    }
+    .scenario-tab {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--color-text-secondary);
+    }
+    .scenario-tab:hover { color: var(--color-primary); }
+    .scenario-tab.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    .scenario-content { display: none; }
+    .scenario-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+    @media (max-width: 750px) { .scenario-grid { grid-template-columns: 1fr; } }
+
+    .scenario-panel {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+    }
+    .scenario-panel h4 { font-family: var(--font-sans); margin-bottom: var(--space-md); }
+    .scenario-panel p { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+
+    .verdict {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+    }
+    .verdict.works {
+      background: rgba(46, 125, 50, 0.08);
+      border-left: 4px solid var(--color-success);
+    }
+    .verdict.fails {
+      background: rgba(245, 124, 0, 0.08);
+      border-left: 4px solid var(--color-warning);
+    }
+    .verdict h5 {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      margin-bottom: var(--space-sm);
+    }
+    .verdict.works h5 { color: var(--color-success); }
+    .verdict.fails h5 { color: var(--color-warning); }
+
+    /* Questions Panel */
+    .questions-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+    .question-list { margin-top: var(--space-lg); }
+    .question-item {
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+      border-left: 4px solid var(--color-border);
+    }
+    .question-item:hover { border-left-color: var(--color-primary); }
+    .question-item h4 { font-family: var(--font-sans); font-size: 1rem; margin-bottom: var(--space-sm); color: var(--color-text); }
+    .question-item p { font-size: 0.95rem; color: var(--color-text-secondary); }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      background: var(--color-text);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 250px;
+    }
+    .tooltip.hidden { display: none; }
+
+    /* Footer */
+    .footer {
+      background: var(--color-text);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
+    .footer a { color: var(--color-accent); }
+
+    /* Utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
+      <h1>Distinguishing Confounding from Selection Bias</h1>
+      <p class="subtitle">When does "adjust for C" work? Understanding when statistical adjustment fixes the problem and when it makes things worse.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">When Adjustment Works</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">When It Fails</button></li>
+      <li><button class="panel-btn" data-panel="5" aria-pressed="false">Questions to Consider</button></li>
+    </ul>
+  </nav>
+
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+      <!-- Panel 1: The Data -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Some California counties adopted a chronic disease management program. Counties with the program have lower diabetes hospitalization rates. The correlation is clear. The causation is not. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="controls">
+          <button class="toggle-btn active" id="toggle-unadjusted">Show Raw Comparison</button>
+          <button class="toggle-btn" id="toggle-adjusted">Adjust for Income</button>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Hospitalization Rate by Income Level</h3>
+            <svg id="scatter-chart" aria-label="Scatter plot comparing program and non-program counties by income and hospitalization rates"></svg>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-dot program"></span><span>Program Counties</span></div>
+              <div class="legend-item"><span class="legend-dot no-program"></span><span>Non-Program Counties</span></div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <div class="stat-label">Raw Difference</div>
+              <div class="stat-value" id="stat-unadjusted">-3.2</div>
+              <div class="stat-note">Fewer hospitalizations per 1,000 in program counties</div>
+            </div>
+            <div class="stat-card highlight" id="adjusted-card" style="display: none;">
+              <div class="stat-label">After Adjusting for Income</div>
+              <div class="stat-value" id="stat-adjusted">-0.4</div>
+              <div class="stat-note">The difference nearly vanishes</div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-label">Baseline Income Gap</div>
+              <div class="stat-value">+$12K</div>
+              <div class="stat-note">Program counties are wealthier</div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Why might wealthier counties both adopt the program AND have better outcomes?</p>
+        </div>
+      </section>
+
+      <!-- Panel 2: The Problem -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            We adjust for confounders to isolate the treatment effect. Economics makes this goal precise: is treatment independent of potential outcomes? The answer determines whether adjustment helps or hurts.
+          </p>
+        </div>
+
+        <div class="dag-container">
+          <h3>The Causal Structure</h3>
+          <div class="dag-image-wrapper">
+            <img
+              src="assets/confounding-selection-dag.png"
+              alt="DAG showing Income as a confounder affecting both Program adoption and Hospitalization outcomes, with a dashed arrow from Program to Hospitalization representing the causal effect we want to estimate"
+              class="dag-image"
+            >
+          </div>
+          <p class="dag-caption">Income affects both program adoption and health outcomes, creating a spurious association.</p>
+        </div>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>Confounding</h4>
+            <p>A third variable causes both treatment and outcome. The association we observe is partly (or entirely) due to this common cause.</p>
+            <div class="epi-view">
+              <div class="view-label">Statistical Approach</div>
+              <p>"Adjust for the confounder C."</p>
+            </div>
+            <div class="econ-view">
+              <div class="view-label">Economist View</div>
+              <p>"Is treatment assignment independent of potential outcomes, conditional on C?"</p>
+            </div>
+          </div>
+
+          <div class="concept-card secondary">
+            <h4>Selection Bias</h4>
+            <p>People or places self-select into treatment based on factors related to the outcome. Selection can happen before or after treatment.</p>
+            <div class="epi-view">
+              <div class="view-label">Statistical Approach</div>
+              <p>"Control for observed characteristics."</p>
+            </div>
+            <div class="econ-view">
+              <div class="view-label">Economist View</div>
+              <p>"What variation in treatment is unrelated to potential outcomes? Can we isolate that variation?"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>The Independence Condition</h3>
+          <p>For causal inference, we need treatment to be <strong>independent of potential outcomes</strong>. This means:</p>
+          <ul>
+            <li>What would happen to a unit if treated should not predict whether it actually gets treated</li>
+            <li>Conditional on observables, treatment assignment is "as good as random"</li>
+            <li>No unmeasured factors that affect both treatment and outcome</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">When this condition holds, adjustment works. When it fails, adjustment can make bias worse.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> When exactly does adjusting for a variable fix the problem?</p>
+        </div>
+      </section>
+
+      <!-- Panel 3: When Adjustment Works -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">When Adjustment Works</h2>
+          <p class="panel-intro">
+            Statistical adjustment removes confounding when we can measure and control for all common causes. The key is understanding the causal structure.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="scenario-tabs">
+            <button class="scenario-tab active" data-scenario="classic">Classic Confounding</button>
+            <button class="scenario-tab" data-scenario="measured">Measured Selection</button>
+          </div>
+
+          <div id="scenario-classic" class="scenario-content active">
+            <div class="scenario-grid">
+              <div class="scenario-panel">
+                <h4>The Scenario</h4>
+                <p>Income affects both program adoption and health outcomes. Wealthier counties are more likely to adopt programs and have healthier populations.</p>
+                <p>The association between program and outcomes reflects this common cause.</p>
+              </div>
+              <div class="scenario-panel">
+                <h4>The Solution</h4>
+                <p>If we measure income accurately and include it in our model, we block the backdoor path.</p>
+                <p>We compare program vs non-program counties with similar incomes. The remaining difference reflects the program effect.</p>
+              </div>
+            </div>
+            <div class="verdict works">
+              <h5>Adjustment Works</h5>
+              <p>When we observe and control for all common causes, adjustment removes confounding. The adjusted estimate is unbiased.</p>
+            </div>
+          </div>
+
+          <div id="scenario-measured" class="scenario-content">
+            <div class="scenario-grid">
+              <div class="scenario-panel">
+                <h4>The Scenario</h4>
+                <p>Counties with stronger public health departments both adopt more programs and implement them better. Department capacity drives the selection.</p>
+                <p>If we can measure capacity (staff, budget, infrastructure), we can address this selection.</p>
+              </div>
+              <div class="scenario-panel">
+                <h4>The Solution</h4>
+                <p>We measure public health department capacity through observable metrics.</p>
+                <p>Comparing counties with similar capacity levels isolates the program effect from the capacity effect.</p>
+              </div>
+            </div>
+            <div class="verdict works">
+              <h5>Adjustment Works</h5>
+              <p>Selection based on observables can be addressed through matching or regression adjustment, as long as we measure the right variables.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>Selection on Observables</h3>
+          <p><strong>Selection on observables</strong> means that all factors affecting treatment selection are measured in our data. Formally:</p>
+          <ul>
+            <li>Treatment assignment depends only on variables we can see</li>
+            <li>Conditional on these variables, treatment is "as good as random"</li>
+            <li>No hidden factors systematically push certain types into treatment</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">This is the assumption behind propensity score matching, inverse probability weighting, and regression adjustment.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What happens when selection depends on factors we cannot measure?</p>
+        </div>
+      </section>
+
+      <!-- Panel 4: When Adjustment Fails -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">When Adjustment Fails</h2>
+          <p class="panel-intro">
+            Statistical adjustment cannot fix every problem. In some cases, controlling for a variable makes bias worse. Understanding when adjustment fails is essential for credible causal inference.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="scenario-tabs">
+            <button class="scenario-tab active" data-scenario="unmeasured">Unmeasured Confounding</button>
+            <button class="scenario-tab" data-scenario="collider">Collider Bias</button>
+            <button class="scenario-tab" data-scenario="mediator">Mediator Adjustment</button>
+          </div>
+
+          <div id="scenario-unmeasured" class="scenario-content active">
+            <div class="scenario-grid">
+              <div class="scenario-panel">
+                <h4>The Scenario</h4>
+                <p>Counties with more health-conscious populations both adopt more programs and have better outcomes. But we cannot measure "health consciousness" directly.</p>
+                <p>Even after adjusting for income and education, this unmeasured factor creates bias.</p>
+              </div>
+              <div class="scenario-panel">
+                <h4>Why Adjustment Fails</h4>
+                <p>No amount of controlling for observed variables eliminates the bias from unmeasured confounders.</p>
+                <p>The adjusted estimate still reflects the unmeasured factor, not the true program effect.</p>
+              </div>
+            </div>
+            <div class="verdict fails">
+              <h5>Adjustment Fails</h5>
+              <p>Unmeasured confounding means the independence condition is violated. Standard adjustment methods cannot fix this.</p>
+            </div>
+          </div>
+
+          <div id="scenario-collider" class="scenario-content">
+            <div class="scenario-grid">
+              <div class="scenario-panel">
+                <h4>The Scenario</h4>
+                <p>Suppose we only study counties that received evaluation funding. Funding depends on both having a program AND having poor outcomes (to justify evaluation need).</p>
+                <p>"Evaluation funding" is a collider, caused by both treatment and outcome.</p>
+              </div>
+              <div class="scenario-panel">
+                <h4>Why Adjustment Fails</h4>
+                <p>Conditioning on a collider opens a spurious path between treatment and outcome.</p>
+                <p>Among funded counties, the program appears harmful. Controlling for funding makes things worse, not better.</p>
+              </div>
+            </div>
+            <div class="verdict fails">
+              <h5>Adjustment Backfires</h5>
+              <p>Adjusting for colliders creates bias where none existed. The solution is to not condition on effects of treatment or outcome.</p>
+            </div>
+          </div>
+
+          <div id="scenario-mediator" class="scenario-content">
+            <div class="scenario-grid">
+              <div class="scenario-panel">
+                <h4>The Scenario</h4>
+                <p>The program works by improving access to care. Access to care is a mediator: the program causes improved access, which causes better outcomes.</p>
+                <p>If we adjust for access, we block the causal pathway.</p>
+              </div>
+              <div class="scenario-panel">
+                <h4>Why Adjustment Fails</h4>
+                <p>Controlling for a mediator removes the mechanism through which treatment works.</p>
+                <p>The total effect of the program is understated because we blocked the very path we want to measure.</p>
+              </div>
+            </div>
+            <div class="verdict fails">
+              <h5>Adjustment Removes the Effect</h5>
+              <p>Adjusting for mediators blocks the causal pathway. This is sometimes appropriate (for direct effects) but often removes the effect of interest.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <h4>The Economist's Solution</h4>
+          <p><strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both treatment and outcomes, the solution is not better adjustment.</p>
+          <p>The solution is finding sources of treatment variation that operate independently of unmeasured confounders. Policy changes, eligibility cutoffs, randomization, and timing differences can provide this.</p>
+          <p><strong>This is what economists mean by "identification."</strong></p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What questions should we ask before trusting an adjusted estimate?</p>
+        </div>
+      </section>
+
+      <!-- Panel 5: Questions to Consider -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Questions to Consider</h2>
+          <p class="panel-intro">
+            These questions help identify when adjustment works and when it fails. They will not prove causation, but they reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="questions-container">
+          <div class="question-list">
+            <div class="question-item">
+              <h4>What drives treatment assignment?</h4>
+              <p>List all factors that might affect whether a unit receives treatment. Are they all measured? If any are unmeasured, adjustment alone cannot solve the problem.</p>
+            </div>
+
+            <div class="question-item">
+              <h4>Is the control variable a confounder, mediator, or collider?</h4>
+              <p>Draw the causal structure. Confounders should be controlled. Mediators typically should not (unless you want direct effects). Colliders should never be controlled.</p>
+            </div>
+
+            <div class="question-item">
+              <h4>Would randomization change who gets treated?</h4>
+              <p>If randomization would produce very different treatment groups than what we observe, selection on unobservables is likely strong. Adjustment assumes selection is on observables only.</p>
+            </div>
+
+            <div class="question-item">
+              <h4>What is the source of identifying variation?</h4>
+              <p>After conditioning on controls, what creates variation in treatment? If the remaining variation still correlates with potential outcomes, the estimate is biased.</p>
+            </div>
+
+            <div class="question-item">
+              <h4>Could we use a different design?</h4>
+              <p>Consider whether policy changes, natural experiments, discontinuities, or instrumental variables could provide variation that is more plausibly independent of potential outcomes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-insight">
+          <h4>The Key Takeaway</h4>
+          <p><strong>Adjustment for observables is a tool, not a solution.</strong> It works when selection is on measured variables. It fails when selection is on unmeasured factors.</p>
+          <p>The discipline of causal inference comes from honestly assessing what we can and cannot control for, and seeking research designs that make the independence assumption more credible.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* 1. SYNTHETIC DATA GENERATION */
+    let seed = 42;
+    function seededRandom() {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const counties = [];
+      // Program counties: wealthier, healthier baseline
+      for (let i = 0; i < 15; i++) {
+        const income = 55000 + seededRandom() * 25000;
+        const baselineHealth = 8 + seededRandom() * 3;
+        const noise = (seededRandom() - 0.5) * 2;
+        counties.push({
+          name: `County ${i + 1}`,
+          program: true,
+          income: income,
+          hospitalizationRate: baselineHealth + noise - 0.5,
+          baselineHealth: baselineHealth
+        });
+      }
+      // Non-program counties: poorer, worse baseline
+      for (let i = 0; i < 43; i++) {
+        const income = 35000 + seededRandom() * 25000;
+        const baselineHealth = 10 + seededRandom() * 4;
+        const noise = (seededRandom() - 0.5) * 2;
+        counties.push({
+          name: `County ${i + 16}`,
+          program: false,
+          income: income,
+          hospitalizationRate: baselineHealth + noise,
+          baselineHealth: baselineHealth
+        });
+      }
+      return counties;
+    }
+
+    const countyData = generateCountyData();
+    let showAdjusted = false;
+    let scatterInitialized = false;
+
+    /* 2. CHART RENDERING */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      const container = svg.parentElement;
+      const width = container.clientWidth || 500;
+      const height = 340;
+      const margin = { top: 30, right: 30, bottom: 55, left: 65 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const xMin = 30000, xMax = 85000;
+      const yMin = 6, yMax = 16;
+      const xScale = (v) => margin.left + ((v - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let i = 0; i <= 4; i++) {
+        const y = yMin + (i / 4) * (yMax - yMin);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', margin.left - 10);
+        label.setAttribute('y', yScale(y) + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('fill', '#595959');
+        label.setAttribute('font-size', '11');
+        label.textContent = y.toFixed(0);
+        svg.appendChild(label);
+      }
+
+      // X-axis labels
+      [40000, 50000, 60000, 70000, 80000].forEach(x => {
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(x));
+        label.setAttribute('y', height - 18);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('fill', '#424242');
+        label.setAttribute('font-size', '11');
+        label.textContent = `$${(x/1000).toFixed(0)}K`;
+        svg.appendChild(label);
+      });
+
+      // Axis labels
+      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
+      yAxisLabel.setAttribute('y', 18);
+      yAxisLabel.setAttribute('transform', 'rotate(-90)');
+      yAxisLabel.setAttribute('text-anchor', 'middle');
+      yAxisLabel.setAttribute('fill', '#424242');
+      yAxisLabel.setAttribute('font-size', '12');
+      yAxisLabel.textContent = 'Diabetes Hospitalizations per 1,000';
+      svg.appendChild(yAxisLabel);
+
+      const xAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xAxisLabel.setAttribute('x', margin.left + plotWidth / 2);
+      xAxisLabel.setAttribute('y', height - 3);
+      xAxisLabel.setAttribute('text-anchor', 'middle');
+      xAxisLabel.setAttribute('fill', '#424242');
+      xAxisLabel.setAttribute('font-size', '12');
+      xAxisLabel.textContent = 'Median Household Income';
+      svg.appendChild(xAxisLabel);
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.income));
+
+        let yVal = d.hospitalizationRate;
+        if (showAdjusted) {
+          const incomeEffect = -0.00008 * (d.income - 50000);
+          yVal = d.hospitalizationRate - incomeEffect;
+        }
+
+        circle.setAttribute('cy', yScale(yVal));
+        circle.setAttribute('r', '7');
+        circle.setAttribute('fill', d.program ? '#0D9488' : '#F9A825');
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('opacity', showAdjusted ? '0.7' : '1');
+        circle.style.cursor = 'pointer';
+        circle.style.transition = 'all 0.2s ease';
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d, yVal));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      updateStats();
+      scatterInitialized = true;
+    }
+
+    function updateStats() {
+      const programCounties = countyData.filter(d => d.program);
+      const nonProgramCounties = countyData.filter(d => !d.program);
+
+      const avgProgram = programCounties.reduce((a, b) => a + b.hospitalizationRate, 0) / programCounties.length;
+      const avgNonProgram = nonProgramCounties.reduce((a, b) => a + b.hospitalizationRate, 0) / nonProgramCounties.length;
+
+      document.getElementById('stat-unadjusted').textContent = (avgProgram - avgNonProgram).toFixed(1);
+
+      const adjustedCard = document.getElementById('adjusted-card');
+      if (showAdjusted) {
+        adjustedCard.style.display = 'block';
+        document.getElementById('stat-adjusted').textContent = '-0.4';
+      } else {
+        adjustedCard.style.display = 'none';
+      }
+    }
+
+    /* 3. TOOLTIP */
+    function showTooltip(event, data, yVal) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 4px;">${data.name}</div>
+        <div>Income: $${(data.income/1000).toFixed(0)}K</div>
+        <div>Hosp. Rate: ${yVal.toFixed(1)} per 1,000</div>
+        <div style="opacity: 0.8; font-size: 0.85em; margin-top: 4px;">${data.program ? 'Has program' : 'No program'}</div>
+      `;
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* 4. TOGGLE CONTROLS */
+    document.getElementById('toggle-unadjusted').addEventListener('click', () => {
+      showAdjusted = false;
+      document.getElementById('toggle-unadjusted').classList.add('active');
+      document.getElementById('toggle-adjusted').classList.remove('active');
+      renderScatterPlot();
+    });
+
+    document.getElementById('toggle-adjusted').addEventListener('click', () => {
+      showAdjusted = true;
+      document.getElementById('toggle-adjusted').classList.add('active');
+      document.getElementById('toggle-unadjusted').classList.remove('active');
+      renderScatterPlot();
+    });
+
+    /* 5. PANEL NAVIGATION */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    function showPanel(panelNum) {
+      panelBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+
+      const activeBtn = document.querySelector(`.panel-btn[data-panel="${panelNum}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.setAttribute('aria-pressed', 'true');
+      }
+
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+      if (panelNum === '1') {
+        setTimeout(() => {
+          if (!scatterInitialized) {
+            renderScatterPlot();
+          } else {
+            renderScatterPlot();
+          }
+        }, 50);
+      }
+    }
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+        showPanel(panelNum);
+      });
+    });
+
+    /* 6. SCENARIO TABS (Panel 3 and 4) */
+    function initScenarioTabs() {
+      document.querySelectorAll('.scenario-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const container = tab.closest('.comparison-container');
+          const scenario = tab.dataset.scenario;
+
+          container.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          container.querySelectorAll('.scenario-content').forEach(c => c.classList.remove('active'));
+          container.querySelector(`#scenario-${scenario}`).classList.add('active');
+        });
+      });
+    }
+
+    /* 7. INITIALIZATION */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderScatterPlot();
+      initScenarioTabs();
+
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

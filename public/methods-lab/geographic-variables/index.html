@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geographic Variables: Proxy or Mechanism? | CAPHE Methods Lab</title>
+  <meta name="description" content="Explore when geographic variation helps identify causal effects versus when it introduces bias. Learn to distinguish place-based treatment from place-based confounding.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DATA PANEL
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. DAG / EXPLANATION PANELS
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.treatment {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.confounder {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. DEFINITION CARD (KEY CONCEPT)
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       9. INTERACTIVE CONTROLS
+       ============================================ */
+    .toggle-section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .toggle-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .toggle-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .toggle-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .scenario-description {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .scenario-description h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .scenario-description p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       10. COMPARISON GRID
+       ============================================ */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    .comparison-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .comparison-box.treatment {
+      border-top: 4px solid var(--color-secondary);
+    }
+
+    .comparison-box.confounder {
+      border-top: 4px solid var(--color-accent);
+    }
+
+    .comparison-box h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .comparison-box.treatment h3 {
+      color: var(--color-secondary);
+    }
+
+    .comparison-box.confounder h3 {
+      color: var(--color-warning);
+    }
+
+    .example-list {
+      list-style: none;
+      margin-top: var(--space-md);
+    }
+
+    .example-list li {
+      padding: var(--space-sm) 0;
+      padding-left: var(--space-lg);
+      border-left: 2px solid var(--color-border-light);
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .example-list li strong {
+      color: var(--color-text);
+      display: block;
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       11. WHEN-TO-USE SECTION
+       ============================================ */
+    .checklist-section {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .checklist-section h3 {
+      margin-bottom: var(--space-lg);
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .checklist-grid { grid-template-columns: 1fr; }
+    }
+
+    .checklist-column h4 {
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .checklist-column.use h4 {
+      color: var(--color-success);
+    }
+
+    .checklist-column.avoid h4 {
+      color: var(--color-caution);
+    }
+
+    .checklist {
+      list-style: none;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .checklist li::before {
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+
+    .checklist-column.use .checklist li::before {
+      content: "OK";
+      color: var(--color-success);
+    }
+
+    .checklist-column.avoid .checklist li::before {
+      content: "!!";
+      color: var(--color-caution);
+    }
+
+    /* ============================================
+       12. KEY INSIGHT PANEL
+       ============================================ */
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* ============================================
+       13. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       14. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       15. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       16. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden { display: none; }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab - Advanced Methods</div>
+      <h1>Geographic Variables: Proxy or Mechanism?</h1>
+      <p class="subtitle">County fixed effects can absorb confounding. But they can also absorb the treatment effect you want to measure. The question: Is geography the treatment or the confounder?</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Geography as Treatment</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Geography as Confounder</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">When to Use Fixed Effects</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            We observe that counties with stricter air quality regulations have lower asthma hospitalization rates. The correlation is strong. But should we include county fixed effects in our model? The answer depends on what question we're asking. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Air Quality Regulation vs Asthma Hospitalizations</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing air quality regulation strictness versus asthma hospitalization rates across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Urban Counties</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Rural Counties</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Overall Correlation</h4>
+              <div class="stat-item" style="text-align: center;">
+                <div class="stat-value" id="stat-overall-corr">--</div>
+                <div class="stat-label">Stricter rules, fewer hospitalizations</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>By County Type</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-urban-corr">--</div>
+                  <div class="stat-label">Within Urban</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-rural-corr">--</div>
+                  <div class="stat-label">Within Rural</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>Observation:</strong> The overall correlation is <span id="corr-comparison">strong</span>, but the within-group correlations tell a different story. What's driving the relationship?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Two possible interpretations emerge.</strong></p>
+          <p>Does stricter regulation cause fewer hospitalizations? Or do urban counties happen to have both stricter rules AND other factors that reduce asthma?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: GEOGRAPHY AS TREATMENT
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Geography as Treatment</h2>
+          <p class="panel-intro">
+            Sometimes place-based variation IS the treatment effect you want to measure. In these cases, adding geographic fixed effects would remove the very thing you're studying.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/geographic-variables-treatment-dag.png"
+              alt="Causal diagram showing Geographic Location directly affecting Health Outcome through place-based treatment, with an arrow from Location to Health Outcome"
+              class="dag-image"
+            >
+            <p class="dag-caption">When location IS the treatment: Fixed effects would absorb the causal effect.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>When Geography Is the Treatment</h4>
+              <div class="pathway-list">
+                <div class="pathway-item treatment">
+                  <strong>Place-based policies</strong>
+                  <p>State Medicaid expansions, county health programs, or regional environmental regulations that vary by jurisdiction.</p>
+                </div>
+                <div class="pathway-item treatment">
+                  <strong>Local infrastructure</strong>
+                  <p>Proximity to hospitals, public transit access, or food desert status that directly affects health.</p>
+                </div>
+                <div class="pathway-item treatment">
+                  <strong>Neighborhood effects</strong>
+                  <p>Social cohesion, pollution exposure, or built environment features that operate at the local level.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The problem with fixed effects here:</strong> If you add county fixed effects when studying county-level policies, you absorb all between-county variation. Your treatment effect comes entirely from within-county changes over time.
+            </div>
+          </aside>
+        </div>
+
+        <div class="definition-card">
+          <h3>Place-Based Treatment</h3>
+          <p>A <strong>place-based treatment</strong> is an intervention or exposure that varies across geographic units and operates through the characteristics of that location. Examples include:</p>
+          <ul>
+            <li>State-level policy changes (Medicaid expansion, minimum wage)</li>
+            <li>County health department programs</li>
+            <li>Neighborhood walkability or food access</li>
+            <li>Local air or water quality</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">For these treatments, geographic variation is informative, not a nuisance to be removed.</p>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Geography can also be something else entirely.</strong></p>
+          <p>What if location predicts both treatment AND outcome through a back-door path?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: GEOGRAPHY AS CONFOUNDER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Geography as Confounder</h2>
+          <p class="panel-intro">
+            Other times, geographic variation reflects unmeasured differences between places that affect both treatment and outcome. Here, fixed effects can block confounding paths.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/geographic-variables-confounder-dag.png"
+              alt="Causal diagram showing Geographic Location as a confounder affecting both Treatment and Health Outcome through separate paths"
+              class="dag-image"
+            >
+            <p class="dag-caption">When location is a confounder: Fixed effects can block the back-door path.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>When Geography Is a Confounder</h4>
+              <div class="pathway-list">
+                <div class="pathway-item confounder">
+                  <strong>Wealth and resources</strong>
+                  <p>Rich counties have both better healthcare access AND adopt certain policies earlier. Location proxies for wealth.</p>
+                </div>
+                <div class="pathway-item confounder">
+                  <strong>Political climate</strong>
+                  <p>Liberal areas might both expand social programs AND have healthier populations for other reasons.</p>
+                </div>
+                <div class="pathway-item confounder">
+                  <strong>Urbanicity bundle</strong>
+                  <p>Urban areas have stricter regulations AND more specialists, better jobs, and different demographics.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>Fixed effects help here:</strong> By comparing within the same county over time (or individuals within counties), you remove time-invariant confounders. The urban/rural difference is absorbed, letting you isolate the treatment effect.
+            </div>
+          </aside>
+        </div>
+
+        <div class="definition-card">
+          <h3>Geographic Confounding</h3>
+          <p><strong>Geographic confounding</strong> occurs when location predicts both treatment assignment and outcomes through unmeasured characteristics of that place:</p>
+          <ul>
+            <li>Counties that adopt programs differ systematically from those that don't</li>
+            <li>People who live in certain areas differ from those who live elsewhere</li>
+            <li>Regional factors affect both policy adoption and health</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">Fixed effects can control for these stable differences by comparing changes within units rather than differences between them.</p>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>How do you know which situation you're in?</strong></p>
+          <p>The answer depends on your research question and causal model.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: WHEN TO USE FIXED EFFECTS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">When to Use Fixed Effects</h2>
+          <p class="panel-intro">
+            The decision to include geographic fixed effects should follow from your causal question, not from a default assumption. Here's a framework for deciding.
+          </p>
+        </div>
+
+        <div class="toggle-section">
+          <div class="toggle-controls">
+            <span class="toggle-label">Your research question:</span>
+            <button class="toggle-btn active" data-scenario="between">Effect of living in County A vs B</button>
+            <button class="toggle-btn" data-scenario="within">Effect of policy change within counties</button>
+          </div>
+
+          <div id="scenario-between" class="scenario-description">
+            <h4>Studying Between-Place Differences</h4>
+            <p>You want to know: "What is the effect of living in an area with feature X versus an area without it?" For example, does living in a county with better air quality improve health? Here, geographic variation IS the treatment. Fixed effects would remove what you're measuring.</p>
+          </div>
+
+          <div id="scenario-within" class="scenario-description" style="display: none;">
+            <h4>Studying Within-Place Changes</h4>
+            <p>You want to know: "When a county adopts policy X, what happens to outcomes?" For example, when a county tightens regulations, do hospitalizations fall? Here, geographic variation is a confounder. Fixed effects help by comparing the same county before and after.</p>
+          </div>
+        </div>
+
+        <div class="checklist-section">
+          <h3>Decision Framework</h3>
+          <div class="checklist-grid">
+            <div class="checklist-column use">
+              <h4>Use Geographic Fixed Effects When...</h4>
+              <ul class="checklist">
+                <li>Your treatment varies within locations over time</li>
+                <li>You have panel data with repeated observations</li>
+                <li>Location-level confounders are time-invariant</li>
+                <li>You want to isolate within-unit changes</li>
+                <li>Cross-sectional comparisons are implausible</li>
+              </ul>
+            </div>
+            <div class="checklist-column avoid">
+              <h4>Avoid Fixed Effects When...</h4>
+              <ul class="checklist">
+                <li>Geographic variation IS your treatment</li>
+                <li>You only have cross-sectional data</li>
+                <li>Treatment never varies within units</li>
+                <li>You want to generalize across locations</li>
+                <li>Time-varying confounders dominate</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comparison-box treatment">
+            <h3>Example: Air Quality and Health</h3>
+            <ul class="example-list">
+              <li>
+                <strong>Without fixed effects:</strong>
+                "Counties with stricter regulations have 12% fewer asthma hospitalizations." But stricter counties differ in many ways.
+              </li>
+              <li>
+                <strong>With county fixed effects:</strong>
+                "When a county tightens regulations, hospitalizations fall 4%." Compares same county before/after. But requires within-county variation.
+              </li>
+              <li>
+                <strong>Which is right?</strong>
+                Depends on the question. "Should I move?" versus "Should we regulate?"
+              </li>
+            </ul>
+          </div>
+          <div class="comparison-box confounder">
+            <h3>Example: Hospital Access and Mortality</h3>
+            <ul class="example-list">
+              <li>
+                <strong>Without fixed effects:</strong>
+                "Counties with more hospitals have lower mortality." But wealthy counties have more hospitals AND healthier populations.
+              </li>
+              <li>
+                <strong>With county fixed effects:</strong>
+                "When a county gains a hospital, mortality falls 2%." Within-county comparison controls for wealth. But hospital openings are rare.
+              </li>
+              <li>
+                <strong>Which is right?</strong>
+                Fixed effects help here because you're not trying to measure the "effect of living in a hospital-rich area."
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The core insight: Your model should match your question.</strong></p>
+          <p>There's no universally "correct" specification. The right choice depends on the causal effect you're trying to identify.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Geographic fixed effects are a tool, not a solution. Their value depends entirely on whether place-based variation is part of the treatment effect or part of the confounding structure.
+          </p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Core Distinctions</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Geography as treatment:</strong> When location-based characteristics ARE the intervention (policy, environment, access), fixed effects absorb the effect you want to measure</div>
+            <div class="concept-item"><strong>Geography as confounder:</strong> When location predicts both treatment and outcome through back-door paths, fixed effects can block confounding</div>
+            <div class="concept-item"><strong>Between-unit variation:</strong> Compares different places; captures level differences but includes confounding</div>
+            <div class="concept-item"><strong>Within-unit variation:</strong> Compares same place over time; removes time-invariant confounding but requires temporal variation</div>
+            <div class="concept-item"><strong>Identification strategy:</strong> Your modeling choice should follow from your causal model, not from convention</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>"Control for geography" is not a universal solution.</strong> When place-based variation is the treatment, fixed effects destroy the signal. When geography is a confounder, fixed effects can help. The critical question is: Does your research question ask about the effect of being in a different place, or about the effect of something changing within places? Answer that first, then choose your specification. <strong>This is what economists mean when they say "let the question drive the model."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
+        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
+        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
+        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
+        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
+        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
+        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
+        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
+        'County BC', 'County BD', 'County BE', 'County BF'
+      ];
+
+      // More counties are urban vs rural
+      const urbanCounties = [
+        'County A', 'County G', 'County S', 'County U', 'County AD', 'County AH',
+        'County AK', 'County AL', 'County AO', 'County AQ', 'County BD',
+        'County AG', 'County AJ', 'County AM', 'County J', 'County O',
+        'County AP', 'County AW', 'County AV', 'County AX', 'County BE', 'County AE', 'County AB'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        const name = countyNames[i];
+        const isUrban = urbanCounties.includes(name);
+
+        // Urban counties: higher regulation, lower hospitalizations, but with variation
+        // Rural counties: lower regulation, higher hospitalizations, but with variation
+        // The key: WITHIN each group, the correlation is weaker
+
+        let regulation, hospitalizations;
+
+        if (isUrban) {
+          // Urban: base higher regulation (60-90), lower hospitalizations (20-50)
+          regulation = 60 + rand() * 30;
+          // Within urban, regulation has small effect on hospitalizations
+          const baseHosp = 35;
+          const regulationEffect = -0.1 * (regulation - 75); // Small within-effect
+          hospitalizations = baseHosp + regulationEffect + (rand() - 0.5) * 20;
+        } else {
+          // Rural: base lower regulation (20-50), higher hospitalizations (50-80)
+          regulation = 20 + rand() * 30;
+          // Within rural, regulation has small effect on hospitalizations
+          const baseHosp = 65;
+          const regulationEffect = -0.1 * (regulation - 35); // Small within-effect
+          hospitalizations = baseHosp + regulationEffect + (rand() - 0.5) * 20;
+        }
+
+        // Clamp values
+        regulation = Math.max(15, Math.min(95, regulation));
+        hospitalizations = Math.max(15, Math.min(90, hospitalizations));
+
+        data.push({
+          name: name,
+          isUrban: isUrban,
+          regulation: Math.round(regulation),
+          hospitalizations: Math.round(hospitalizations * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function correlation(data, xKey, yKey) {
+      const n = data.length;
+      if (n < 3) return 0;
+
+      const xVals = data.map(d => d[xKey]);
+      const yVals = data.map(d => d[yKey]);
+
+      const xMean = mean(xVals);
+      const yMean = mean(yVals);
+
+      let num = 0, denX = 0, denY = 0;
+      for (let i = 0; i < n; i++) {
+        const dx = xVals[i] - xMean;
+        const dy = yVals[i] - yMean;
+        num += dx * dy;
+        denX += dx * dx;
+        denY += dy * dy;
+      }
+
+      const den = Math.sqrt(denX * denY);
+      return den === 0 ? 0 : num / den;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 10, xMax = 100;
+      const yMin = 10, yMax = 95;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 20; y <= 90; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend line for overall data
+      const allX = countyData.map(d => d.regulation);
+      const allY = countyData.map(d => d.hospitalizations);
+      const n = countyData.length;
+      const xMean = mean(allX);
+      const yMean = mean(allY);
+
+      let num = 0, den = 0;
+      for (let i = 0; i < n; i++) {
+        num += (allX[i] - xMean) * (allY[i] - yMean);
+        den += (allX[i] - xMean) * (allX[i] - xMean);
+      }
+      const slope = num / den;
+      const intercept = yMean - slope * xMean;
+
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trendLine.setAttribute('x1', xScale(15));
+      trendLine.setAttribute('y1', yScale(slope * 15 + intercept));
+      trendLine.setAttribute('x2', xScale(95));
+      trendLine.setAttribute('y2', yScale(slope * 95 + intercept));
+      trendLine.setAttribute('stroke', 'var(--color-primary)');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '8,4');
+      trendLine.setAttribute('opacity', '0.6');
+      svg.appendChild(trendLine);
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.regulation));
+        circle.setAttribute('cy', yScale(d.hospitalizations));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.isUrban ? 'var(--color-secondary)' : 'var(--color-accent)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s, r 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => {
+          circle.setAttribute('r', 11);
+          showTooltip(e, d);
+        });
+        circle.addEventListener('mouseleave', () => {
+          circle.setAttribute('r', 8);
+          hideTooltip();
+        });
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 20; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Air Quality Regulation Strictness (index)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 20; y <= 90; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Asthma Hospitalizations (per 10,000)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Type: ${data.isUrban ? 'Urban' : 'Rural'}</div>
+        <div class="metric">Regulation: ${data.regulation}</div>
+        <div class="metric">Hospitalizations: ${data.hospitalizations}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       6. SCENARIO TOGGLE (Panel 4)
+       ============================================ */
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const scenario = btn.dataset.scenario;
+        document.getElementById('scenario-between').style.display = scenario === 'between' ? 'block' : 'none';
+        document.getElementById('scenario-within').style.display = scenario === 'within' ? 'block' : 'none';
+      });
+    });
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate correlations
+      const overallCorr = correlation(countyData, 'regulation', 'hospitalizations');
+      const urbanData = countyData.filter(d => d.isUrban);
+      const ruralData = countyData.filter(d => !d.isUrban);
+      const urbanCorr = correlation(urbanData, 'regulation', 'hospitalizations');
+      const ruralCorr = correlation(ruralData, 'regulation', 'hospitalizations');
+
+      document.getElementById('stat-overall-corr').textContent = overallCorr.toFixed(2);
+      document.getElementById('stat-urban-corr').textContent = urbanCorr.toFixed(2);
+      document.getElementById('stat-rural-corr').textContent = ruralCorr.toFixed(2);
+
+      // Update comparison text
+      const comparisonEl = document.getElementById('corr-comparison');
+      if (Math.abs(overallCorr) > 0.5 && Math.abs(urbanCorr) < 0.3 && Math.abs(ruralCorr) < 0.3) {
+        comparisonEl.textContent = 'strong overall, but weak within groups';
+      } else {
+        comparisonEl.textContent = 'different between and within groups';
+      }
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

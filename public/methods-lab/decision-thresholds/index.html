@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is It Worth It? Decision Thresholds | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how cost-effectiveness thresholds translate ICERs into policy decisions. Explore how willingness-to-pay thresholds determine whether interventions are 'worth it.'">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-danger: #C62828;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DATA PANEL
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.cost-effective {
+      color: var(--color-success);
+    }
+
+    .stat-value.not-cost-effective {
+      color: var(--color-danger);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. THRESHOLDS EXPLAINED PANEL
+       ============================================ */
+    .explanation-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .explanation-container { grid-template-columns: 1fr; }
+    }
+
+    .diagram-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .diagram-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .concept-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .concept-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .concept-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .formula-box {
+      background: var(--color-bg-alt);
+      padding: var(--space-md);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      text-align: center;
+      margin: var(--space-md) 0;
+    }
+
+    .threshold-examples {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .threshold-example {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .threshold-example .country {
+      font-weight: 500;
+    }
+
+    .threshold-example .value {
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. INTERACTIVE THRESHOLD PANEL
+       ============================================ */
+    .interactive-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .interactive-container { grid-template-columns: 1fr; }
+    }
+
+    .threshold-controls {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+
+    .slider-label span:first-child {
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+      background: rgba(0, 65, 165, 0.1);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .slider-hint {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .decision-result {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .decision-result h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      margin-bottom: var(--space-md);
+    }
+
+    .decision-badge {
+      display: inline-block;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .decision-badge.accept {
+      background: rgba(46, 125, 50, 0.15);
+      color: var(--color-success);
+    }
+
+    .decision-badge.reject {
+      background: rgba(198, 40, 40, 0.15);
+      color: var(--color-danger);
+    }
+
+    .decision-badge.uncertain {
+      background: rgba(249, 168, 37, 0.15);
+      color: var(--color-warning);
+    }
+
+    .decision-detail {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .comparison-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-md);
+    }
+
+    .comparison-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: var(--space-xs) 0;
+    }
+
+    .comparison-label {
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       9. UNCERTAINTY PANEL
+       ============================================ */
+    .uncertainty-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .uncertainty-container { grid-template-columns: 1fr; }
+    }
+
+    .uncertainty-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .probability-display {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .probability-display h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      margin-bottom: var(--space-md);
+    }
+
+    .probability-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-sm);
+    }
+
+    .probability-value.high {
+      color: var(--color-success);
+    }
+
+    .probability-value.medium {
+      color: var(--color-accent);
+    }
+
+    .probability-value.low {
+      color: var(--color-danger);
+    }
+
+    .probability-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .ceac-note {
+      background: rgba(13, 148, 136, 0.1);
+      border-left: 4px solid var(--color-secondary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .ceac-note strong {
+      color: var(--color-secondary);
+    }
+
+    /* ============================================
+       10. KEY INSIGHT PANEL
+       ============================================ */
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "\2713";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .reflection-grid { grid-template-columns: 1fr; }
+    }
+
+    .reflection-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .reflection-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .reflection-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 260px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .program-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Economic Evaluation</div>
+      <h1>Is It Worth It? Decision Thresholds</h1>
+      <p class="subtitle">Statistical significance tells you if an effect is real. Cost-effectiveness thresholds tell you if it's worth paying for. Learn how willingness-to-pay thresholds translate ICERs into policy decisions.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Thresholds Explained</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Interactive Threshold</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Uncertainty</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A health department is evaluating six programs to reduce cardiovascular disease. Each program has a different cost and produces different health gains measured in quality-adjusted life years (QALYs). Which programs are worth funding? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Program Cost vs Health Gains (QALYs)</h3>
+            <svg id="cost-effectiveness-chart" class="chart-svg" role="img" aria-label="Scatter plot showing cost and QALY gains for six health programs"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-success);"></span>
+                <span>Cost-effective at $100,000/QALY</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-danger);"></span>
+                <span>Not cost-effective</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Programs Evaluated</h4>
+              <div class="stat-value">6</div>
+              <div class="stat-label">Interventions for CVD prevention</div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Decision Threshold</h4>
+              <div class="stat-value">$100K</div>
+              <div class="stat-label">Per QALY gained</div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Programs Below Threshold</h4>
+              <div class="stat-value cost-effective" id="programs-below-threshold">--</div>
+              <div class="stat-label">Considered cost-effective</div>
+            </div>
+
+            <div class="observation-box">
+              <strong>The question:</strong> A program's ICER (incremental cost-effectiveness ratio) tells us cost per QALY gained. But how do we decide if that's a good deal?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Statistical significance isn't enough.</strong></p>
+          <p>A program might significantly improve health, but if it costs $2 million per QALY gained, is it worth it? We need a benchmark to decide.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THRESHOLDS EXPLAINED
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Thresholds Explained</h2>
+          <p class="panel-intro">
+            A willingness-to-pay (WTP) threshold is the maximum amount a decision-maker is willing to pay for one additional unit of health benefit. It converts an ICER into a yes/no funding decision.
+          </p>
+        </div>
+
+        <div class="explanation-container">
+          <div class="diagram-wrapper">
+            <img
+              src="assets/decision-thresholds-diagram.png"
+              alt="Diagram showing how the willingness-to-pay threshold divides programs into cost-effective (below the line) and not cost-effective (above the line) regions"
+              class="dag-image"
+              style="width: 100%; height: auto; max-height: 400px; object-fit: contain;"
+            >
+            <p class="diagram-caption">The WTP threshold creates a decision rule: fund programs below the line.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="concept-card">
+              <h4>The Decision Rule</h4>
+              <div class="formula-box">
+                If ICER &lt; WTP threshold &rarr; Accept<br>
+                If ICER &gt; WTP threshold &rarr; Reject
+              </div>
+              <p>The threshold converts cost-effectiveness evidence into a funding decision. Programs below the threshold are considered "good value."</p>
+            </div>
+
+            <div class="concept-card">
+              <h4>Common Thresholds</h4>
+              <div class="threshold-examples">
+                <div class="threshold-example">
+                  <span class="country">US (typical)</span>
+                  <span class="value">$50K-$150K/QALY</span>
+                </div>
+                <div class="threshold-example">
+                  <span class="country">UK (NICE)</span>
+                  <span class="value">$25K-$38K/QALY</span>
+                </div>
+                <div class="threshold-example">
+                  <span class="country">WHO suggestion</span>
+                  <span class="value">1-3x GDP per capita</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>No universal threshold exists.</strong> The "right" threshold depends on budget constraints, societal values, and what else the money could buy. Different countries and contexts use different values.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The threshold isn't just technical; it's political.</strong></p>
+          <p>What if we use $50,000 instead of $150,000? The same data could lead to completely different funding decisions.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: INTERACTIVE THRESHOLD
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Interactive Threshold</h2>
+          <p class="panel-intro">
+            Move the threshold slider to see how many programs become "cost-effective" at different willingness-to-pay values. The choice of threshold can dramatically change which programs get funded.
+          </p>
+        </div>
+
+        <div class="threshold-controls">
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Willingness-to-Pay Threshold</span>
+              <span class="slider-value" id="wtp-value">$100,000/QALY</span>
+            </div>
+            <input type="range" class="slider-input" id="wtp-slider" min="25000" max="200000" step="5000" value="100000" aria-label="Adjust willingness-to-pay threshold">
+            <div class="slider-hint">Drag to adjust the maximum society is willing to pay for one QALY</div>
+          </div>
+        </div>
+
+        <div class="interactive-container">
+          <div class="chart-wrapper">
+            <svg id="threshold-chart" class="chart-svg" role="img" aria-label="Interactive chart showing programs relative to adjustable threshold line"></svg>
+          </div>
+
+          <aside class="comparison-cards">
+            <div class="decision-result">
+              <h4>At This Threshold</h4>
+              <div class="decision-badge accept" id="threshold-decision">4 of 6 funded</div>
+              <p class="decision-detail" id="threshold-detail">Programs A, B, D, and E are cost-effective</p>
+            </div>
+
+            <div class="comparison-card">
+              <h4>ICER Summary</h4>
+              <div class="comparison-row">
+                <span class="comparison-label">Lowest ICER:</span>
+                <span class="comparison-value" id="lowest-icer">$25,000</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">Highest ICER:</span>
+                <span class="comparison-value" id="highest-icer">$180,000</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">Median ICER:</span>
+                <span class="comparison-value" id="median-icer">$85,000</span>
+              </div>
+            </div>
+
+            <div class="comparison-card">
+              <h4>Budget Impact</h4>
+              <div class="comparison-row">
+                <span class="comparison-label">Programs funded:</span>
+                <span class="comparison-value" id="programs-funded">4</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">Total cost:</span>
+                <span class="comparison-value" id="total-cost">$8.2M</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">QALYs gained:</span>
+                <span class="comparison-value" id="total-qalys">142</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Notice how sensitive decisions are to the threshold.</strong></p>
+          <p>But we've been treating ICERs as if they're certain. What happens when we account for uncertainty in our estimates?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: UNCERTAINTY
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Uncertainty</h2>
+          <p class="panel-intro">
+            Cost and effectiveness estimates have uncertainty. Instead of asking "Is the ICER below the threshold?" we ask "What's the probability the ICER is below the threshold?" This is what cost-effectiveness acceptability curves (CEACs) show.
+          </p>
+        </div>
+
+        <div class="uncertainty-container">
+          <div class="chart-wrapper">
+            <svg id="ceac-chart" class="chart-svg" role="img" aria-label="Cost-effectiveness acceptability curve showing probability of being cost-effective across different thresholds"></svg>
+          </div>
+
+          <aside class="uncertainty-sidebar">
+            <div class="probability-display">
+              <h4>At $100K/QALY Threshold</h4>
+              <div class="probability-value high" id="prob-ce">78%</div>
+              <p class="probability-label">Probability Program D is cost-effective</p>
+            </div>
+
+            <div class="comparison-card">
+              <h4>Threshold Sensitivity</h4>
+              <div class="comparison-row">
+                <span class="comparison-label">At $50K/QALY:</span>
+                <span class="comparison-value" id="prob-50k">42%</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">At $100K/QALY:</span>
+                <span class="comparison-value" id="prob-100k">78%</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-label">At $150K/QALY:</span>
+                <span class="comparison-value" id="prob-150k">91%</span>
+              </div>
+            </div>
+
+            <div class="ceac-note">
+              <strong>The CEAC shows:</strong> As the threshold increases, decision-makers become more confident the program is cost-effective. But even at high thresholds, some uncertainty remains.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Uncertainty doesn't disappear; it gets quantified.</strong></p>
+          <p>Instead of a binary decision, we get a probability. But someone still has to decide what probability is "good enough" to fund a program.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Cost-effectiveness thresholds bridge the gap between evidence and decision-making. They don't eliminate judgment calls; they make the judgments explicit and consistent across decisions.
+          </p>
+        </div>
+
+        <div class="reflection-grid">
+          <div class="reflection-card">
+            <h4>Why not just fund everything that works?</h4>
+            <p>Budgets are finite. Funding one program means not funding another. Thresholds force us to consider opportunity costs: what health benefits are we giving up elsewhere?</p>
+          </div>
+
+          <div class="reflection-card">
+            <h4>Is $100,000 per QALY the "right" threshold?</h4>
+            <p>There is no objectively correct threshold. It reflects what society is willing to pay for health, which is ultimately a value judgment, not a technical calculation.</p>
+          </div>
+
+          <div class="reflection-card">
+            <h4>What about equity considerations?</h4>
+            <p>Standard CEA treats all QALYs equally. Some argue we should weight QALYs for disadvantaged populations more heavily, which would lower the effective threshold for equity-focused programs.</p>
+          </div>
+
+          <div class="reflection-card">
+            <h4>Does the UK approach work for the US?</h4>
+            <p>NICE uses explicit thresholds in a single-payer system. The US has fragmented payers with different willingness-to-pay, making uniform thresholds harder to apply.</p>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>ICER (Incremental Cost-Effectiveness Ratio):</strong> additional cost divided by additional health benefit, usually per QALY</div>
+            <div class="concept-item"><strong>Willingness-to-pay threshold:</strong> the maximum a decision-maker will pay for one unit of health gain</div>
+            <div class="concept-item"><strong>Cost-effectiveness acceptability:</strong> the probability an intervention is cost-effective at a given threshold</div>
+            <div class="concept-item"><strong>Opportunity cost:</strong> the health benefits foregone by spending resources on one program instead of another</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>"Statistically significant" and "cost-effective" answer different questions.</strong> Statistical significance asks whether an effect is real. Cost-effectiveness asks whether the effect is worth paying for. A program can be highly effective in absolute terms but still not worth funding if the cost per unit of health gain exceeds what society is willing to pay. <strong>The threshold makes this trade-off explicit.</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    const programs = [
+      { id: 'A', name: 'Community Walking Program', cost: 850000, qalys: 45, uncertainty: 0.25 },
+      { id: 'B', name: 'Smoking Cessation Hotline', cost: 1200000, qalys: 52, uncertainty: 0.20 },
+      { id: 'C', name: 'Advanced Cardiac Screening', cost: 4500000, qalys: 28, uncertainty: 0.35 },
+      { id: 'D', name: 'Blood Pressure Monitoring', cost: 2100000, qalys: 38, uncertainty: 0.22 },
+      { id: 'E', name: 'Diabetes Prevention Classes', cost: 1800000, qalys: 32, uncertainty: 0.28 },
+      { id: 'F', name: 'Intensive Care Coordination', cost: 5400000, qalys: 30, uncertainty: 0.40 }
+    ];
+
+    // Calculate ICERs
+    programs.forEach(p => {
+      p.icer = Math.round(p.cost / p.qalys);
+    });
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function formatCurrency(val) {
+      if (val >= 1000000) {
+        return '$' + (val / 1000000).toFixed(1) + 'M';
+      } else if (val >= 1000) {
+        return '$' + (val / 1000).toFixed(0) + 'K';
+      }
+      return '$' + val;
+    }
+
+    function isCostEffective(program, threshold) {
+      return program.icer <= threshold;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let ceChartInitialized = false;
+    let thresholdChartInitialized = false;
+    let ceacChartInitialized = false;
+
+    function showPanel(panelNum) {
+      panelBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      document.querySelector(`[data-panel="${panelNum}"]`).classList.add('active');
+      document.querySelector(`[data-panel="${panelNum}"]`).setAttribute('aria-pressed', 'true');
+
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+      // Render charts when panel becomes visible
+      setTimeout(() => {
+        if (panelNum === '1' && !ceChartInitialized) {
+          renderCostEffectivenessChart();
+          updateProgramStats(100000);
+          ceChartInitialized = true;
+        }
+        if (panelNum === '3') {
+          if (!thresholdChartInitialized) {
+            renderThresholdChart(100000);
+            thresholdChartInitialized = true;
+          }
+        }
+        if (panelNum === '4') {
+          if (!ceacChartInitialized) {
+            renderCEACChart();
+            ceacChartInitialized = true;
+          }
+        }
+      }, 50);
+    }
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        showPanel(btn.dataset.panel);
+      });
+    });
+
+    /* ============================================
+       4. COST-EFFECTIVENESS CHART (Panel 1)
+       ============================================ */
+    function renderCostEffectivenessChart() {
+      const svg = document.getElementById('cost-effectiveness-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 40, bottom: 60, left: 100 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMax = 60;
+      const yMax = 6000000;
+      const threshold = 100000;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Background regions
+      const belowThreshold = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const thresholdLineY = yScale(0);
+      const thresholdLineX = xScale(0);
+      // Cost-effective region (below the threshold line)
+      const cePoints = [
+        `${margin.left},${margin.top + plotHeight}`,
+        `${margin.left + plotWidth},${margin.top + plotHeight}`,
+        `${margin.left + plotWidth},${yScale(xMax * threshold)}`,
+        `${margin.left},${yScale(0)}`
+      ].join(' ');
+      belowThreshold.setAttribute('points', cePoints);
+      belowThreshold.setAttribute('fill', 'rgba(46, 125, 50, 0.08)');
+      svg.appendChild(belowThreshold);
+
+      // Threshold line
+      const threshLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      threshLine.setAttribute('x1', margin.left);
+      threshLine.setAttribute('y1', yScale(0));
+      threshLine.setAttribute('x2', xScale(yMax / threshold));
+      threshLine.setAttribute('y2', margin.top);
+      threshLine.setAttribute('stroke', 'var(--color-text-muted)');
+      threshLine.setAttribute('stroke-width', '2');
+      threshLine.setAttribute('stroke-dasharray', '8,4');
+      svg.appendChild(threshLine);
+
+      // Threshold label
+      const threshLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      threshLabel.setAttribute('x', xScale(45));
+      threshLabel.setAttribute('y', yScale(45 * threshold) - 10);
+      threshLabel.setAttribute('font-size', '11');
+      threshLabel.setAttribute('fill', 'var(--color-text-muted)');
+      threshLabel.setAttribute('transform', `rotate(-35, ${xScale(45)}, ${yScale(45 * threshold) - 10})`);
+      threshLabel.textContent = '$100K/QALY threshold';
+      svg.appendChild(threshLabel);
+
+      // Grid lines
+      for (let y = 1000000; y <= 5000000; y += 1000000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      programs.forEach(p => {
+        const ce = isCostEffective(p, threshold);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(p.qalys));
+        circle.setAttribute('cy', yScale(p.cost));
+        circle.setAttribute('r', 12);
+        circle.setAttribute('fill', ce ? 'var(--color-success)' : 'var(--color-danger)');
+        circle.setAttribute('opacity', '0.85');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, p));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+
+        // Label
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(p.qalys));
+        label.setAttribute('y', yScale(p.cost) + 5);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('font-weight', '600');
+        label.setAttribute('fill', 'white');
+        label.textContent = p.id;
+        label.setAttribute('style', 'pointer-events: none;');
+        svg.appendChild(label);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 60; x += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'QALYs Gained';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 5000000; y += 1000000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (y / 1000000) + 'M';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Program Cost ($)';
+      svg.appendChild(yLabel);
+    }
+
+    function updateProgramStats(threshold) {
+      const belowThreshold = programs.filter(p => isCostEffective(p, threshold)).length;
+      document.getElementById('programs-below-threshold').textContent = belowThreshold;
+    }
+
+    /* ============================================
+       5. THRESHOLD CHART (Panel 3)
+       ============================================ */
+    function renderThresholdChart(threshold) {
+      const svg = document.getElementById('threshold-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 40, bottom: 60, left: 100 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMax = 60;
+      const yMax = 6000000;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Cost-effective region
+      const thresholdY2 = yScale(xMax * threshold);
+      const ceRegion = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      let regionPoints;
+      if (threshold * xMax <= yMax) {
+        regionPoints = [
+          `${margin.left},${margin.top + plotHeight}`,
+          `${margin.left + plotWidth},${margin.top + plotHeight}`,
+          `${margin.left + plotWidth},${thresholdY2}`,
+          `${margin.left},${yScale(0)}`
+        ].join(' ');
+      } else {
+        const xAtYMax = yMax / threshold;
+        regionPoints = [
+          `${margin.left},${margin.top + plotHeight}`,
+          `${margin.left + plotWidth},${margin.top + plotHeight}`,
+          `${margin.left + plotWidth},${margin.top}`,
+          `${xScale(xAtYMax)},${margin.top}`,
+          `${margin.left},${yScale(0)}`
+        ].join(' ');
+      }
+      ceRegion.setAttribute('points', regionPoints);
+      ceRegion.setAttribute('fill', 'rgba(46, 125, 50, 0.08)');
+      svg.appendChild(ceRegion);
+
+      // Threshold line
+      const threshLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const lineEndX = Math.min(xScale(yMax / threshold), margin.left + plotWidth);
+      const lineEndY = threshold * xMax <= yMax ? thresholdY2 : margin.top;
+      threshLine.setAttribute('x1', margin.left);
+      threshLine.setAttribute('y1', yScale(0));
+      threshLine.setAttribute('x2', lineEndX);
+      threshLine.setAttribute('y2', lineEndY);
+      threshLine.setAttribute('stroke', 'var(--color-primary)');
+      threshLine.setAttribute('stroke-width', '3');
+      svg.appendChild(threshLine);
+
+      // Threshold label
+      const labelX = Math.min(xScale(35), lineEndX - 50);
+      const labelY = yScale(35 * threshold);
+      if (labelY > margin.top && labelY < margin.top + plotHeight) {
+        const threshLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        threshLabel.setAttribute('x', labelX);
+        threshLabel.setAttribute('y', labelY - 10);
+        threshLabel.setAttribute('font-size', '11');
+        threshLabel.setAttribute('font-weight', '600');
+        threshLabel.setAttribute('fill', 'var(--color-primary)');
+        const angle = Math.atan(threshold * plotWidth / plotHeight / (xMax / yMax)) * 180 / Math.PI;
+        threshLabel.setAttribute('transform', `rotate(-${Math.min(angle, 45)}, ${labelX}, ${labelY - 10})`);
+        threshLabel.textContent = formatCurrency(threshold) + '/QALY';
+        svg.appendChild(threshLabel);
+      }
+
+      // Grid lines
+      for (let y = 1000000; y <= 5000000; y += 1000000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      programs.forEach(p => {
+        const ce = isCostEffective(p, threshold);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(p.qalys));
+        circle.setAttribute('cy', yScale(p.cost));
+        circle.setAttribute('r', 14);
+        circle.setAttribute('fill', ce ? 'var(--color-success)' : 'var(--color-danger)');
+        circle.setAttribute('opacity', '0.9');
+        circle.setAttribute('style', 'cursor: pointer; transition: all 0.3s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, p));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+
+        // Label
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(p.qalys));
+        label.setAttribute('y', yScale(p.cost) + 5);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '12');
+        label.setAttribute('font-weight', '600');
+        label.setAttribute('fill', 'white');
+        label.textContent = p.id;
+        label.setAttribute('style', 'pointer-events: none;');
+        svg.appendChild(label);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 60; x += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'QALYs Gained';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 5000000; y += 1000000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (y / 1000000) + 'M';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Program Cost ($)';
+      svg.appendChild(yLabel);
+
+      // Update stats
+      updateThresholdStats(threshold);
+    }
+
+    function updateThresholdStats(threshold) {
+      const funded = programs.filter(p => isCostEffective(p, threshold));
+      const fundedCount = funded.length;
+      const fundedNames = funded.map(p => p.id).join(', ');
+      const totalCost = funded.reduce((sum, p) => sum + p.cost, 0);
+      const totalQalys = funded.reduce((sum, p) => sum + p.qalys, 0);
+
+      const decisionBadge = document.getElementById('threshold-decision');
+      const decisionDetail = document.getElementById('threshold-detail');
+
+      decisionBadge.textContent = `${fundedCount} of 6 funded`;
+      decisionBadge.className = 'decision-badge ' + (fundedCount >= 4 ? 'accept' : fundedCount >= 2 ? 'uncertain' : 'reject');
+
+      if (fundedCount === 0) {
+        decisionDetail.textContent = 'No programs are cost-effective at this threshold';
+      } else if (fundedCount === 6) {
+        decisionDetail.textContent = 'All programs are cost-effective';
+      } else {
+        decisionDetail.textContent = `Program${fundedCount > 1 ? 's' : ''} ${fundedNames} ${fundedCount > 1 ? 'are' : 'is'} cost-effective`;
+      }
+
+      document.getElementById('programs-funded').textContent = fundedCount;
+      document.getElementById('total-cost').textContent = formatCurrency(totalCost);
+      document.getElementById('total-qalys').textContent = totalQalys;
+
+      // ICER summary
+      const icers = programs.map(p => p.icer).sort((a, b) => a - b);
+      document.getElementById('lowest-icer').textContent = formatCurrency(icers[0]);
+      document.getElementById('highest-icer').textContent = formatCurrency(icers[icers.length - 1]);
+      document.getElementById('median-icer').textContent = formatCurrency(icers[Math.floor(icers.length / 2)]);
+    }
+
+    // Slider handler
+    const wtpSlider = document.getElementById('wtp-slider');
+    if (wtpSlider) {
+      wtpSlider.addEventListener('input', (e) => {
+        const threshold = parseInt(e.target.value);
+        document.getElementById('wtp-value').textContent = formatCurrency(threshold) + '/QALY';
+        renderThresholdChart(threshold);
+      });
+    }
+
+    /* ============================================
+       6. CEAC CHART (Panel 4)
+       ============================================ */
+    function renderCEACChart() {
+      const svg = document.getElementById('ceac-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 40, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Generate CEAC data for Program D
+      const thresholds = [];
+      const probabilities = [];
+      for (let t = 0; t <= 200000; t += 5000) {
+        thresholds.push(t);
+        // Simulated probability function (logistic curve)
+        const programD = programs.find(p => p.id === 'D');
+        const midpoint = programD.icer;
+        const steepness = 0.00003 / programD.uncertainty;
+        const prob = 1 / (1 + Math.exp(-steepness * (t - midpoint)));
+        probabilities.push(prob);
+      }
+
+      const xScale = (val) => margin.left + (val / 200000) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val * plotHeight);
+
+      // Grid lines
+      for (let y = 0.2; y <= 1; y += 0.2) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // CEAC curve
+      let pathD = `M ${xScale(thresholds[0])},${yScale(probabilities[0])}`;
+      for (let i = 1; i < thresholds.length; i++) {
+        pathD += ` L ${xScale(thresholds[i])},${yScale(probabilities[i])}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'var(--color-secondary)');
+      path.setAttribute('stroke-width', '3');
+      svg.appendChild(path);
+
+      // Fill area under curve
+      const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      let areaD = pathD + ` L ${xScale(200000)},${yScale(0)} L ${xScale(0)},${yScale(0)} Z`;
+      areaPath.setAttribute('d', areaD);
+      areaPath.setAttribute('fill', 'rgba(13, 148, 136, 0.15)');
+      svg.appendChild(areaPath);
+
+      // Reappend the line on top
+      svg.appendChild(path);
+
+      // Marker at $100K
+      const idx100k = thresholds.findIndex(t => t >= 100000);
+      const prob100k = probabilities[idx100k];
+
+      const markerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      markerLine.setAttribute('x1', xScale(100000));
+      markerLine.setAttribute('x2', xScale(100000));
+      markerLine.setAttribute('y1', yScale(0));
+      markerLine.setAttribute('y2', yScale(prob100k));
+      markerLine.setAttribute('stroke', 'var(--color-primary)');
+      markerLine.setAttribute('stroke-width', '2');
+      markerLine.setAttribute('stroke-dasharray', '4,4');
+      svg.appendChild(markerLine);
+
+      const markerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      markerDot.setAttribute('cx', xScale(100000));
+      markerDot.setAttribute('cy', yScale(prob100k));
+      markerDot.setAttribute('r', 8);
+      markerDot.setAttribute('fill', 'var(--color-primary)');
+      svg.appendChild(markerDot);
+
+      // Annotation
+      const annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      annotation.setAttribute('x', xScale(100000) + 10);
+      annotation.setAttribute('y', yScale(prob100k) - 10);
+      annotation.setAttribute('font-size', '11');
+      annotation.setAttribute('fill', 'var(--color-primary)');
+      annotation.textContent = `${Math.round(prob100k * 100)}% at $100K`;
+      svg.appendChild(annotation);
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 200000; x += 50000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (x / 1000) + 'K';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Willingness-to-Pay Threshold ($/QALY)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 1; y += 0.2) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = Math.round(y * 100) + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Probability Cost-Effective';
+      svg.appendChild(yLabel);
+
+      // Title
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      title.setAttribute('x', width / 2);
+      title.setAttribute('y', 20);
+      title.setAttribute('text-anchor', 'middle');
+      title.setAttribute('font-size', '14');
+      title.setAttribute('font-weight', '600');
+      title.setAttribute('fill', 'var(--color-text)');
+      title.textContent = 'Cost-Effectiveness Acceptability Curve: Program D';
+      svg.appendChild(title);
+
+      // Update probability stats
+      const idx50k = thresholds.findIndex(t => t >= 50000);
+      const idx150k = thresholds.findIndex(t => t >= 150000);
+      document.getElementById('prob-ce').textContent = Math.round(prob100k * 100) + '%';
+      document.getElementById('prob-50k').textContent = Math.round(probabilities[idx50k] * 100) + '%';
+      document.getElementById('prob-100k').textContent = Math.round(prob100k * 100) + '%';
+      document.getElementById('prob-150k').textContent = Math.round(probabilities[idx150k] * 100) + '%';
+
+      // Update probability value color
+      const probEl = document.getElementById('prob-ce');
+      probEl.className = 'probability-value ' + (prob100k >= 0.7 ? 'high' : prob100k >= 0.4 ? 'medium' : 'low');
+    }
+
+    /* ============================================
+       7. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="program-name">Program ${data.id}: ${data.name}</div>
+        <div class="metric">Cost: ${formatCurrency(data.cost)}</div>
+        <div class="metric">QALYs Gained: ${data.qalys}</div>
+        <div class="metric">ICER: ${formatCurrency(data.icer)}/QALY</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       8. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render initial chart
+      renderCostEffectivenessChart();
+      updateProgramStats(100000);
+      ceChartInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderCostEffectivenessChart();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            const threshold = parseInt(document.getElementById('wtp-slider').value);
+            renderThresholdChart(threshold);
+          }
+          if (document.getElementById('panel-4').classList.contains('active')) {
+            renderCEACChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

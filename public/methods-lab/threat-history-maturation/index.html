@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History and Maturation | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how pre-existing trends and external events can be mistaken for program effects. Explore the history and maturation threats to causal validity.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-success: #2E7D32;
+      --color-error: #C9553A;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', monospace;
+      --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem;
+      --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+    }
+
+    body { font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--color-text); background: var(--color-bg-alt); }
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
+
+    .header { background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%); color: white; padding: var(--space-xl) 0; text-align: center; }
+    .header h1 { color: white; margin-bottom: var(--space-sm); }
+    .eyebrow { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: var(--space-xs); }
+    .subtitle { font-size: 1rem; opacity: 0.9; max-width: 650px; margin: 0 auto var(--space-md); }
+    .threat-badge { display: inline-block; background: var(--color-error); color: white; padding: var(--space-xs) var(--space-md); border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+
+    .panel-nav { background: var(--color-bg); border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
+    .panel-btn { background: transparent; border: 2px solid transparent; padding: var(--space-sm) var(--space-md); font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease; }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    .main { padding: var(--space-xl) 0 var(--space-2xl); }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-header h2 { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+    .panel-number { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: var(--color-primary); color: white; border-radius: 50%; font-size: 1rem; font-family: var(--font-sans); font-weight: 600; }
+    .panel-intro { font-size: 1rem; color: var(--color-text-secondary); max-width: 750px; }
+
+    .chart-container { display: grid; grid-template-columns: 1fr 260px; gap: var(--space-xl); background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    @media (max-width: 850px) { .chart-container { grid-template-columns: 1fr; } }
+    .chart-wrapper { display: flex; flex-direction: column; position: relative; }
+    .chart-title { font-size: 1rem; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-lg); text-align: center; }
+    .chart-wrapper svg { width: 100%; height: 320px; flex-shrink: 0; }
+
+    .stats-sidebar { display: flex; flex-direction: column; gap: var(--space-md); }
+    .stat-card { background: var(--color-bg-alt); border-radius: var(--radius-md); padding: var(--space-md); border-left: 4px solid var(--color-primary); }
+    .stat-card.highlight { border-left-color: var(--color-secondary); }
+    .stat-card.warning { border-left-color: var(--color-error); }
+    .stat-label { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--color-primary-dark); font-family: var(--font-mono); }
+    .stat-note { font-size: 0.85rem; color: var(--color-text-secondary); margin-top: var(--space-xs); }
+
+    .controls { display: flex; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-lg); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); }
+    .toggle-btn { padding: var(--space-sm) var(--space-md); background: white; border: 2px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; }
+    .toggle-btn:hover { border-color: var(--color-primary-light); }
+    .toggle-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    .explanation-container { background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    .explanation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); margin-top: var(--space-lg); }
+    @media (max-width: 750px) { .explanation-grid { grid-template-columns: 1fr; } }
+    .concept-card { background: var(--color-bg-alt); border-radius: var(--radius-md); padding: var(--space-lg); border-top: 4px solid var(--color-error); }
+    .concept-card h4 { font-family: var(--font-sans); font-size: 1rem; margin-bottom: var(--space-sm); color: var(--color-text); }
+    .concept-card p { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+
+    .key-insight { background: linear-gradient(135deg, rgba(201,85,58,0.08) 0%, rgba(201,85,58,0.02) 100%); border-left: 4px solid var(--color-error); padding: var(--space-lg); border-radius: var(--radius-md); margin-top: var(--space-lg); }
+    .key-insight h4 { color: var(--color-error); margin-bottom: var(--space-sm); }
+
+    .policy-container { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+    @media (max-width: 850px) { .policy-container { grid-template-columns: 1fr; } }
+    .policy-selector { background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    .policy-selector h3 { margin-bottom: var(--space-md); }
+    .section-intro { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-lg); }
+
+    .belief-options { display: flex; flex-direction: column; gap: var(--space-md); }
+    .belief-option { position: relative; }
+    .belief-option input[type="radio"] { position: absolute; opacity: 0; }
+    .belief-option label { display: block; padding: var(--space-md); background: var(--color-bg-alt); border: 2px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; }
+    .belief-option input[type="radio"]:checked + label { border-color: var(--color-primary); background: rgba(0,65,165,0.05); }
+    .belief-option label:hover { border-color: var(--color-primary-light); }
+    .option-title { font-weight: 600; color: var(--color-text); margin-bottom: var(--space-xs); }
+    .option-desc { font-size: 0.9rem; color: var(--color-text-secondary); }
+
+    .policy-output { position: sticky; top: 80px; }
+    .policy-memo { background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .memo-header { background: var(--color-primary-dark); color: white; padding: var(--space-lg); }
+    .memo-header h3 { color: white; margin-bottom: var(--space-md); }
+    .memo-meta { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-md); font-size: 0.9rem; }
+    .memo-meta dt { font-weight: 600; opacity: 0.8; }
+    .memo-body { padding: var(--space-lg); min-height: 180px; }
+    .memo-recommendation { padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-md); }
+    .memo-recommendation.trend { background: rgba(201,85,58,0.08); border-left: 4px solid var(--color-error); }
+    .memo-recommendation.partial { background: rgba(249,168,37,0.08); border-left: 4px solid var(--color-accent); }
+    .memo-recommendation.design-needed { background: rgba(13,148,136,0.08); border-left: 4px solid var(--color-secondary); }
+    .memo-recommendation h4 { font-family: var(--font-sans); font-size: 1rem; margin-bottom: var(--space-sm); }
+    .memo-recommendation p { font-size: 0.95rem; margin-bottom: var(--space-sm); }
+    .memo-recommendation ul { font-size: 0.9rem; padding-left: var(--space-lg); color: var(--color-text-secondary); }
+    .memo-footer { padding: var(--space-md) var(--space-lg); background: var(--color-bg-alt); font-size: 0.85rem; color: var(--color-text-muted); }
+
+    .cross-ref { margin-top: var(--space-lg); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); font-size: 0.9rem; color: var(--color-text-secondary); text-align: center; }
+    .cross-ref a { color: var(--color-primary); font-weight: 500; }
+
+    .chart-legend { display: flex; gap: var(--space-lg); justify-content: center; margin-top: var(--space-md); flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9rem; color: var(--color-text-secondary); }
+    .legend-line { width: 24px; height: 3px; border-radius: 2px; }
+    .legend-line.observed { background: var(--color-secondary); }
+    .legend-line.trend { background: var(--color-text-muted); background: repeating-linear-gradient(90deg, var(--color-text-muted) 0px, var(--color-text-muted) 4px, transparent 4px, transparent 8px); }
+
+    .tooltip { position: fixed; background: var(--color-text); color: white; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); font-size: 0.85rem; pointer-events: none; z-index: 1000; max-width: 250px; }
+    .tooltip.hidden { display: none; }
+
+    .footer { background: var(--color-text); color: white; padding: var(--space-xl) 0; text-align: center; }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
+    .footer a { color: var(--color-accent); }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Threat 4B</div>
+      <h1>History and Maturation</h1>
+      <p class="subtitle">When external events or pre-existing trends happen alongside a program, improvement looks like causation even when it isn't.</p>
+      <span class="threat-badge">Threat to Validity</span>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">1. The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. The Threat Explained</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. What To Do</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+      <!-- Panel 1: The Data -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading"><span class="panel-number">1</span> The Data</h2>
+          <p class="panel-intro">
+            A county launched a preventive care program in 2020. Preventive screening rates increased after the program started. But look at the trend before the program—rates were already rising at the same pace. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="controls">
+          <button class="toggle-btn active" id="toggle-all">Show Full Timeline</button>
+          <button class="toggle-btn" id="toggle-post">Show Post-Program Only</button>
+          <button class="toggle-btn" id="toggle-trend">Show Pre-Program Trend Extended</button>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Preventive Screening Rate Over Time</h3>
+            <svg id="trend-chart" aria-label="Time series showing preventive screening rates before and after program"></svg>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-line observed"></span><span>Observed Data</span></div>
+              <div class="legend-item" id="trend-legend" style="display: none;"><span class="legend-line trend"></span><span>Pre-Program Trend (Extended)</span></div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <div class="stat-label">Pre-Program Slope</div>
+              <div class="stat-value">+2.1%</div>
+              <div class="stat-note">Annual increase before 2020</div>
+            </div>
+            <div class="stat-card highlight">
+              <div class="stat-label">Post-Program Slope</div>
+              <div class="stat-value">+2.3%</div>
+              <div class="stat-note">Annual increase after 2020</div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-label">Added Effect</div>
+              <div class="stat-value">~0.2%</div>
+              <div class="stat-note">Difference is within noise</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Panel 2: The Threat Explained -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading"><span class="panel-number">2</span> The Threat Explained</h2>
+          <p class="panel-intro">
+            Outcomes can change for reasons that have nothing to do with your program. Ignoring these other causes leads to false conclusions.
+          </p>
+        </div>
+
+        <div class="explanation-container">
+          <div class="explanation-grid">
+            <div class="concept-card">
+              <h4>History</h4>
+              <p>External events that happen at the same time as the program can cause the outcome to change.</p>
+              <p><strong>Examples:</strong></p>
+              <ul style="font-size: 0.9rem; color: var(--color-text-secondary); padding-left: var(--space-lg);">
+                <li>A new state mandate required insurers to cover preventive care</li>
+                <li>COVID-19 changed healthcare utilization patterns</li>
+                <li>A major employer added health benefits</li>
+              </ul>
+            </div>
+            <div class="concept-card">
+              <h4>Maturation</h4>
+              <p>Outcomes naturally change over time, regardless of any intervention.</p>
+              <p><strong>Examples:</strong></p>
+              <ul style="font-size: 0.9rem; color: var(--color-text-secondary); padding-left: var(--space-lg);">
+                <li>Public awareness of preventive care was already growing</li>
+                <li>Healthcare technology was steadily improving</li>
+                <li>Population demographics were shifting</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="key-insight">
+            <h4>Why This Matters</h4>
+            <p>In this lab's data, screening rates were increasing by about <strong>2.1% per year before the program even started</strong>. After the program, they continued at nearly the same rate (2.3%). The program may have added nothing—we're just seeing a trend that was already underway.</p>
+            <p style="margin-top: var(--space-sm);"><strong>Pre-post designs</strong> (comparing before to after in a single group) cannot distinguish program effects from underlying trends or coincidental events.</p>
+          </div>
+
+          <div class="cross-ref">
+            For a full comparison of how different designs handle this threat, see <a href="../study-design-ladder/">Lab 4: Study Design Ladder</a>.
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: What To Do -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading"><span class="panel-number">3</span> What To Do</h2>
+          <p class="panel-intro">
+            Given the pre-existing trend, how should we interpret the post-program improvement?
+          </p>
+        </div>
+
+        <div class="policy-container">
+          <div class="policy-selector">
+            <h3>Choose Your Interpretation</h3>
+            <p class="section-intro">The pre-program trend continued at nearly the same rate after the program launched:</p>
+
+            <div class="belief-options" role="radiogroup">
+              <div class="belief-option">
+                <input type="radio" id="belief-trend" name="belief" value="trend" checked aria-label="Adjust belief trend">
+                <label for="belief-trend">
+                  <div class="option-title">The trend fully explains the pattern</div>
+                  <div class="option-desc">The program had no added effect. Screening was already improving and would have continued without the program.</div>
+                </label>
+              </div>
+              <div class="belief-option">
+                <input type="radio" id="belief-partial" name="belief" value="partial" aria-label="Adjust belief partial">
+                <label for="belief-partial">
+                  <div class="option-title">The program might have a small effect on top of the trend</div>
+                  <div class="option-desc">Hard to isolate, but the slight acceleration (2.1% → 2.3%) could be real.</div>
+                </label>
+              </div>
+              <div class="belief-option">
+                <input type="radio" id="belief-design" name="belief" value="design" aria-label="Adjust belief design">
+                <label for="belief-design">
+                  <div class="option-title">We need a comparison group or different design</div>
+                  <div class="option-desc">Only by comparing to a group without the program can we see if the trend changed differently.</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="policy-output">
+            <div class="policy-memo">
+              <div class="memo-header">
+                <h3>Policy Memorandum</h3>
+                <dl class="memo-meta">
+                  <dt>To:</dt><dd>Health Department Leadership</dd>
+                  <dt>From:</dt><dd>Health Economics Analysis Unit</dd>
+                  <dt>Re:</dt><dd>Preventive Care Program Evaluation</dd>
+                  <dt>Date:</dt><dd id="memo-date"></dd>
+                </dl>
+              </div>
+              <div class="memo-body" id="memo-body"></div>
+              <div class="memo-footer">
+                <p><strong>This memo reflects:</strong> The evidence shown in this lab and your interpretation of trend vs. program effect.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    // Generate trend data
+    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
+    const programStart = 2020;
+    const baseRate = 42; // Starting screening rate
+    const annualIncrease = 2.1; // Pre-program trend
+
+    let seed = 42;
+    function seededRandom() { const x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
+
+    const trendData = years.map((year, i) => {
+      const trendValue = baseRate + annualIncrease * i;
+      const noise = (seededRandom() - 0.5) * 1.5;
+      // Slight acceleration post-program (but within noise)
+      const postBoost = year >= programStart ? 0.2 * (year - programStart) : 0;
+      return {
+        year,
+        rate: trendValue + noise + postBoost,
+        trend: trendValue, // Pure trend line
+        isPost: year >= programStart
+      };
+    });
+
+    let viewMode = 'all'; // 'all', 'post', 'trend'
+
+    function renderTrendChart() {
+      const svg = document.getElementById('trend-chart');
+      const container = svg.parentElement;
+      const width = container.clientWidth || 500;
+      const height = 320;
+      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const displayData = viewMode === 'post' ? trendData.filter(d => d.year >= programStart) : trendData;
+      const xMin = displayData[0].year;
+      const xMax = displayData[displayData.length - 1].year;
+      const yMin = 40;
+      const yMax = 60;
+
+      const xScale = (v) => margin.left + ((v - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Program period shading
+      if (viewMode !== 'post') {
+        const shadingRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        shadingRect.setAttribute('x', xScale(programStart));
+        shadingRect.setAttribute('y', margin.top);
+        shadingRect.setAttribute('width', xScale(xMax) - xScale(programStart));
+        shadingRect.setAttribute('height', plotHeight);
+        shadingRect.setAttribute('fill', 'rgba(13, 148, 136, 0.08)');
+        svg.appendChild(shadingRect);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', (xScale(programStart) + xScale(xMax)) / 2);
+        label.setAttribute('y', margin.top + 18);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('fill', '#0D9488');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('font-weight', '500');
+        label.textContent = 'Program Period';
+        svg.appendChild(label);
+      }
+
+      // Grid
+      for (let i = 0; i <= 4; i++) {
+        const y = yMin + (i / 4) * (yMax - yMin);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const ylbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        ylbl.setAttribute('x', margin.left - 8);
+        ylbl.setAttribute('y', yScale(y) + 4);
+        ylbl.setAttribute('text-anchor', 'end');
+        ylbl.setAttribute('fill', '#595959');
+        ylbl.setAttribute('font-size', '11');
+        ylbl.textContent = y.toFixed(0) + '%';
+        svg.appendChild(ylbl);
+      }
+
+      // X-axis
+      displayData.forEach(d => {
+        const xlbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xlbl.setAttribute('x', xScale(d.year));
+        xlbl.setAttribute('y', height - 15);
+        xlbl.setAttribute('text-anchor', 'middle');
+        xlbl.setAttribute('fill', '#424242');
+        xlbl.setAttribute('font-size', '11');
+        xlbl.textContent = d.year;
+        svg.appendChild(xlbl);
+      });
+
+      // Axis labels
+      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
+      yAxisLabel.setAttribute('y', 15);
+      yAxisLabel.setAttribute('transform', 'rotate(-90)');
+      yAxisLabel.setAttribute('text-anchor', 'middle');
+      yAxisLabel.setAttribute('fill', '#424242');
+      yAxisLabel.setAttribute('font-size', '12');
+      yAxisLabel.textContent = 'Preventive Screening Rate';
+      svg.appendChild(yAxisLabel);
+
+      // Draw trend line if enabled
+      if (viewMode === 'trend') {
+        let trendPath = `M ${xScale(trendData[0].year)} ${yScale(trendData[0].trend)}`;
+        trendData.forEach(d => { trendPath += ` L ${xScale(d.year)} ${yScale(d.trend)}`; });
+        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        trendLine.setAttribute('d', trendPath);
+        trendLine.setAttribute('fill', 'none');
+        trendLine.setAttribute('stroke', '#595959');
+        trendLine.setAttribute('stroke-width', '2');
+        trendLine.setAttribute('stroke-dasharray', '6,4');
+        svg.appendChild(trendLine);
+        document.getElementById('trend-legend').style.display = 'flex';
+      } else {
+        document.getElementById('trend-legend').style.display = 'none';
+      }
+
+      // Draw observed line
+      let pathD = `M ${xScale(displayData[0].year)} ${yScale(displayData[0].rate)}`;
+      displayData.forEach(d => { pathD += ` L ${xScale(d.year)} ${yScale(d.rate)}`; });
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#0D9488');
+      path.setAttribute('stroke-width', '3');
+      svg.appendChild(path);
+
+      // Draw points
+      displayData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.year));
+        circle.setAttribute('cy', yScale(d.rate));
+        circle.setAttribute('r', '6');
+        circle.setAttribute('fill', '#0D9488');
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
+        circle.style.cursor = 'pointer';
+
+        circle.addEventListener('mouseenter', (e) => {
+          const tooltip = document.getElementById('tooltip');
+          tooltip.innerHTML = `<div style="font-weight:600;">${d.year}</div><div>Screening Rate: ${d.rate.toFixed(1)}%</div>${d.isPost ? '<div style="opacity:0.8;font-size:0.85em;">Post-program</div>' : ''}`;
+          const rect = e.target.getBoundingClientRect();
+          tooltip.style.left = rect.left + rect.width / 2 + 'px';
+          tooltip.style.top = rect.top - 10 + 'px';
+          tooltip.style.transform = 'translate(-50%, -100%)';
+          tooltip.classList.remove('hidden');
+        });
+        circle.addEventListener('mouseleave', () => document.getElementById('tooltip').classList.add('hidden'));
+
+        svg.appendChild(circle);
+      });
+    }
+
+    // Toggle controls
+    document.getElementById('toggle-all').addEventListener('click', () => {
+      viewMode = 'all';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-all').classList.add('active');
+      renderTrendChart();
+    });
+
+    document.getElementById('toggle-post').addEventListener('click', () => {
+      viewMode = 'post';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-post').classList.add('active');
+      renderTrendChart();
+    });
+
+    document.getElementById('toggle-trend').addEventListener('click', () => {
+      viewMode = 'trend';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-trend').classList.add('active');
+      renderTrendChart();
+    });
+
+    // Panel navigation
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+        if (panelNum === '3') updatePolicyMemo();
+      });
+    });
+
+    // Policy memo
+    function updatePolicyMemo() {
+      const selected = document.querySelector('input[name="belief"]:checked');
+      if (!selected) return;
+      const memoBody = document.getElementById('memo-body');
+
+      const memos = {
+        trend: `
+          <div class="memo-recommendation trend">
+            <h4>Conclusion: Pre-Existing Trend Explains Improvement</h4>
+            <p>Screening rates were already increasing by 2.1% annually before the program launched. After the program, rates continued at 2.3%—a difference too small to be meaningful.</p>
+            <ul>
+              <li>The trend was in place for at least 4 years pre-program</li>
+              <li>Post-program trajectory is nearly identical</li>
+              <li>No evidence of trend acceleration or break in slope</li>
+            </ul>
+            <p><strong>Recommendation:</strong> Do not attribute the improvement to the program. The county was already on this path.</p>
+          </div>
+        `,
+        partial: `
+          <div class="memo-recommendation partial">
+            <h4>Conclusion: Possible Small Effect, Hard to Isolate</h4>
+            <p>The slight acceleration from 2.1% to 2.3% annual growth could represent a real program effect, but it's within the range of normal variation.</p>
+            <ul>
+              <li>0.2 percentage point acceleration is statistically ambiguous</li>
+              <li>Could be program effect, or just year-to-year noise</li>
+              <li>Effect, if real, is modest</li>
+            </ul>
+            <p><strong>Recommendation:</strong> Continue the program but set realistic expectations. The marginal benefit may be small.</p>
+          </div>
+        `,
+        design: `
+          <div class="memo-recommendation design-needed">
+            <h4>Conclusion: Comparison Group Needed</h4>
+            <p>Without knowing what happened in similar counties without the program, we cannot distinguish program effects from continuing trends.</p>
+            <ul>
+              <li><strong>Difference-in-differences:</strong> Compare trend change in program county vs. similar non-program counties</li>
+              <li><strong>Interrupted time series:</strong> Test for a break in slope at program start</li>
+              <li><strong>Synthetic control:</strong> Build a weighted comparison from multiple non-program counties</li>
+            </ul>
+            <p><strong>Recommendation:</strong> Before scaling, conduct a rigorous evaluation with a comparison group.</p>
+          </div>
+        `
+      };
+
+      memoBody.innerHTML = memos[selected.value] || '';
+    }
+
+    document.querySelectorAll('input[name="belief"]').forEach(radio => {
+      radio.addEventListener('change', updatePolicyMemo);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('memo-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      renderTrendChart();
+      updatePolicyMemo();
+      let resizeTimeout;
+      window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(renderTrendChart, 250); });
+    });
+  </script>
+</body>
+</html>

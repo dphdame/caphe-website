@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What If We're Wrong? Sensitivity Analysis in CEA | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how sensitivity analysis reveals which uncertain parameters could flip a cost-effectiveness decision. Explore one-way and probabilistic sensitivity analysis through interactive visualizations.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 380px;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    .icer-display {
+      text-align: center;
+      padding: var(--space-lg);
+    }
+
+    .icer-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .icer-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .decision-badge {
+      display: inline-block;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: var(--space-md);
+    }
+
+    .decision-badge.favorable {
+      background: rgba(46, 125, 50, 0.15);
+      color: var(--color-success);
+    }
+
+    .decision-badge.unfavorable {
+      background: rgba(245, 124, 0, 0.15);
+      color: var(--color-warning);
+    }
+
+    /* ============================================
+       7. PANEL 2: TORNADO DIAGRAM
+       ============================================ */
+    .tornado-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .tornado-container { grid-template-columns: 1fr; }
+    }
+
+    .tornado-svg {
+      width: 100%;
+      height: 450px;
+    }
+
+    .parameter-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .parameter-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .parameter-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .parameter-list {
+      font-size: 0.85rem;
+    }
+
+    .parameter-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-xs) 0;
+      border-bottom: 1px dashed var(--color-border-light);
+    }
+
+    .parameter-row:last-child {
+      border-bottom: none;
+    }
+
+    .parameter-name {
+      color: var(--color-text-secondary);
+    }
+
+    .parameter-range {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .insight-box {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: PSA EXPLAINED
+       ============================================ */
+    .psa-explained-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .psa-explained-container { grid-template-columns: 1fr; }
+    }
+
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-top: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    .comparison-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .comparison-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .comparison-card.owsa {
+      border-top: 3px solid var(--color-secondary);
+    }
+
+    .comparison-card.psa {
+      border-top: 3px solid var(--color-accent);
+    }
+
+    .step-list {
+      counter-reset: steps;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      padding-left: var(--space-lg);
+      position: relative;
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .step-list li::before {
+      content: counter(steps);
+      position: absolute;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ============================================
+       9. PANEL 4: INTERACTIVE PSA
+       ============================================ */
+    .psa-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .psa-container { grid-template-columns: 1fr; }
+    }
+
+    .psa-svg {
+      width: 100%;
+      height: 450px;
+    }
+
+    .controls-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .control-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .control-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .slider-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .slider-label span:first-child {
+      color: var(--color-text-secondary);
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .probability-display {
+      text-align: center;
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      border-radius: var(--radius-md);
+      color: white;
+    }
+
+    .probability-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .probability-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: var(--space-xs);
+    }
+
+    .run-btn {
+      width: 100%;
+      padding: var(--space-md);
+      background: var(--color-secondary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .run-btn:hover {
+      background: #0a7a70;
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .insight-container {
+      max-width: 800px;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "";
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      margin-top: 8px;
+      background: var(--color-secondary);
+      border-radius: 50%;
+    }
+
+    .reflection-questions {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .reflection-questions h3 {
+      margin-bottom: var(--space-lg);
+    }
+
+    .question-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .question-item {
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-secondary);
+    }
+
+    .question-item p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       11. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 240px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .tooltip-title {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .tooltip-value {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Advanced Methods</div>
+      <h1>What If We're Wrong? Sensitivity Analysis in CEA</h1>
+      <p class="subtitle">Cost-effectiveness analyses depend on uncertain estimates. Sensitivity analysis reveals which parameters could flip your decision and how confident you should be in your conclusions.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Tornado Diagram</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">PSA Explained</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Interactive PSA</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A new diabetes prevention program costs more than standard care but improves health outcomes. The base-case analysis suggests it is cost-effective, but every input value carries uncertainty. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 style="margin-bottom: var(--space-md); font-size: 1rem; color: var(--color-text-secondary);">Base-Case Cost-Effectiveness</h3>
+            <svg id="ce-plane-chart" class="chart-svg" role="img" aria-label="Cost-effectiveness plane showing the new program versus standard care"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Standard Care</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>New Program</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Program Comparison</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-inc-cost">--</div>
+                  <div class="stat-label">Added Cost</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-inc-qaly">--</div>
+                  <div class="stat-label">Added QALYs</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="icer-display">
+                <div class="icer-value" id="stat-icer">--</div>
+                <div class="icer-label">ICER ($/QALY)</div>
+                <div class="decision-badge favorable" id="decision-badge">Cost-effective at $100K/QALY</div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>Base-case finding:</strong> At a willingness-to-pay threshold of $100,000 per QALY, the new program appears cost-effective. But every number in this analysis is an estimate.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The base-case looks favorable.</strong></p>
+          <p>But how sensitive is this conclusion to our assumptions? Which parameters matter most?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: TORNADO DIAGRAM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Tornado Diagram</h2>
+          <p class="panel-intro">
+            One-way sensitivity analysis varies each parameter individually while holding others at base-case values. The tornado diagram shows which parameters have the largest impact on the ICER. Longer bars mean greater influence on the decision.
+          </p>
+        </div>
+
+        <div class="tornado-container">
+          <div class="chart-wrapper">
+            <svg id="tornado-chart" class="tornado-svg" role="img" aria-label="Tornado diagram showing parameter impact on ICER"></svg>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); text-align: center; margin-top: var(--space-md);">
+              Vertical dashed line = $100,000/QALY threshold. Bars crossing this line indicate parameters that could flip the decision.
+            </p>
+          </div>
+
+          <aside class="parameter-sidebar">
+            <div class="parameter-card">
+              <h4>Parameter Ranges Tested</h4>
+              <div class="parameter-list">
+                <div class="parameter-row">
+                  <span class="parameter-name">Treatment effect</span>
+                  <span class="parameter-range">0.03 - 0.09</span>
+                </div>
+                <div class="parameter-row">
+                  <span class="parameter-name">Program cost</span>
+                  <span class="parameter-range">$800 - $1,600</span>
+                </div>
+                <div class="parameter-row">
+                  <span class="parameter-name">Quality of life gain</span>
+                  <span class="parameter-range">0.02 - 0.06</span>
+                </div>
+                <div class="parameter-row">
+                  <span class="parameter-name">Time horizon</span>
+                  <span class="parameter-range">5 - 20 years</span>
+                </div>
+                <div class="parameter-row">
+                  <span class="parameter-name">Discount rate</span>
+                  <span class="parameter-range">0% - 5%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="insight-box">
+              <strong>What this reveals:</strong> The treatment effect and program cost have the largest influence. If the real treatment effect is at the low end of our estimate, the program may not be cost-effective.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Some parameters could flip the decision on their own.</strong></p>
+          <p>But in reality, multiple parameters might be wrong simultaneously. How do we account for that?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: PSA EXPLAINED
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Probabilistic Sensitivity Analysis</h2>
+          <p class="panel-intro">
+            One-way analysis varies parameters individually. Probabilistic sensitivity analysis (PSA) varies all uncertain parameters simultaneously, drawing from probability distributions to generate thousands of possible scenarios.
+          </p>
+        </div>
+
+        <div class="psa-explained-container">
+          <div>
+            <div class="definition-card">
+              <h3>What Is Probabilistic Sensitivity Analysis?</h3>
+              <p>PSA acknowledges that <strong>all parameters are uncertain at once</strong>. Instead of varying one parameter while holding others fixed, PSA:</p>
+              <ul>
+                <li>Assigns a probability distribution to each uncertain parameter</li>
+                <li>Draws random values from each distribution simultaneously</li>
+                <li>Recalculates the ICER for each combination (typically 1,000-10,000 times)</li>
+                <li>Reports the probability that the intervention is cost-effective</li>
+              </ul>
+            </div>
+
+            <div class="comparison-grid">
+              <div class="comparison-card owsa">
+                <h4>One-Way Analysis (OWSA)</h4>
+                <ul class="step-list">
+                  <li>Vary one parameter at a time</li>
+                  <li>Hold all other parameters at base case</li>
+                  <li>Shows which single parameters matter most</li>
+                  <li>Cannot capture parameter interactions</li>
+                </ul>
+              </div>
+              <div class="comparison-card psa">
+                <h4>Probabilistic Analysis (PSA)</h4>
+                <ul class="step-list">
+                  <li>Vary all parameters simultaneously</li>
+                  <li>Draw from probability distributions</li>
+                  <li>Captures realistic joint uncertainty</li>
+                  <li>Quantifies decision confidence</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Common Distributions</h4>
+              <div style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                <p style="margin-bottom: var(--space-sm);"><strong>Beta:</strong> Probabilities, utilities (0-1)</p>
+                <p style="margin-bottom: var(--space-sm);"><strong>Gamma:</strong> Costs, positive values</p>
+                <p style="margin-bottom: var(--space-sm);"><strong>Log-normal:</strong> Relative risks, hazard ratios</p>
+                <p><strong>Normal:</strong> Treatment effects, when symmetric</p>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>Why this matters:</strong> Real-world uncertainty is correlated and simultaneous. A program might have both higher costs and lower effectiveness than expected. PSA captures this reality.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>PSA gives us a probability, not just a point estimate.</strong></p>
+          <p>How confident should we be in our cost-effectiveness conclusion? Let us run a simulation.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: INTERACTIVE PSA
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Interactive PSA</h2>
+          <p class="panel-intro">
+            Run a probabilistic sensitivity analysis with 1,000 simulations. Each dot represents one possible scenario based on random draws from parameter distributions. Adjust the uncertainty ranges to see how they affect the probability of cost-effectiveness.
+          </p>
+        </div>
+
+        <div class="psa-container">
+          <div class="chart-wrapper">
+            <svg id="psa-chart" class="psa-svg" role="img" aria-label="Cost-effectiveness acceptability plane showing PSA results"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-success);"></span>
+                <span>Cost-effective</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-warning);"></span>
+                <span>Not cost-effective</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="controls-sidebar">
+            <div class="control-card">
+              <h4>Uncertainty Parameters</h4>
+
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>Treatment Effect Uncertainty</span>
+                  <span class="slider-value" id="effect-uncertainty-value">Medium</span>
+                </div>
+                <input type="range" id="effect-uncertainty" min="1" max="3" value="2" step="1" aria-label="Adjust effect size uncertainty">
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>Cost Uncertainty</span>
+                  <span class="slider-value" id="cost-uncertainty-value">Medium</span>
+                </div>
+                <input type="range" id="cost-uncertainty" min="1" max="3" value="2" step="1" aria-label="Adjust cost uncertainty">
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>WTP Threshold ($/QALY)</span>
+                  <span class="slider-value" id="wtp-value">$100,000</span>
+                </div>
+                <input type="range" id="wtp-threshold" min="50000" max="150000" value="100000" step="10000" aria-label="Adjust willingness-to-pay threshold">
+              </div>
+            </div>
+
+            <button class="run-btn" id="run-psa-btn">Run 1,000 Simulations</button>
+
+            <div class="control-card">
+              <div class="probability-display">
+                <div class="probability-value" id="prob-ce">--</div>
+                <div class="probability-label">Probability Cost-Effective</div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong id="psa-interpretation">Run the simulation to see how uncertainty affects the decision.</strong>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The probability gives decision-makers realistic expectations.</strong></p>
+          <p>What should we conclude from this analysis?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Sensitivity analysis transforms cost-effectiveness from a yes/no answer into a probability statement about decision confidence.
+          </p>
+        </div>
+
+        <div class="insight-container">
+          <div class="takeaway-box">
+            <h4>Key Takeaway</h4>
+            <p>
+              <strong>Reporting a single ICER without sensitivity analysis is like reporting a poll result without a margin of error.</strong> Decision-makers need to know not just whether an intervention appears cost-effective, but how confident they should be in that conclusion. Sensitivity analysis identifies which parameters could flip the decision and quantifies the probability of making the right choice under uncertainty. <strong>This is what economists mean by "characterizing decision uncertainty."</strong>
+            </p>
+          </div>
+
+          <div class="concepts-box">
+            <h3>Concepts Demonstrated in This Lab</h3>
+            <div class="concept-list">
+              <div class="concept-item"><strong>ICER:</strong> the incremental cost-effectiveness ratio, comparing added cost to added health benefit</div>
+              <div class="concept-item"><strong>One-way sensitivity analysis:</strong> varying one parameter at a time to identify influential inputs</div>
+              <div class="concept-item"><strong>Tornado diagram:</strong> visual display of which parameters have the largest impact on results</div>
+              <div class="concept-item"><strong>Probabilistic sensitivity analysis:</strong> varying all parameters simultaneously to quantify decision uncertainty</div>
+              <div class="concept-item"><strong>Willingness-to-pay threshold:</strong> the maximum amount a decision-maker will pay per unit of health gain</div>
+            </div>
+          </div>
+
+          <div class="reflection-questions">
+            <h3>Questions for Reflection</h3>
+            <div class="question-list">
+              <div class="question-item">
+                <p>A program has a 70% probability of being cost-effective. Is that high enough to recommend adoption? What factors might influence this decision?</p>
+              </div>
+              <div class="question-item">
+                <p>The tornado diagram shows treatment effect is the most influential parameter. What additional research might reduce this uncertainty?</p>
+              </div>
+              <div class="question-item">
+                <p>How might a decision-maker weigh a highly uncertain but promising intervention against a well-established but modest one?</p>
+              </div>
+              <div class="question-item">
+                <p>If the probability of cost-effectiveness changes dramatically with different willingness-to-pay thresholds, what does this tell us about the decision?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. BASE-CASE DATA
+       ============================================ */
+    const baseCase = {
+      // Standard care
+      standardCost: 5000,
+      standardQALY: 8.5,
+
+      // New program (incremental)
+      programCost: 1200,      // additional cost
+      treatmentEffect: 0.06,  // probability of avoiding diabetes
+      qualityGain: 0.04,      // QALY gain per year if diabetes avoided
+      timeHorizon: 10,        // years
+      discountRate: 0.03,     // 3%
+
+      // Derived
+      get newCost() { return this.standardCost + this.programCost; },
+      get qalyGain() {
+        // Simplified: probability of benefit * quality gain * discounted years
+        let totalQALY = 0;
+        for (let t = 1; t <= this.timeHorizon; t++) {
+          totalQALY += (this.treatmentEffect * this.qualityGain) / Math.pow(1 + this.discountRate, t);
+        }
+        return totalQALY;
+      },
+      get newQALY() { return this.standardQALY + this.qalyGain; },
+      get icer() { return this.programCost / this.qalyGain; }
+    };
+
+    const WTP_THRESHOLD = 100000; // $100,000 per QALY
+
+    /* ============================================
+       2. PARAMETER RANGES FOR SENSITIVITY
+       ============================================ */
+    const parameters = {
+      treatmentEffect: { base: 0.06, low: 0.03, high: 0.09, label: 'Treatment Effect' },
+      programCost: { base: 1200, low: 800, high: 1600, label: 'Program Cost' },
+      qualityGain: { base: 0.04, low: 0.02, high: 0.06, label: 'Quality of Life Gain' },
+      timeHorizon: { base: 10, low: 5, high: 20, label: 'Time Horizon' },
+      discountRate: { base: 0.03, low: 0, high: 0.05, label: 'Discount Rate' }
+    };
+
+    /* ============================================
+       3. HELPER FUNCTIONS
+       ============================================ */
+    function calculateICER(params) {
+      const { programCost, treatmentEffect, qualityGain, timeHorizon, discountRate } = params;
+      let totalQALY = 0;
+      for (let t = 1; t <= timeHorizon; t++) {
+        totalQALY += (treatmentEffect * qualityGain) / Math.pow(1 + discountRate, t);
+      }
+      if (totalQALY <= 0) return Infinity;
+      return programCost / totalQALY;
+    }
+
+    function formatCurrency(val) {
+      if (val >= 1000000) return '$' + (val / 1000000).toFixed(1) + 'M';
+      if (val >= 1000) return '$' + Math.round(val / 1000) + 'K';
+      return '$' + Math.round(val);
+    }
+
+    function gaussianRandom(mean, sd) {
+      // Box-Muller transform
+      let u1 = Math.random();
+      let u2 = Math.random();
+      while (u1 === 0) u1 = Math.random();
+      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      return mean + z * sd;
+    }
+
+    function gammaRandom(shape, scale) {
+      // Marsaglia and Tsang's method
+      if (shape < 1) {
+        return gammaRandom(shape + 1, scale) * Math.pow(Math.random(), 1 / shape);
+      }
+      const d = shape - 1/3;
+      const c = 1 / Math.sqrt(9 * d);
+      while (true) {
+        let x, v;
+        do {
+          x = gaussianRandom(0, 1);
+          v = 1 + c * x;
+        } while (v <= 0);
+        v = v * v * v;
+        const u = Math.random();
+        if (u < 1 - 0.0331 * (x * x) * (x * x)) return d * v * scale;
+        if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v * scale;
+      }
+    }
+
+    function betaRandom(alpha, beta) {
+      const x = gammaRandom(alpha, 1);
+      const y = gammaRandom(beta, 1);
+      return x / (x + y);
+    }
+
+    /* ============================================
+       4. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let cePlaneInitialized = false;
+    let tornadoInitialized = false;
+    let psaInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Initialize charts when panel becomes visible
+        if (panelNum === '1' && !cePlaneInitialized) {
+          setTimeout(() => {
+            renderCEPlane();
+            cePlaneInitialized = true;
+          }, 50);
+        }
+        if (panelNum === '2' && !tornadoInitialized) {
+          setTimeout(() => {
+            renderTornadoDiagram();
+            tornadoInitialized = true;
+          }, 50);
+        }
+        if (panelNum === '4' && !psaInitialized) {
+          setTimeout(() => {
+            initPSAPanel();
+            psaInitialized = true;
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       5. PANEL 1: COST-EFFECTIVENESS PLANE
+       ============================================ */
+    function renderCEPlane() {
+      const svg = document.getElementById('ce-plane-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 380;
+      const margin = { top: 40, right: 40, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Scales
+      const xMin = -0.5, xMax = 0.5;
+      const yMin = -2000, yMax = 3000;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Background quadrants
+      const quadrants = [
+        { x: xMin, y: 0, w: 0 - xMin, h: yMax, fill: 'rgba(245, 124, 0, 0.05)', label: 'Dominated' },
+        { x: 0, y: 0, w: xMax, h: yMax, fill: 'rgba(46, 125, 50, 0.03)', label: '' },
+        { x: xMin, y: yMin, w: 0 - xMin, h: 0 - yMin, fill: 'rgba(46, 125, 50, 0.08)', label: 'Dominant' },
+        { x: 0, y: yMin, w: xMax, h: 0 - yMin, fill: 'rgba(245, 124, 0, 0.03)', label: '' }
+      ];
+
+      quadrants.forEach(q => {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', xScale(q.x));
+        rect.setAttribute('y', yScale(q.y + q.h));
+        rect.setAttribute('width', (q.w / (xMax - xMin)) * plotWidth);
+        rect.setAttribute('height', (q.h / (yMax - yMin)) * plotHeight);
+        rect.setAttribute('fill', q.fill);
+        svg.appendChild(rect);
+      });
+
+      // WTP threshold line
+      const wtpLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const wtpX = 0.3;
+      const wtpY = wtpX * WTP_THRESHOLD;
+      wtpLine.setAttribute('x1', xScale(0));
+      wtpLine.setAttribute('y1', yScale(0));
+      wtpLine.setAttribute('x2', xScale(wtpX));
+      wtpLine.setAttribute('y2', yScale(Math.min(wtpY, yMax)));
+      wtpLine.setAttribute('stroke', 'var(--color-text-muted)');
+      wtpLine.setAttribute('stroke-width', '2');
+      wtpLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(wtpLine);
+
+      // WTP label
+      const wtpLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      wtpLabel.setAttribute('x', xScale(0.25));
+      wtpLabel.setAttribute('y', yScale(2500));
+      wtpLabel.setAttribute('font-size', '11');
+      wtpLabel.setAttribute('fill', 'var(--color-text-muted)');
+      wtpLabel.setAttribute('transform', `rotate(-45, ${xScale(0.25)}, ${yScale(2500)})`);
+      wtpLabel.textContent = 'WTP = $100K/QALY';
+      svg.appendChild(wtpLabel);
+
+      // Axes
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', yScale(0));
+      xAxis.setAttribute('y2', yScale(0));
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      xAxis.setAttribute('stroke-width', '1.5');
+      svg.appendChild(xAxis);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', xScale(0));
+      yAxis.setAttribute('x2', xScale(0));
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      yAxis.setAttribute('stroke-width', '1.5');
+      svg.appendChild(yAxis);
+
+      // X-axis labels
+      for (let x = -0.4; x <= 0.4; x += 0.2) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Incremental QALYs';
+      svg.appendChild(xLabel);
+
+      // Y-axis labels
+      for (let y = -1000; y <= 2500; y += 1000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (y >= 0 ? '' : '-') + Math.abs(y / 1000) + 'K';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Incremental Cost ($)';
+      svg.appendChild(yLabel);
+
+      // Plot points
+      // Origin (standard care)
+      const origin = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      origin.setAttribute('cx', xScale(0));
+      origin.setAttribute('cy', yScale(0));
+      origin.setAttribute('r', 10);
+      origin.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(origin);
+
+      // New program
+      const incQALY = baseCase.qalyGain;
+      const incCost = baseCase.programCost;
+      const newProg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      newProg.setAttribute('cx', xScale(incQALY));
+      newProg.setAttribute('cy', yScale(incCost));
+      newProg.setAttribute('r', 10);
+      newProg.setAttribute('fill', 'var(--color-accent)');
+      svg.appendChild(newProg);
+
+      // Arrow from origin to new program
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      arrow.setAttribute('x1', xScale(0));
+      arrow.setAttribute('y1', yScale(0));
+      arrow.setAttribute('x2', xScale(incQALY));
+      arrow.setAttribute('y2', yScale(incCost));
+      arrow.setAttribute('stroke', 'var(--color-primary)');
+      arrow.setAttribute('stroke-width', '2');
+      arrow.setAttribute('stroke-dasharray', '4,3');
+      svg.appendChild(arrow);
+
+      // Update stats
+      document.getElementById('stat-inc-cost').textContent = '+$' + Math.round(incCost).toLocaleString();
+      document.getElementById('stat-inc-qaly').textContent = '+' + incQALY.toFixed(2);
+      document.getElementById('stat-icer').textContent = formatCurrency(baseCase.icer);
+
+      const isCE = baseCase.icer < WTP_THRESHOLD;
+      const badge = document.getElementById('decision-badge');
+      badge.textContent = isCE ? 'Cost-effective at $100K/QALY' : 'Not cost-effective';
+      badge.className = 'decision-badge ' + (isCE ? 'favorable' : 'unfavorable');
+    }
+
+    /* ============================================
+       6. PANEL 2: TORNADO DIAGRAM
+       ============================================ */
+    function renderTornadoDiagram() {
+      const svg = document.getElementById('tornado-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 450;
+      const margin = { top: 40, right: 60, bottom: 50, left: 160 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Calculate ICER sensitivity for each parameter
+      const sensitivities = [];
+
+      Object.keys(parameters).forEach(key => {
+        const param = parameters[key];
+
+        // Low value ICER
+        const lowParams = {
+          programCost: parameters.programCost.base,
+          treatmentEffect: parameters.treatmentEffect.base,
+          qualityGain: parameters.qualityGain.base,
+          timeHorizon: parameters.timeHorizon.base,
+          discountRate: parameters.discountRate.base
+        };
+        lowParams[key] = param.low;
+        const lowICER = calculateICER(lowParams);
+
+        // High value ICER
+        const highParams = { ...lowParams };
+        highParams[key] = param.high;
+        const highICER = calculateICER(highParams);
+
+        sensitivities.push({
+          label: param.label,
+          low: Math.min(lowICER, highICER),
+          high: Math.max(lowICER, highICER),
+          range: Math.abs(highICER - lowICER)
+        });
+      });
+
+      // Sort by range (largest first)
+      sensitivities.sort((a, b) => b.range - a.range);
+
+      // Scales
+      const baseICER = baseCase.icer;
+      const xMin = 0;
+      const xMax = 200000;
+      const barHeight = 35;
+      const barGap = 15;
+
+      const xScale = (val) => margin.left + (Math.min(val, xMax) / xMax) * plotWidth;
+      const yPos = (i) => margin.top + i * (barHeight + barGap);
+
+      // WTP threshold line
+      const threshLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      threshLine.setAttribute('x1', xScale(WTP_THRESHOLD));
+      threshLine.setAttribute('x2', xScale(WTP_THRESHOLD));
+      threshLine.setAttribute('y1', margin.top - 10);
+      threshLine.setAttribute('y2', height - margin.bottom);
+      threshLine.setAttribute('stroke', 'var(--color-text-muted)');
+      threshLine.setAttribute('stroke-width', '2');
+      threshLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(threshLine);
+
+      // Base case line
+      const baseLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      baseLine.setAttribute('x1', xScale(baseICER));
+      baseLine.setAttribute('x2', xScale(baseICER));
+      baseLine.setAttribute('y1', margin.top - 10);
+      baseLine.setAttribute('y2', height - margin.bottom);
+      baseLine.setAttribute('stroke', 'var(--color-primary)');
+      baseLine.setAttribute('stroke-width', '2');
+      svg.appendChild(baseLine);
+
+      // Draw bars
+      sensitivities.forEach((s, i) => {
+        const y = yPos(i);
+
+        // Low bar (left side from base)
+        const lowBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        lowBar.setAttribute('x', xScale(s.low));
+        lowBar.setAttribute('y', y);
+        lowBar.setAttribute('width', xScale(baseICER) - xScale(s.low));
+        lowBar.setAttribute('height', barHeight);
+        lowBar.setAttribute('fill', 'var(--color-secondary)');
+        lowBar.setAttribute('rx', '3');
+        svg.appendChild(lowBar);
+
+        // High bar (right side from base)
+        const highBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        highBar.setAttribute('x', xScale(baseICER));
+        highBar.setAttribute('y', y);
+        highBar.setAttribute('width', Math.min(xScale(s.high) - xScale(baseICER), plotWidth - (xScale(baseICER) - margin.left)));
+        highBar.setAttribute('height', barHeight);
+        highBar.setAttribute('fill', 'var(--color-accent)');
+        highBar.setAttribute('rx', '3');
+        svg.appendChild(highBar);
+
+        // Label
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', margin.left - 10);
+        label.setAttribute('y', y + barHeight / 2 + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '12');
+        label.setAttribute('fill', 'var(--color-text)');
+        label.textContent = s.label;
+        svg.appendChild(label);
+
+        // Value labels
+        if (s.low > 0) {
+          const lowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          lowLabel.setAttribute('x', xScale(s.low) - 5);
+          lowLabel.setAttribute('y', y + barHeight / 2 + 4);
+          lowLabel.setAttribute('text-anchor', 'end');
+          lowLabel.setAttribute('font-size', '10');
+          lowLabel.setAttribute('fill', 'var(--color-text-muted)');
+          lowLabel.textContent = formatCurrency(s.low);
+          svg.appendChild(lowLabel);
+        }
+
+        if (s.high < xMax) {
+          const highLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          highLabel.setAttribute('x', xScale(s.high) + 5);
+          highLabel.setAttribute('y', y + barHeight / 2 + 4);
+          highLabel.setAttribute('text-anchor', 'start');
+          highLabel.setAttribute('font-size', '10');
+          highLabel.setAttribute('fill', 'var(--color-text-muted)');
+          highLabel.textContent = formatCurrency(s.high);
+          svg.appendChild(highLabel);
+        }
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 200000; x += 50000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = formatCurrency(x);
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'ICER ($/QALY)';
+      svg.appendChild(xLabel);
+
+      // Legend
+      const legendY = margin.top - 25;
+
+      const baseDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      baseDot.setAttribute('cx', margin.left + 10);
+      baseDot.setAttribute('cy', legendY);
+      baseDot.setAttribute('r', 5);
+      baseDot.setAttribute('fill', 'var(--color-primary)');
+      svg.appendChild(baseDot);
+
+      const baseLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      baseLabel.setAttribute('x', margin.left + 20);
+      baseLabel.setAttribute('y', legendY + 4);
+      baseLabel.setAttribute('font-size', '11');
+      baseLabel.setAttribute('fill', 'var(--color-text-muted)');
+      baseLabel.textContent = 'Base case';
+      svg.appendChild(baseLabel);
+
+      const threshDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      threshDot.setAttribute('cx', margin.left + 100);
+      threshDot.setAttribute('cy', legendY);
+      threshDot.setAttribute('r', 5);
+      threshDot.setAttribute('fill', 'var(--color-text-muted)');
+      svg.appendChild(threshDot);
+
+      const threshLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      threshLabel.setAttribute('x', margin.left + 110);
+      threshLabel.setAttribute('y', legendY + 4);
+      threshLabel.setAttribute('font-size', '11');
+      threshLabel.setAttribute('fill', 'var(--color-text-muted)');
+      threshLabel.textContent = 'WTP threshold';
+      svg.appendChild(threshLabel);
+    }
+
+    /* ============================================
+       7. PANEL 4: PSA
+       ============================================ */
+    let psaResults = [];
+    let currentWTP = WTP_THRESHOLD;
+
+    function initPSAPanel() {
+      // Set up slider handlers
+      document.getElementById('effect-uncertainty').addEventListener('input', updateSliderLabels);
+      document.getElementById('cost-uncertainty').addEventListener('input', updateSliderLabels);
+      document.getElementById('wtp-threshold').addEventListener('input', updateSliderLabels);
+
+      document.getElementById('run-psa-btn').addEventListener('click', runPSA);
+
+      updateSliderLabels();
+      renderPSAPlaceholder();
+    }
+
+    function updateSliderLabels() {
+      const effectLevel = document.getElementById('effect-uncertainty').value;
+      const costLevel = document.getElementById('cost-uncertainty').value;
+      const wtp = document.getElementById('wtp-threshold').value;
+
+      const levels = ['Low', 'Medium', 'High'];
+      document.getElementById('effect-uncertainty-value').textContent = levels[effectLevel - 1];
+      document.getElementById('cost-uncertainty-value').textContent = levels[costLevel - 1];
+      document.getElementById('wtp-value').textContent = formatCurrency(parseInt(wtp));
+
+      currentWTP = parseInt(wtp);
+    }
+
+    function renderPSAPlaceholder() {
+      const svg = document.getElementById('psa-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 450;
+
+      svg.innerHTML = '';
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', width / 2);
+      text.setAttribute('y', height / 2);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('font-size', '14');
+      text.setAttribute('fill', 'var(--color-text-muted)');
+      text.textContent = 'Click "Run 1,000 Simulations" to generate PSA results';
+      svg.appendChild(text);
+    }
+
+    function runPSA() {
+      const effectLevel = parseInt(document.getElementById('effect-uncertainty').value);
+      const costLevel = parseInt(document.getElementById('cost-uncertainty').value);
+
+      // Uncertainty multipliers
+      const uncertaintyMult = [0.5, 1, 1.5];
+      const effectSD = 0.015 * uncertaintyMult[effectLevel - 1];
+      const costSD = 200 * uncertaintyMult[costLevel - 1];
+      const qualitySD = 0.01 * uncertaintyMult[effectLevel - 1];
+
+      psaResults = [];
+      const nSim = 1000;
+
+      for (let i = 0; i < nSim; i++) {
+        // Draw random parameters
+        const effect = Math.max(0.01, gaussianRandom(0.06, effectSD));
+        const cost = Math.max(100, gaussianRandom(1200, costSD));
+        const quality = Math.max(0.01, gaussianRandom(0.04, qualitySD));
+        const horizon = Math.max(3, Math.min(25, gaussianRandom(10, 3)));
+        const discount = Math.max(0, Math.min(0.07, gaussianRandom(0.03, 0.01)));
+
+        // Calculate incremental outcomes
+        let incQALY = 0;
+        for (let t = 1; t <= horizon; t++) {
+          incQALY += (effect * quality) / Math.pow(1 + discount, t);
+        }
+
+        const icer = incQALY > 0 ? cost / incQALY : Infinity;
+
+        psaResults.push({
+          incCost: cost,
+          incQALY: incQALY,
+          icer: icer,
+          costEffective: icer < currentWTP
+        });
+      }
+
+      renderPSAChart();
+      updatePSAStats();
+    }
+
+    function renderPSAChart() {
+      const svg = document.getElementById('psa-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 450;
+      const margin = { top: 40, right: 40, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Calculate bounds
+      const xVals = psaResults.map(d => d.incQALY);
+      const yVals = psaResults.map(d => d.incCost);
+
+      const xMin = Math.min(-0.05, Math.min(...xVals) * 1.1);
+      const xMax = Math.max(0.5, Math.max(...xVals) * 1.1);
+      const yMin = Math.min(-500, Math.min(...yVals) * 1.1);
+      const yMax = Math.max(3000, Math.max(...yVals) * 1.1);
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // WTP threshold line
+      const wtpLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const wtpX2 = Math.min(xMax, yMax / currentWTP);
+      wtpLine.setAttribute('x1', xScale(0));
+      wtpLine.setAttribute('y1', yScale(0));
+      wtpLine.setAttribute('x2', xScale(wtpX2));
+      wtpLine.setAttribute('y2', yScale(wtpX2 * currentWTP));
+      wtpLine.setAttribute('stroke', 'var(--color-text-muted)');
+      wtpLine.setAttribute('stroke-width', '2');
+      wtpLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(wtpLine);
+
+      // Axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', yScale(0));
+      xAxis.setAttribute('y2', yScale(0));
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      xAxis.setAttribute('stroke-width', '1.5');
+      svg.appendChild(xAxis);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', xScale(0));
+      yAxis.setAttribute('x2', xScale(0));
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      yAxis.setAttribute('stroke-width', '1.5');
+      svg.appendChild(yAxis);
+
+      // Plot points
+      psaResults.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.incQALY));
+        circle.setAttribute('cy', yScale(d.incCost));
+        circle.setAttribute('r', 3);
+        circle.setAttribute('fill', d.costEffective ? 'var(--color-success)' : 'var(--color-warning)');
+        circle.setAttribute('opacity', '0.5');
+        svg.appendChild(circle);
+      });
+
+      // X-axis labels
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Incremental QALYs';
+      svg.appendChild(xLabel);
+
+      // Y-axis labels
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Incremental Cost ($)';
+      svg.appendChild(yLabel);
+
+      // WTP label
+      const wtpLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      wtpLabel.setAttribute('x', xScale(wtpX2 * 0.7));
+      wtpLabel.setAttribute('y', yScale(wtpX2 * 0.7 * currentWTP) - 10);
+      wtpLabel.setAttribute('font-size', '11');
+      wtpLabel.setAttribute('fill', 'var(--color-text-muted)');
+      wtpLabel.textContent = 'WTP = ' + formatCurrency(currentWTP) + '/QALY';
+      svg.appendChild(wtpLabel);
+    }
+
+    function updatePSAStats() {
+      const nCE = psaResults.filter(d => d.costEffective).length;
+      const probCE = (nCE / psaResults.length * 100).toFixed(0);
+
+      document.getElementById('prob-ce').textContent = probCE + '%';
+
+      const interpretation = document.getElementById('psa-interpretation');
+      if (probCE >= 90) {
+        interpretation.innerHTML = '<strong>High confidence:</strong> The program is cost-effective in ' + probCE + '% of simulations. Strong evidence supports adoption.';
+      } else if (probCE >= 70) {
+        interpretation.innerHTML = '<strong>Moderate confidence:</strong> The program is cost-effective in ' + probCE + '% of simulations. Consider additional evidence before deciding.';
+      } else if (probCE >= 50) {
+        interpretation.innerHTML = '<strong>Uncertain:</strong> The program is cost-effective in only ' + probCE + '% of simulations. Decision-makers face substantial uncertainty.';
+      } else {
+        interpretation.innerHTML = '<strong>Unlikely cost-effective:</strong> The program is cost-effective in only ' + probCE + '% of simulations. Current evidence does not support adoption.';
+      }
+    }
+
+    /* ============================================
+       8. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="tooltip-title">${data.label}</div>
+        <div class="tooltip-value">${data.value}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       9. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render initial chart
+      renderCEPlane();
+      cePlaneInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const activePanel = document.querySelector('.panel.active');
+          if (activePanel) {
+            const panelId = activePanel.id;
+            if (panelId === 'panel-1') renderCEPlane();
+            if (panelId === 'panel-2') renderTornadoDiagram();
+            if (panelId === 'panel-4' && psaResults.length > 0) renderPSAChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

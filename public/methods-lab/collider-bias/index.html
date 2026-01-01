@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collider Bias in Healthcare Databases | CAPHE Methods Lab</title>
+  <meta name="description" content="Controlling for hospitalization can create spurious associations that don't exist in the general population. Learn why conditioning on a common effect reverses, creates, or distorts relationships.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-danger: #C62828;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.positive { color: var(--color-success); }
+    .stat-value.negative { color: var(--color-danger); }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* Bridging question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       7. TOGGLE CONTROLS
+       ============================================ */
+    .toggle-group {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .toggle-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-bg-alt);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--color-primary-light);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* ============================================
+       8. EXPLANATION PANELS
+       ============================================ */
+    .explanation-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .explanation-container { grid-template-columns: 1fr; }
+    }
+
+    .explanation-main {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .step-item {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .step-content strong {
+      color: var(--color-text);
+    }
+
+    /* Sidebar cards */
+    .info-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .info-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .info-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .info-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .info-card ul {
+      margin-left: var(--space-md);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .info-card li {
+      margin-bottom: var(--space-sm);
+    }
+
+    .warning-card {
+      background: rgba(198, 40, 40, 0.08);
+      border-left: 4px solid var(--color-danger);
+    }
+
+    .warning-card h4 {
+      color: var(--color-danger);
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       9. HOSPITAL EXAMPLE PANEL
+       ============================================ */
+    .example-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .example-container { grid-template-columns: 1fr; }
+    }
+
+    .scenario-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .scenario-card.population {
+      border-top: 4px solid var(--color-secondary);
+    }
+
+    .scenario-card.hospital {
+      border-top: 4px solid var(--color-accent);
+    }
+
+    .scenario-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .scenario-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .scenario-icon.population {
+      background: var(--color-secondary);
+    }
+
+    .scenario-icon.hospital {
+      background: var(--color-accent);
+    }
+
+    .scenario-stats {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .scenario-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-sm);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+    }
+
+    .scenario-stat-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .scenario-stat-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .scenario-result {
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .scenario-result.none {
+      background: rgba(46, 125, 50, 0.1);
+      border: 2px solid var(--color-success);
+    }
+
+    .scenario-result.spurious {
+      background: rgba(198, 40, 40, 0.1);
+      border: 2px solid var(--color-danger);
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .scenario-result.none .result-label {
+      color: var(--color-success);
+    }
+
+    .scenario-result.spurious .result-label {
+      color: var(--color-danger);
+    }
+
+    .result-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: var(--font-serif);
+    }
+
+    .scenario-result.none .result-text {
+      color: var(--color-success);
+    }
+
+    .scenario-result.spurious .result-text {
+      color: var(--color-danger);
+    }
+
+    /* ============================================
+       10. AVOIDING COLLIDERS PANEL
+       ============================================ */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    .strategy-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 3px solid var(--color-border);
+    }
+
+    .strategy-card.good {
+      border-top-color: var(--color-success);
+    }
+
+    .strategy-card.caution {
+      border-top-color: var(--color-caution);
+    }
+
+    .strategy-card.avoid {
+      border-top-color: var(--color-danger);
+    }
+
+    .strategy-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .strategy-card.good .strategy-badge {
+      background: rgba(46, 125, 50, 0.15);
+      color: var(--color-success);
+    }
+
+    .strategy-card.caution .strategy-badge {
+      background: rgba(245, 127, 23, 0.15);
+      color: var(--color-caution);
+    }
+
+    .strategy-card.avoid .strategy-badge {
+      background: rgba(198, 40, 40, 0.15);
+      color: var(--color-danger);
+    }
+
+    .strategy-card h4 {
+      margin-bottom: var(--space-md);
+    }
+
+    .strategy-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       11. KEY INSIGHT PANEL
+       ============================================ */
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .person-id {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Specialized Applications</div>
+      <h1>Collider Bias in Healthcare Databases</h1>
+      <p class="subtitle">Controlling for hospitalization can create false associations between conditions that are actually unrelated. The solution is understanding why people end up in your database.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Collider Explained</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Hospital Example</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Avoiding Colliders</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A researcher studies whether high blood pressure (hypertension) is associated with respiratory illness. In the general population, these conditions are unrelated. But in hospital patient records, they appear strongly correlated. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Hypertension Severity vs Respiratory Illness</h3>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="toggle-population" aria-pressed="true">General Population</button>
+              <button class="toggle-btn" id="toggle-hospital" aria-pressed="false">Hospital Patients Only</button>
+            </div>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing hypertension severity versus respiratory illness severity"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Not hospitalized</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Hospitalized</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Correlation (r)</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-corr-pop">--</div>
+                  <div class="stat-label">Population</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value negative" id="stat-corr-hosp">--</div>
+                  <div class="stat-label">Hospital Only</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Sample Sizes</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-n-pop">--</div>
+                  <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-n-hosp">--</div>
+                  <div class="stat-label">Hospitalized</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>The paradox:</strong> Two unrelated conditions appear negatively correlated when we only look at hospitalized patients. The more severe one condition, the less severe the other seems.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Why does limiting to hospitalized patients create a correlation that doesn't exist in the population? The answer involves a concept called a "collider."</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: COLLIDER EXPLAINED
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">What Is a Collider?</h2>
+          <p class="panel-intro">
+            A collider is a variable that is caused by two other variables. Conditioning on a collider (selecting, stratifying, or adjusting for it) creates a spurious association between its causes, even when they're truly independent.
+          </p>
+        </div>
+
+        <div class="explanation-container">
+          <div class="explanation-main">
+            <div class="dag-wrapper" style="box-shadow: none; padding: 0; margin-bottom: var(--space-lg);">
+              <img
+                src="assets/collider-bias-dag.png"
+                alt="Causal diagram showing Hypertension and Respiratory Illness both pointing to Hospitalization, with a dashed line between Hypertension and Respiratory Illness indicating spurious correlation when conditioning on hospitalization"
+                class="dag-image"
+              >
+              <p class="dag-caption">Hospitalization is a "collider" because two independent causes point into it. Conditioning on it opens a backdoor path.</p>
+            </div>
+
+            <div class="step-list">
+              <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content"><strong>Two independent causes:</strong> Hypertension and respiratory illness are separate conditions that each increase the chance of hospitalization, but they don't cause each other.</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content"><strong>Hospitalization is a common effect:</strong> People end up in the hospital database if they have severe hypertension OR severe respiratory problems (or both).</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content"><strong>Conditioning opens a path:</strong> Among hospitalized patients, knowing someone has mild hypertension tells you they probably have severe respiratory illness (otherwise why are they hospitalized?).</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content"><strong>The spurious correlation appears:</strong> This creates a negative association in the hospitalized sample that doesn't exist in the population.</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="info-sidebar">
+            <div class="info-card">
+              <h4>Why "Collider"?</h4>
+              <p>The name comes from the DAG structure: two arrows "collide" at hospitalization. This variable sits at the intersection of two causal pathways.</p>
+            </div>
+
+            <div class="info-card warning-card">
+              <h4>The Trap</h4>
+              <p>Researchers often control for hospitalization thinking it removes confounding. Instead, it can create bias where none existed, or reverse the direction of real effects.</p>
+            </div>
+
+            <div class="info-card">
+              <h4>Other Names</h4>
+              <ul>
+                <li>Berkson's bias (in case-control studies)</li>
+                <li>Selection bias</li>
+                <li>Conditioning on a common effect</li>
+                <li>Index event bias</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+
+        <div class="definition-card">
+          <h3>The Collider Principle</h3>
+          <p>When you condition on a <strong>common effect</strong> of two variables, you create a statistical association between those variables, even if they were independent in the full population.</p>
+          <p style="margin-top: var(--space-md);">This happens because:</p>
+          <ul>
+            <li>Selection into your sample depends on having at least one of the causes</li>
+            <li>Knowing the value of one cause tells you something about the likely value of the other (among selected individuals)</li>
+            <li>The association is real in your data, but it doesn't exist in the population you want to generalize to</li>
+          </ul>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Let's see exactly how this works with a concrete hospital example, step by step.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: HOSPITAL EXAMPLE
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Hospital Example: Why Selection Matters</h2>
+          <p class="panel-intro">
+            Imagine 1,000 people in the general population. Hypertension and respiratory illness are completely independent (correlation = 0). Each condition independently increases hospitalization risk. Watch what happens when we restrict to hospitalized patients only.
+          </p>
+        </div>
+
+        <div class="example-container">
+          <div class="scenario-card population">
+            <div class="scenario-header">
+              <div class="scenario-icon population">P</div>
+              <h3>General Population</h3>
+            </div>
+
+            <div class="scenario-stats">
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Sample size</span>
+                <span class="scenario-stat-value" id="pop-n">1,000</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Hypertension prevalence</span>
+                <span class="scenario-stat-value">30%</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Respiratory illness prevalence</span>
+                <span class="scenario-stat-value">20%</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Correlation (Hypertension, Respiratory)</span>
+                <span class="scenario-stat-value" id="pop-corr" style="color: var(--color-success);">r = 0.00</span>
+              </div>
+            </div>
+
+            <div class="scenario-result none">
+              <div class="result-label">Finding</div>
+              <div class="result-text">No Association</div>
+            </div>
+          </div>
+
+          <div class="scenario-card hospital">
+            <div class="scenario-header">
+              <div class="scenario-icon hospital">H</div>
+              <h3>Hospital Database</h3>
+            </div>
+
+            <div class="scenario-stats">
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Sample size</span>
+                <span class="scenario-stat-value" id="hosp-n">~180</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Hypertension prevalence</span>
+                <span class="scenario-stat-value">65%</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Respiratory illness prevalence</span>
+                <span class="scenario-stat-value">55%</span>
+              </div>
+              <div class="scenario-stat">
+                <span class="scenario-stat-label">Correlation (Hypertension, Respiratory)</span>
+                <span class="scenario-stat-value" id="hosp-corr" style="color: var(--color-danger);">r = -0.35</span>
+              </div>
+            </div>
+
+            <div class="scenario-result spurious">
+              <div class="result-label">Finding</div>
+              <div class="result-text">Spurious Negative Association</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>Why Does This Happen?</h3>
+          <p>Among hospitalized patients:</p>
+          <ul>
+            <li><strong>If someone has mild hypertension</strong> and they're still hospitalized, they probably have something else wrong (like severe respiratory illness)</li>
+            <li><strong>If someone has severe hypertension</strong>, that alone explains their hospitalization, so their respiratory status can be anything (including healthy)</li>
+            <li>This "explaining away" creates a negative correlation that exists only in the selected sample</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">The hospital selects people who are sick enough on at least one dimension. Among those selected, the two dimensions become negatively correlated.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do we recognize collider bias in practice, and what can we do about it?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: AVOIDING COLLIDERS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Recognizing and Avoiding Collider Bias</h2>
+          <p class="panel-intro">
+            Collider bias is subtle because the patterns look real in your data. The correlation is statistically significant. The challenge is recognizing that your sample selection created the pattern.
+          </p>
+        </div>
+
+        <div class="strategy-grid">
+          <div class="strategy-card good">
+            <span class="strategy-badge">Recommended</span>
+            <h4>Draw a DAG Before Analyzing</h4>
+            <p>Before controlling for any variable, ask: "Could this be caused by both my exposure and my outcome?" If arrows point INTO the variable from both, it's a collider. Don't condition on it.</p>
+          </div>
+
+          <div class="strategy-card good">
+            <span class="strategy-badge">Recommended</span>
+            <h4>Understand Your Selection Process</h4>
+            <p>Why are people in your database? Hospital records, insurance claims, and registry data all involve selection. If both exposure and outcome affect selection, you likely have collider bias.</p>
+          </div>
+
+          <div class="strategy-card caution">
+            <span class="strategy-badge">Use Carefully</span>
+            <h4>Sensitivity Analysis</h4>
+            <p>Test whether your results hold if you change the sample. If restricting to a subgroup reverses or magnifies the association, collider bias may be operating.</p>
+          </div>
+
+          <div class="strategy-card caution">
+            <span class="strategy-badge">Use Carefully</span>
+            <h4>Population-Based Data</h4>
+            <p>When possible, use samples that don't select on your outcome's causes. Population surveys, birth cohorts, and random samples avoid many selection problems.</p>
+          </div>
+
+          <div class="strategy-card avoid">
+            <span class="strategy-badge">Avoid</span>
+            <h4>Controlling for Consequences</h4>
+            <p>Never control for variables that happen after your exposure or outcome. Mediators and downstream consequences are especially dangerous sources of collider bias.</p>
+          </div>
+
+          <div class="strategy-card avoid">
+            <span class="strategy-badge">Avoid</span>
+            <h4>Case-Only Designs Without Caution</h4>
+            <p>Studying only hospitalized patients, only those with a diagnosis, or only those who survived an event restricts your sample based on a potential collider.</p>
+          </div>
+        </div>
+
+        <div class="explanation-container">
+          <div class="explanation-main">
+            <h3 style="margin-bottom: var(--space-md);">Common Colliders in Health Research</h3>
+            <div class="step-list">
+              <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content"><strong>Hospitalization:</strong> Many conditions lead to hospitalization. Studying only hospitalized patients can create false associations between unrelated conditions.</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content"><strong>Survival:</strong> Both exposure and outcome may affect survival. Studying survivors only can reverse the true relationship ("obesity paradox").</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content"><strong>Study enrollment:</strong> People who enroll in studies differ from those who don't. If enrollment depends on both exposure and outcome, bias follows.</div>
+              </div>
+              <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content"><strong>Loss to follow-up:</strong> If dropping out depends on both exposure and outcome status, your remaining sample is selected on a collider.</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="info-sidebar">
+            <div class="info-card">
+              <h4>The Key Question</h4>
+              <p>"Is the variable I'm conditioning on caused by both my exposure and my outcome (or causes of my outcome)?"</p>
+              <p style="margin-top: var(--space-sm);">If yes, conditioning on it will induce bias.</p>
+            </div>
+
+            <div class="info-card warning-card">
+              <h4>Confounding vs. Collider</h4>
+              <p>Confounders should be controlled. Colliders should NOT be controlled. Getting this backwards is a common source of bias in observational studies.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What's the key takeaway for researchers working with healthcare databases?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            The patterns in your database are real, but they may not exist in the population you care about. Understanding why people are in your data is as important as understanding what the data show.
+          </p>
+        </div>
+
+        <div class="dag-wrapper">
+          <img
+            src="assets/collider-bias-dag.png"
+            alt="Causal diagram showing the collider structure where two independent causes both point to a common effect"
+            class="dag-image"
+          >
+          <p class="dag-caption">Conditioning on a collider opens a backdoor path between otherwise independent variables, creating spurious correlation.</p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Questions Economists Ask About Healthcare Data</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Selection:</strong> Why are these people in my database? What determines who gets included?</div>
+            <div class="concept-item"><strong>Collider check:</strong> Is my sample restriction based on something caused by both my exposure and outcome?</div>
+            <div class="concept-item"><strong>DAG structure:</strong> Which variables are confounders (control for them) versus colliders (don't control)?</div>
+            <div class="concept-item"><strong>External validity:</strong> Even if the association is real in this sample, does it generalize to the population I want to inform?</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Conditioning on a collider creates spurious correlation between otherwise independent variables.</strong> When your sample is selected based on a common effect of exposure and outcome, associations can appear, disappear, or reverse compared to the general population. Hospital databases, insurance claims, and survival analyses are especially vulnerable. Before analyzing, draw a DAG and ask: "Is my sample restriction a collider?" <strong>This is what economists mean by "selection bias from conditioning on a common effect."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual patient records.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generatePersonData() {
+      const data = [];
+      let seed = 42;
+
+      const rand = () => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      };
+
+      // Generate 500 people
+      for (let i = 0; i < 500; i++) {
+        // Hypertension severity (0-100) - independent
+        const hypertension = rand() * 100;
+
+        // Respiratory illness severity (0-100) - INDEPENDENT of hypertension
+        const respiratory = rand() * 100;
+
+        // Hospitalization probability based on EITHER condition being severe
+        // This creates the collider structure
+        const hospProbFromHypertension = hypertension > 60 ? 0.4 + (hypertension - 60) * 0.01 : hypertension * 0.003;
+        const hospProbFromRespiratory = respiratory > 50 ? 0.3 + (respiratory - 50) * 0.012 : respiratory * 0.004;
+
+        // Combined probability (not independent, but additive)
+        const hospProb = Math.min(0.95, hospProbFromHypertension + hospProbFromRespiratory);
+
+        const hospitalized = rand() < hospProb;
+
+        data.push({
+          id: i + 1,
+          hypertension: Math.round(hypertension * 10) / 10,
+          respiratory: Math.round(respiratory * 10) / 10,
+          hospitalized: hospitalized
+        });
+      }
+
+      return data;
+    }
+
+    const personData = generatePersonData();
+    const hospitalizedData = personData.filter(d => d.hospitalized);
+    const nonHospitalizedData = personData.filter(d => !d.hospitalized);
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function calculateCorrelation(data, xKey, yKey) {
+      if (data.length < 2) return 0;
+
+      const n = data.length;
+      const xVals = data.map(d => d[xKey]);
+      const yVals = data.map(d => d[yKey]);
+
+      const xMean = mean(xVals);
+      const yMean = mean(yVals);
+
+      let numerator = 0;
+      let xDenom = 0;
+      let yDenom = 0;
+
+      for (let i = 0; i < n; i++) {
+        const xDiff = xVals[i] - xMean;
+        const yDiff = yVals[i] - yMean;
+        numerator += xDiff * yDiff;
+        xDenom += xDiff * xDiff;
+        yDenom += yDiff * yDiff;
+      }
+
+      if (xDenom === 0 || yDenom === 0) return 0;
+      return numerator / Math.sqrt(xDenom * yDenom);
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let showHospitalOnly = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. TOGGLE BUTTONS
+       ============================================ */
+    const togglePopulation = document.getElementById('toggle-population');
+    const toggleHospital = document.getElementById('toggle-hospital');
+
+    togglePopulation.addEventListener('click', () => {
+      showHospitalOnly = false;
+      togglePopulation.classList.add('active');
+      togglePopulation.setAttribute('aria-pressed', 'true');
+      toggleHospital.classList.remove('active');
+      toggleHospital.setAttribute('aria-pressed', 'false');
+      renderScatterPlot();
+    });
+
+    toggleHospital.addEventListener('click', () => {
+      showHospitalOnly = true;
+      toggleHospital.classList.add('active');
+      toggleHospital.setAttribute('aria-pressed', 'true');
+      togglePopulation.classList.remove('active');
+      togglePopulation.setAttribute('aria-pressed', 'false');
+      renderScatterPlot();
+    });
+
+    /* ============================================
+       5. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 0, yMax = 100;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Grid lines
+      for (let v = 20; v <= 80; v += 20) {
+        // Horizontal
+        const hLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hLine.setAttribute('x1', margin.left);
+        hLine.setAttribute('x2', width - margin.right);
+        hLine.setAttribute('y1', yScale(v));
+        hLine.setAttribute('y2', yScale(v));
+        hLine.setAttribute('stroke', 'var(--color-border-light)');
+        hLine.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(hLine);
+
+        // Vertical
+        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        vLine.setAttribute('x1', xScale(v));
+        vLine.setAttribute('x2', xScale(v));
+        vLine.setAttribute('y1', margin.top);
+        vLine.setAttribute('y2', height - margin.bottom);
+        vLine.setAttribute('stroke', 'var(--color-border-light)');
+        vLine.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(vLine);
+      }
+
+      // Determine which data to show
+      const dataToShow = showHospitalOnly ? hospitalizedData : personData;
+
+      // Calculate trend line for displayed data
+      const xVals = dataToShow.map(d => d.hypertension);
+      const yVals = dataToShow.map(d => d.respiratory);
+      const xMean = mean(xVals);
+      const yMean = mean(yVals);
+
+      let numerator = 0;
+      let denominator = 0;
+      for (let i = 0; i < dataToShow.length; i++) {
+        numerator += (xVals[i] - xMean) * (yVals[i] - yMean);
+        denominator += (xVals[i] - xMean) * (xVals[i] - xMean);
+      }
+      const slope = denominator !== 0 ? numerator / denominator : 0;
+      const intercept = yMean - slope * xMean;
+
+      // Trend line
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      const trendY1 = intercept;
+      const trendY2 = slope * 100 + intercept;
+      trendLine.setAttribute('x1', xScale(0));
+      trendLine.setAttribute('x2', xScale(100));
+      trendLine.setAttribute('y1', yScale(Math.max(0, Math.min(100, trendY1))));
+      trendLine.setAttribute('y2', yScale(Math.max(0, Math.min(100, trendY2))));
+      trendLine.setAttribute('stroke', showHospitalOnly ? 'var(--color-danger)' : 'var(--color-text-muted)');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '5,5');
+      trendLine.setAttribute('opacity', '0.7');
+      svg.appendChild(trendLine);
+
+      // Data points
+      if (showHospitalOnly) {
+        // Show only hospitalized
+        hospitalizedData.forEach(d => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(d.hypertension));
+          circle.setAttribute('cy', yScale(d.respiratory));
+          circle.setAttribute('r', 6);
+          circle.setAttribute('fill', 'var(--color-accent)');
+          circle.setAttribute('opacity', '0.8');
+          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+          circle.addEventListener('mouseleave', hideTooltip);
+
+          svg.appendChild(circle);
+        });
+      } else {
+        // Show all, with different colors
+        // Non-hospitalized first (so hospitalized are on top)
+        nonHospitalizedData.forEach(d => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(d.hypertension));
+          circle.setAttribute('cy', yScale(d.respiratory));
+          circle.setAttribute('r', 5);
+          circle.setAttribute('fill', 'var(--color-secondary)');
+          circle.setAttribute('opacity', '0.5');
+          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+          circle.addEventListener('mouseleave', hideTooltip);
+
+          svg.appendChild(circle);
+        });
+
+        hospitalizedData.forEach(d => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(d.hypertension));
+          circle.setAttribute('cy', yScale(d.respiratory));
+          circle.setAttribute('r', 6);
+          circle.setAttribute('fill', 'var(--color-accent)');
+          circle.setAttribute('opacity', '0.85');
+          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+          circle.addEventListener('mouseleave', hideTooltip);
+
+          svg.appendChild(circle);
+        });
+      }
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Hypertension Severity (0-100)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 100; y += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Respiratory Illness Severity (0-100)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="person-id">Person ${data.id}</div>
+        <div class="metric">Hypertension: ${data.hypertension}</div>
+        <div class="metric">Respiratory: ${data.respiratory}</div>
+        <div class="metric">Hospitalized: ${data.hospitalized ? 'Yes' : 'No'}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const corrPop = calculateCorrelation(personData, 'hypertension', 'respiratory');
+      const corrHosp = calculateCorrelation(hospitalizedData, 'hypertension', 'respiratory');
+
+      document.getElementById('stat-corr-pop').textContent = corrPop.toFixed(2);
+      document.getElementById('stat-corr-hosp').textContent = corrHosp.toFixed(2);
+      document.getElementById('stat-n-pop').textContent = personData.length;
+      document.getElementById('stat-n-hosp').textContent = hospitalizedData.length;
+
+      // Update the example panel stats
+      document.getElementById('pop-n').textContent = personData.length;
+      document.getElementById('hosp-n').textContent = hospitalizedData.length;
+      document.getElementById('pop-corr').textContent = `r = ${corrPop.toFixed(2)}`;
+      document.getElementById('hosp-corr').textContent = `r = ${corrHosp.toFixed(2)}`;
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

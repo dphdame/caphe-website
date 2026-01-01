@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 4C: Maturation | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn to identify maturation bias when outcomes improve on their own over time, even without your program.">
+  <style>
+    /* ============================================
+       CSS RESET & BASE STYLES
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* CAPHE Brand Palette */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-maturation: #0D9488;
+      --color-error: #C9553A;
+
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radius */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; margin-bottom: var(--space-lg); }
+    h2 { font-size: 1.5rem; margin-bottom: var(--space-md); }
+    h3 { font-size: 1.25rem; margin-bottom: var(--space-sm); }
+    p { margin-bottom: var(--space-md); }
+
+    /* ============================================
+       LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+      text-align: center;
+    }
+
+    .header h1 { color: white; font-size: 2.25rem; margin-bottom: var(--space-sm); }
+    .header .subtitle { font-size: 1.1rem; opacity: 0.9; max-width: 700px; margin: 0 auto var(--space-lg); }
+    .header .eyebrow { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; opacity: 0.8; margin-bottom: var(--space-sm); }
+
+    .header .scenario-box {
+      background: rgba(255,255,255,0.15);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md) var(--space-lg);
+      max-width: 650px;
+      margin: var(--space-lg) auto 0;
+      text-align: left;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-md) 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .panel-nav button {
+      background: transparent;
+      border: 2px solid var(--color-border);
+      padding: var(--space-sm) var(--space-lg);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .panel-nav button:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .panel-nav button[aria-pressed="true"] {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    /* Main Content */
+    .main { padding: var(--space-2xl) 0; }
+
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header { margin-bottom: var(--space-xl); }
+
+    .panel-header h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .panel-number {
+      background: var(--color-primary);
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .panel-intro {
+      color: var(--color-text-secondary);
+      font-size: 1.05rem;
+      max-width: 800px;
+    }
+
+    /* ============================================
+       CHART STYLES
+       ============================================ */
+    .chart-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .chart-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-lg);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 400px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .info-box {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+    }
+
+    .info-box h4 {
+      font-family: var(--font-serif);
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-sm);
+      font-size: 1rem;
+    }
+
+    .info-box p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+      font-size: 0.9rem;
+    }
+
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: var(--color-text-secondary); }
+    .stat-value { font-weight: 600; color: var(--color-maturation); font-family: var(--font-mono); }
+
+    .warning-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .warning-box h4 {
+      color: #B7791F;
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       EXPLANATION STYLES
+       ============================================ */
+    .explanation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+
+    .concept-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .concept-card h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-icon {
+      font-size: 1.5rem;
+    }
+
+    .concept-card ul {
+      list-style: none;
+      margin-top: var(--space-md);
+    }
+
+    .concept-card li {
+      padding: var(--space-sm) 0;
+      padding-left: var(--space-lg);
+      position: relative;
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .concept-card li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--color-maturation);
+    }
+
+    .metaphor-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-maturation);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-top: var(--space-xl);
+      text-align: center;
+    }
+
+    .metaphor-box h3 {
+      color: var(--color-maturation);
+      margin-bottom: var(--space-md);
+    }
+
+    .metaphor-text {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ============================================
+       SOLUTION STYLES
+       ============================================ */
+    .solution-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-xl);
+    }
+
+    .solution-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 4px solid var(--color-maturation);
+    }
+
+    .solution-card h3 {
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .solution-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .solution-example {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+      padding: var(--space-md);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+
+    .key-question {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      margin-top: var(--space-xl);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .key-question h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a { color: var(--color-accent); }
+    .footer p { margin-bottom: var(--space-sm); font-size: 0.9rem; }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 200px;
+    }
+
+    .tooltip.hidden { display: none; }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab 4C &middot; Threats to Internal Validity</div>
+      <h1>Maturation: When Outcomes Improve on Their Own</h1>
+      <p class="subtitle">Sometimes things get better naturally, with or without your program.</p>
+      <div class="scenario-box">
+        <strong>The Scenario:</strong> Your diabetes prevention program launched in 2019. Since then, blood sugar levels in participants have improved. Great news—or is it? What if blood sugar trends were already improving before you started?
+      </div>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Lab panels">
+    <ul>
+      <li><button class="panel-btn" data-panel="1" aria-pressed="true">1. The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. The Threat Explained</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. What To Do</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">
+            <span class="panel-number">1</span>
+            The Data: A Trend That Was Already Moving
+          </h2>
+          <p class="panel-intro">
+            Look at the screening rates below. The program launched in 2019, and rates kept rising afterward. But notice something important: they were already rising before the program started. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Screening Rate Over Time (Before and After Program)</h3>
+            <svg id="trend-chart" class="chart-svg" aria-label="Time series showing screening rates rising before and after program launch"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-maturation);"></span>
+                <span>Before Program (2014–2018)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>After Program (2019–2024)</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="sidebar">
+            <div class="info-box">
+              <h4>The Numbers</h4>
+              <div class="stat-row">
+                <span class="stat-label">Rate in 2014</span>
+                <span class="stat-value" id="stat-start">42%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Rate at Launch (2019)</span>
+                <span class="stat-value" id="stat-launch">52%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Rate in 2024</span>
+                <span class="stat-value" id="stat-end">62%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Pre-Program Trend</span>
+                <span class="stat-value" id="stat-pre-trend">+2 pts/year</span>
+              </div>
+            </div>
+
+            <div class="warning-box">
+              <h4>The Problem</h4>
+              <p>The outcome was already improving at about 2 points per year before the program. If it kept improving at the same rate after the program, did the program actually do anything?</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE THREAT EXPLAINED
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">
+            <span class="panel-number">2</span>
+            The Threat Explained: What Is Maturation?
+          </h2>
+          <p class="panel-intro">
+            Maturation means outcomes change naturally over time—independent of any program. If you only compare "before" to "after," you might credit your program for changes that would have happened anyway.
+          </p>
+        </div>
+
+        <div class="explanation-grid">
+          <div class="concept-card">
+            <h3><span class="concept-icon">📈</span> What Causes Natural Trends?</h3>
+            <p>Many things drive outcomes to change over time, even without intervention:</p>
+            <ul>
+              <li>National health campaigns and awareness</li>
+              <li>Changes in medical guidelines</li>
+              <li>Technology improvements</li>
+              <li>Economic growth or decline</li>
+              <li>Demographic shifts in the population</li>
+              <li>Participants simply getting older</li>
+            </ul>
+          </div>
+
+          <div class="concept-card">
+            <h3><span class="concept-icon">🎯</span> Why It's a Threat</h3>
+            <p>If your outcome was already improving, and it continues improving after your program:</p>
+            <ul>
+              <li>You might claim credit for natural change</li>
+              <li>Your "effect size" is actually zero</li>
+              <li>Resources spent on a program that added nothing</li>
+              <li>Decision-makers misled about what works</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="metaphor-box">
+          <h3>Think of It Like This</h3>
+          <p class="metaphor-text">
+            Imagine you start watering a plant in spring. By summer, it's grown taller. Did your watering help, or was the plant going to grow anyway because of the season? Without knowing what would have happened without watering, you can't tell.
+          </p>
+        </div>
+
+        <div class="key-question">
+          <h4>The Key Question</h4>
+          <p>Did the rate of improvement <strong>change</strong> after the program—or just continue at the same pace it was already on?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: WHAT TO DO
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">
+            <span class="panel-number">3</span>
+            What To Do: Addressing Maturation
+          </h2>
+          <p class="panel-intro">
+            You can't eliminate maturation threats entirely, but you can recognize them and use study designs that account for natural trends.
+          </p>
+        </div>
+
+        <div class="solution-cards">
+          <div class="solution-card">
+            <h3>1. Look at Pre-Program Trends</h3>
+            <p>Before claiming your program worked, check if the outcome was already changing. Plot several years of baseline data.</p>
+            <div class="solution-example">
+              "Screening rates rose 2 points/year before the program and 2 points/year after. The program didn't accelerate the trend."
+            </div>
+          </div>
+
+          <div class="solution-card">
+            <h3>2. Use a Comparison Group</h3>
+            <p>Find a similar group that didn't receive the program. If both groups improve at the same rate, the improvement isn't your program's effect.</p>
+            <div class="solution-example">
+              "Both the program county and the comparison county saw screening rates rise equally. The program added nothing beyond the regional trend."
+            </div>
+          </div>
+
+          <div class="solution-card">
+            <h3>3. Extend Your Baseline</h3>
+            <p>The more years of pre-program data you have, the better you can estimate the natural trend and test if it was stable.</p>
+            <div class="solution-example">
+              "With 5+ years of baseline data, we can fit a reliable trend line and project what would have happened without the program."
+            </div>
+          </div>
+
+          <div class="solution-card">
+            <h3>4. Report Honestly</h3>
+            <p>If your data shows the trend didn't change, say so. Null findings are valuable—they prevent wasted resources on ineffective programs.</p>
+            <div class="solution-example">
+              "The program launched, but the rate of improvement didn't change. We found no evidence the program accelerated outcomes."
+            </div>
+          </div>
+        </div>
+
+        <div class="key-question" style="margin-top: var(--space-2xl);">
+          <h4>Takeaway</h4>
+          <p>Maturation is one of the most common threats in before-after studies. Always ask: <strong>"Was this outcome already moving in this direction?"</strong> If yes, you need a comparison group or trend analysis to separate program effects from natural change.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       DATA GENERATION
+       ============================================ */
+
+    function seededRandom(seed) {
+      return function() {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
+    }
+
+    function generateData() {
+      const data = [];
+      const baseValue = 42;
+      const annualIncrease = 2.0;
+      const programYear = 2019;
+      const rand = seededRandom(42);
+
+      for (let year = 2014; year <= 2024; year++) {
+        const yearsFromStart = year - 2014;
+        const expected = baseValue + (annualIncrease * yearsFromStart);
+        const noise = (rand() - 0.5) * 2.5;
+
+        data.push({
+          year: year,
+          value: Math.round((expected + noise) * 10) / 10,
+          period: year < programYear ? 'pre' : 'post'
+        });
+      }
+
+      return data;
+    }
+
+    const timeSeriesData = generateData();
+
+    /* ============================================
+       CHART RENDERING
+       ============================================ */
+
+    function renderTrendChart() {
+      const svg = document.getElementById('trend-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 400;
+      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 2013.5, xMax = 2024.5;
+      const yMin = 35, yMax = 70;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 40; y <= 65; y += 5) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#EEEEEE');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Program launch line
+      const programX = xScale(2019);
+      const programLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      programLine.setAttribute('x1', programX);
+      programLine.setAttribute('x2', programX);
+      programLine.setAttribute('y1', margin.top);
+      programLine.setAttribute('y2', height - margin.bottom);
+      programLine.setAttribute('stroke', 'var(--color-primary)');
+      programLine.setAttribute('stroke-width', '2');
+      programLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(programLine);
+
+      const programLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      programLabel.setAttribute('x', programX);
+      programLabel.setAttribute('y', margin.top - 10);
+      programLabel.setAttribute('text-anchor', 'middle');
+      programLabel.setAttribute('font-size', '11');
+      programLabel.setAttribute('font-weight', '600');
+      programLabel.setAttribute('fill', 'var(--color-primary)');
+      programLabel.textContent = 'Program Launch';
+      svg.appendChild(programLabel);
+
+      // Data lines
+      const preData = timeSeriesData.filter(d => d.period === 'pre');
+      const postData = timeSeriesData.filter(d => d.period === 'post');
+
+      // Pre-program line
+      let prePath = '';
+      preData.forEach((d, i) => {
+        prePath += (i === 0 ? 'M' : 'L') + xScale(d.year) + ',' + yScale(d.value);
+      });
+      const preLineEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      preLineEl.setAttribute('d', prePath);
+      preLineEl.setAttribute('stroke', 'var(--color-maturation)');
+      preLineEl.setAttribute('stroke-width', '3');
+      preLineEl.setAttribute('fill', 'none');
+      svg.appendChild(preLineEl);
+
+      // Post-program line
+      let postPath = '';
+      postData.forEach((d, i) => {
+        postPath += (i === 0 ? 'M' : 'L') + xScale(d.year) + ',' + yScale(d.value);
+      });
+      const postLineEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      postLineEl.setAttribute('d', postPath);
+      postLineEl.setAttribute('stroke', 'var(--color-accent)');
+      postLineEl.setAttribute('stroke-width', '3');
+      postLineEl.setAttribute('fill', 'none');
+      svg.appendChild(postLineEl);
+
+      // Data points
+      timeSeriesData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.year));
+        circle.setAttribute('cy', yScale(d.value));
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', d.period === 'pre' ? 'var(--color-maturation)' : 'var(--color-accent)');
+        circle.setAttribute('style', 'cursor: pointer;');
+        circle.setAttribute('data-year', d.year);
+        circle.setAttribute('data-value', d.value);
+        circle.setAttribute('data-period', d.period);
+
+        circle.addEventListener('mouseenter', showTooltip);
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let year = 2014; year <= 2024; year++) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(year));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = year;
+        svg.appendChild(tick);
+      }
+
+      const xTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xTitle.setAttribute('x', width / 2);
+      xTitle.setAttribute('y', height - 8);
+      xTitle.setAttribute('text-anchor', 'middle');
+      xTitle.setAttribute('font-size', '12');
+      xTitle.setAttribute('fill', 'var(--color-text)');
+      xTitle.textContent = 'Year';
+      svg.appendChild(xTitle);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 40; y <= 65; y += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yTitle.setAttribute('x', 18);
+      yTitle.setAttribute('y', height / 2);
+      yTitle.setAttribute('text-anchor', 'middle');
+      yTitle.setAttribute('font-size', '12');
+      yTitle.setAttribute('fill', 'var(--color-text)');
+      yTitle.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yTitle.textContent = 'Screening Rate';
+      svg.appendChild(yTitle);
+    }
+
+    function showTooltip(event) {
+      const tooltip = document.getElementById('tooltip');
+      const target = event.target;
+      const year = target.getAttribute('data-year');
+      const value = target.getAttribute('data-value');
+      const period = target.getAttribute('data-period');
+
+      tooltip.innerHTML = `<strong>${year}</strong><br>Rate: ${parseFloat(value).toFixed(1)}%<br>${period === 'pre' ? 'Before Program' : 'After Program'}`;
+
+      const rect = target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip').classList.add('hidden');
+    }
+
+    /* ============================================
+       PANEL NAVIGATION
+       ============================================ */
+
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        panelBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+      });
+    });
+
+    /* ============================================
+       INITIALIZATION
+       ============================================ */
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTrendChart();
+
+      // Update stats
+      document.getElementById('stat-start').textContent = timeSeriesData[0].value.toFixed(0) + '%';
+      document.getElementById('stat-launch').textContent = timeSeriesData.find(d => d.year === 2019).value.toFixed(0) + '%';
+      document.getElementById('stat-end').textContent = timeSeriesData[timeSeriesData.length - 1].value.toFixed(0) + '%';
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(renderTrendChart, 250);
+      });
+    });
+  </script>
+</body>
+</html>

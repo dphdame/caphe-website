@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Study: Comparing Two Programs | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how health economists compare programs that both work to determine which delivers more health per dollar. Interactive cost-effectiveness comparison with real tradeoffs.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Program Colors */
+      --color-program-a: #0D9488;
+      --color-program-b: #F9A825;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA (Scenario Setup)
+       ============================================ */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .scenario-grid { grid-template-columns: 1fr; }
+    }
+
+    .program-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 5px solid var(--color-border);
+    }
+
+    .program-card.program-a {
+      border-top-color: var(--color-program-a);
+    }
+
+    .program-card.program-b {
+      border-top-color: var(--color-program-b);
+    }
+
+    .program-card h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .program-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .program-badge.a { background: var(--color-program-a); }
+    .program-badge.b { background: var(--color-program-b); }
+
+    .program-description {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .metric-row:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--color-text);
+    }
+
+    .context-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-xl);
+    }
+
+    .context-box h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .context-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .context-item::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      margin-top: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ============================================
+       7. PANEL 2 & 3: PROGRAM ANALYSIS
+       ============================================ */
+    .analysis-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .analysis-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 380px;
+    }
+
+    .breakdown-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .breakdown-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .breakdown-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-md);
+    }
+
+    .breakdown-stat {
+      text-align: center;
+      padding: var(--space-md) 0;
+    }
+
+    .breakdown-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .breakdown-value.program-a { color: var(--color-program-a); }
+    .breakdown-value.program-b { color: var(--color-program-b); }
+
+    .breakdown-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .breakdown-detail {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      padding: var(--space-sm) 0;
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .breakdown-detail span {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .formula-box {
+      background: var(--color-bg-code);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: var(--space-md);
+    }
+
+    /* ============================================
+       8. PANEL 4: HEAD-TO-HEAD COMPARISON
+       ============================================ */
+    .comparison-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .comparison-container { grid-template-columns: 1fr; }
+    }
+
+    .comparison-chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      grid-column: 1 / -1;
+    }
+
+    .comparison-chart-svg {
+      width: 100%;
+      height: 450px;
+    }
+
+    .slider-controls {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      grid-column: 1 / -1;
+    }
+
+    .slider-controls h4 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .slider-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    .slider-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      border: none;
+    }
+
+    .slider-hint {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .decision-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      grid-column: 1 / -1;
+    }
+
+    .decision-box h4 {
+      margin-bottom: var(--space-md);
+    }
+
+    .decision-result {
+      font-size: 1.1rem;
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .decision-result.program-a-wins {
+      background: rgba(13, 148, 136, 0.1);
+      border-left: 4px solid var(--color-program-a);
+    }
+
+    .decision-result.program-b-wins {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-program-b);
+    }
+
+    .decision-result.tie {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+    }
+
+    .decision-explanation {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       9. PANEL 5: KEY INSIGHTS
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .insights-grid { grid-template-columns: 1fr; }
+    }
+
+    .insight-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .insight-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* Bridging Box */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       11. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .tooltip-title {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .tooltip-metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       12. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab - Economic Evaluation</div>
+      <h1>Case Study: Comparing Two Programs</h1>
+      <p class="subtitle">When two programs both improve outcomes, they are effective. But which delivers more health per dollar? That's efficiency.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Program A</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Program B</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Head-to-Head</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A county health department has funding for one new diabetes prevention program. They are evaluating two evidence-based options. Both programs reduce diabetes incidence. The question is which one to choose. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="scenario-grid">
+          <div class="program-card program-a">
+            <h3>
+              <span class="program-badge a">A</span>
+              Community Health Workers
+            </h3>
+            <p class="program-description">
+              Trained community members conduct home visits, provide culturally appropriate education, and connect at-risk individuals to clinical services. Requires ongoing staffing costs but reaches people who avoid clinics.
+            </p>
+            <div class="metric-row">
+              <span class="metric-label">Annual program cost</span>
+              <span class="metric-value">$450,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">People reached per year</span>
+              <span class="metric-value">600</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Diabetes cases prevented</span>
+              <span class="metric-value">24</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">QALYs gained (total)</span>
+              <span class="metric-value">48</span>
+            </div>
+          </div>
+
+          <div class="program-card program-b">
+            <h3>
+              <span class="program-badge b">B</span>
+              Digital Health Platform
+            </h3>
+            <p class="program-description">
+              Smartphone app with personalized nutrition coaching, activity tracking, and telehealth consultations. Lower per-person costs allow serving more people, but engagement varies and some populations lack digital access.
+            </p>
+            <div class="metric-row">
+              <span class="metric-label">Annual program cost</span>
+              <span class="metric-value">$320,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">People reached per year</span>
+              <span class="metric-value">2,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Diabetes cases prevented</span>
+              <span class="metric-value">30</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">QALYs gained (total)</span>
+              <span class="metric-value">60</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="context-box">
+          <h4>Context for This Decision</h4>
+          <div class="context-item">County budget allows funding only ONE program</div>
+          <div class="context-item">Both programs have strong evidence of effectiveness from randomized trials</div>
+          <div class="context-item">Target population: adults with prediabetes in the county (approximately 15,000 people)</div>
+          <div class="context-item">Decision must consider both efficiency and equity implications</div>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text);">
+            <strong>Both programs work. But choosing between them requires more than knowing they are effective.</strong>
+          </p>
+          <p style="font-size: 0.95rem;">
+            Explore Program A to understand how economists calculate cost-effectiveness.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: PROGRAM A
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Program A: Community Health Workers</h2>
+          <p class="panel-intro">
+            Program A spends more money reaching fewer people, but achieves deep engagement with each participant. Cost-effectiveness analysis translates these tradeoffs into a single comparable metric.
+          </p>
+        </div>
+
+        <div class="analysis-container">
+          <div class="chart-wrapper">
+            <h4 style="margin-bottom: var(--space-md); color: var(--color-primary);">Cost and Health Outcome Breakdown</h4>
+            <svg id="program-a-chart" class="chart-svg" role="img" aria-label="Bar chart showing Program A costs and outcomes"></svg>
+          </div>
+
+          <aside class="breakdown-sidebar">
+            <div class="breakdown-card">
+              <h4>Cost-Effectiveness Ratio</h4>
+              <div class="breakdown-stat">
+                <div class="breakdown-value program-a" id="cea-ratio-a">$9,375</div>
+                <div class="breakdown-label">per QALY gained</div>
+              </div>
+              <div class="formula-box">
+                $450,000 / 48 QALYs
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <h4>What This Means</h4>
+              <div class="breakdown-detail">
+                Cost per person reached: <span>$750</span>
+              </div>
+              <div class="breakdown-detail">
+                Cost per case prevented: <span>$18,750</span>
+              </div>
+              <div class="breakdown-detail">
+                QALYs per case prevented: <span>2.0</span>
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <h4>Strengths</h4>
+              <p style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                High engagement, reaches hard-to-reach populations, builds community capacity, addresses social determinants
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text);">
+            <strong>Program A costs $9,375 per QALY gained.</strong>
+          </p>
+          <p style="font-size: 0.95rem;">
+            Is that expensive or affordable? Compare it to Program B to understand how relative cost-effectiveness drives decisions.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: PROGRAM B
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Program B: Digital Health Platform</h2>
+          <p class="panel-intro">
+            Program B reaches more people at lower cost but with shallower engagement. Lower cost per person translates to more total health benefit from the same budget.
+          </p>
+        </div>
+
+        <div class="analysis-container">
+          <div class="chart-wrapper">
+            <h4 style="margin-bottom: var(--space-md); color: var(--color-primary);">Cost and Health Outcome Breakdown</h4>
+            <svg id="program-b-chart" class="chart-svg" role="img" aria-label="Bar chart showing Program B costs and outcomes"></svg>
+          </div>
+
+          <aside class="breakdown-sidebar">
+            <div class="breakdown-card">
+              <h4>Cost-Effectiveness Ratio</h4>
+              <div class="breakdown-stat">
+                <div class="breakdown-value program-b" id="cea-ratio-b">$5,333</div>
+                <div class="breakdown-label">per QALY gained</div>
+              </div>
+              <div class="formula-box">
+                $320,000 / 60 QALYs
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <h4>What This Means</h4>
+              <div class="breakdown-detail">
+                Cost per person reached: <span>$160</span>
+              </div>
+              <div class="breakdown-detail">
+                Cost per case prevented: <span>$10,667</span>
+              </div>
+              <div class="breakdown-detail">
+                QALYs per case prevented: <span>2.0</span>
+              </div>
+            </div>
+
+            <div class="breakdown-card">
+              <h4>Strengths</h4>
+              <p style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                Scalable, lower cost per person, continuous engagement tracking, easy to update content
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text);">
+            <strong>Program B costs $5,333 per QALY gained.</strong>
+          </p>
+          <p style="font-size: 0.95rem;">
+            See how these programs compare directly, and explore how assumptions about reach and effectiveness change the decision.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: HEAD-TO-HEAD COMPARISON
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Head-to-Head Comparison</h2>
+          <p class="panel-intro">
+            Cost-effectiveness analysis enables direct comparison of programs with different costs and outcomes. The program with the lower cost per QALY delivers more health for each dollar spent.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="comparison-chart-wrapper">
+            <h4 style="margin-bottom: var(--space-md); color: var(--color-primary);">Cost-Effectiveness Plane</h4>
+            <svg id="comparison-chart" class="comparison-chart-svg" role="img" aria-label="Scatter plot comparing cost-effectiveness of Programs A and B"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-program-a);"></span>
+                <span>Program A (CHW)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-program-b);"></span>
+                <span>Program B (Digital)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slider-controls">
+            <h4>Sensitivity Analysis: What If Assumptions Change?</h4>
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Program A effectiveness multiplier</span>
+                <span class="slider-value" id="slider-a-value">1.0x</span>
+              </div>
+              <input type="range" class="slider-input" id="slider-a" min="0.5" max="2.0" step="0.1" value="1.0" aria-label="Adjust effectiveness of Program A">
+              <div class="slider-hint">Adjusts QALYs gained (e.g., 1.5x = 50% more effective than estimated)</div>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Program B effectiveness multiplier</span>
+                <span class="slider-value" id="slider-b-value">1.0x</span>
+              </div>
+              <input type="range" class="slider-input" id="slider-b" min="0.5" max="2.0" step="0.1" value="1.0" aria-label="Adjust effectiveness of Program B">
+              <div class="slider-hint">Lower engagement may reduce effectiveness in real-world settings</div>
+            </div>
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Budget available</span>
+                <span class="slider-value" id="slider-budget-value">$500,000</span>
+              </div>
+              <input type="range" class="slider-input" id="slider-budget" min="250000" max="1000000" step="50000" value="500000" aria-label="Adjust total budget constraint">
+              <div class="slider-hint">Larger budgets may enable both programs or scaled implementation</div>
+            </div>
+          </div>
+
+          <div class="decision-box">
+            <h4>Current Decision</h4>
+            <div class="decision-result" id="decision-result">
+              Loading...
+            </div>
+            <p class="decision-explanation" id="decision-explanation">
+              Adjust the sliders to see how uncertainty in effectiveness estimates affects which program delivers more value.
+            </p>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text);">
+            <strong>The "best" choice depends on what you value and what you believe about uncertain estimates.</strong>
+          </p>
+          <p style="font-size: 0.95rem;">
+            Explore the key insight to understand how economists think about these tradeoffs.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Cost-effectiveness analysis transforms complex program comparisons into structured decisions. But the analysis reveals tradeoffs; it does not eliminate them.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>Incremental Cost-Effectiveness Ratio (ICER)</h3>
+          <p>The <strong>ICER</strong> measures the additional cost to gain one additional unit of health benefit when comparing two alternatives:</p>
+          <div class="formula-box" style="margin: var(--space-lg) 0; font-size: 1rem;">
+            ICER = (Cost<sub>B</sub> - Cost<sub>A</sub>) / (Effect<sub>B</sub> - Effect<sub>A</sub>)
+          </div>
+          <ul>
+            <li>When one program costs less AND produces more health, it <strong>dominates</strong> the other</li>
+            <li>When a program costs more but produces more health, the ICER tells you if the extra benefit is worth the extra cost</li>
+            <li>Decision thresholds (like $50,000 or $100,000 per QALY) help determine if an ICER represents good value</li>
+          </ul>
+        </div>
+
+        <div class="insights-grid">
+          <div class="insight-card">
+            <h4>Efficiency is not the only value</h4>
+            <p>Program A might be preferred despite higher cost per QALY if it reaches populations that digital tools cannot serve. Equity considerations may override pure efficiency.</p>
+          </div>
+
+          <div class="insight-card">
+            <h4>Uncertainty matters</h4>
+            <p>Point estimates hide uncertainty. A program that looks better on average might have wide confidence intervals that overlap with the alternative.</p>
+          </div>
+
+          <div class="insight-card">
+            <h4>Budget constraints are real</h4>
+            <p>Even if Program A delivers good value, it may not be affordable. Budget impact analysis complements cost-effectiveness analysis.</p>
+          </div>
+
+          <div class="insight-card">
+            <h4>Opportunity cost is the comparison</h4>
+            <p>Economists compare programs not to "doing nothing" but to the next best use of those resources. Every dollar spent on one program cannot be spent elsewhere.</p>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>"It works" is not enough.</strong> Many programs improve health. The economist's question is which program improves health the most for each dollar spent. Cost-effectiveness analysis provides a framework for comparing options with different costs and outcomes. The program that generates more QALYs per dollar allows limited resources to produce more total health. <strong>This is what economists mean by "efficiency."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. PROGRAM DATA
+       ============================================ */
+    const programData = {
+      a: {
+        name: 'Community Health Workers',
+        shortName: 'CHW',
+        cost: 450000,
+        peopleReached: 600,
+        casesPrevented: 24,
+        qalys: 48,
+        color: '#0D9488'
+      },
+      b: {
+        name: 'Digital Health Platform',
+        shortName: 'Digital',
+        cost: 320000,
+        peopleReached: 2000,
+        casesPrevented: 30,
+        qalys: 60,
+        color: '#F9A825'
+      }
+    };
+
+    // Adjusted values based on sliders
+    let adjustedData = {
+      a: { ...programData.a },
+      b: { ...programData.b }
+    };
+    let budget = 500000;
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function formatCurrency(value) {
+      return '$' + value.toLocaleString('en-US');
+    }
+
+    function formatNumber(value) {
+      return value.toLocaleString('en-US');
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let programAChartInitialized = false;
+    let programBChartInitialized = false;
+    let comparisonChartInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '2') {
+          setTimeout(() => {
+            if (!programAChartInitialized) {
+              renderProgramChart('a');
+              programAChartInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!programBChartInitialized) {
+              renderProgramChart('b');
+              programBChartInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '4') {
+          setTimeout(() => {
+            if (!comparisonChartInitialized) {
+              renderComparisonChart();
+              updateDecision();
+              comparisonChartInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. PROGRAM CHART (Panels 2 & 3)
+       ============================================ */
+    function renderProgramChart(program) {
+      const data = programData[program];
+      const svgId = program === 'a' ? 'program-a-chart' : 'program-b-chart';
+      const svg = document.getElementById(svgId);
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 380;
+      const margin = { top: 40, right: 40, bottom: 80, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Metrics to display
+      const metrics = [
+        { label: 'Cost (thousands)', value: data.cost / 1000, unit: '$', max: 500 },
+        { label: 'People Reached', value: data.peopleReached, unit: '', max: 2500 },
+        { label: 'Cases Prevented', value: data.casesPrevented, unit: '', max: 40 },
+        { label: 'QALYs Gained', value: data.qalys, unit: '', max: 80 }
+      ];
+
+      const barWidth = plotWidth / metrics.length - 30;
+      const barSpacing = (plotWidth - barWidth * metrics.length) / (metrics.length + 1);
+
+      metrics.forEach((m, i) => {
+        const x = margin.left + barSpacing + i * (barWidth + barSpacing);
+        const barHeight = (m.value / m.max) * plotHeight;
+        const y = margin.top + plotHeight - barHeight;
+
+        // Bar
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', barWidth);
+        rect.setAttribute('height', barHeight);
+        rect.setAttribute('fill', data.color);
+        rect.setAttribute('rx', '4');
+        rect.setAttribute('opacity', '0.85');
+        svg.appendChild(rect);
+
+        // Value label
+        const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valueLabel.setAttribute('x', x + barWidth / 2);
+        valueLabel.setAttribute('y', y - 10);
+        valueLabel.setAttribute('text-anchor', 'middle');
+        valueLabel.setAttribute('font-size', '14');
+        valueLabel.setAttribute('font-weight', '600');
+        valueLabel.setAttribute('fill', 'var(--color-text)');
+        valueLabel.textContent = m.unit + formatNumber(Math.round(m.value));
+        svg.appendChild(valueLabel);
+
+        // X-axis label
+        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xLabel.setAttribute('x', x + barWidth / 2);
+        xLabel.setAttribute('y', height - margin.bottom + 25);
+        xLabel.setAttribute('text-anchor', 'middle');
+        xLabel.setAttribute('font-size', '12');
+        xLabel.setAttribute('fill', 'var(--color-text-secondary)');
+        xLabel.textContent = m.label;
+        svg.appendChild(xLabel);
+      });
+
+      // Y-axis line
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', margin.top + plotHeight);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      // X-axis line
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', margin.top + plotHeight);
+      xAxis.setAttribute('y2', margin.top + plotHeight);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+    }
+
+    /* ============================================
+       5. COMPARISON CHART (Panel 4)
+       ============================================ */
+    function renderComparisonChart() {
+      const svg = document.getElementById('comparison-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 800;
+      const height = svg.clientHeight || 450;
+      const margin = { top: 40, right: 60, bottom: 80, left: 100 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Scales
+      const maxCost = 600000;
+      const maxQalys = 100;
+
+      const xScale = (val) => margin.left + (val / maxQalys) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / maxCost) * plotHeight;
+
+      // Grid lines
+      for (let y = 0; y <= 600000; y += 100000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', margin.left - 10);
+        label.setAttribute('y', yScale(y) + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', 'var(--color-text-muted)');
+        label.textContent = '$' + (y / 1000) + 'K';
+        svg.appendChild(label);
+      }
+
+      for (let x = 0; x <= 100; x += 20) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xScale(x));
+        line.setAttribute('x2', xScale(x));
+        line.setAttribute('y1', margin.top);
+        line.setAttribute('y2', margin.top + plotHeight);
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(x));
+        label.setAttribute('y', height - margin.bottom + 20);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', 'var(--color-text-muted)');
+        label.textContent = x;
+        svg.appendChild(label);
+      }
+
+      // ICER reference line ($50,000/QALY)
+      const icerLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      icerLine.setAttribute('x1', xScale(0));
+      icerLine.setAttribute('y1', yScale(0));
+      icerLine.setAttribute('x2', xScale(maxCost / 50000));
+      icerLine.setAttribute('y2', yScale(maxCost));
+      icerLine.setAttribute('stroke', 'var(--color-primary)');
+      icerLine.setAttribute('stroke-width', '1.5');
+      icerLine.setAttribute('stroke-dasharray', '8,4');
+      icerLine.setAttribute('opacity', '0.5');
+      svg.appendChild(icerLine);
+
+      const icerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icerLabel.setAttribute('x', xScale(85));
+      icerLabel.setAttribute('y', yScale(450000));
+      icerLabel.setAttribute('font-size', '10');
+      icerLabel.setAttribute('fill', 'var(--color-primary)');
+      icerLabel.setAttribute('opacity', '0.7');
+      icerLabel.textContent = '$50K/QALY threshold';
+      svg.appendChild(icerLabel);
+
+      // Program points
+      const programs = [
+        { ...adjustedData.a, id: 'a' },
+        { ...adjustedData.b, id: 'b' }
+      ];
+
+      programs.forEach(p => {
+        const cx = xScale(p.qalys);
+        const cy = yScale(p.cost);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 14);
+        circle.setAttribute('fill', p.color);
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '3');
+        circle.setAttribute('style', 'cursor: pointer;');
+
+        circle.addEventListener('mouseenter', (e) => showProgramTooltip(e, p));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+
+        // Label
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', cx);
+        label.setAttribute('y', cy + 5);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '12');
+        label.setAttribute('font-weight', '700');
+        label.setAttribute('fill', 'white');
+        label.setAttribute('style', 'pointer-events: none;');
+        label.textContent = p.id.toUpperCase();
+        svg.appendChild(label);
+      });
+
+      // Axes
+      const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxisLine.setAttribute('x1', margin.left);
+      xAxisLine.setAttribute('x2', width - margin.right);
+      xAxisLine.setAttribute('y1', margin.top + plotHeight);
+      xAxisLine.setAttribute('y2', margin.top + plotHeight);
+      xAxisLine.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxisLine);
+
+      const yAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxisLine.setAttribute('x1', margin.left);
+      yAxisLine.setAttribute('x2', margin.left);
+      yAxisLine.setAttribute('y1', margin.top);
+      yAxisLine.setAttribute('y2', margin.top + plotHeight);
+      yAxisLine.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxisLine);
+
+      // Axis labels
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 20);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '13');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'QALYs Gained';
+      svg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '13');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Program Cost';
+      svg.appendChild(yLabel);
+
+      // Title annotation
+      const annotation = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      annotation.setAttribute('x', width - margin.right);
+      annotation.setAttribute('y', margin.top);
+      annotation.setAttribute('text-anchor', 'end');
+      annotation.setAttribute('font-size', '11');
+      annotation.setAttribute('fill', 'var(--color-text-muted)');
+      annotation.textContent = 'Lower and to the right = more cost-effective';
+      svg.appendChild(annotation);
+    }
+
+    /* ============================================
+       6. SLIDER CONTROLS
+       ============================================ */
+    document.getElementById('slider-a').addEventListener('input', function() {
+      const multiplier = parseFloat(this.value);
+      document.getElementById('slider-a-value').textContent = multiplier.toFixed(1) + 'x';
+      adjustedData.a.qalys = programData.a.qalys * multiplier;
+      renderComparisonChart();
+      updateDecision();
+    });
+
+    document.getElementById('slider-b').addEventListener('input', function() {
+      const multiplier = parseFloat(this.value);
+      document.getElementById('slider-b-value').textContent = multiplier.toFixed(1) + 'x';
+      adjustedData.b.qalys = programData.b.qalys * multiplier;
+      renderComparisonChart();
+      updateDecision();
+    });
+
+    document.getElementById('slider-budget').addEventListener('input', function() {
+      budget = parseInt(this.value);
+      document.getElementById('slider-budget-value').textContent = formatCurrency(budget);
+      updateDecision();
+    });
+
+    /* ============================================
+       7. DECISION UPDATE
+       ============================================ */
+    function updateDecision() {
+      const ceaA = adjustedData.a.cost / adjustedData.a.qalys;
+      const ceaB = adjustedData.b.cost / adjustedData.b.qalys;
+
+      const resultEl = document.getElementById('decision-result');
+      const explanationEl = document.getElementById('decision-explanation');
+
+      const canAffordA = adjustedData.a.cost <= budget;
+      const canAffordB = adjustedData.b.cost <= budget;
+
+      if (!canAffordA && !canAffordB) {
+        resultEl.className = 'decision-result tie';
+        resultEl.innerHTML = '<strong>Neither program is affordable</strong> within the current budget.';
+        explanationEl.textContent = 'Increase the budget to enable program implementation.';
+      } else if (!canAffordA) {
+        resultEl.className = 'decision-result program-b-wins';
+        resultEl.innerHTML = '<strong>Program B is the only affordable option</strong> at ' + formatCurrency(Math.round(ceaB)) + '/QALY.';
+        explanationEl.textContent = 'Program A costs ' + formatCurrency(adjustedData.a.cost) + ', which exceeds the ' + formatCurrency(budget) + ' budget.';
+      } else if (!canAffordB) {
+        resultEl.className = 'decision-result program-a-wins';
+        resultEl.innerHTML = '<strong>Program A is the only affordable option</strong> at ' + formatCurrency(Math.round(ceaA)) + '/QALY.';
+        explanationEl.textContent = 'Program B costs ' + formatCurrency(adjustedData.b.cost) + ', which exceeds the ' + formatCurrency(budget) + ' budget.';
+      } else if (Math.abs(ceaA - ceaB) < 500) {
+        resultEl.className = 'decision-result tie';
+        resultEl.innerHTML = '<strong>Both programs have similar cost-effectiveness</strong> (within $500/QALY).';
+        explanationEl.textContent = 'With similar efficiency, other factors like equity, feasibility, and population reach should guide the decision.';
+      } else if (ceaA < ceaB) {
+        resultEl.className = 'decision-result program-a-wins';
+        resultEl.innerHTML = '<strong>Program A is more cost-effective</strong> at ' + formatCurrency(Math.round(ceaA)) + '/QALY vs. ' + formatCurrency(Math.round(ceaB)) + '/QALY.';
+        explanationEl.textContent = 'Program A generates ' + adjustedData.a.qalys.toFixed(1) + ' QALYs at ' + formatCurrency(adjustedData.a.cost) + '. Each QALY costs ' + formatCurrency(Math.round(ceaB - ceaA)) + ' less than Program B.';
+      } else {
+        resultEl.className = 'decision-result program-b-wins';
+        resultEl.innerHTML = '<strong>Program B is more cost-effective</strong> at ' + formatCurrency(Math.round(ceaB)) + '/QALY vs. ' + formatCurrency(Math.round(ceaA)) + '/QALY.';
+        explanationEl.textContent = 'Program B generates ' + adjustedData.b.qalys.toFixed(1) + ' QALYs at ' + formatCurrency(adjustedData.b.cost) + '. Each QALY costs ' + formatCurrency(Math.round(ceaA - ceaB)) + ' less than Program A.';
+      }
+    }
+
+    /* ============================================
+       8. TOOLTIP
+       ============================================ */
+    function showProgramTooltip(event, program) {
+      const cea = program.cost / program.qalys;
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="tooltip-title">${program.name}</div>
+        <div class="tooltip-metric">Cost: ${formatCurrency(program.cost)}</div>
+        <div class="tooltip-metric">QALYs: ${program.qalys.toFixed(1)}</div>
+        <div class="tooltip-metric">Cost/QALY: ${formatCurrency(Math.round(cea))}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       9. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize adjusted data
+      adjustedData = {
+        a: { ...programData.a },
+        b: { ...programData.b }
+      };
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-2').classList.contains('active') && programAChartInitialized) {
+            renderProgramChart('a');
+          }
+          if (document.getElementById('panel-3').classList.contains('active') && programBChartInitialized) {
+            renderProgramChart('b');
+          }
+          if (document.getElementById('panel-4').classList.contains('active') && comparisonChartInitialized) {
+            renderComparisonChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

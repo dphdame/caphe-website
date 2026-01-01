@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Measurement Error in Administrative Claims Data | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how measurement error in claims data biases effect estimates. Understand classical vs. non-classical error, attenuation bias, and correction methods.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    code, .mono { font-family: var(--font-mono); }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .legend-line {
+      width: 24px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.attenuated {
+      color: var(--color-warning);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: TYPES OF ERROR
+       ============================================ */
+    .error-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .error-container { grid-template-columns: 1fr; }
+    }
+
+    .error-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .error-card h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .error-type-badge {
+      font-size: 0.7rem;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .badge-classical {
+      background: var(--color-secondary);
+      color: white;
+    }
+
+    .badge-nonclassical {
+      background: var(--color-accent);
+      color: var(--color-text);
+    }
+
+    .error-visual {
+      height: 180px;
+      margin: var(--space-lg) 0;
+      position: relative;
+    }
+
+    .error-description {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .error-examples {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+
+    .error-examples h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .error-examples ul {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .error-examples li {
+      padding: var(--space-xs) 0;
+      padding-left: var(--space-md);
+      position: relative;
+    }
+
+    .error-examples li::before {
+      content: "-";
+      position: absolute;
+      left: 0;
+      color: var(--color-text-muted);
+    }
+
+    .error-consequence {
+      margin-top: var(--space-md);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+
+    .consequence-classical {
+      background: rgba(13, 148, 136, 0.1);
+      border-left: 3px solid var(--color-secondary);
+    }
+
+    .consequence-nonclassical {
+      background: rgba(249, 168, 37, 0.15);
+      border-left: 3px solid var(--color-accent);
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       8. PANEL 3: ATTENUATION BIAS
+       ============================================ */
+    .attenuation-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .attenuation-container { grid-template-columns: 1fr; }
+    }
+
+    .slider-section {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .slider-controls {
+      margin-bottom: var(--space-xl);
+    }
+
+    .slider-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+      background: rgba(0, 65, 165, 0.1);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    .formula-box {
+      background: var(--color-bg-code);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .formula-box .fraction {
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .formula-box .numerator {
+      border-bottom: 2px solid var(--color-text);
+      padding-bottom: 2px;
+      display: block;
+    }
+
+    .formula-box .denominator {
+      padding-top: 2px;
+      display: block;
+    }
+
+    .results-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .result-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .result-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .result-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-value.true { color: var(--color-secondary); }
+    .result-value.observed { color: var(--color-accent); }
+    .result-value.bias { color: var(--color-warning); }
+
+    .result-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .attenuation-insight {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       9. PANEL 4: CORRECTION METHODS
+       ============================================ */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .methods-grid { grid-template-columns: 1fr; }
+    }
+
+    .method-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .method-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .method-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .method-detail {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .method-requirements {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .method-requirements h5 {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+    }
+
+    .method-requirements ul {
+      list-style: none;
+      font-size: 0.85rem;
+    }
+
+    .method-requirements li {
+      padding: var(--space-xs) 0;
+      padding-left: var(--space-md);
+      position: relative;
+    }
+
+    .method-requirements li::before {
+      content: ">";
+      position: absolute;
+      left: 0;
+      color: var(--color-secondary);
+      font-weight: bold;
+    }
+
+    .caution-box {
+      background: rgba(245, 127, 23, 0.1);
+      border: 2px solid var(--color-caution);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .caution-box h3 {
+      color: var(--color-caution);
+      margin-bottom: var(--space-md);
+    }
+
+    .caution-box p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "check";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .practical-questions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .practical-questions { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       11. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab - Specialized Applications</div>
+      <h1>Measurement Error in Administrative Claims Data</h1>
+      <p class="subtitle">Claims data often miscounts conditions and costs. Small measurement errors can shrink effect estimates toward zero, hiding real relationships. Understanding when and how this happens is critical for economic evaluation.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Types of Error</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Attenuation Bias</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Correction Methods</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A researcher wants to measure how diabetes affects healthcare costs. Claims data shows a relationship, but chart review reveals the claims often misclassify patients. What happens to the estimated effect? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Healthcare Costs by Diabetes Status</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot comparing true diabetes status with healthcare costs, showing measurement error in claims data"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>True Diabetic (from chart review)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Non-Diabetic</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line" style="background: var(--color-secondary);"></span>
+                <span>True Relationship</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line" style="background: var(--color-warning); border-style: dashed;"></span>
+                <span>Estimated from Claims</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Effect Estimates</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-true-effect">--</div>
+                  <div class="stat-label">True Effect</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value attenuated" id="stat-observed-effect">--</div>
+                  <div class="stat-label">Claims Estimate</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Misclassification Rate</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-false-neg">--</div>
+                  <div class="stat-label">False Negatives</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-false-pos">--</div>
+                  <div class="stat-label">False Positives</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> The claims-based estimate is <span id="stat-attenuation">--</span>% smaller than the true effect. Misclassification made the real relationship look weaker than it is.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Claims data misses some diabetics and mislabels some non-diabetics.</strong></p>
+          <p>This "noise" in measurement affects what we can learn. But how much depends on the type of error.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: TYPES OF ERROR
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Types of Measurement Error</h2>
+          <p class="panel-intro">
+            Measurement error comes in two forms. Classical error is random, like a ruler that sometimes reads slightly high or low. Non-classical error is systematic, depending on the true value or other variables.
+          </p>
+        </div>
+
+        <div class="error-container">
+          <div class="error-card">
+            <h3>
+              <span class="error-type-badge badge-classical">Classical</span>
+              Random Error
+            </h3>
+            <svg id="classical-error-visual" class="error-visual" role="img" aria-label="Visualization of classical measurement error as random noise around true values"></svg>
+            <p class="error-description">
+              Errors are random and unrelated to the true value. Some measurements are too high, others too low, but there is no pattern.
+            </p>
+            <div class="error-examples">
+              <h4>Examples in Claims Data</h4>
+              <ul>
+                <li>Coding typos that occur randomly</li>
+                <li>Sporadic billing system glitches</li>
+                <li>Random data entry errors</li>
+              </ul>
+            </div>
+            <div class="error-consequence consequence-classical">
+              <strong>Effect on estimates:</strong> Shrinks (attenuates) the estimated relationship toward zero. You underestimate the true effect.
+            </div>
+          </div>
+
+          <div class="error-card">
+            <h3>
+              <span class="error-type-badge badge-nonclassical">Non-Classical</span>
+              Systematic Error
+            </h3>
+            <svg id="nonclassical-error-visual" class="error-visual" role="img" aria-label="Visualization of non-classical measurement error as systematic bias"></svg>
+            <p class="error-description">
+              Errors depend on the true value or other variables. The pattern of mistakes is predictable, not random.
+            </p>
+            <div class="error-examples">
+              <h4>Examples in Claims Data</h4>
+              <ul>
+                <li>Sicker patients more likely to have conditions coded</li>
+                <li>Certain hospitals overcode for reimbursement</li>
+                <li>Diagnosis depends on whether treatment was sought</li>
+              </ul>
+            </div>
+            <div class="error-consequence consequence-nonclassical">
+              <strong>Effect on estimates:</strong> Can bias in either direction. You might overestimate or underestimate, and the direction is hard to predict.
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>Why Does Error Type Matter?</h3>
+          <p>
+            <strong>Classical error</strong> in an independent variable (like diabetes status) always biases effects toward zero. This is called <em>attenuation bias</em>. You can sometimes correct for it if you know the error rate.
+          </p>
+          <p style="margin-top: var(--space-md);">
+            <strong>Non-classical error</strong> has unpredictable effects. If hospitals overcode diabetes for sicker patients, your estimate conflates the effect of diabetes with the effect of being sicker in general.
+          </p>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Classical error predictably shrinks effect estimates.</strong></p>
+          <p>Understanding this pattern lets us quantify how much bias might exist and, sometimes, correct for it.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: ATTENUATION BIAS
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Attenuation Bias</h2>
+          <p class="panel-intro">
+            Classical measurement error in an independent variable creates predictable bias. The formula below shows exactly how much the estimate shrinks based on the reliability of the measure.
+          </p>
+        </div>
+
+        <div class="attenuation-container">
+          <div class="slider-section">
+            <div class="formula-box">
+              <p style="margin-bottom: var(--space-md); font-weight: bold; color: var(--color-primary-dark);">Attenuation Formula</p>
+              <p style="font-size: 1.2rem;">
+                Observed Effect = True Effect x
+                <span class="fraction">
+                  <span class="numerator">Var(True X)</span>
+                  <span class="denominator">Var(True X) + Var(Error)</span>
+                </span>
+              </p>
+              <p style="margin-top: var(--space-md); font-size: 0.85rem; color: var(--color-text-muted);">
+                This ratio is called the "reliability ratio." More error means a smaller ratio and more attenuation.
+              </p>
+            </div>
+
+            <div class="slider-controls">
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>True Effect Size</span>
+                  <span class="slider-value" id="true-effect-value">$3,000</span>
+                </div>
+                <input type="range" id="true-effect-slider" min="1000" max="8000" value="3000" step="100" aria-label="Adjust true effect size">
+              </div>
+
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>Measurement Error (Variance)</span>
+                  <span class="slider-value" id="error-variance-value">20%</span>
+                </div>
+                <input type="range" id="error-variance-slider" min="0" max="80" value="20" step="5" aria-label="Adjust measurement error variance">
+              </div>
+            </div>
+
+            <div class="chart-wrapper" style="padding: var(--space-lg);">
+              <svg id="attenuation-chart" style="width: 100%; height: 280px;" role="img" aria-label="Bar chart comparing true effect to observed effect after attenuation"></svg>
+            </div>
+          </div>
+
+          <aside class="results-sidebar">
+            <div class="result-card">
+              <h4>True Effect</h4>
+              <div class="result-value true" id="result-true-effect">$3,000</div>
+              <div class="result-label">Diabetes increases annual costs by this amount</div>
+            </div>
+
+            <div class="result-card">
+              <h4>Observed Effect</h4>
+              <div class="result-value observed" id="result-observed-effect">$2,400</div>
+              <div class="result-label">What claims-based analysis would find</div>
+            </div>
+
+            <div class="result-card">
+              <h4>Attenuation</h4>
+              <div class="result-value bias" id="result-attenuation">-20%</div>
+              <div class="result-label">How much the estimate is shrunk</div>
+            </div>
+
+            <div class="attenuation-insight">
+              <p id="attenuation-interpretation">
+                <strong>Interpretation:</strong> With 20% error variance, the observed effect is 80% of the true effect. A $3,000 true effect would appear as $2,400 in claims data.
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Knowing the reliability ratio lets you "un-shrink" the estimate.</strong></p>
+          <p>Several methods exist to correct for attenuation, each with different data requirements.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: CORRECTION METHODS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Correction Methods</h2>
+          <p class="panel-intro">
+            When you know or can estimate the extent of measurement error, several approaches can recover the true effect. Each requires different assumptions and data.
+          </p>
+        </div>
+
+        <div class="methods-grid">
+          <div class="method-card">
+            <h4>Validation Study</h4>
+            <p>Compare claims data to a "gold standard" (chart review, lab results) in a subsample to estimate sensitivity and specificity.</p>
+            <div class="method-detail">
+              Use validation rates to adjust the main analysis for known misclassification.
+            </div>
+            <div class="method-requirements">
+              <h5>Requires</h5>
+              <ul>
+                <li>Access to gold standard measure</li>
+                <li>Representative validation sample</li>
+                <li>Error rates that generalize</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <h4>Regression Calibration</h4>
+            <p>Replace the mismeasured variable with its expected value conditional on observed data, estimated from a calibration subsample.</p>
+            <div class="method-detail">
+              Works well when the outcome model is approximately linear.
+            </div>
+            <div class="method-requirements">
+              <h5>Requires</h5>
+              <ul>
+                <li>Subsample with true values</li>
+                <li>Approximately linear relationships</li>
+                <li>Classical or known error structure</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <h4>Instrumental Variables</h4>
+            <p>Find a variable (instrument) that predicts the true value but is unrelated to the measurement error.</p>
+            <div class="method-detail">
+              Isolates variation in the true value, avoiding error-driven bias.
+            </div>
+            <div class="method-requirements">
+              <h5>Requires</h5>
+              <ul>
+                <li>Valid instrument</li>
+                <li>Strong first stage</li>
+                <li>Exclusion restriction</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="method-card">
+            <h4>Sensitivity Analysis</h4>
+            <p>Report how estimates would change under different assumptions about error rates, even without validation data.</p>
+            <div class="method-detail">
+              Shows readers the range of possible true effects given plausible error levels.
+            </div>
+            <div class="method-requirements">
+              <h5>Requires</h5>
+              <ul>
+                <li>Reasonable bounds on error rates</li>
+                <li>Transparent assumptions</li>
+                <li>Clear presentation of uncertainty</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="caution-box">
+          <h3>When Correction Gets Complicated</h3>
+          <p>
+            These methods assume classical error or known error structures. With non-classical error, corrections can make bias worse. If sicker patients are more likely to be coded as diabetic, adjusting for random misclassification will not fix the problem. You need to understand the source and pattern of error before choosing a correction approach.
+          </p>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Correction works when error is understood.</strong></p>
+          <p>Economists emphasize quantifying measurement error direction and magnitude before interpreting any claims-based estimate.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            These questions help identify measurement error threats and their likely direction. They structure thinking about when claims-based estimates can be trusted and when correction is needed.
+          </p>
+        </div>
+
+        <div class="practical-questions">
+          <div class="question-card">
+            <h4>How is the variable measured?</h4>
+            <p>Diagnoses from claims depend on billing codes, which depend on provider behavior, patient presentation, and reimbursement incentives. Each step introduces potential error.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>Is the error random or systematic?</h4>
+            <p>Random errors shrink estimates toward zero. Systematic errors (like overcoding for sicker patients) create bias in unpredictable directions.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>What is the reliability?</h4>
+            <p>Validation studies comparing claims to chart review typically find sensitivities of 60-80% for chronic conditions. This implies substantial attenuation.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>Is the error in X or Y?</h4>
+            <p>Error in the independent variable (X) causes attenuation. Error in the dependent variable (Y) increases variance but does not bias coefficients if the error is classical.</p>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Classical measurement error:</strong> random mistakes unrelated to the true value</div>
+            <div class="concept-item"><strong>Non-classical measurement error:</strong> systematic mistakes that depend on the true value or other factors</div>
+            <div class="concept-item"><strong>Attenuation bias:</strong> the shrinking of estimated effects toward zero due to measurement error in independent variables</div>
+            <div class="concept-item"><strong>Reliability ratio:</strong> the fraction of observed variance that reflects true variance, not error variance</div>
+            <div class="concept-item"><strong>Validation study:</strong> comparing a measure to a gold standard to quantify error rates</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Noting "measurement issues" is not enough.</strong> Economists quantify the direction and magnitude of measurement error bias. Classical error in an independent variable shrinks effect estimates predictably. With validation data, you can correct for this attenuation. Without validation, sensitivity analysis shows how conclusions depend on error assumptions. Understanding measurement error transforms a vague caveat into a quantifiable threat that can be addressed.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual patient-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generatePatientData() {
+      const data = [];
+      let seed = 42;
+
+      const n = 200;
+      const trueEffect = 3000; // True diabetes effect on costs
+
+      for (let i = 0; i < n; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // True diabetes status (40% prevalence)
+        const trueDiabetic = rand() < 0.40;
+
+        // Base costs with some variation
+        const baseCost = 4000 + rand() * 3000;
+        const diabetesEffect = trueDiabetic ? trueEffect : 0;
+        const noise = (rand() - 0.5) * 2000;
+        const trueCost = baseCost + diabetesEffect + noise;
+
+        // Misclassification: 15% false negatives, 8% false positives
+        let claimsDiabetic = trueDiabetic;
+        if (trueDiabetic && rand() < 0.15) {
+          claimsDiabetic = false; // False negative
+        } else if (!trueDiabetic && rand() < 0.08) {
+          claimsDiabetic = true; // False positive
+        }
+
+        data.push({
+          id: i,
+          trueDiabetic: trueDiabetic,
+          claimsDiabetic: claimsDiabetic,
+          trueCost: Math.max(1000, Math.round(trueCost)),
+          misclassified: trueDiabetic !== claimsDiabetic
+        });
+      }
+
+      return data;
+    }
+
+    const patientData = generatePatientData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function calculateTrueEffect(data) {
+      const diabeticCosts = data.filter(d => d.trueDiabetic).map(d => d.trueCost);
+      const nonDiabeticCosts = data.filter(d => !d.trueDiabetic).map(d => d.trueCost);
+      return mean(diabeticCosts) - mean(nonDiabeticCosts);
+    }
+
+    function calculateClaimsEffect(data) {
+      const diabeticCosts = data.filter(d => d.claimsDiabetic).map(d => d.trueCost);
+      const nonDiabeticCosts = data.filter(d => !d.claimsDiabetic).map(d => d.trueCost);
+      return mean(diabeticCosts) - mean(nonDiabeticCosts);
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let errorVisualsInitialized = false;
+    let attenuationInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '2') {
+          setTimeout(() => {
+            if (!errorVisualsInitialized) {
+              renderErrorVisuals();
+              errorVisualsInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!attenuationInitialized) {
+              renderAttenuationChart();
+              attenuationInitialized = true;
+            } else {
+              updateAttenuation();
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 2000, xMax = 12000;
+      const yMin = 0, yMax = 1.0;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let x = 2000; x <= 12000; x += 2000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xScale(x));
+        line.setAttribute('x2', xScale(x));
+        line.setAttribute('y1', margin.top);
+        line.setAttribute('y2', height - margin.bottom);
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Calculate group means for regression lines
+      const trueDiabeticCosts = patientData.filter(d => d.trueDiabetic).map(d => d.trueCost);
+      const trueNonDiabeticCosts = patientData.filter(d => !d.trueDiabetic).map(d => d.trueCost);
+      const claimsDiabeticCosts = patientData.filter(d => d.claimsDiabetic).map(d => d.trueCost);
+      const claimsNonDiabeticCosts = patientData.filter(d => !d.claimsDiabetic).map(d => d.trueCost);
+
+      const trueDiabeticMean = mean(trueDiabeticCosts);
+      const trueNonDiabeticMean = mean(trueNonDiabeticCosts);
+      const claimsDiabeticMean = mean(claimsDiabeticCosts);
+      const claimsNonDiabeticMean = mean(claimsNonDiabeticCosts);
+
+      // Draw true relationship line
+      const trueLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trueLine.setAttribute('x1', xScale(trueNonDiabeticMean));
+      trueLine.setAttribute('y1', yScale(0.3));
+      trueLine.setAttribute('x2', xScale(trueDiabeticMean));
+      trueLine.setAttribute('y2', yScale(0.8));
+      trueLine.setAttribute('stroke', 'var(--color-secondary)');
+      trueLine.setAttribute('stroke-width', '3');
+      svg.appendChild(trueLine);
+
+      // Draw claims relationship line (attenuated)
+      const claimsLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      claimsLine.setAttribute('x1', xScale(claimsNonDiabeticMean));
+      claimsLine.setAttribute('y1', yScale(0.35));
+      claimsLine.setAttribute('x2', xScale(claimsDiabeticMean));
+      claimsLine.setAttribute('y2', yScale(0.75));
+      claimsLine.setAttribute('stroke', 'var(--color-warning)');
+      claimsLine.setAttribute('stroke-width', '3');
+      claimsLine.setAttribute('stroke-dasharray', '8,4');
+      svg.appendChild(claimsLine);
+
+      // Data points
+      patientData.forEach(d => {
+        const jitterY = 0.2 + Math.random() * 0.6;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.trueCost));
+        circle.setAttribute('cy', yScale(jitterY));
+        circle.setAttribute('r', 5);
+        circle.setAttribute('fill', d.trueDiabetic ? 'var(--color-secondary)' : 'var(--color-accent)');
+        circle.setAttribute('opacity', d.misclassified ? '0.4' : '0.7');
+        circle.setAttribute('stroke', d.misclassified ? 'var(--color-warning)' : 'none');
+        circle.setAttribute('stroke-width', d.misclassified ? '2' : '0');
+        circle.setAttribute('style', 'cursor: pointer;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 2000; x <= 12000; x += 2000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (x / 1000).toFixed(0) + 'k';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Annual Healthcare Costs';
+      svg.appendChild(xLabel);
+
+      // Y-axis label
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Patients (jittered)';
+      svg.appendChild(yLabel);
+
+      // Calculate and display stats
+      const trueEffect = calculateTrueEffect(patientData);
+      const claimsEffect = calculateClaimsEffect(patientData);
+      const attenuation = ((trueEffect - claimsEffect) / trueEffect * 100).toFixed(0);
+
+      const falseNeg = patientData.filter(d => d.trueDiabetic && !d.claimsDiabetic).length;
+      const falsePos = patientData.filter(d => !d.trueDiabetic && d.claimsDiabetic).length;
+      const totalDiabetic = patientData.filter(d => d.trueDiabetic).length;
+      const totalNonDiabetic = patientData.filter(d => !d.trueDiabetic).length;
+
+      document.getElementById('stat-true-effect').textContent = '$' + Math.round(trueEffect).toLocaleString();
+      document.getElementById('stat-observed-effect').textContent = '$' + Math.round(claimsEffect).toLocaleString();
+      document.getElementById('stat-false-neg').textContent = Math.round(falseNeg / totalDiabetic * 100) + '%';
+      document.getElementById('stat-false-pos').textContent = Math.round(falsePos / totalNonDiabetic * 100) + '%';
+      document.getElementById('stat-attenuation').textContent = attenuation;
+    }
+
+    /* ============================================
+       5. ERROR TYPE VISUALS (Panel 2)
+       ============================================ */
+    function renderErrorVisuals() {
+      renderClassicalError();
+      renderNonClassicalError();
+    }
+
+    function renderClassicalError() {
+      const svg = document.getElementById('classical-error-visual');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 300;
+      const height = svg.clientHeight || 180;
+
+      svg.innerHTML = '';
+
+      // Draw true value line
+      const trueLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trueLine.setAttribute('x1', width * 0.2);
+      trueLine.setAttribute('x2', width * 0.8);
+      trueLine.setAttribute('y1', height / 2);
+      trueLine.setAttribute('y2', height / 2);
+      trueLine.setAttribute('stroke', 'var(--color-secondary)');
+      trueLine.setAttribute('stroke-width', '3');
+      svg.appendChild(trueLine);
+
+      // Label
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', width * 0.5);
+      label.setAttribute('y', height / 2 - 50);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('font-size', '12');
+      label.setAttribute('fill', 'var(--color-text-secondary)');
+      label.textContent = 'True Value';
+      svg.appendChild(label);
+
+      // Random errors around the line
+      let seed = 123;
+      for (let i = 0; i < 15; i++) {
+        const x = width * 0.2 + (width * 0.6) * (i / 14);
+        const rand = () => {
+          const r = Math.sin(seed++) * 10000;
+          return r - Math.floor(r);
+        };
+        const errorY = (rand() - 0.5) * 60;
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', height / 2 + errorY);
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', 'var(--color-accent)');
+        circle.setAttribute('opacity', '0.7');
+        svg.appendChild(circle);
+
+        // Error line
+        const errorLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        errorLine.setAttribute('x1', x);
+        errorLine.setAttribute('x2', x);
+        errorLine.setAttribute('y1', height / 2);
+        errorLine.setAttribute('y2', height / 2 + errorY);
+        errorLine.setAttribute('stroke', 'var(--color-text-muted)');
+        errorLine.setAttribute('stroke-width', '1');
+        errorLine.setAttribute('stroke-dasharray', '2,2');
+        svg.appendChild(errorLine);
+      }
+
+      // Measured label
+      const measuredLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      measuredLabel.setAttribute('x', width * 0.5);
+      measuredLabel.setAttribute('y', height - 10);
+      measuredLabel.setAttribute('text-anchor', 'middle');
+      measuredLabel.setAttribute('font-size', '11');
+      measuredLabel.setAttribute('fill', 'var(--color-text-muted)');
+      measuredLabel.textContent = 'Measured values scatter randomly';
+      svg.appendChild(measuredLabel);
+    }
+
+    function renderNonClassicalError() {
+      const svg = document.getElementById('nonclassical-error-visual');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 300;
+      const height = svg.clientHeight || 180;
+
+      svg.innerHTML = '';
+
+      // Draw true value line (diagonal to show systematic pattern)
+      const trueLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trueLine.setAttribute('x1', width * 0.2);
+      trueLine.setAttribute('x2', width * 0.8);
+      trueLine.setAttribute('y1', height * 0.7);
+      trueLine.setAttribute('y2', height * 0.3);
+      trueLine.setAttribute('stroke', 'var(--color-secondary)');
+      trueLine.setAttribute('stroke-width', '3');
+      svg.appendChild(trueLine);
+
+      // Label
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', width * 0.5);
+      label.setAttribute('y', 20);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('font-size', '12');
+      label.setAttribute('fill', 'var(--color-text-secondary)');
+      label.textContent = 'True Value';
+      svg.appendChild(label);
+
+      // Systematic errors (higher values have bigger positive errors)
+      let seed = 456;
+      for (let i = 0; i < 15; i++) {
+        const t = i / 14;
+        const x = width * 0.2 + (width * 0.6) * t;
+        const trueY = height * 0.7 - (height * 0.4) * t;
+
+        const rand = () => {
+          const r = Math.sin(seed++) * 10000;
+          return r - Math.floor(r);
+        };
+
+        // Error increases with true value (systematic)
+        const systematicBias = -t * 30;
+        const randomPart = (rand() - 0.5) * 20;
+        const errorY = systematicBias + randomPart;
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', trueY + errorY);
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', 'var(--color-accent)');
+        circle.setAttribute('opacity', '0.7');
+        svg.appendChild(circle);
+
+        // Error line
+        const errorLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        errorLine.setAttribute('x1', x);
+        errorLine.setAttribute('x2', x);
+        errorLine.setAttribute('y1', trueY);
+        errorLine.setAttribute('y2', trueY + errorY);
+        errorLine.setAttribute('stroke', 'var(--color-warning)');
+        errorLine.setAttribute('stroke-width', '1');
+        errorLine.setAttribute('stroke-dasharray', '2,2');
+        svg.appendChild(errorLine);
+      }
+
+      // Measured label
+      const measuredLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      measuredLabel.setAttribute('x', width * 0.5);
+      measuredLabel.setAttribute('y', height - 10);
+      measuredLabel.setAttribute('text-anchor', 'middle');
+      measuredLabel.setAttribute('font-size', '11');
+      measuredLabel.setAttribute('fill', 'var(--color-text-muted)');
+      measuredLabel.textContent = 'Error depends on true value';
+      svg.appendChild(measuredLabel);
+    }
+
+    /* ============================================
+       6. ATTENUATION CHART (Panel 3)
+       ============================================ */
+    function renderAttenuationChart() {
+      updateAttenuation();
+    }
+
+    function updateAttenuation() {
+      const trueEffectSlider = document.getElementById('true-effect-slider');
+      const errorVarianceSlider = document.getElementById('error-variance-slider');
+
+      const trueEffect = parseInt(trueEffectSlider.value);
+      const errorVariance = parseInt(errorVarianceSlider.value) / 100;
+
+      // Reliability ratio
+      const reliability = 1 / (1 + errorVariance);
+      const observedEffect = trueEffect * reliability;
+      const attenuation = (1 - reliability) * 100;
+
+      // Update displays
+      document.getElementById('true-effect-value').textContent = '$' + trueEffect.toLocaleString();
+      document.getElementById('error-variance-value').textContent = errorVarianceSlider.value + '%';
+
+      document.getElementById('result-true-effect').textContent = '$' + trueEffect.toLocaleString();
+      document.getElementById('result-observed-effect').textContent = '$' + Math.round(observedEffect).toLocaleString();
+      document.getElementById('result-attenuation').textContent = '-' + Math.round(attenuation) + '%';
+
+      document.getElementById('attenuation-interpretation').innerHTML =
+        '<strong>Interpretation:</strong> With ' + errorVarianceSlider.value + '% error variance, the observed effect is ' +
+        Math.round(reliability * 100) + '% of the true effect. A $' + trueEffect.toLocaleString() +
+        ' true effect would appear as $' + Math.round(observedEffect).toLocaleString() + ' in claims data.';
+
+      // Render bar chart
+      const svg = document.getElementById('attenuation-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 500;
+      const height = svg.clientHeight || 280;
+      const margin = { top: 30, right: 30, bottom: 50, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const maxEffect = 8000;
+      const barWidth = plotWidth * 0.3;
+
+      // True effect bar
+      const trueBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      trueBar.setAttribute('x', margin.left + plotWidth * 0.15);
+      trueBar.setAttribute('y', margin.top + plotHeight - (trueEffect / maxEffect) * plotHeight);
+      trueBar.setAttribute('width', barWidth);
+      trueBar.setAttribute('height', (trueEffect / maxEffect) * plotHeight);
+      trueBar.setAttribute('fill', 'var(--color-secondary)');
+      trueBar.setAttribute('rx', '4');
+      svg.appendChild(trueBar);
+
+      // True effect label
+      const trueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      trueLabel.setAttribute('x', margin.left + plotWidth * 0.15 + barWidth / 2);
+      trueLabel.setAttribute('y', margin.top + plotHeight - (trueEffect / maxEffect) * plotHeight - 10);
+      trueLabel.setAttribute('text-anchor', 'middle');
+      trueLabel.setAttribute('font-size', '14');
+      trueLabel.setAttribute('font-weight', 'bold');
+      trueLabel.setAttribute('fill', 'var(--color-secondary)');
+      trueLabel.textContent = '$' + trueEffect.toLocaleString();
+      svg.appendChild(trueLabel);
+
+      // Observed effect bar
+      const obsBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      obsBar.setAttribute('x', margin.left + plotWidth * 0.55);
+      obsBar.setAttribute('y', margin.top + plotHeight - (observedEffect / maxEffect) * plotHeight);
+      obsBar.setAttribute('width', barWidth);
+      obsBar.setAttribute('height', (observedEffect / maxEffect) * plotHeight);
+      obsBar.setAttribute('fill', 'var(--color-accent)');
+      obsBar.setAttribute('rx', '4');
+      svg.appendChild(obsBar);
+
+      // Observed effect label
+      const obsLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      obsLabel.setAttribute('x', margin.left + plotWidth * 0.55 + barWidth / 2);
+      obsLabel.setAttribute('y', margin.top + plotHeight - (observedEffect / maxEffect) * plotHeight - 10);
+      obsLabel.setAttribute('text-anchor', 'middle');
+      obsLabel.setAttribute('font-size', '14');
+      obsLabel.setAttribute('font-weight', 'bold');
+      obsLabel.setAttribute('fill', 'var(--color-accent)');
+      obsLabel.textContent = '$' + Math.round(observedEffect).toLocaleString();
+      svg.appendChild(obsLabel);
+
+      // X-axis labels
+      const trueCat = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      trueCat.setAttribute('x', margin.left + plotWidth * 0.15 + barWidth / 2);
+      trueCat.setAttribute('y', height - 15);
+      trueCat.setAttribute('text-anchor', 'middle');
+      trueCat.setAttribute('font-size', '12');
+      trueCat.setAttribute('fill', 'var(--color-text)');
+      trueCat.textContent = 'True Effect';
+      svg.appendChild(trueCat);
+
+      const obsCat = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      obsCat.setAttribute('x', margin.left + plotWidth * 0.55 + barWidth / 2);
+      obsCat.setAttribute('y', height - 15);
+      obsCat.setAttribute('text-anchor', 'middle');
+      obsCat.setAttribute('font-size', '12');
+      obsCat.setAttribute('fill', 'var(--color-text)');
+      obsCat.textContent = 'Observed Effect';
+      svg.appendChild(obsCat);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 8000; y += 2000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', margin.top + plotHeight - (y / maxEffect) * plotHeight + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = '$' + (y / 1000) + 'k';
+        svg.appendChild(tick);
+      }
+
+      // Attenuation arrow
+      if (attenuation > 5) {
+        const arrowX = margin.left + plotWidth * 0.55 + barWidth + 20;
+        const arrowTopY = margin.top + plotHeight - (trueEffect / maxEffect) * plotHeight;
+        const arrowBottomY = margin.top + plotHeight - (observedEffect / maxEffect) * plotHeight;
+
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        arrow.setAttribute('x1', arrowX);
+        arrow.setAttribute('x2', arrowX);
+        arrow.setAttribute('y1', arrowTopY);
+        arrow.setAttribute('y2', arrowBottomY);
+        arrow.setAttribute('stroke', 'var(--color-warning)');
+        arrow.setAttribute('stroke-width', '2');
+        arrow.setAttribute('marker-end', 'url(#arrowhead)');
+        svg.appendChild(arrow);
+
+        // Arrowhead marker
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', 'arrowhead');
+        marker.setAttribute('markerWidth', '10');
+        marker.setAttribute('markerHeight', '7');
+        marker.setAttribute('refX', '9');
+        marker.setAttribute('refY', '3.5');
+        marker.setAttribute('orient', 'auto');
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+        polygon.setAttribute('fill', 'var(--color-warning)');
+        marker.appendChild(polygon);
+        defs.appendChild(marker);
+        svg.insertBefore(defs, svg.firstChild);
+
+        const attLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        attLabel.setAttribute('x', arrowX + 5);
+        attLabel.setAttribute('y', (arrowTopY + arrowBottomY) / 2 + 4);
+        attLabel.setAttribute('font-size', '11');
+        attLabel.setAttribute('fill', 'var(--color-warning)');
+        attLabel.setAttribute('font-weight', 'bold');
+        attLabel.textContent = '-' + Math.round(attenuation) + '%';
+        svg.appendChild(attLabel);
+      }
+    }
+
+    // Slider event listeners
+    document.getElementById('true-effect-slider').addEventListener('input', updateAttenuation);
+    document.getElementById('error-variance-slider').addEventListener('input', updateAttenuation);
+
+    /* ============================================
+       7. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">Patient ${data.id + 1}</div>
+        <div class="metric">True Status: ${data.trueDiabetic ? 'Diabetic' : 'Non-Diabetic'}</div>
+        <div class="metric">Claims Status: ${data.claimsDiabetic ? 'Diabetic' : 'Non-Diabetic'}</div>
+        <div class="metric">Annual Cost: $${data.trueCost.toLocaleString()}</div>
+        ${data.misclassified ? '<div class="metric" style="color: var(--color-warning);">Misclassified</div>' : ''}
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       8. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+          if (document.getElementById('panel-2').classList.contains('active')) {
+            renderErrorVisuals();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            updateAttenuation();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

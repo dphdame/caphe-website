@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moving from Observational to Experimental Evidence | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how economists seek exogenous variation through natural experiments and quasi-experimental designs to strengthen causal claims when randomized trials are impossible.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DATA PANEL
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. LIMITS PANEL (TWO-COLUMN)
+       ============================================ */
+    .limits-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .limits-container { grid-template-columns: 1fr; }
+    }
+
+    .limits-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .limits-card h3 {
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .limits-card.problem h3 {
+      color: var(--color-warning);
+    }
+
+    .limits-card.solution h3 {
+      color: var(--color-secondary);
+    }
+
+    .approach-item {
+      margin-bottom: var(--space-lg);
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .approach-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .approach-item strong {
+      display: block;
+      color: var(--color-text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .approach-item p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .approach-item.highlight {
+      border-left-color: var(--color-secondary);
+      background: rgba(13, 148, 136, 0.05);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    /* ============================================
+       8. NATURAL EXPERIMENTS PANEL
+       ============================================ */
+    .experiments-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .experiments-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .example-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .example-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-secondary);
+    }
+
+    .example-item strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .example-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       9. DESIGN TOOLKIT PANEL
+       ============================================ */
+    .toolkit-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+
+    .design-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+
+    @media (max-width: 900px) {
+      .design-cards { grid-template-columns: 1fr; }
+    }
+
+    .design-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 4px solid var(--color-secondary);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .design-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .design-card.active {
+      border-top-color: var(--color-accent);
+      background: rgba(249, 168, 37, 0.03);
+    }
+
+    .design-card h4 {
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-md);
+    }
+
+    .design-card .summary {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .design-card .strength {
+      font-size: 0.85rem;
+      padding: var(--space-sm);
+      background: rgba(13, 148, 136, 0.1);
+      border-radius: var(--radius-sm);
+      color: var(--color-secondary);
+    }
+
+    .design-detail {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: none;
+    }
+
+    .design-detail.active {
+      display: block;
+    }
+
+    .design-detail h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+
+    .detail-section h4 {
+      color: var(--color-text);
+      margin-bottom: var(--space-md);
+      font-size: 0.95rem;
+    }
+
+    .detail-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .detail-section li {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding-left: var(--space-lg);
+      position: relative;
+    }
+
+    .detail-section li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.5em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+    }
+
+    .detail-section.assumptions li::before {
+      background: var(--color-accent);
+    }
+
+    /* ============================================
+       10. KEY INSIGHT PANEL
+       ============================================ */
+    .insight-container {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-top: var(--space-md);
+      margin-left: var(--space-lg);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "\2713";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* Bridging box */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Advanced Methods</div>
+      <h1>Moving from Observational to Experimental Evidence</h1>
+      <p class="subtitle">Observational data can show associations, but turning them into causal claims requires finding variation that operates independently of confounders. Economists call this "exogenous variation."</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Observational Limits</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Natural Experiments</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Design Toolkit</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Imagine a health department studying whether a chronic disease management program reduces hospitalizations. Counties that adopted the program earlier show lower hospitalization rates. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Hospitalization Rate by Program Adoption Year</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing program adoption year versus hospitalization rate across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Earlier Adoption (2018-2020)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Later Adoption (2021-2023)</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Average Hospitalization Rate</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-early-rate">--</div>
+                  <div class="stat-label">Early Adopters</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-late-rate">--</div>
+                  <div class="stat-label">Late Adopters</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Program Duration (Years)</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-early-years">--</div>
+                  <div class="stat-label">Early Adopters</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-late-years">--</div>
+                  <div class="stat-label">Late Adopters</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>The pattern:</strong> Counties that adopted the program earlier have hospitalization rates about <span id="stat-difference">--</span> per 1,000 lower than late adopters.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Early adopters have better outcomes.</strong></p>
+          <p>Can we conclude the program works? Or are early adopters different in ways that matter?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: OBSERVATIONAL LIMITS
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Observational Limits</h2>
+          <p class="panel-intro">
+            A statistics-focused approach is to "adjust for confounders," adding more variables to the model. But this strategy has fundamental limits that more data cannot solve.
+          </p>
+        </div>
+
+        <div class="limits-container">
+          <div class="limits-card problem">
+            <h3>The Adjustment Approach</h3>
+            <div class="approach-item">
+              <strong>"Control for more variables"</strong>
+              <p>Add age, income, education, prior health conditions to the model. Hope that measured factors capture the differences between groups.</p>
+            </div>
+            <div class="approach-item">
+              <strong>"Match on observables"</strong>
+              <p>Find similar counties based on demographics, resources, and baseline health. Compare only matched pairs.</p>
+            </div>
+            <div class="approach-item">
+              <strong>"Use propensity scores"</strong>
+              <p>Model the probability of treatment, then weight or match on that probability. Assume selection is fully captured.</p>
+            </div>
+            <div class="approach-item" style="border-left-color: var(--color-warning);">
+              <strong>The problem</strong>
+              <p>All of these assume that measured variables capture everything that drives both treatment and outcomes. If something unmeasured matters, the estimate is biased.</p>
+            </div>
+          </div>
+
+          <div class="limits-card solution">
+            <h3>The Economist's Question</h3>
+            <div class="approach-item highlight">
+              <strong>"Why did some counties adopt early and others late?"</strong>
+              <p>Instead of adjusting for confounders, economists ask whether there's any source of variation in treatment that is unrelated to outcomes except through the treatment itself.</p>
+            </div>
+            <div class="approach-item">
+              <strong>Exogenous variation</strong>
+              <p>Variation in treatment that comes from outside the system, rather than from patient or provider choices that might correlate with health.</p>
+            </div>
+            <div class="approach-item">
+              <strong>The goal</strong>
+              <p>Find something that changed treatment status but could not have directly affected outcomes. This "as-if random" variation mimics what a randomized trial would provide.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The economist's insight:</strong> Instead of assuming we measured all confounders, find variation where confounding is implausible by design.</p>
+          <p>Where might such variation come from?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: NATURAL EXPERIMENTS
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Natural Experiments</h2>
+          <p class="panel-intro">
+            A natural experiment occurs when something outside the system creates variation in treatment. Policy changes, eligibility cutoffs, and random timing can provide exogenous variation that mimics randomization.
+          </p>
+        </div>
+
+        <div class="experiments-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/observational-to-experimental-dag.png"
+              alt="Diagram comparing observational studies where confounders affect both treatment and outcome, versus natural experiments where an exogenous source affects only treatment"
+              class="dag-image"
+            >
+            <p class="dag-caption">In observational data, confounders (U) affect both treatment and outcome. A natural experiment provides variation through an instrument (Z) that affects only treatment.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Sources of Exogenous Variation</h4>
+              <div class="example-list">
+                <div class="example-item">
+                  <strong>Policy Changes</strong>
+                  <p>New laws or regulations that affect some groups but not others, creating treatment/control comparisons.</p>
+                </div>
+                <div class="example-item">
+                  <strong>Eligibility Thresholds</strong>
+                  <p>Age cutoffs, income limits, or geographic boundaries where people just above and below are nearly identical.</p>
+                </div>
+                <div class="example-item">
+                  <strong>Timing Variation</strong>
+                  <p>Staggered rollouts or administrative delays that create "early" and "late" groups for non-health reasons.</p>
+                </div>
+                <div class="example-item">
+                  <strong>Lotteries</strong>
+                  <p>Actual random assignment, like the Oregon Medicaid lottery or school choice lotteries.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The key question:</strong> Does the variation in treatment come from something unrelated to the outcomes we care about? If yes, we can estimate causal effects even without a randomized trial.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Exogenous variation lets us estimate causal effects without randomization.</strong></p>
+          <p>What specific study designs exploit these sources of variation?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: DESIGN TOOLKIT
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Design Toolkit</h2>
+          <p class="panel-intro">
+            Economists have developed specific quasi-experimental designs to exploit different sources of exogenous variation. Each design has its own assumptions and applications.
+          </p>
+        </div>
+
+        <div class="toolkit-container">
+          <div class="design-cards">
+            <div class="design-card active" data-design="did">
+              <h4>Difference-in-Differences</h4>
+              <p class="summary">Compare the change in treated group to the change in untreated group over the same period.</p>
+              <p class="strength">Removes fixed differences between groups</p>
+            </div>
+
+            <div class="design-card" data-design="rdd">
+              <h4>Regression Discontinuity</h4>
+              <p class="summary">Compare people just above and just below an eligibility cutoff where treatment changes sharply.</p>
+              <p class="strength">Near-random assignment at the threshold</p>
+            </div>
+
+            <div class="design-card" data-design="iv">
+              <h4>Instrumental Variables</h4>
+              <p class="summary">Use an external factor that affects treatment but not outcomes directly to isolate causal effects.</p>
+              <p class="strength">Works even with unmeasured confounding</p>
+            </div>
+          </div>
+
+          <!-- Difference-in-Differences Detail -->
+          <div class="design-detail active" id="detail-did">
+            <h3>Difference-in-Differences (DiD)</h3>
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>How It Works</h4>
+                <ul>
+                  <li>Compare outcomes before and after treatment in the treated group</li>
+                  <li>Subtract the same comparison for an untreated control group</li>
+                  <li>The "double difference" removes common trends and fixed group differences</li>
+                  <li>What remains is the treatment effect (under assumptions)</li>
+                </ul>
+              </div>
+              <div class="detail-section assumptions">
+                <h4>Key Assumption: Parallel Trends</h4>
+                <ul>
+                  <li>Without treatment, both groups would have followed the same trajectory</li>
+                  <li>Check by examining pre-treatment trends</li>
+                  <li>Fails if treatment timing is correlated with changing outcomes</li>
+                  <li>Example: States expanded Medicaid because their uninsured rates were rising faster</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Regression Discontinuity Detail -->
+          <div class="design-detail" id="detail-rdd">
+            <h3>Regression Discontinuity Design (RDD)</h3>
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>How It Works</h4>
+                <ul>
+                  <li>Treatment is assigned based on a cutoff (age 65, income threshold, test score)</li>
+                  <li>Compare people just above and just below the cutoff</li>
+                  <li>People near the cutoff are nearly identical except for treatment status</li>
+                  <li>The "jump" at the cutoff reveals the treatment effect</li>
+                </ul>
+              </div>
+              <div class="detail-section assumptions">
+                <h4>Key Assumption: No Manipulation</h4>
+                <ul>
+                  <li>People cannot precisely control their position relative to the cutoff</li>
+                  <li>Check by looking for bunching or sorting at the threshold</li>
+                  <li>Fails if people can game their way above or below the cutoff</li>
+                  <li>Example: Hospitals changing diagnosis codes to meet performance thresholds</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instrumental Variables Detail -->
+          <div class="design-detail" id="detail-iv">
+            <h3>Instrumental Variables (IV)</h3>
+            <div class="detail-grid">
+              <div class="detail-section">
+                <h4>How It Works</h4>
+                <ul>
+                  <li>Find an "instrument" that affects treatment but not outcomes directly</li>
+                  <li>Use only the variation in treatment driven by the instrument</li>
+                  <li>Isolates causal effect by removing endogenous variation</li>
+                  <li>Classic example: Draft lottery numbers to study military service effects</li>
+                </ul>
+              </div>
+              <div class="detail-section assumptions">
+                <h4>Key Assumptions: Exclusion and Relevance</h4>
+                <ul>
+                  <li>Exclusion: Instrument affects outcome only through treatment</li>
+                  <li>Relevance: Instrument meaningfully predicts treatment</li>
+                  <li>Cannot test exclusion directly; must argue it theoretically</li>
+                  <li>Example: Distance to hospital as instrument for treatment intensity</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Each design exploits a specific type of exogenous variation.</strong></p>
+          <p>The common thread: finding treatment variation that operates independently of confounders.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            The fundamental shift from observational to quasi-experimental thinking is not about methods. It is about the source of variation we use to estimate effects.
+          </p>
+        </div>
+
+        <div class="insight-container">
+          <div class="definition-card">
+            <h3>What Is Identification?</h3>
+            <p><strong>Identification</strong> is the economist's term for establishing that an estimate reflects a causal effect rather than a correlation driven by confounding. A study is "identified" when the source of treatment variation is credibly exogenous.</p>
+            <ul>
+              <li><strong>Observational studies</strong> rely on measured confounders, leaving identification uncertain</li>
+              <li><strong>Quasi-experimental designs</strong> exploit specific sources of exogenous variation</li>
+              <li><strong>Randomized trials</strong> guarantee identification through random assignment</li>
+            </ul>
+          </div>
+
+          <div class="concepts-box">
+            <h3>Concepts Demonstrated in This Lab</h3>
+            <div class="concept-list">
+              <div class="concept-item"><strong>Exogenous variation:</strong> treatment changes from sources unrelated to outcomes</div>
+              <div class="concept-item"><strong>Natural experiment:</strong> real-world events that create as-if random variation</div>
+              <div class="concept-item"><strong>Identification:</strong> establishing that estimates reflect causal effects</div>
+              <div class="concept-item"><strong>Quasi-experimental designs:</strong> DiD, RDD, and IV methods that exploit exogenous variation</div>
+              <div class="concept-item"><strong>Parallel trends assumption:</strong> the key identifying assumption for difference-in-differences</div>
+            </div>
+          </div>
+
+          <div class="takeaway-box">
+            <h4>Key Takeaway</h4>
+            <p>
+              <strong>Better statistical adjustment cannot fix a flawed comparison.</strong> When we cannot measure all confounders, the solution is not more sophisticated models. The solution is finding sources of treatment variation that operate independently of confounders. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'Alameda', 'Alpine', 'Amador', 'Butte', 'Calaveras', 'Colusa', 'Contra Costa',
+        'Del Norte', 'El Dorado', 'Fresno', 'Glenn', 'Humboldt', 'Imperial', 'Inyo',
+        'Kern', 'Kings', 'Lake', 'Lassen', 'Los Angeles', 'Madera', 'Marin', 'Mariposa',
+        'Mendocino', 'Merced', 'Modoc', 'Mono', 'Monterey', 'Napa', 'Nevada', 'Orange',
+        'Placer', 'Plumas', 'Riverside', 'Sacramento', 'San Benito', 'San Bernardino',
+        'San Diego', 'San Francisco', 'San Joaquin', 'San Luis Obispo', 'San Mateo',
+        'Santa Barbara', 'Santa Clara', 'Santa Cruz', 'Shasta', 'Sierra', 'Siskiyou',
+        'Solano', 'Sonoma', 'Stanislaus', 'Sutter', 'Tehama', 'Trinity', 'Tulare',
+        'Tuolumne', 'Ventura', 'Yolo', 'Yuba'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // Underlying county "capacity" - wealthy/resourced counties adopt earlier AND have better outcomes
+        const capacity = rand() * 100;
+
+        // Adoption year: higher capacity -> earlier adoption (2018-2023)
+        const baseYear = capacity > 60 ? 2018 : (capacity > 30 ? 2020 : 2022);
+        const adoptionYear = baseYear + Math.floor(rand() * 2);
+
+        // Years in program (as of 2024)
+        const yearsInProgram = 2024 - adoptionYear;
+
+        // Early adopter if adopted 2018-2020
+        const earlyAdopter = adoptionYear <= 2020;
+
+        // Hospitalization rate depends on capacity (confounder) and small program effect
+        const baseRate = 25 - (capacity * 0.12); // Higher capacity -> lower base rate
+        const programEffect = yearsInProgram * 0.5; // Small true program effect over time
+        const noise = (rand() - 0.5) * 8;
+        const hospRate = Math.max(8, Math.min(35, baseRate - programEffect + noise));
+
+        data.push({
+          name: countyNames[i],
+          capacity: Math.round(capacity),
+          adoptionYear: adoptionYear,
+          yearsInProgram: yearsInProgram,
+          earlyAdopter: earlyAdopter,
+          hospRate: Math.round(hospRate * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 2017.5, xMax = 2023.5;
+      const yMin = 5, yMax = 40;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 10; y <= 35; y += 5) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Vertical dividing line between early and late adopters
+      const dividerX = xScale(2020.5);
+      const divider = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      divider.setAttribute('x1', dividerX);
+      divider.setAttribute('x2', dividerX);
+      divider.setAttribute('y1', margin.top);
+      divider.setAttribute('y2', height - margin.bottom);
+      divider.setAttribute('stroke', 'var(--color-border)');
+      divider.setAttribute('stroke-dasharray', '5,5');
+      divider.setAttribute('stroke-width', '2');
+      svg.appendChild(divider);
+
+      // Labels for early/late regions
+      const earlyLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      earlyLabel.setAttribute('x', margin.left + (dividerX - margin.left) / 2);
+      earlyLabel.setAttribute('y', margin.top - 10);
+      earlyLabel.setAttribute('text-anchor', 'middle');
+      earlyLabel.setAttribute('font-size', '11');
+      earlyLabel.setAttribute('fill', 'var(--color-secondary)');
+      earlyLabel.textContent = 'Early Adopters';
+      svg.appendChild(earlyLabel);
+
+      const lateLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      lateLabel.setAttribute('x', dividerX + (width - margin.right - dividerX) / 2);
+      lateLabel.setAttribute('y', margin.top - 10);
+      lateLabel.setAttribute('text-anchor', 'middle');
+      lateLabel.setAttribute('font-size', '11');
+      lateLabel.setAttribute('fill', 'var(--color-accent)');
+      lateLabel.textContent = 'Late Adopters';
+      svg.appendChild(lateLabel);
+
+      // Data points
+      countyData.forEach(d => {
+        // Add jitter to x position to avoid overlap
+        const jitter = (Math.random() - 0.5) * 0.4;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.adoptionYear + jitter));
+        circle.setAttribute('cy', yScale(d.hospRate));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.earlyAdopter ? 'var(--color-secondary)' : 'var(--color-accent)');
+        circle.setAttribute('opacity', '0.75');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 2018; x <= 2023; x++) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Program Adoption Year';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 10; y <= 35; y += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Hospitalization Rate (per 1,000)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. DESIGN TOOLKIT INTERACTIVITY
+       ============================================ */
+    const designCards = document.querySelectorAll('.design-card');
+    const designDetails = document.querySelectorAll('.design-detail');
+
+    designCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const designType = card.dataset.design;
+
+        // Update card states
+        designCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Update detail visibility
+        designDetails.forEach(d => d.classList.remove('active'));
+        document.getElementById(`detail-${designType}`).classList.add('active');
+      });
+    });
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Adopted: ${data.adoptionYear}</div>
+        <div class="metric">Years in Program: ${data.yearsInProgram}</div>
+        <div class="metric">Hosp. Rate: ${data.hospRate} per 1,000</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const earlyAdopters = countyData.filter(d => d.earlyAdopter);
+      const lateAdopters = countyData.filter(d => !d.earlyAdopter);
+
+      const earlyRate = mean(earlyAdopters.map(d => d.hospRate));
+      const lateRate = mean(lateAdopters.map(d => d.hospRate));
+      const earlyYears = mean(earlyAdopters.map(d => d.yearsInProgram));
+      const lateYears = mean(lateAdopters.map(d => d.yearsInProgram));
+      const diff = lateRate - earlyRate;
+
+      document.getElementById('stat-early-rate').textContent = earlyRate.toFixed(1);
+      document.getElementById('stat-late-rate').textContent = lateRate.toFixed(1);
+      document.getElementById('stat-early-years').textContent = earlyYears.toFixed(1);
+      document.getElementById('stat-late-years').textContent = lateYears.toFixed(1);
+      document.getElementById('stat-difference').textContent = diff.toFixed(1);
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

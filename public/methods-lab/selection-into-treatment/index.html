@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Gets Treated? Selection Explained | CAPHE Methods Lab</title>
+  <meta name="description" content="Before comparing outcomes, economists ask: Why did some units get treatment and others didn't? Learn how selection into treatment affects causal inference.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: WHO GETS TREATED (DAG)
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.resources {
+      border-left-color: var(--color-primary);
+    }
+
+    .pathway-item.politics {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.infrastructure {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: SELECTION MECHANISMS (Interactive)
+       ============================================ */
+    .selection-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .selection-container { grid-template-columns: 1fr; }
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-right: var(--space-sm);
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .mechanism-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .mechanism-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .mechanism-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .mechanism-card p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .mechanism-stats {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .mechanism-stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .mechanism-stat-label {
+      color: var(--color-text-secondary);
+    }
+
+    .mechanism-stat-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .insight-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* Definition Card */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+      color: var(--color-text);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       9. PANEL 4: IMPLICATIONS
+       ============================================ */
+    .implications-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .implications-grid { grid-template-columns: 1fr; }
+    }
+
+    .implication-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .implication-card.warning {
+      border-left-color: var(--color-caution);
+    }
+
+    .implication-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .implication-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .implication-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .comparison-table {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .comparison-table h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .comparison-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-table th {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table .highlight {
+      background: rgba(249, 168, 37, 0.1);
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* Bridging Question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    .bridging-question p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 240px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Design Essentials</div>
+      <h1>Who Gets Treated? Selection Explained</h1>
+      <p class="subtitle">Before comparing outcomes, economists ask: "Why did some units get treatment and others didn't?" The answer reveals whether selection bias will plague your analysis.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Who Gets Treated?</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Selection Mechanisms</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Implications</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            California counties show different rates of maternal mortality. Some adopted a new maternal health program; others did not. Counties with the program have lower mortality. Is the program working? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">County Wealth vs Maternal Mortality</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing county wealth versus maternal mortality rate, colored by program adoption"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>No Program</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Has Program</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>County Breakdown</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-program-count">--</div>
+                  <div class="stat-label">With Program</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-no-program-count">--</div>
+                  <div class="stat-label">Without Program</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Average Maternal Mortality</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-program-avg">--</div>
+                  <div class="stat-label">With Program</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-no-program-avg">--</div>
+                  <div class="stat-label">Without Program</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> Counties with the maternal health program have mortality rates about <span id="stat-difference">--</span> per 100,000 lower on average.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>The crucial question:</strong> Is the program reducing mortality, or are certain types of counties more likely to adopt it?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: WHO GETS TREATED?
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Who Gets Treated?</h2>
+          <p class="panel-intro">
+            Economists start by asking: "What determines which units receive treatment?" The answer reveals potential threats to causal inference. If treatment assignment is related to outcomes for reasons other than the treatment itself, simple comparisons will be misleading.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/selection-into-treatment-dag.png"
+              alt="Causal diagram showing multiple factors (wealth, infrastructure, political will) affecting both program adoption and maternal mortality, with a dashed arrow from program to mortality indicating uncertain causal effect"
+              class="dag-image"
+            >
+            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to measure.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Factors Predicting Adoption</h4>
+              <div class="pathway-list">
+                <div class="pathway-item resources">
+                  <strong>County Wealth</strong>
+                  <p>Wealthy counties have more resources to implement new programs and already have lower mortality rates.</p>
+                </div>
+                <div class="pathway-item politics">
+                  <strong>Political Will</strong>
+                  <p>Counties with health-focused leadership prioritize maternal care programs and make other health investments.</p>
+                </div>
+                <div class="pathway-item infrastructure">
+                  <strong>Existing Infrastructure</strong>
+                  <p>Counties with more hospitals and clinics can more easily launch new initiatives and provide better care generally.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The selection problem:</strong> Each factor that predicts program adoption also predicts better outcomes. Counties that adopt the program would likely have lower mortality even without the program.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Understanding selection:</strong> The association between program and outcomes reflects two things mixed together.</p>
+          <p>How do we separate the causal effect from the selection effect?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: SELECTION MECHANISMS
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Selection Mechanisms</h2>
+          <p class="panel-intro">
+            Use the filters below to explore what predicts program adoption. When certain characteristics strongly predict treatment, comparing treated and untreated units becomes problematic.
+          </p>
+        </div>
+
+        <div class="filter-controls">
+          <span class="filter-label">Explore by:</span>
+          <button class="filter-btn active" data-filter="all">All Counties</button>
+          <button class="filter-btn" data-filter="wealth">By Wealth</button>
+          <button class="filter-btn" data-filter="infrastructure">By Infrastructure</button>
+          <button class="filter-btn" data-filter="timing">By Adoption Timing</button>
+        </div>
+
+        <div class="selection-container">
+          <div class="chart-wrapper">
+            <svg id="selection-chart" class="chart-svg" role="img" aria-label="Interactive scatter plot exploring selection into treatment"></svg>
+          </div>
+
+          <aside class="mechanism-sidebar">
+            <div class="mechanism-card">
+              <h4 id="mechanism-title">Selection Pattern</h4>
+              <p id="mechanism-description">Select a filter to explore how different county characteristics predict program adoption.</p>
+              <div class="mechanism-stats">
+                <div class="mechanism-stat-row">
+                  <span class="mechanism-stat-label">Adoption rate (high):</span>
+                  <span class="mechanism-stat-value" id="stat-high-adoption">--</span>
+                </div>
+                <div class="mechanism-stat-row">
+                  <span class="mechanism-stat-label">Adoption rate (low):</span>
+                  <span class="mechanism-stat-value" id="stat-low-adoption">--</span>
+                </div>
+                <div class="mechanism-stat-row">
+                  <span class="mechanism-stat-label">Ratio:</span>
+                  <span class="mechanism-stat-value" id="stat-adoption-ratio">--</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="insight-box">
+              <p id="selection-insight"><strong>Explore the patterns:</strong> Use the filters to see how wealth, infrastructure, and timing relate to program adoption.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="definition-card">
+          <h3>Selection Into Treatment</h3>
+          <p><strong>Selection into treatment</strong> occurs when units that receive treatment differ systematically from those that do not. It creates bias when:</p>
+          <ul>
+            <li>The same factors that predict treatment also predict outcomes</li>
+            <li>Treated units would have different outcomes even without treatment</li>
+            <li>The treatment-outcome association reflects both causation and selection</li>
+          </ul>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>The pattern is clear:</strong> Wealthier counties with better infrastructure are far more likely to adopt the program.</p>
+          <p>What does this mean for interpreting the mortality difference?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: IMPLICATIONS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Implications</h2>
+          <p class="panel-intro">
+            Selection into treatment has profound consequences for policy evaluation. The observed difference between treated and untreated groups tells us little about what would happen if we implemented the program elsewhere.
+          </p>
+        </div>
+
+        <div class="comparison-table">
+          <h3>What the Comparison Actually Captures</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Description</th>
+                <th>What It Means</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>True Program Effect</strong></td>
+                <td>Lives saved by the program itself</td>
+                <td>What we want to measure</td>
+              </tr>
+              <tr class="highlight">
+                <td><strong>Selection Effect</strong></td>
+                <td>Advantage from being a county that adopts programs</td>
+                <td>Wealthier, better-resourced counties would do better anyway</td>
+              </tr>
+              <tr>
+                <td><strong>Observed Difference</strong></td>
+                <td>Program Effect + Selection Effect</td>
+                <td>Overstates the true impact of the program</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="implications-grid">
+          <div class="implication-card">
+            <h4>Overestimating Program Benefits</h4>
+            <p>If wealthy counties adopt programs and have better outcomes, we may attribute to the program what would have happened anyway.</p>
+            <div class="implication-prompt">
+              What would mortality look like in these counties if they had NOT adopted the program?
+            </div>
+          </div>
+
+          <div class="implication-card warning">
+            <h4>Misleading Policy Conclusions</h4>
+            <p>Scaling a program to different counties may not replicate the observed benefits if those counties lack the same underlying advantages.</p>
+            <div class="implication-prompt">
+              Would the program work equally well in under-resourced counties that haven't adopted it?
+            </div>
+          </div>
+
+          <div class="implication-card">
+            <h4>The Counterfactual Problem</h4>
+            <p>We never observe what would have happened to treated counties without treatment. Selection makes this counterfactual especially hard to estimate.</p>
+            <div class="implication-prompt">
+              The control group may not tell us what treated counties would have experienced.
+            </div>
+          </div>
+
+          <div class="implication-card warning">
+            <h4>Regression Cannot Fully Adjust</h4>
+            <p>Statistical controls help but cannot eliminate bias from unmeasured factors that predict both adoption and outcomes.</p>
+            <div class="implication-prompt">
+              What unmeasured factors might wealthy counties have that affect mortality?
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Selection is a fundamental challenge:</strong> It does not invalidate observational research, but it demands careful thinking about the treatment assignment mechanism.</p>
+          <p>What strategies can address selection bias?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Understanding selection is the first step toward credible causal inference. These questions help you think about whether selection threatens your analysis. They do not guarantee valid causal estimates, but they reveal where the analysis is vulnerable.
+          </p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Questions Economists Ask About Selection</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>What predicts treatment?</strong> List the factors that make units more likely to receive treatment.</div>
+            <div class="concept-item"><strong>Do those factors also predict outcomes?</strong> If so, selection bias is likely.</div>
+            <div class="concept-item"><strong>Is there overlap?</strong> Are there similar treated and untreated units to compare?</div>
+            <div class="concept-item"><strong>What is unmeasured?</strong> Even after controlling for observables, what hidden factors might remain?</div>
+            <div class="concept-item"><strong>Why did some units NOT get treated?</strong> The reasons for non-adoption matter as much as reasons for adoption.</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Selection into treatment is not a statistical problem with a statistical fix.</strong> When units that receive treatment differ systematically from those that do not, simple comparisons confound causation with selection. The solution is not more sophisticated adjustment but finding sources of treatment variation that operate independently of the factors that determine outcomes. Policy mandates, geographic rollouts, and eligibility thresholds can provide this. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'Alameda', 'Alpine', 'Amador', 'Butte', 'Calaveras', 'Colusa', 'Contra Costa',
+        'Del Norte', 'El Dorado', 'Fresno', 'Glenn', 'Humboldt', 'Imperial', 'Inyo',
+        'Kern', 'Kings', 'Lake', 'Lassen', 'Los Angeles', 'Madera', 'Marin', 'Mariposa',
+        'Mendocino', 'Merced', 'Modoc', 'Mono', 'Monterey', 'Napa', 'Nevada', 'Orange',
+        'Placer', 'Plumas', 'Riverside', 'Sacramento', 'San Benito', 'San Bernardino',
+        'San Diego', 'San Francisco', 'San Joaquin', 'San Luis Obispo', 'San Mateo',
+        'Santa Barbara', 'Santa Clara', 'Santa Cruz', 'Shasta', 'Sierra', 'Siskiyou',
+        'Solano', 'Sonoma', 'Stanislaus', 'Sutter', 'Tehama', 'Trinity', 'Tulare',
+        'Tuolumne', 'Ventura', 'Yolo', 'Yuba'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // County wealth (affects both adoption and outcomes)
+        const wealth = rand() * 100;
+
+        // Health infrastructure (affects both adoption and outcomes)
+        const infrastructure = 20 + rand() * 80;
+
+        // Political will (affects adoption, some effect on outcomes)
+        const politicalWill = rand() * 100;
+
+        // Selection mechanism: wealthy counties with good infrastructure more likely to adopt
+        const adoptionScore = wealth * 0.4 + infrastructure * 0.35 + politicalWill * 0.25;
+        const hasProgram = adoptionScore > 55 ? (rand() > 0.2) : (rand() > 0.85);
+
+        // Timing of adoption (earlier = more resources/will)
+        const adoptionYear = hasProgram ? (2015 + Math.floor((1 - adoptionScore/100) * 8)) : null;
+
+        // Maternal mortality: lower with wealth, infrastructure, and program
+        // True program effect is small (about 3 per 100k)
+        const baseMortality = 35 - (wealth * 0.15) - (infrastructure * 0.1);
+        const programEffect = hasProgram ? -3 : 0;
+        const noise = (rand() - 0.5) * 10;
+        const maternalMortality = Math.max(5, Math.min(50, baseMortality + programEffect + noise));
+
+        data.push({
+          name: countyNames[i],
+          wealth: Math.round(wealth),
+          infrastructure: Math.round(infrastructure),
+          politicalWill: Math.round(politicalWill),
+          hasProgram: hasProgram,
+          adoptionYear: adoptionYear,
+          maternalMortality: Math.round(maternalMortality * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let selectionInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            } else {
+              renderScatterPlot();
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!selectionInitialized) {
+              renderSelectionChart('all');
+              selectionInitialized = true;
+            } else {
+              renderSelectionChart(currentFilter);
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 0, yMax = 55;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 10; y <= 50; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.wealth));
+        circle.setAttribute('cy', yScale(d.maternalMortality));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.hasProgram ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'County Wealth Index';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 10; y <= 50; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Maternal Mortality (per 100,000)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. SELECTION CHART (Panel 3)
+       ============================================ */
+    let currentFilter = 'all';
+
+    function renderSelectionChart(filter) {
+      currentFilter = filter;
+      const svg = document.getElementById('selection-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Determine x-axis variable based on filter
+      let xVar, xLabel, xMax;
+      if (filter === 'wealth' || filter === 'all') {
+        xVar = 'wealth';
+        xLabel = 'County Wealth Index';
+        xMax = 100;
+      } else if (filter === 'infrastructure') {
+        xVar = 'infrastructure';
+        xLabel = 'Health Infrastructure Index';
+        xMax = 100;
+      } else if (filter === 'timing') {
+        xVar = 'wealth';
+        xLabel = 'County Wealth Index';
+        xMax = 100;
+      }
+
+      const xMin = 0;
+      const yMin = 0, yMax = 55;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Background regions for wealth/infrastructure filters
+      if (filter === 'wealth' || filter === 'infrastructure') {
+        // Low region
+        const lowRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        lowRect.setAttribute('x', xScale(0));
+        lowRect.setAttribute('y', margin.top);
+        lowRect.setAttribute('width', xScale(50) - xScale(0));
+        lowRect.setAttribute('height', plotHeight);
+        lowRect.setAttribute('fill', 'rgba(13, 148, 136, 0.05)');
+        svg.appendChild(lowRect);
+
+        // High region
+        const highRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        highRect.setAttribute('x', xScale(50));
+        highRect.setAttribute('y', margin.top);
+        highRect.setAttribute('width', xScale(100) - xScale(50));
+        highRect.setAttribute('height', plotHeight);
+        highRect.setAttribute('fill', 'rgba(249, 168, 37, 0.05)');
+        svg.appendChild(highRect);
+
+        // Dividing line
+        const divLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        divLine.setAttribute('x1', xScale(50));
+        divLine.setAttribute('x2', xScale(50));
+        divLine.setAttribute('y1', margin.top);
+        divLine.setAttribute('y2', height - margin.bottom);
+        divLine.setAttribute('stroke', 'var(--color-border)');
+        divLine.setAttribute('stroke-dasharray', '5,5');
+        svg.appendChild(divLine);
+
+        // Labels
+        const lowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        lowLabel.setAttribute('x', xScale(25));
+        lowLabel.setAttribute('y', margin.top + 20);
+        lowLabel.setAttribute('text-anchor', 'middle');
+        lowLabel.setAttribute('font-size', '11');
+        lowLabel.setAttribute('fill', 'var(--color-text-muted)');
+        lowLabel.textContent = filter === 'wealth' ? 'Lower Wealth' : 'Lower Infrastructure';
+        svg.appendChild(lowLabel);
+
+        const highLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        highLabel.setAttribute('x', xScale(75));
+        highLabel.setAttribute('y', margin.top + 20);
+        highLabel.setAttribute('text-anchor', 'middle');
+        highLabel.setAttribute('font-size', '11');
+        highLabel.setAttribute('fill', 'var(--color-text-muted)');
+        highLabel.textContent = filter === 'wealth' ? 'Higher Wealth' : 'Higher Infrastructure';
+        svg.appendChild(highLabel);
+      }
+
+      // Grid lines
+      for (let y = 10; y <= 50; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points with filter-specific styling
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const xVal = d[xVar];
+        circle.setAttribute('cx', xScale(xVal));
+        circle.setAttribute('cy', yScale(d.maternalMortality));
+        circle.setAttribute('r', 8);
+
+        if (filter === 'timing' && d.hasProgram && d.adoptionYear) {
+          // Color by adoption year
+          const yearColors = {
+            2015: '#1565C0',
+            2016: '#1976D2',
+            2017: '#1E88E5',
+            2018: '#2196F3',
+            2019: '#42A5F5',
+            2020: '#64B5F6',
+            2021: '#90CAF9',
+            2022: '#BBDEFB'
+          };
+          circle.setAttribute('fill', yearColors[d.adoptionYear] || 'var(--color-secondary)');
+          circle.setAttribute('opacity', '0.9');
+        } else {
+          circle.setAttribute('fill', d.hasProgram ? 'var(--color-accent)' : 'var(--color-secondary)');
+          circle.setAttribute('opacity', '0.8');
+        }
+
+        circle.setAttribute('style', 'cursor: pointer; transition: all 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxisLine.setAttribute('x1', margin.left);
+      xAxisLine.setAttribute('x2', width - margin.right);
+      xAxisLine.setAttribute('y1', height - margin.bottom);
+      xAxisLine.setAttribute('y2', height - margin.bottom);
+      xAxisLine.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxisLine);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabelText.setAttribute('x', width / 2);
+      xLabelText.setAttribute('y', height - 10);
+      xLabelText.setAttribute('text-anchor', 'middle');
+      xLabelText.setAttribute('font-size', '12');
+      xLabelText.setAttribute('fill', 'var(--color-text)');
+      xLabelText.textContent = xLabel;
+      svg.appendChild(xLabelText);
+
+      // Y-axis
+      const yAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxisLine.setAttribute('x1', margin.left);
+      yAxisLine.setAttribute('x2', margin.left);
+      yAxisLine.setAttribute('y1', margin.top);
+      yAxisLine.setAttribute('y2', height - margin.bottom);
+      yAxisLine.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxisLine);
+
+      for (let y = 10; y <= 50; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabelText.setAttribute('x', 20);
+      yLabelText.setAttribute('y', height / 2);
+      yLabelText.setAttribute('text-anchor', 'middle');
+      yLabelText.setAttribute('font-size', '12');
+      yLabelText.setAttribute('fill', 'var(--color-text)');
+      yLabelText.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabelText.textContent = 'Maternal Mortality (per 100,000)';
+      svg.appendChild(yLabelText);
+
+      updateSelectionStats(filter, xVar);
+    }
+
+    function updateSelectionStats(filter, xVar) {
+      const titleEl = document.getElementById('mechanism-title');
+      const descEl = document.getElementById('mechanism-description');
+      const insightEl = document.getElementById('selection-insight');
+      const highAdoptEl = document.getElementById('stat-high-adoption');
+      const lowAdoptEl = document.getElementById('stat-low-adoption');
+      const ratioEl = document.getElementById('stat-adoption-ratio');
+
+      if (filter === 'all') {
+        titleEl.textContent = 'Selection Pattern';
+        descEl.textContent = 'Select a filter to explore how different county characteristics predict program adoption.';
+        highAdoptEl.textContent = '--';
+        lowAdoptEl.textContent = '--';
+        ratioEl.textContent = '--';
+        insightEl.innerHTML = '<strong>Explore the patterns:</strong> Use the filters to see how wealth, infrastructure, and timing relate to program adoption.';
+        return;
+      }
+
+      let highGroup, lowGroup, groupLabel;
+      if (filter === 'wealth') {
+        highGroup = countyData.filter(d => d.wealth >= 50);
+        lowGroup = countyData.filter(d => d.wealth < 50);
+        groupLabel = 'Wealth';
+      } else if (filter === 'infrastructure') {
+        highGroup = countyData.filter(d => d.infrastructure >= 50);
+        lowGroup = countyData.filter(d => d.infrastructure < 50);
+        groupLabel = 'Infrastructure';
+      } else if (filter === 'timing') {
+        const earlyAdopters = countyData.filter(d => d.hasProgram && d.adoptionYear <= 2018);
+        const lateAdopters = countyData.filter(d => d.hasProgram && d.adoptionYear > 2018);
+
+        titleEl.textContent = 'Adoption Timing';
+        descEl.textContent = 'Earlier adopters (2015-2018) tend to be wealthier counties. Later adopters (2019-2022) are catching up.';
+
+        const earlyAvgWealth = mean(earlyAdopters.map(d => d.wealth));
+        const lateAvgWealth = mean(lateAdopters.map(d => d.wealth));
+
+        highAdoptEl.textContent = earlyAvgWealth.toFixed(0);
+        lowAdoptEl.textContent = lateAvgWealth.toFixed(0);
+        ratioEl.textContent = (earlyAvgWealth / lateAvgWealth).toFixed(1) + 'x';
+
+        document.querySelector('.mechanism-stat-row:nth-child(1) .mechanism-stat-label').textContent = 'Avg wealth (early):';
+        document.querySelector('.mechanism-stat-row:nth-child(2) .mechanism-stat-label').textContent = 'Avg wealth (late):';
+
+        insightEl.innerHTML = '<strong>Early adopters are wealthier.</strong> Counties that implemented the program first had more resources to begin with. This timing pattern reflects selection, not just program effectiveness.';
+        return;
+      }
+
+      const highAdoption = highGroup.filter(d => d.hasProgram).length / highGroup.length * 100;
+      const lowAdoption = lowGroup.filter(d => d.hasProgram).length / lowGroup.length * 100;
+      const ratio = highAdoption / lowAdoption;
+
+      titleEl.textContent = groupLabel + ' and Adoption';
+      descEl.textContent = `Counties with higher ${groupLabel.toLowerCase()} are much more likely to have adopted the program.`;
+
+      document.querySelector('.mechanism-stat-row:nth-child(1) .mechanism-stat-label').textContent = 'Adoption rate (high):';
+      document.querySelector('.mechanism-stat-row:nth-child(2) .mechanism-stat-label').textContent = 'Adoption rate (low):';
+
+      highAdoptEl.textContent = highAdoption.toFixed(0) + '%';
+      lowAdoptEl.textContent = lowAdoption.toFixed(0) + '%';
+      ratioEl.textContent = ratio.toFixed(1) + 'x';
+
+      if (filter === 'wealth') {
+        insightEl.innerHTML = '<strong>Wealthy counties are ' + ratio.toFixed(1) + 'x more likely to adopt.</strong> These same counties have lower mortality even before the program. The observed benefit mixes causation with selection.';
+      } else if (filter === 'infrastructure') {
+        insightEl.innerHTML = '<strong>Counties with better infrastructure adopt at ' + ratio.toFixed(1) + 'x the rate.</strong> More hospitals and clinics make new programs easier to implement. They also directly improve maternal outcomes.';
+      }
+    }
+
+    // Filter button handlers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSelectionChart(btn.dataset.filter);
+      });
+    });
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      let programStatus = data.hasProgram ? 'Has Program' : 'No Program';
+      if (data.hasProgram && data.adoptionYear) {
+        programStatus += ` (${data.adoptionYear})`;
+      }
+
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Wealth: ${data.wealth}</div>
+        <div class="metric">Infrastructure: ${data.infrastructure}</div>
+        <div class="metric">Mortality: ${data.maternalMortality} per 100k</div>
+        <div class="metric">${programStatus}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const programCounties = countyData.filter(d => d.hasProgram);
+      const noProgramCounties = countyData.filter(d => !d.hasProgram);
+
+      const programAvg = mean(programCounties.map(d => d.maternalMortality));
+      const noProgramAvg = mean(noProgramCounties.map(d => d.maternalMortality));
+      const diff = noProgramAvg - programAvg;
+
+      document.getElementById('stat-program-count').textContent = programCounties.length;
+      document.getElementById('stat-no-program-count').textContent = noProgramCounties.length;
+      document.getElementById('stat-program-avg').textContent = programAvg.toFixed(1);
+      document.getElementById('stat-no-program-avg').textContent = noProgramAvg.toFixed(1);
+      document.getElementById('stat-difference').textContent = diff.toFixed(1);
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderSelectionChart(currentFilter);
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

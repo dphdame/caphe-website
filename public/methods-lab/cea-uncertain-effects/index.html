@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEA When Causal Effects Are Uncertain | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn why 'wait for better evidence' is itself a decision with costs. Value of Information analysis helps decide whether to act now or invest in research.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 380px;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.positive {
+      color: var(--color-success);
+    }
+
+    .stat-value.negative {
+      color: var(--color-warning);
+    }
+
+    .stat-value.uncertain {
+      color: var(--color-accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .scenario-card {
+      background: rgba(13, 148, 136, 0.08);
+      border-left: 4px solid var(--color-secondary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .scenario-card h4 {
+      color: var(--color-secondary);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .scenario-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Bridging question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       7. DECISION PANEL
+       ============================================ */
+    .decision-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .decision-container { grid-template-columns: 1fr; }
+    }
+
+    .decision-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 4px solid var(--color-border);
+    }
+
+    .decision-card.implement {
+      border-top-color: var(--color-success);
+    }
+
+    .decision-card.wait {
+      border-top-color: var(--color-warning);
+    }
+
+    .decision-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .decision-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .decision-card.implement .decision-icon {
+      background: var(--color-success);
+    }
+
+    .decision-card.wait .decision-icon {
+      background: var(--color-warning);
+    }
+
+    .decision-card h3 {
+      font-size: 1.2rem;
+    }
+
+    .outcome-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .outcome-item {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .outcome-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      min-width: 100px;
+    }
+
+    .outcome-value {
+      font-size: 0.95rem;
+      color: var(--color-text);
+    }
+
+    .expected-value-box {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .ev-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .ev-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .decision-card.implement .ev-value {
+      color: var(--color-success);
+    }
+
+    .decision-card.wait .ev-value {
+      color: var(--color-warning);
+    }
+
+    /* ============================================
+       8. EVPI PANEL
+       ============================================ */
+    .evpi-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .evpi-container { grid-template-columns: 1fr; }
+    }
+
+    .evpi-diagram {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .diagram-svg {
+      width: 100%;
+      height: 400px;
+    }
+
+    .evpi-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .evpi-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .evpi-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .formula-box {
+      background: var(--color-bg-code);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .formula-explanation {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .evpi-highlight {
+      background: rgba(249, 168, 37, 0.15);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+
+    .evpi-highlight h4 {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+    }
+
+    .evpi-result {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .evpi-result .label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .evpi-result .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       9. INTERACTIVE VOI PANEL
+       ============================================ */
+    .voi-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .voi-container { grid-template-columns: 1fr; }
+    }
+
+    .voi-interactive {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .slider-group {
+      margin-bottom: var(--space-xl);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+
+    .slider-label span:first-child {
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+      background: var(--color-bg-alt);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    .result-display {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-top: var(--space-lg);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .result-grid { grid-template-columns: 1fr; }
+    }
+
+    .result-item {
+      padding: var(--space-md);
+    }
+
+    .result-item .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-item .label {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .result-item.implement .value {
+      color: var(--color-success);
+    }
+
+    .result-item.wait .value {
+      color: var(--color-warning);
+    }
+
+    .result-item.evpi .value {
+      color: var(--color-accent);
+    }
+
+    .decision-recommendation {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .decision-recommendation.implement {
+      background: rgba(46, 125, 50, 0.1);
+      border: 2px solid var(--color-success);
+    }
+
+    .decision-recommendation.wait {
+      background: rgba(245, 124, 0, 0.1);
+      border: 2px solid var(--color-warning);
+    }
+
+    .decision-recommendation .rec-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .decision-recommendation.implement .rec-label {
+      color: var(--color-success);
+    }
+
+    .decision-recommendation.wait .rec-label {
+      color: var(--color-warning);
+    }
+
+    .decision-recommendation .rec-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: var(--font-serif);
+    }
+
+    .decision-recommendation.implement .rec-text {
+      color: var(--color-success);
+    }
+
+    .decision-recommendation.wait .rec-text {
+      color: var(--color-warning);
+    }
+
+    .voi-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .insight-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .insight-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. KEY INSIGHT PANEL
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 250px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: var(--space-md);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-sm) var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-table th {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      background: var(--color-bg-alt);
+    }
+
+    .comparison-table td {
+      font-size: 0.9rem;
+    }
+
+    .comparison-table .scenario {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .comparison-table .positive {
+      color: var(--color-success);
+      font-weight: 600;
+    }
+
+    .comparison-table .negative {
+      color: var(--color-warning);
+      font-weight: 600;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Advanced Methods</div>
+      <h1>CEA When Causal Effects Are Uncertain</h1>
+      <p class="subtitle">Should we implement a program now or wait for better evidence? Value of Information analysis shows that "waiting" is itself a decision with real costs.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Decision Under Uncertainty</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">EVPI Explained</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Interactive VOI</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A state health department is considering a new diabetes prevention program. The evidence suggests the program works, but with substantial uncertainty. The effect could be large, modest, or even zero. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <div class="chart-title">Estimated Program Effect: Distribution of Possible Outcomes</div>
+            <svg id="distribution-chart" class="chart-svg" role="img" aria-label="Probability distribution showing uncertainty in program effectiveness"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-primary);"></span>
+                <span>Probability distribution of true effect</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Mean estimate</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Effect Estimate</h4>
+              <div class="stat-item" style="text-align: left;">
+                <div class="stat-value uncertain">0.15 QALYs</div>
+                <div class="stat-label">Mean effect per person</div>
+              </div>
+              <div style="margin-top: var(--space-sm); font-size: 0.85rem; color: var(--color-text-secondary);">
+                95% CI: -0.02 to 0.32 QALYs
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Program Costs</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value">$5,000</div>
+                  <div class="stat-label">Per person</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">50,000</div>
+                  <div class="stat-label">Target pop.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scenario-card">
+              <h4>The Dilemma</h4>
+              <p>The point estimate suggests the program is cost-effective ($33,333/QALY). But there's a 15% chance the program doesn't work at all. Should we implement now or wait for better evidence?</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What happens if we implement the program now? What happens if we wait? The answer depends on which scenario turns out to be true.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: DECISION UNDER UNCERTAINTY
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Decision Under Uncertainty</h2>
+          <p class="panel-intro">
+            Every decision carries risk. Implementing a program that doesn't work wastes resources. Waiting to implement a program that works delays health benefits. The expected value calculation weighs these trade-offs.
+          </p>
+        </div>
+
+        <div class="decision-container">
+          <div class="decision-card implement">
+            <div class="decision-header">
+              <div class="decision-icon">Go</div>
+              <div>
+                <h3>Implement Now</h3>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);">Act on current evidence</span>
+              </div>
+            </div>
+
+            <div class="outcome-list">
+              <div class="outcome-item">
+                <span class="outcome-label">If effective (85%)</span>
+                <span class="outcome-value">Gain 7,500 QALYs, cost $250M. Net benefit: +$125M at $50K/QALY threshold</span>
+              </div>
+              <div class="outcome-item">
+                <span class="outcome-label">If ineffective (15%)</span>
+                <span class="outcome-value">Gain 0 QALYs, cost $250M. Net benefit: -$250M</span>
+              </div>
+            </div>
+
+            <div class="expected-value-box">
+              <div class="ev-label">Expected Net Benefit</div>
+              <div class="ev-value" id="ev-implement">+$68.8M</div>
+            </div>
+          </div>
+
+          <div class="decision-card wait">
+            <div class="decision-header">
+              <div class="decision-icon">Wait</div>
+              <div>
+                <h3>Wait for Better Evidence</h3>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);">Delay decision by 2 years</span>
+              </div>
+            </div>
+
+            <div class="outcome-list">
+              <div class="outcome-item">
+                <span class="outcome-label">If effective (85%)</span>
+                <span class="outcome-value">Eventually implement, but 2 years of benefits lost. Net: +$87M (delayed)</span>
+              </div>
+              <div class="outcome-item">
+                <span class="outcome-label">If ineffective (15%)</span>
+                <span class="outcome-value">Avoid wasting $250M. Net benefit: $0</span>
+              </div>
+            </div>
+
+            <div class="expected-value-box">
+              <div class="ev-label">Expected Net Benefit</div>
+              <div class="ev-value" id="ev-wait">+$74.0M</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>Expected Value of a Decision</h3>
+          <p>The <strong>expected value</strong> is the probability-weighted average of all possible outcomes. It accounts for both:</p>
+          <ul>
+            <li><strong>Upside risk:</strong> The chance of gains if the decision is right</li>
+            <li><strong>Downside risk:</strong> The chance of losses if the decision is wrong</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">In this case, both decisions have positive expected value. But which is higher depends on how uncertain we are and how costly waiting is.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> If we could learn the truth before deciding, how much would that information be worth? This is the Expected Value of Perfect Information.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: EVPI EXPLAINED
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">EVPI Explained</h2>
+          <p class="panel-intro">
+            The Expected Value of Perfect Information (EVPI) tells us the maximum we should spend on research. It's the difference between deciding with perfect knowledge and deciding under uncertainty.
+          </p>
+        </div>
+
+        <div class="evpi-container">
+          <div class="evpi-diagram">
+            <div class="chart-title">Decision Tree: With and Without Perfect Information</div>
+            <svg id="decision-tree" class="diagram-svg" role="img" aria-label="Decision tree showing outcomes with and without perfect information"></svg>
+          </div>
+
+          <aside class="evpi-sidebar">
+            <div class="evpi-card">
+              <h4>The Calculation</h4>
+              <div class="formula-box">
+                EVPI = EV(perfect info) - EV(current best)
+              </div>
+              <p class="formula-explanation">
+                <strong>With perfect information:</strong> We always make the right choice. Implement when effective, don't when ineffective.
+              </p>
+              <p class="formula-explanation" style="margin-top: var(--space-sm);">
+                <strong>Without:</strong> We must commit to one strategy now, accepting the risk of being wrong.
+              </p>
+            </div>
+
+            <div class="evpi-highlight">
+              <h4>The Value of Knowing</h4>
+              <table class="comparison-table">
+                <tr>
+                  <th>Scenario</th>
+                  <th>Probability</th>
+                  <th>Optimal Action</th>
+                </tr>
+                <tr>
+                  <td class="scenario">Effective</td>
+                  <td>85%</td>
+                  <td class="positive">Implement</td>
+                </tr>
+                <tr>
+                  <td class="scenario">Ineffective</td>
+                  <td>15%</td>
+                  <td class="negative">Don't implement</td>
+                </tr>
+              </table>
+              <div class="evpi-result">
+                <span class="label">EVPI =</span>
+                <span class="value" id="evpi-value">$37.5M</span>
+              </div>
+            </div>
+
+            <div class="evpi-card">
+              <h4>What This Means</h4>
+              <p class="formula-explanation">
+                A perfect study would be worth up to <strong>$37.5 million</strong> to the health system. Any research costing less than this has positive expected return. Research costing more is not worth conducting.
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do the key parameters affect the value of information? Explore interactively to build intuition.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: INTERACTIVE VOI
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Interactive Value of Information</h2>
+          <p class="panel-intro">
+            Adjust the parameters below to see how uncertainty, costs, and population size affect the optimal decision and the value of additional research.
+          </p>
+        </div>
+
+        <div class="voi-container">
+          <div class="voi-interactive">
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Probability Program is Effective</span>
+                <span class="slider-value" id="prob-value">85%</span>
+              </div>
+              <input type="range" class="slider" id="prob-slider" min="5" max="95" value="85" step="5" aria-label="Adjust probability of effect">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Effect Size if Effective (QALYs per person)</span>
+                <span class="slider-value" id="effect-value">0.15</span>
+              </div>
+              <input type="range" class="slider" id="effect-slider" min="0.05" max="0.40" value="0.15" step="0.01" aria-label="Adjust observed effect size">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Cost per Person</span>
+                <span class="slider-value" id="cost-value">$5,000</span>
+              </div>
+              <input type="range" class="slider" id="cost-slider" min="1000" max="15000" value="5000" step="500" aria-label="Adjust program cost">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label">
+                <span>Target Population</span>
+                <span class="slider-value" id="pop-value">50,000</span>
+              </div>
+              <input type="range" class="slider" id="pop-slider" min="10000" max="200000" value="50000" step="10000" aria-label="Adjust population size">
+            </div>
+
+            <div class="result-display">
+              <div class="result-grid">
+                <div class="result-item implement">
+                  <div class="value" id="result-implement">+$68.8M</div>
+                  <div class="label">EV: Implement Now</div>
+                </div>
+                <div class="result-item wait">
+                  <div class="value" id="result-wait">+$74.0M</div>
+                  <div class="label">EV: Wait 2 Years</div>
+                </div>
+                <div class="result-item evpi">
+                  <div class="value" id="result-evpi">$37.5M</div>
+                  <div class="label">Max Research Value</div>
+                </div>
+              </div>
+
+              <div class="decision-recommendation implement" id="recommendation">
+                <div class="rec-label">Optimal Decision</div>
+                <div class="rec-text" id="rec-text">Implement Now</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="voi-sidebar">
+            <div class="insight-card">
+              <h4>When to Implement Now</h4>
+              <p>Implement now when the expected benefit exceeds the expected cost, accounting for the probability the program doesn't work. Higher probability of effectiveness and larger effect sizes favor immediate action.</p>
+            </div>
+
+            <div class="insight-card">
+              <h4>When to Wait</h4>
+              <p>Wait when uncertainty is high and the cost of being wrong is large. A 50% probability of effectiveness means you're essentially flipping a coin with hundreds of millions at stake.</p>
+            </div>
+
+            <div class="insight-card">
+              <h4>When Research Pays Off</h4>
+              <p>EVPI is highest when: (1) the decision is close, (2) the population is large, and (3) the consequences of being wrong are severe. Small, low-stakes decisions don't justify expensive research.</p>
+            </div>
+
+            <div class="insight-card">
+              <h4>Practical Limits</h4>
+              <p>EVPI assumes perfect information. Real studies provide partial information. The Expected Value of Sample Information (EVSI) calculates the value of a specific study design.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What's the key insight for health economists? "Wait for better evidence" is itself a decision that must be evaluated.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Waiting for more evidence has real costs. Every day of delay means foregone benefits for people who would have been helped. Economics treats the decision to wait as itself a choice with consequences.
+          </p>
+        </div>
+
+        <div class="dag-wrapper">
+          <img
+            src="assets/cea-uncertain-effects-dag.png"
+            alt="Decision diagram showing two paths: Implement Now (with uncertain outcomes) and Wait for Evidence (with delayed benefits and research costs). Both paths lead to Net Health Benefit, with Value of Information connecting uncertainty to the wait path."
+            class="dag-image"
+          >
+          <p class="dag-caption">The decision to wait is itself a choice with expected costs and benefits. VOI analysis makes these trade-offs explicit.</p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Questions Economists Ask About Evidence and Action</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Expected value:</strong> What's the probability-weighted average of all possible outcomes?</div>
+            <div class="concept-item"><strong>Opportunity cost of waiting:</strong> How many people are harmed by delayed implementation if the program works?</div>
+            <div class="concept-item"><strong>Value of information:</strong> How much would we pay to know the truth before deciding?</div>
+            <div class="concept-item"><strong>Decision threshold:</strong> At what level of uncertainty should we act versus wait?</div>
+            <div class="concept-item"><strong>Research prioritization:</strong> Which uncertainties matter most for the decision?</div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>Value of Information Analysis</h3>
+          <p><strong>Value of Information (VOI)</strong> quantifies how much additional research is worth. It provides:</p>
+          <ul>
+            <li><strong>EVPI (Expected Value of Perfect Information):</strong> Upper bound on what any research could be worth</li>
+            <li><strong>EVPPI (Partial Perfect Information):</strong> Value of resolving uncertainty about a specific parameter</li>
+            <li><strong>EVSI (Sample Information):</strong> Value of a specific study with a specific sample size</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">VOI transforms vague calls for "more research" into precise questions about which research, how much, and whether it's worth the investment.</p>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>"Wait for better evidence" is not a neutral position.</strong> It's a decision with real costs: delayed benefits for patients, continued spending on possibly inferior alternatives, and the expense of the research itself. Value of Information analysis makes these trade-offs explicit and quantifiable. The goal isn't to eliminate uncertainty before acting. The goal is to act wisely given the uncertainty we face. <strong>This is what economists mean by "decision-making under uncertainty."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. CONFIGURATION
+       ============================================ */
+    const CONFIG = {
+      probEffective: 0.85,
+      effectSize: 0.15,
+      costPerPerson: 5000,
+      population: 50000,
+      wtpThreshold: 50000,
+      yearsDelayIfWait: 2,
+      discountRate: 0.03
+    };
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function formatMoney(value) {
+      const absVal = Math.abs(value);
+      if (absVal >= 1e9) {
+        return (value / 1e9).toFixed(1) + 'B';
+      } else if (absVal >= 1e6) {
+        return (value / 1e6).toFixed(1) + 'M';
+      } else if (absVal >= 1e3) {
+        return (value / 1e3).toFixed(1) + 'K';
+      }
+      return value.toFixed(0);
+    }
+
+    function normalPDF(x, mean, sd) {
+      const exp = -0.5 * Math.pow((x - mean) / sd, 2);
+      return (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(exp);
+    }
+
+    /* ============================================
+       3. CALCULATION FUNCTIONS
+       ============================================ */
+    function calculateExpectedValues(config) {
+      const totalCost = config.costPerPerson * config.population;
+      const totalQALYs = config.effectSize * config.population;
+      const monetizedBenefit = totalQALYs * config.wtpThreshold;
+
+      // Net benefit if effective
+      const netBenefitIfEffective = monetizedBenefit - totalCost;
+
+      // Net benefit if ineffective (just lose the cost)
+      const netBenefitIfIneffective = -totalCost;
+
+      // Expected value of implementing now
+      const evImplement = (config.probEffective * netBenefitIfEffective) +
+                          ((1 - config.probEffective) * netBenefitIfIneffective);
+
+      // Expected value of waiting (delayed benefit if effective, avoid cost if not)
+      const discountFactor = Math.pow(1 + config.discountRate, -config.yearsDelayIfWait);
+      const delayedNetBenefit = netBenefitIfEffective * discountFactor;
+      const evWait = config.probEffective * delayedNetBenefit;
+
+      // Expected value with perfect information
+      // If we knew it was effective, we'd implement (get full benefit)
+      // If we knew it wasn't, we'd skip (get 0, not negative)
+      const evPerfect = config.probEffective * netBenefitIfEffective +
+                        (1 - config.probEffective) * 0;
+
+      // EVPI is difference between perfect information and best current choice
+      const evpi = evPerfect - Math.max(evImplement, evWait);
+
+      return {
+        evImplement,
+        evWait,
+        evPerfect,
+        evpi,
+        netBenefitIfEffective,
+        netBenefitIfIneffective,
+        totalCost,
+        totalQALYs
+      };
+    }
+
+    /* ============================================
+       4. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let distributionInitialized = false;
+    let decisionTreeInitialized = false;
+    let voiInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Initialize/resize charts when panel becomes visible
+        setTimeout(() => {
+          if (panelNum === '1') {
+            if (!distributionInitialized) {
+              renderDistributionChart();
+              distributionInitialized = true;
+            }
+          } else if (panelNum === '3') {
+            if (!decisionTreeInitialized) {
+              renderDecisionTree();
+              decisionTreeInitialized = true;
+            }
+          } else if (panelNum === '4') {
+            if (!voiInitialized) {
+              initVOISliders();
+              voiInitialized = true;
+            }
+            updateVOICalculations();
+          }
+        }, 50);
+      });
+    });
+
+    /* ============================================
+       5. DISTRIBUTION CHART (Panel 1)
+       ============================================ */
+    function renderDistributionChart() {
+      const svg = document.getElementById('distribution-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 380;
+      const margin = { top: 30, right: 40, bottom: 60, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Distribution parameters
+      const mean = 0.15;
+      const sd = 0.087; // Gives roughly 95% CI from -0.02 to 0.32
+
+      // Generate curve points
+      const xMin = -0.1;
+      const xMax = 0.4;
+      const points = [];
+      const steps = 100;
+
+      for (let i = 0; i <= steps; i++) {
+        const x = xMin + (xMax - xMin) * (i / steps);
+        const y = normalPDF(x, mean, sd);
+        points.push({ x, y });
+      }
+
+      const yMax = Math.max(...points.map(p => p.y)) * 1.1;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Fill area under curve
+      let pathD = `M ${xScale(xMin)} ${yScale(0)}`;
+      points.forEach(p => {
+        pathD += ` L ${xScale(p.x)} ${yScale(p.y)}`;
+      });
+      pathD += ` L ${xScale(xMax)} ${yScale(0)} Z`;
+
+      const fill = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      fill.setAttribute('d', pathD);
+      fill.setAttribute('fill', 'var(--color-primary)');
+      fill.setAttribute('opacity', '0.2');
+      svg.appendChild(fill);
+
+      // Draw curve line
+      let lineD = `M ${xScale(points[0].x)} ${yScale(points[0].y)}`;
+      points.slice(1).forEach(p => {
+        lineD += ` L ${xScale(p.x)} ${yScale(p.y)}`;
+      });
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      line.setAttribute('d', lineD);
+      line.setAttribute('fill', 'none');
+      line.setAttribute('stroke', 'var(--color-primary)');
+      line.setAttribute('stroke-width', '3');
+      svg.appendChild(line);
+
+      // Zero line (vertical)
+      const zeroLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      zeroLine.setAttribute('x1', xScale(0));
+      zeroLine.setAttribute('x2', xScale(0));
+      zeroLine.setAttribute('y1', margin.top);
+      zeroLine.setAttribute('y2', height - margin.bottom);
+      zeroLine.setAttribute('stroke', 'var(--color-warning)');
+      zeroLine.setAttribute('stroke-width', '2');
+      zeroLine.setAttribute('stroke-dasharray', '5,5');
+      svg.appendChild(zeroLine);
+
+      // Zero label
+      const zeroLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      zeroLabel.setAttribute('x', xScale(0) + 5);
+      zeroLabel.setAttribute('y', margin.top + 15);
+      zeroLabel.setAttribute('font-size', '11');
+      zeroLabel.setAttribute('fill', 'var(--color-warning)');
+      zeroLabel.textContent = 'No effect';
+      svg.appendChild(zeroLabel);
+
+      // Mean line (vertical)
+      const meanLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      meanLine.setAttribute('x1', xScale(mean));
+      meanLine.setAttribute('x2', xScale(mean));
+      meanLine.setAttribute('y1', margin.top);
+      meanLine.setAttribute('y2', height - margin.bottom);
+      meanLine.setAttribute('stroke', 'var(--color-accent)');
+      meanLine.setAttribute('stroke-width', '3');
+      svg.appendChild(meanLine);
+
+      // Mean marker
+      const meanMarker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      meanMarker.setAttribute('cx', xScale(mean));
+      meanMarker.setAttribute('cy', yScale(normalPDF(mean, mean, sd)));
+      meanMarker.setAttribute('r', '8');
+      meanMarker.setAttribute('fill', 'var(--color-accent)');
+      svg.appendChild(meanMarker);
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      // X-axis ticks
+      for (let x = -0.1; x <= 0.4; x += 0.1) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      // X-axis label
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Effect Size (QALYs per person)';
+      svg.appendChild(xLabel);
+
+      // Y-axis label
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Probability Density';
+      svg.appendChild(yLabel);
+
+      // Shade ineffective region
+      const ineffectiveArea = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      ineffectiveArea.setAttribute('x', xScale(xMin));
+      ineffectiveArea.setAttribute('y', margin.top);
+      ineffectiveArea.setAttribute('width', xScale(0) - xScale(xMin));
+      ineffectiveArea.setAttribute('height', plotHeight);
+      ineffectiveArea.setAttribute('fill', 'var(--color-warning)');
+      ineffectiveArea.setAttribute('opacity', '0.1');
+      svg.insertBefore(ineffectiveArea, svg.firstChild);
+    }
+
+    /* ============================================
+       6. DECISION TREE (Panel 3)
+       ============================================ */
+    function renderDecisionTree() {
+      const svg = document.getElementById('decision-tree');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 400;
+
+      svg.innerHTML = '';
+
+      // Decision tree nodes
+      const nodeRadius = 8;
+      const squareSize = 16;
+
+      // Positions
+      const startX = 60;
+      const midX = width * 0.4;
+      const endX = width - 100;
+      const topY = height * 0.25;
+      const midY = height * 0.5;
+      const bottomY = height * 0.75;
+
+      // Helper to create text
+      function addText(x, y, text, anchor = 'start', size = '11', weight = 'normal') {
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', x);
+        t.setAttribute('y', y);
+        t.setAttribute('text-anchor', anchor);
+        t.setAttribute('font-size', size);
+        t.setAttribute('font-weight', weight);
+        t.setAttribute('fill', 'var(--color-text)');
+        t.textContent = text;
+        svg.appendChild(t);
+      }
+
+      // Helper to create line
+      function addLine(x1, y1, x2, y2, color = 'var(--color-text-muted)', width = 2) {
+        const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', x1);
+        l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2);
+        l.setAttribute('y2', y2);
+        l.setAttribute('stroke', color);
+        l.setAttribute('stroke-width', width);
+        svg.appendChild(l);
+      }
+
+      // Start decision square
+      const startSquare = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      startSquare.setAttribute('x', startX - squareSize / 2);
+      startSquare.setAttribute('y', midY - squareSize / 2);
+      startSquare.setAttribute('width', squareSize);
+      startSquare.setAttribute('height', squareSize);
+      startSquare.setAttribute('fill', 'var(--color-primary)');
+      svg.appendChild(startSquare);
+      addText(startX, midY + 35, 'Decision', 'middle', '12', '600');
+
+      // Branch to "Implement"
+      addLine(startX + squareSize / 2, midY, midX - 40, topY);
+      addText(midX - 100, topY - 30, 'Implement Now', 'middle', '11', '600');
+
+      // Chance node for Implement
+      const chanceTop = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      chanceTop.setAttribute('cx', midX - 30);
+      chanceTop.setAttribute('cy', topY);
+      chanceTop.setAttribute('r', nodeRadius);
+      chanceTop.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(chanceTop);
+
+      // Implement outcomes
+      addLine(midX - 22, topY, endX - 60, topY - 40, 'var(--color-success)');
+      addText(endX - 50, topY - 45, '+$125M', 'start', '11', '600');
+      addText(endX - 50, topY - 30, '(85%: effective)', 'start', '10');
+
+      addLine(midX - 22, topY, endX - 60, topY + 40, 'var(--color-warning)');
+      addText(endX - 50, topY + 35, '-$250M', 'start', '11', '600');
+      addText(endX - 50, topY + 50, '(15%: ineffective)', 'start', '10');
+
+      // Branch to "Wait"
+      addLine(startX + squareSize / 2, midY, midX - 40, bottomY);
+      addText(midX - 100, bottomY + 45, 'Wait for Evidence', 'middle', '11', '600');
+
+      // Chance node for Wait
+      const chanceBottom = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      chanceBottom.setAttribute('cx', midX - 30);
+      chanceBottom.setAttribute('cy', bottomY);
+      chanceBottom.setAttribute('r', nodeRadius);
+      chanceBottom.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(chanceBottom);
+
+      // Wait outcomes
+      addLine(midX - 22, bottomY, endX - 60, bottomY - 40, 'var(--color-success)');
+      addText(endX - 50, bottomY - 45, '+$87M', 'start', '11', '600');
+      addText(endX - 50, bottomY - 30, '(85%: implement later)', 'start', '10');
+
+      addLine(midX - 22, bottomY, endX - 60, bottomY + 40, 'var(--color-text-muted)');
+      addText(endX - 50, bottomY + 35, '$0', 'start', '11', '600');
+      addText(endX - 50, bottomY + 50, '(15%: avoid waste)', 'start', '10');
+
+      // Expected values box
+      const evBox = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      evBox.setAttribute('x', 10);
+      evBox.setAttribute('y', height - 70);
+      evBox.setAttribute('width', width - 20);
+      evBox.setAttribute('height', 60);
+      evBox.setAttribute('fill', 'var(--color-bg-alt)');
+      evBox.setAttribute('rx', '8');
+      svg.appendChild(evBox);
+
+      addText(width / 4, height - 40, 'EV(Implement) = $68.8M', 'middle', '12', '600');
+      addText(width / 2, height - 40, 'EV(Wait) = $74.0M', 'middle', '12', '600');
+      addText(width * 3 / 4, height - 40, 'EVPI = $37.5M', 'middle', '12', '600');
+
+      addText(width / 4, height - 22, '(current best choice)', 'middle', '10');
+      addText(width / 2, height - 22, '(slightly lower)', 'middle', '10');
+      addText(width * 3 / 4, height - 22, '(max research value)', 'middle', '10');
+    }
+
+    /* ============================================
+       7. INTERACTIVE VOI (Panel 4)
+       ============================================ */
+    function initVOISliders() {
+      const probSlider = document.getElementById('prob-slider');
+      const effectSlider = document.getElementById('effect-slider');
+      const costSlider = document.getElementById('cost-slider');
+      const popSlider = document.getElementById('pop-slider');
+
+      [probSlider, effectSlider, costSlider, popSlider].forEach(slider => {
+        slider.addEventListener('input', updateVOICalculations);
+      });
+    }
+
+    function updateVOICalculations() {
+      const probSlider = document.getElementById('prob-slider');
+      const effectSlider = document.getElementById('effect-slider');
+      const costSlider = document.getElementById('cost-slider');
+      const popSlider = document.getElementById('pop-slider');
+
+      // Update displayed values
+      const prob = parseInt(probSlider.value) / 100;
+      const effect = parseFloat(effectSlider.value);
+      const cost = parseInt(costSlider.value);
+      const pop = parseInt(popSlider.value);
+
+      document.getElementById('prob-value').textContent = (prob * 100).toFixed(0) + '%';
+      document.getElementById('effect-value').textContent = effect.toFixed(2);
+      document.getElementById('cost-value').textContent = '$' + cost.toLocaleString();
+      document.getElementById('pop-value').textContent = pop.toLocaleString();
+
+      // Calculate expected values
+      const config = {
+        probEffective: prob,
+        effectSize: effect,
+        costPerPerson: cost,
+        population: pop,
+        wtpThreshold: 50000,
+        yearsDelayIfWait: 2,
+        discountRate: 0.03
+      };
+
+      const results = calculateExpectedValues(config);
+
+      // Update result displays
+      const evImplement = results.evImplement;
+      const evWait = results.evWait;
+      const evpi = Math.max(0, results.evpi);
+
+      document.getElementById('result-implement').textContent =
+        (evImplement >= 0 ? '+' : '') + '$' + formatMoney(evImplement);
+      document.getElementById('result-wait').textContent =
+        (evWait >= 0 ? '+' : '') + '$' + formatMoney(evWait);
+      document.getElementById('result-evpi').textContent = '$' + formatMoney(evpi);
+
+      // Update recommendation
+      const recDiv = document.getElementById('recommendation');
+      const recText = document.getElementById('rec-text');
+
+      if (evImplement >= evWait && evImplement > 0) {
+        recDiv.className = 'decision-recommendation implement';
+        recText.textContent = 'Implement Now';
+      } else if (evWait > evImplement && evWait > 0) {
+        recDiv.className = 'decision-recommendation wait';
+        recText.textContent = 'Wait for Better Evidence';
+      } else {
+        recDiv.className = 'decision-recommendation wait';
+        recText.textContent = 'Do Not Implement';
+      }
+
+      // Update color classes based on positive/negative
+      const implementResult = document.querySelector('.result-item.implement .value');
+      const waitResult = document.querySelector('.result-item.wait .value');
+
+      implementResult.style.color = evImplement >= 0 ? 'var(--color-success)' : 'var(--color-warning)';
+      waitResult.style.color = evWait >= 0 ? 'var(--color-success)' : 'var(--color-warning)';
+    }
+
+    /* ============================================
+       8. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate and display initial EVPI
+      const initialResults = calculateExpectedValues(CONFIG);
+      document.getElementById('evpi-value').textContent =
+        '$' + formatMoney(Math.max(0, initialResults.evpi));
+
+      // Render initial distribution chart
+      renderDistributionChart();
+      distributionInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderDistributionChart();
+          } else if (document.getElementById('panel-3').classList.contains('active')) {
+            renderDecisionTree();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

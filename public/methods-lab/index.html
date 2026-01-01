@@ -11,257 +11,368 @@
     gtag('js', new Date());
     gtag('config', 'G-E1LG1N11QE');
   </script>
-  <title>Methods Lab - Interactive Health Economics Learning | CAPHE</title>
-  <meta name="description" content="Learn health economics methods through interactive California case studies. Master causal inference, cost-effectiveness analysis, and policy evaluation with real data.">
+  <title>Methods Lab | CAPHE</title>
+  <meta name="description" content="Interactive labs teaching causal inference and economic evaluation for public health professionals. Learn health economics methods through California case studies.">
   <link rel="stylesheet" href="/src/frontend/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    .methods-lab-hero {
-      background: linear-gradient(160deg, #0041A5 0%, #003080 50%, #002060 100%);
-      color: white;
-      padding: 4rem 0 3.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .methods-lab-hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      pointer-events: none;
-    }
-    .methods-lab-hero .container {
-      position: relative;
-      z-index: 1;
-    }
-    .methods-lab-hero .section-eyebrow {
-      color: #F9A825;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
-    .methods-lab-hero .page-title {
-      color: white;
-      font-size: 2.75rem;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-      letter-spacing: -0.01em;
-    }
-    .methods-lab-hero .page-subtitle {
-      color: rgba(255, 255, 255, 0.85);
-      max-width: 580px;
-      font-size: 1.125rem;
-      line-height: 1.7;
-      margin-bottom: 0;
-    }
-    .hero-features {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 2.5rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    .hero-feature {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .hero-feature-icon {
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .hero-feature-icon svg {
-      width: 20px;
-      height: 20px;
-      stroke: #F9A825;
-      stroke-width: 1.5;
-      fill: none;
-    }
-    @media (max-width: 768px) {
-      .methods-lab-hero {
-        padding: 2.5rem 0 2rem;
-      }
-      .methods-lab-hero .page-title {
-        font-size: 2rem;
-      }
-      .methods-lab-hero .page-subtitle {
-        font-size: 1rem;
-      }
-      .hero-features {
-        flex-direction: column;
-        gap: 1.25rem;
-        margin-top: 1.75rem;
-        padding-top: 1.5rem;
-      }
-    }
-    .module-card-featured {
-      border: 2px solid var(--color-primary);
-      position: relative;
-    }
-    .module-card-featured::before {
-      content: 'Available Now';
-      position: absolute;
-      top: -12px;
-      left: var(--space-lg);
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-xs) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: var(--font-size-xs);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .module-meta {
-      display: flex;
-      gap: var(--space-lg);
-      margin: var(--space-md) 0;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .module-meta-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-xs);
-    }
-    .learning-outcomes {
-      background: var(--color-surface);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-    .learning-outcomes h4 {
-      font-size: var(--font-size-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-md);
-    }
-    .learning-outcomes ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: var(--space-sm);
-    }
-    .learning-outcomes li {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: var(--font-size-sm);
-    }
-    .learning-outcomes li::before {
-      content: '✓';
-      color: var(--color-success);
-      font-weight: 600;
-    }
-    .module-card-coming {
-      opacity: 0.7;
-      border: 1px dashed var(--color-border);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-public: #2E7D32;
+      --color-affiliate: #1565C0;
+      --color-member: #7B1FA2;
+      --color-bg: #FAFAF8;
+      --color-bg-card: #FFFFFF;
+      --color-text: #1C1C1C;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --font-serif: 'Georgia', serif;
+      --font-sans: 'Segoe UI', system-ui, sans-serif;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --radius-md: 8px;
+      --radius-lg: 12px;
     }
 
-    /* Filter UI */
-    .filter-section {
-      margin-bottom: var(--space-xl);
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
     }
-    .filter-row {
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      padding: 3rem 0 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .header h1 {
+      font-family: var(--font-serif);
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin-bottom: 1.5rem;
+    }
+
+    .header .tagline {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Quick Start Roles */
+    .quick-start {
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .quick-start-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.8;
+      margin-bottom: 0.75rem;
+    }
+
+    .role-buttons {
       display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
+
+    .role-btn {
+      background: white;
+      color: var(--color-primary);
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .role-btn:hover {
+      background: var(--color-accent);
+      color: var(--color-text);
+      transform: translateY(-1px);
+    }
+
+    /* Filter Bar - Sticky */
+    .filter-bar {
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-container {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 100px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .search-box::before {
+      content: "🔍";
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      opacity: 0.5;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
     .filter-label {
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.75rem;
       color: var(--color-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      min-width: 70px;
+      margin-right: 0.5rem;
     }
-    .filter-tabs {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .filter-tab {
-      padding: 0.5rem 1rem;
+
+    .filter-btn {
+      padding: 0.4rem 0.9rem;
       border: 1px solid var(--color-border);
-      border-radius: 20px;
       background: white;
-      font-size: 0.875rem;
-      color: var(--color-text-secondary);
+      border-radius: 100px;
+      font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.2s;
+      color: var(--color-text-muted);
     }
-    .filter-tab:hover {
+
+    .filter-btn:hover {
       border-color: var(--color-primary);
       color: var(--color-primary);
     }
-    .filter-tab.active {
+
+    .filter-btn.active {
       background: var(--color-primary);
       border-color: var(--color-primary);
       color: white;
     }
-    .filter-tab .count {
-      opacity: 0.7;
-      margin-left: 0.25rem;
+
+    .filter-btn.active-public {
+      background: var(--color-public);
+      border-color: var(--color-public);
+      color: white;
     }
 
-    /* Module Grid */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: var(--space-lg);
+    .filter-btn.active-affiliate {
+      background: var(--color-affiliate);
+      border-color: var(--color-affiliate);
+      color: white;
     }
-    .module-card {
-      display: flex;
-      flex-direction: column;
+
+    .filter-btn.active-member {
+      background: var(--color-member);
+      border-color: var(--color-member);
+      color: white;
     }
-    .module-card.hidden {
+
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-left: auto;
+    }
+
+    /* Main */
+    .main {
+      padding: 2rem 0 4rem;
+    }
+
+    /* Track Section */
+    .track {
+      margin-bottom: 3rem;
+    }
+
+    .track.hidden {
       display: none;
     }
-    .module-card .card-text {
-      flex-grow: 1;
-    }
-    .module-card .btn {
-      margin-top: auto;
-    }
-    .no-results {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: var(--space-2xl);
-      color: var(--color-text-muted);
+
+    .track-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid var(--color-primary);
     }
 
+    .track-number {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .track-name {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      color: var(--color-primary-dark);
+    }
+
+    .track-question {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    /* Lab Grid */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .lab-card {
+      background: var(--color-bg-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+      border-left: 4px solid transparent;
+    }
+
+    .lab-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .lab-card.hidden {
+      display: none;
+    }
+
+    .lab-card.public { border-left-color: var(--color-public); }
+    .lab-card.affiliate { border-left-color: var(--color-affiliate); }
+    .lab-card.member { border-left-color: var(--color-member); }
+
+    .lab-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .lab-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-text);
+      line-height: 1.4;
+    }
+
+    .lab-badge {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 100px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-public { background: rgba(46, 125, 50, 0.1); color: var(--color-public); }
+    .badge-affiliate { background: rgba(21, 101, 192, 0.1); color: var(--color-affiliate); }
+    .badge-member { background: rgba(123, 31, 162, 0.1); color: var(--color-member); }
+
+    .lab-description {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: var(--color-text-muted);
+      display: none;
+    }
+
+    .no-results.visible {
+      display: block;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    .footer a { color: var(--color-accent); }
+
+    /* Responsive */
     @media (max-width: 768px) {
-      .filter-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .filter-label {
-        margin-bottom: 0.25rem;
-      }
-      .modules-grid {
-        grid-template-columns: 1fr;
-      }
+      .header h1 { font-size: 1.75rem; }
+      .track-name { font-size: 1.4rem; }
+      .lab-grid { grid-template-columns: 1fr; }
+      .filter-container { flex-direction: column; align-items: stretch; }
+      .search-box { max-width: none; }
+      .filter-group { justify-content: center; }
+      .results-count { margin: 0.5rem 0 0; text-align: center; width: 100%; }
+      .role-buttons { justify-content: center; }
     }
   </style>
 </head>
@@ -286,17 +397,17 @@
         <div class="nav-dropdown">
           <a href="/programs.html" class="nav-link">Programs</a>
           <div class="nav-dropdown-menu">
-            <a href="/programs.html">Upcoming Events</a>
-            <a href="/programs.html#workshops">Workshops</a>
             <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#workshops">Workshops</a>
             <a href="/programs.html#working-groups">Working Groups</a>
+            <a href="/programs.html#peer-review">Peer Review Sessions</a>
           </div>
         </div>
         <div class="nav-dropdown">
           <a href="/resources.html" class="nav-link active">Resources</a>
           <div class="nav-dropdown-menu">
             <a href="/methods-lab/">Methods Lab</a>
-            <a href="/resources.html">External Resources</a>
+            <a href="/resources.html#external-resources">External Resources</a>
           </div>
         </div>
       </div>
@@ -306,140 +417,381 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="methods-lab-hero">
+  <header class="header">
     <div class="container">
-      <div class="section-eyebrow">Interactive Learning</div>
-      <h1 class="page-title">Methods Lab</h1>
-      <p class="page-subtitle">
-        Learn health economics methods through interactive California case studies.
-        Each module uses real public health scenarios to build analytical skills
-        you can apply in your own work.
-      </p>
-      <div class="hero-features">
-        <div class="hero-feature">
-          <span class="hero-feature-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 3v18h18" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 14l4-4 4 4 5-5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="20" cy="9" r="1.5" fill="#F9A825" stroke="none"/>
-            </svg>
-          </span>
-          <span>Interactive charts</span>
-        </div>
-        <div class="hero-feature">
-          <span class="hero-feature-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C8 2 4 6 4 10c0 5.4 7 11 8 12 1-1 8-6.6 8-12 0-4-4-8-8-8z" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="10" r="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>California data</span>
-        </div>
-        <div class="hero-feature">
-          <span class="hero-feature-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="4" width="18" height="16" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 8h10M7 12h6M7 16h8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span>Policy frameworks</span>
+      <h1>Methods Lab</h1>
+      <p class="subtitle">Interactive labs teaching causal inference and economic evaluation for policy analysts, epidemiologists, and public health professionals.</p>
+      <div class="quick-start">
+        <div class="quick-start-label">Quick Start by Track</div>
+        <div class="role-buttons">
+          <button class="role-btn" data-role="evaluator">Program Impact</button>
+          <button class="role-btn" data-role="researcher">Evidence Credibility</button>
+          <button class="role-btn" data-role="analyst">Value for Money</button>
+          <button class="role-btn" data-role="pitfalls">Causal Pitfalls</button>
         </div>
       </div>
     </div>
-  </section>
+  </header>
 
-  <!-- Modules Section -->
-  <section class="section">
+  <!-- Sticky Filter Bar -->
+  <div class="filter-bar">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Available Modules</h2>
-        <p class="section-subtitle">
-          Self-paced lessons that build practical skills in health economics analysis.
-        </p>
+      <div class="filter-container">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Search labs...">
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Access:</span>
+          <button class="filter-btn active" data-access="all">All</button>
+          <button class="filter-btn" data-access="public">Public</button>
+          <button class="filter-btn" data-access="affiliate">Affiliate</button>
+          <button class="filter-btn" data-access="member">Member</button>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Track:</span>
+          <button class="filter-btn active" data-track="all">All</button>
+          <button class="filter-btn" data-track="1">Impact</button>
+          <button class="filter-btn" data-track="2">Credibility</button>
+          <button class="filter-btn" data-track="3">Value</button>
+          <button class="filter-btn" data-track="4">Pitfalls</button>
+        </div>
+
+        <span class="results-count"><span id="visible-count">35</span> labs</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container">
+
+      <div class="no-results" id="no-results">
+        No labs match your filters. <a href="#" onclick="resetFilters(); return false;">Reset filters</a>
       </div>
 
-      <!-- Filter UI -->
-      <div class="filter-section">
-        <div class="filter-row">
-          <span class="filter-label">Method:</span>
-          <div class="filter-tabs" id="method-filters">
-            <button class="filter-tab active" data-method="all">All</button>
-            <button class="filter-tab" data-method="causal-inference">Causal Inference</button>
-            <button class="filter-tab" data-method="cost-effectiveness">Cost-Effectiveness</button>
-          </div>
+      <!-- TRACK 1: Program Impact -->
+      <section class="track" data-track="1">
+        <div class="track-header">
+          <h2 class="track-name">Program Impact</h2>
         </div>
-        <div class="filter-row">
-          <span class="filter-label">Topic:</span>
-          <div class="filter-tabs" id="topic-filters">
-            <button class="filter-tab active" data-topic="all">All</button>
-            <button class="filter-tab" data-topic="nutrition">Food & Nutrition</button>
-            <button class="filter-tab" data-topic="workforce">Healthcare Workforce</button>
-          </div>
-        </div>
-      </div>
+        <p class="track-question">Did the program actually cause the change you're seeing?</p>
 
-      <!-- Module Cards -->
-      <div class="modules-grid" id="modules-grid">
+        <div class="lab-grid">
+          <a href="counterfactual-basics/" class="lab-card public" data-access="public" data-track="1" data-title="What Is a Counterfactual?" data-keywords="counterfactual comparison treatment control">
+            <div class="lab-card-header">
+              <span class="lab-title">What Is a Counterfactual?</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">The comparison you're actually making when you claim something worked.</p>
+          </a>
 
-        <!-- Food Insecurity & Diabetes -->
-        <div class="card module-card" data-method="causal-inference" data-topic="nutrition">
-          <div class="card-badge">Causal Inference</div>
-          <h3 class="card-title">Food Insecurity & Diabetes Hospitalizations</h3>
-          <div class="module-meta">
-            <span class="module-meta-item">5 panels</span>
-            <span class="module-meta-item">~20 min</span>
-          </div>
-          <p class="card-text">
-            Does food access actually affect diabetes hospitalizations, or does poverty drive both?
-            Explore confounding through interactive charts and causal diagrams.
-          </p>
-          <a href="/methods-lab/food-insecurity-diabetes.html" class="btn btn-primary" style="width: 100%;">
-            Start Module
+          <a href="before-after-trap/" class="lab-card public" data-access="public" data-track="1" data-title="The Before-After Trap" data-keywords="before after pre post comparison time">
+            <div class="lab-card-header">
+              <span class="lab-title">The Before-After Trap</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">Why "it improved after we started" isn't proof of impact.</p>
+          </a>
+
+          <a href="control-groups-not-enough/" class="lab-card public" data-access="public" data-track="1" data-title="Why Control Groups Aren't Enough" data-keywords="control group comparison randomization exchangeability">
+            <div class="lab-card-header">
+              <span class="lab-title">Why Control Groups Aren't Enough</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">What makes a comparison group actually comparable.</p>
+          </a>
+
+          <a href="selection-into-treatment/" class="lab-card public" data-access="public" data-track="1" data-title="Who Gets Treated?" data-keywords="selection bias self-selection treatment assignment">
+            <div class="lab-card-header">
+              <span class="lab-title">Who Gets Treated?</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">How self-selection into programs undermines evaluation.</p>
+          </a>
+
+          <a href="threat-regression-to-mean/" class="lab-card public" data-access="public" data-track="1" data-title="Regression to the Mean" data-keywords="regression mean extreme values statistical artifact">
+            <div class="lab-card-header">
+              <span class="lab-title">Regression to the Mean</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">Why extreme cases improve without any intervention.</p>
+          </a>
+
+          <a href="threat-history-solutions/" class="lab-card affiliate" data-access="affiliate" data-track="1" data-title="Difference-in-Differences" data-keywords="difference differences DiD parallel trends quasi-experimental">
+            <div class="lab-card-header">
+              <span class="lab-title">Difference-in-Differences</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Ruling out other things that changed at the same time.</p>
+          </a>
+
+          <a href="threat-maturation-solutions/" class="lab-card affiliate" data-access="affiliate" data-track="1" data-title="Interrupted Time Series" data-keywords="interrupted time series ITS trends slope change">
+            <div class="lab-card-header">
+              <span class="lab-title">Interrupted Time Series</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Separating pre-existing trends from program effects.</p>
+          </a>
+
+          <a href="chw-health-outcomes/" class="lab-card affiliate" data-access="affiliate" data-track="1" data-title="Case Study: CHW Programs" data-keywords="community health worker CHW case study evaluation">
+            <div class="lab-card-header">
+              <span class="lab-title">Case Study: CHW Programs</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Full worked example evaluating community health worker impact.</p>
+          </a>
+
+          <a href="medicaid-expansion/" class="lab-card affiliate" data-access="affiliate" data-track="1" data-title="Case Study: Medicaid Expansion" data-keywords="Medicaid expansion policy evaluation state comparison">
+            <div class="lab-card-header">
+              <span class="lab-title">Case Study: Medicaid Expansion</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Policy evaluation when states choose differently.</p>
+          </a>
+
+          <a href="observational-to-experimental/" class="lab-card member" data-access="member" data-track="1" data-title="Finding Natural Experiments" data-keywords="natural experiment exogenous variation instrumental">
+            <div class="lab-card-header">
+              <span class="lab-title">Finding Natural Experiments</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">Moving from observational to experimental evidence.</p>
+          </a>
+
+          <a href="geographic-variables/" class="lab-card member" data-access="member" data-track="1" data-title="Geographic Variables" data-keywords="geographic spatial location fixed effects">
+            <div class="lab-card-header">
+              <span class="lab-title">Geographic Variables</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">When location is the treatment vs. the confounder.</p>
           </a>
         </div>
+      </section>
 
-        <!-- CHW & Health Outcomes -->
-        <div class="card module-card" data-method="causal-inference" data-topic="workforce">
-          <div class="card-badge">Causal Inference</div>
-          <h3 class="card-title">Community Health Workers & Patient Outcomes</h3>
-          <div class="module-meta">
-            <span class="module-meta-item">5 panels</span>
-            <span class="module-meta-item">~20 min</span>
-          </div>
-          <p class="card-text">
-            Do CHW programs improve health outcomes, or do healthier communities attract more CHWs?
-            Learn to identify confounding in workforce evaluations.
-          </p>
-          <a href="/methods-lab/chw-health-outcomes.html" class="btn btn-primary" style="width: 100%;">
-            Start Module
+      <!-- TRACK 2: Evidence Credibility -->
+      <section class="track" data-track="2">
+        <div class="track-header">
+          <h2 class="track-name">Evidence Credibility</h2>
+        </div>
+        <p class="track-question">Can you trust this study enough to act on it?</p>
+
+        <div class="lab-grid">
+          <a href="correlation-causation-interactive/" class="lab-card public" data-access="public" data-track="2" data-title="Correlation ≠ Causation" data-keywords="correlation causation association spurious">
+            <div class="lab-card-header">
+              <span class="lab-title">Correlation ≠ Causation</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">The gap between observing association and claiming cause.</p>
+          </a>
+
+          <a href="identical-data-opposite-policies/" class="lab-card public" data-access="public" data-track="2" data-title="Same Data, Opposite Conclusions" data-keywords="interpretation policy framing data analysis">
+            <div class="lab-card-header">
+              <span class="lab-title">Same Data, Opposite Conclusions</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">How identical numbers lead to different policy recommendations.</p>
+          </a>
+
+          <a href="threat-maturation-trends/" class="lab-card public" data-access="public" data-track="2" data-title="Maturation Threat" data-keywords="maturation trend time natural progression">
+            <div class="lab-card-header">
+              <span class="lab-title">Maturation Threat</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">Would this have happened anyway over time?</p>
+          </a>
+
+          <a href="threat-history-events/" class="lab-card public" data-access="public" data-track="2" data-title="History Threat" data-keywords="history concurrent events external shock">
+            <div class="lab-card-header">
+              <span class="lab-title">History Threat</span>
+              <span class="lab-badge badge-public">Public</span>
+            </div>
+            <p class="lab-description">What else changed at the same time as your program?</p>
+          </a>
+
+          <a href="threat-confounding-selection/" class="lab-card affiliate" data-access="affiliate" data-track="2" data-title="Confounding vs. Selection Bias" data-keywords="confounding selection bias adjustment">
+            <div class="lab-card-header">
+              <span class="lab-title">Confounding vs. Selection Bias</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Two different problems requiring different solutions.</p>
+          </a>
+
+          <a href="threat-measurement-instrumentation/" class="lab-card affiliate" data-access="affiliate" data-track="2" data-title="Measurement Changes" data-keywords="measurement instrumentation coding data quality">
+            <div class="lab-card-header">
+              <span class="lab-title">Measurement Changes</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Did the ruler change, or the thing being measured?</p>
+          </a>
+
+          <a href="study-design-ladder/" class="lab-card affiliate" data-access="affiliate" data-track="2" data-title="Study Design Hierarchy" data-keywords="study design RCT observational hierarchy evidence">
+            <div class="lab-card-header">
+              <span class="lab-title">Study Design Hierarchy</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Which designs can answer which causal questions.</p>
+          </a>
+
+          <a href="p-hacking-multiple-testing/" class="lab-card affiliate" data-access="affiliate" data-track="2" data-title="Detecting P-Hacking" data-keywords="p-hacking multiple testing specification searching significance">
+            <div class="lab-card-header">
+              <span class="lab-title">Detecting P-Hacking</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">How many analyses did they try before finding significance?</p>
+          </a>
+
+          <a href="regression-tables-confounding/" class="lab-card affiliate" data-access="affiliate" data-track="2" data-title="Reading Regression Tables" data-keywords="regression coefficient interpretation confounding">
+            <div class="lab-card-header">
+              <span class="lab-title">Reading Regression Tables</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">What the coefficients actually tell you about confounding.</p>
+          </a>
+
+          <a href="confounding-assessment-checklist/" class="lab-card member" data-access="member" data-track="2" data-title="Confounding Assessment Tool" data-keywords="confounding assessment Oster bounds sensitivity robustness">
+            <div class="lab-card-header">
+              <span class="lab-title">Confounding Assessment Tool</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">How much bias would it take to flip this result?</p>
           </a>
         </div>
+      </section>
 
-        <!-- No results message (hidden by default) -->
-        <div class="no-results" id="no-results" style="display: none;">
-          No modules match your current filters.
+      <!-- TRACK 3: Value for Money -->
+      <section class="track" data-track="3">
+        <div class="track-header">
+          <h2 class="track-name">Value for Money</h2>
         </div>
+        <p class="track-question">Is this program worth funding over the alternatives?</p>
 
-      </div>
-    </div>
-  </section>
+        <div class="lab-grid">
+          <a href="why-it-works-isnt-enough/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Why It Works Isn't Enough" data-keywords="effectiveness efficiency cost opportunity">
+            <div class="lab-card-header">
+              <span class="lab-title">Why "It Works" Isn't Enough</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Effective doesn't mean worth funding.</p>
+          </a>
 
-  <!-- Listserv Signup -->
-  <section class="section section-alt" style="padding: var(--space-2xl) 0;">
-    <div class="container">
-      <div style="max-width: 600px; margin: 0 auto; text-align: center;">
-        <h3 style="margin-bottom: var(--space-sm);">Get Notified of New Modules</h3>
-        <p style="color: var(--color-text-secondary); margin-bottom: var(--space-lg);">
-          We release new Methods Lab modules regularly. Join our listserv to be the first to know.
-        </p>
-        <a href="/contact.html#listserv" class="btn btn-primary">Join the Listserv</a>
-        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-md);">
-          1-2 emails per month. Unsubscribe anytime.
-        </p>
-      </div>
+          <a href="measuring-health-common-unit/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Measuring Health: QALYs" data-keywords="QALY quality adjusted life year health outcome measure">
+            <div class="lab-card-header">
+              <span class="lab-title">Measuring Health: QALYs</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Putting different health outcomes on a common scale.</p>
+          </a>
+
+          <a href="cost-effectiveness-ratio/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="The Cost-Effectiveness Ratio" data-keywords="ICER incremental cost effectiveness ratio CEA">
+            <div class="lab-card-header">
+              <span class="lab-title">The Cost-Effectiveness Ratio</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Calculating and interpreting ICERs.</p>
+          </a>
+
+          <a href="comparator-choice/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Choosing the Comparator" data-keywords="comparator alternative opportunity cost baseline">
+            <div class="lab-card-header">
+              <span class="lab-title">Choosing the Comparator</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Compared to what alternative use of funds?</p>
+          </a>
+
+          <a href="decision-thresholds/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Decision Thresholds" data-keywords="willingness to pay threshold WTP decision rule">
+            <div class="lab-card-header">
+              <span class="lab-title">Decision Thresholds</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">What does "worth it" actually mean in practice?</p>
+          </a>
+
+          <a href="comparing-two-programs/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Case Study: Comparing Programs" data-keywords="comparison programs cost effectiveness case study">
+            <div class="lab-card-header">
+              <span class="lab-title">Case Study: Comparing Programs</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Head-to-head cost-effectiveness evaluation.</p>
+          </a>
+
+          <a href="budget-impact/" class="lab-card member" data-access="member" data-track="3" data-title="Budget Impact Analysis" data-keywords="budget impact affordability fiscal constraint">
+            <div class="lab-card-header">
+              <span class="lab-title">Budget Impact Analysis</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">Affordable vs. good value: different questions.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- TRACK 4: Causal Pitfalls -->
+      <section class="track" data-track="4">
+        <div class="track-header">
+          <h2 class="track-name">Causal Pitfalls</h2>
+        </div>
+        <p class="track-question">What's really driving these numbers?</p>
+
+        <div class="lab-grid">
+          <a href="food-insecurity-diabetes/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="Case Study: Food Security & Diabetes" data-keywords="food insecurity diabetes bidirectional reverse causation">
+            <div class="lab-card-header">
+              <span class="lab-title">Case Study: Food Security & Diabetes</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Untangling bidirectional relationships in health data.</p>
+          </a>
+
+          <a href="classifying-causal-mechanisms/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="Classifying Causal Mechanisms" data-keywords="causal mechanism pathway DAG diagram">
+            <div class="lab-card-header">
+              <span class="lab-title">Classifying Causal Mechanisms</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Mapping what could explain the pattern you're seeing.</p>
+          </a>
+
+          <a href="sensitivity-analysis-cea/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="Sensitivity Analysis" data-keywords="sensitivity analysis robustness parameter uncertainty">
+            <div class="lab-card-header">
+              <span class="lab-title">Sensitivity Analysis</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Which assumptions matter most for your conclusions?</p>
+          </a>
+
+          <a href="cea-uncertain-effects/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="CEA Under Uncertainty" data-keywords="uncertainty evidence incomplete decision making">
+            <div class="lab-card-header">
+              <span class="lab-title">CEA Under Uncertainty</span>
+              <span class="lab-badge badge-affiliate">Affiliate</span>
+            </div>
+            <p class="lab-description">Making decisions when the evidence is incomplete.</p>
+          </a>
+
+          <a href="measurement-error-claims/" class="lab-card member" data-access="member" data-track="4" data-title="Measurement Error in Claims Data" data-keywords="measurement error attenuation bias administrative claims">
+            <div class="lab-card-header">
+              <span class="lab-title">Measurement Error in Claims Data</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">How administrative data distorts effect estimates.</p>
+          </a>
+
+          <a href="reverse-causation-feedback/" class="lab-card member" data-access="member" data-track="4" data-title="Reverse Causation & Feedback" data-keywords="reverse causation feedback loop simultaneity">
+            <div class="lab-card-header">
+              <span class="lab-title">Reverse Causation & Feedback</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">When cause and effect run both directions.</p>
+          </a>
+
+          <a href="collider-bias/" class="lab-card member" data-access="member" data-track="4" data-title="Collider Bias" data-keywords="collider bias selection conditioning DAG">
+            <div class="lab-card-header">
+              <span class="lab-title">Collider Bias</span>
+              <span class="lab-badge badge-member">Member</span>
+            </div>
+            <p class="lab-description">When controlling for a variable creates spurious correlation.</p>
+          </a>
+        </div>
+      </section>
+
     </div>
-  </section>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
@@ -464,7 +816,7 @@
         <div>
           <h4>Resources</h4>
           <a href="/methods-lab/">Methods Lab</a>
-          <a href="/resources.html">External Resources</a>
+          <a href="/resources.html#external-resources">External Resources</a>
         </div>
         <div>
           <h4>Connect</h4>
@@ -474,7 +826,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 California Association of Public Health Economists. All rights reserved.</p>
+        <p>&copy; 2025 California Association of Public Health Economists. All rights reserved.</p>
         <p style="margin-top: 0.5rem; font-size: 0.875rem;">
           <a href="/privacy.html" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> ·
           <a href="/terms.html" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
@@ -488,58 +840,159 @@
 
   <script src="/src/frontend/js/main.js"></script>
   <script>
-    // Filter functionality
-    (function() {
-      const methodFilters = document.querySelectorAll('#method-filters .filter-tab');
-      const topicFilters = document.querySelectorAll('#topic-filters .filter-tab');
-      const moduleCards = document.querySelectorAll('.module-card');
-      const noResults = document.getElementById('no-results');
+    // Filter state
+    let activeAccess = 'all';
+    let activeTrack = 'all';
+    let searchQuery = '';
 
-      let activeMethod = 'all';
-      let activeTopic = 'all';
+    // DOM elements
+    const searchInput = document.getElementById('search-input');
+    const accessBtns = document.querySelectorAll('[data-access]');
+    const trackBtns = document.querySelectorAll('[data-track]:not(.lab-card):not(.track)');
+    const labCards = document.querySelectorAll('.lab-card');
+    const trackSections = document.querySelectorAll('.track');
+    const visibleCount = document.getElementById('visible-count');
+    const noResults = document.getElementById('no-results');
+    const roleBtns = document.querySelectorAll('.role-btn');
 
-      function filterModules() {
-        let visibleCount = 0;
+    // Filter function
+    function applyFilters() {
+      let visible = 0;
 
-        moduleCards.forEach(card => {
-          const cardMethod = card.dataset.method;
-          const cardTopic = card.dataset.topic;
+      labCards.forEach(card => {
+        const cardAccess = card.dataset.access;
+        const cardTrack = card.dataset.track;
+        const cardTitle = card.dataset.title.toLowerCase();
+        const cardKeywords = card.dataset.keywords.toLowerCase();
 
-          const methodMatch = activeMethod === 'all' || cardMethod === activeMethod;
-          const topicMatch = activeTopic === 'all' || cardTopic === activeTopic;
+        const matchesAccess = activeAccess === 'all' || cardAccess === activeAccess;
+        const matchesTrack = activeTrack === 'all' || cardTrack === activeTrack;
+        const matchesSearch = searchQuery === '' ||
+          cardTitle.includes(searchQuery) ||
+          cardKeywords.includes(searchQuery);
 
-          if (methodMatch && topicMatch) {
-            card.classList.remove('hidden');
-            visibleCount++;
-          } else {
-            card.classList.add('hidden');
-          }
-        });
-
-        // Show/hide no results message
-        if (noResults) {
-          noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        if (matchesAccess && matchesTrack && matchesSearch) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
         }
-      }
-
-      methodFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-          methodFilters.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeMethod = btn.dataset.method;
-          filterModules();
-        });
       });
 
-      topicFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-          topicFilters.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeTopic = btn.dataset.topic;
-          filterModules();
-        });
+      // Show/hide track sections based on visible cards
+      trackSections.forEach(section => {
+        const trackNum = section.dataset.track;
+        const hasVisibleCards = Array.from(section.querySelectorAll('.lab-card'))
+          .some(card => !card.classList.contains('hidden'));
+
+        if (hasVisibleCards && (activeTrack === 'all' || activeTrack === trackNum)) {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
       });
-    })();
+
+      // Update count and no results message
+      visibleCount.textContent = visible;
+      noResults.classList.toggle('visible', visible === 0);
+    }
+
+    // Access filter buttons
+    accessBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        accessBtns.forEach(b => {
+          b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member');
+        });
+
+        const access = btn.dataset.access;
+        activeAccess = access;
+
+        if (access === 'public') btn.classList.add('active-public');
+        else if (access === 'affiliate') btn.classList.add('active-affiliate');
+        else if (access === 'member') btn.classList.add('active-member');
+        else btn.classList.add('active');
+
+        applyFilters();
+      });
+    });
+
+    // Track filter buttons
+    trackBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        trackBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTrack = btn.dataset.track;
+        applyFilters();
+      });
+    });
+
+    // Search input
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      applyFilters();
+    });
+
+    // Role buttons (quick start)
+    roleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const role = btn.dataset.role;
+
+        // Reset filters first
+        activeAccess = 'all';
+        activeTrack = 'all';
+        searchQuery = '';
+        searchInput.value = '';
+
+        accessBtns.forEach(b => b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member'));
+        trackBtns.forEach(b => b.classList.remove('active'));
+
+        document.querySelector('[data-access="all"]').classList.add('active');
+        document.querySelector('[data-track="all"]').classList.add('active');
+
+        // Apply track-specific filters
+        if (role === 'evaluator') {
+          activeTrack = '1';
+          document.querySelector('[data-track="1"]').classList.add('active');
+          document.querySelector('[data-track="all"]').classList.remove('active');
+        } else if (role === 'researcher') {
+          activeTrack = '2';
+          document.querySelector('[data-track="2"]').classList.add('active');
+          document.querySelector('[data-track="all"]').classList.remove('active');
+        } else if (role === 'analyst') {
+          activeTrack = '3';
+          document.querySelector('[data-track="3"]').classList.add('active');
+          document.querySelector('[data-track="all"]').classList.remove('active');
+        } else if (role === 'pitfalls') {
+          activeTrack = '4';
+          document.querySelector('[data-track="4"]').classList.add('active');
+          document.querySelector('[data-track="all"]').classList.remove('active');
+        }
+
+        applyFilters();
+
+        // Scroll to content
+        document.querySelector('.main').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Reset filters function
+    function resetFilters() {
+      activeAccess = 'all';
+      activeTrack = 'all';
+      searchQuery = '';
+      searchInput.value = '';
+
+      accessBtns.forEach(b => b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member'));
+      trackBtns.forEach(b => b.classList.remove('active'));
+
+      document.querySelector('[data-access="all"]').classList.add('active');
+      document.querySelector('[data-track="all"]').classList.add('active');
+
+      applyFilters();
+    }
+
+    // Initial count
+    applyFilters();
   </script>
 </body>
 </html>

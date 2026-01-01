@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Correlation ≠ Causation | CAPHE Methods Lab</title>
+  <meta name="description" content="Explore why correlation doesn't prove causation through the classic ice cream and drowning example. Learn how design-based approaches find variation independent of confounders.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-error: #D32F2F;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+    body { font-family: var(--font-sans); color: var(--color-text); line-height: 1.6; background: var(--color-bg-alt); }
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 2rem; margin-bottom: var(--space-sm); }
+    h2 { font-size: 1.5rem; margin-bottom: var(--space-md); }
+    h3 { font-size: 1.25rem; margin-bottom: var(--space-sm); }
+    p { margin-bottom: var(--space-md); }
+    a { color: var(--color-primary); }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white; padding: var(--space-2xl) 0; text-align: center;
+    }
+    .header h1 { color: white; }
+    .header .eyebrow { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; margin-bottom: var(--space-sm); }
+    .header .subtitle { font-size: 1.1rem; opacity: 0.95; max-width: 600px; margin: 0 auto; }
+    .panel-nav { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
+    .panel-btn { background: none; border: none; padding: var(--space-sm) var(--space-lg); font-size: 0.95rem; color: var(--color-text-secondary); cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease; font-family: var(--font-sans); }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; }
+    .panel-btn:focus { outline: 2px solid var(--color-primary-light); outline-offset: 2px; }
+    .main { padding: var(--space-2xl) 0; }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-intro { color: var(--color-text-secondary); font-size: 1.05rem; max-width: 700px; }
+    .content-card { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
+    .image-container { text-align: center; margin: var(--space-xl) 0; }
+    .image-container img { max-width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+    .image-caption { font-size: 0.9rem; color: var(--color-text-muted); margin-top: var(--space-sm); font-style: italic; }
+
+    /* Scatter Plot */
+    .chart-container { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
+    .chart-wrapper { position: relative; width: 100%; height: 400px; }
+    .chart-wrapper svg { width: 100%; height: 100%; }
+
+    /* Correlation Display */
+    .correlation-display {
+      text-align: center;
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-xl);
+    }
+    .correlation-value {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--color-secondary);
+    }
+    .correlation-label {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Reveal Button */
+    .reveal-container { text-align: center; margin: var(--space-xl) 0; }
+    .reveal-btn {
+      background: var(--color-accent);
+      color: var(--color-text);
+      border: none;
+      padding: var(--space-md) var(--space-xl);
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .reveal-btn:hover { background: var(--color-accent-light); transform: translateY(-2px); }
+
+    /* Confounder Reveal */
+    .confounder-reveal {
+      display: none;
+      animation: fadeIn 0.5s ease;
+      margin-top: var(--space-xl);
+      padding: var(--space-xl);
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+    }
+    .confounder-reveal.visible { display: block; }
+    .confounder-reveal h3 { color: var(--color-warning); }
+
+    /* Comparison Grid */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin: var(--space-xl) 0;
+    }
+    @media (max-width: 700px) { .comparison-grid { grid-template-columns: 1fr; } }
+    .comparison-box {
+      padding: var(--space-xl);
+      border-radius: var(--radius-lg);
+    }
+    .comparison-box.epi {
+      background: #E3F2FD;
+      border-top: 4px solid var(--color-primary);
+    }
+    .comparison-box.econ {
+      background: #E0F2F1;
+      border-top: 4px solid var(--color-secondary);
+    }
+    .comparison-box h4 { font-family: var(--font-serif); margin-bottom: var(--space-md); }
+    .comparison-box.epi h4 { color: var(--color-primary); }
+    .comparison-box.econ h4 { color: var(--color-secondary); }
+    .comparison-box .approach {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: rgba(255,255,255,0.7);
+      border-radius: var(--radius-sm);
+    }
+    .comparison-box .limitation {
+      padding: var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      margin-top: var(--space-md);
+    }
+    .comparison-box.epi .limitation { background: rgba(211, 47, 47, 0.1); color: var(--color-error); }
+    .comparison-box.econ .limitation { background: rgba(46, 125, 50, 0.1); color: var(--color-success); }
+
+    /* Key Insight */
+    .key-insight {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white;
+      padding: var(--space-xl);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+    }
+    .key-insight h3 { color: white; margin-bottom: var(--space-md); }
+    .key-insight p { opacity: 0.95; margin-bottom: var(--space-md); }
+    .key-insight p:last-child { margin-bottom: 0; }
+    .key-insight strong { color: var(--color-accent-light); }
+
+    /* Bridging Question */
+    .bridging-question {
+      background: var(--color-bg-alt);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      margin-top: var(--space-xl);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    .bridging-question p { margin: 0; color: var(--color-text-secondary); }
+    .bridging-question strong { color: var(--color-primary); }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Transition text */
+    .definition-transition {
+      text-align: center;
+      color: var(--color-text-secondary);
+      font-style: italic;
+      margin: var(--space-xl) 0;
+      font-size: 1.1rem;
+    }
+
+    /* DAG Explanation - stacked layout */
+    .dag-explanation {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+    .dag-text { order: 1; }
+    .dag-image { order: 2; text-align: center; }
+    .dag-text h4 { color: var(--color-accent); margin-bottom: var(--space-md); }
+    .dag-text ul { margin-left: var(--space-xl); margin-bottom: var(--space-md); }
+    .dag-text li { margin-bottom: var(--space-sm); }
+
+    /* Footer */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+      margin-top: var(--space-2xl);
+    }
+    .footer a { color: var(--color-accent-light); }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Foundational Concepts</div>
+      <h1>Correlation ≠ Causation</h1>
+      <p class="subtitle">Why strong correlations can be completely misleading—and what to do about it.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Correlation</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Confounder</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Two Approaches</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">Key Insight</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- Panel 1: The Correlation -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Correlation</h2>
+          <p class="panel-intro">Here's a striking pattern: when ice cream sales go up, so do drowning deaths. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em></p>
+        </div>
+
+        <div class="chart-container">
+          <h3>Ice Cream Sales vs. Drowning Deaths</h3>
+          <div class="chart-wrapper">
+            <svg id="scatter-chart" viewBox="0 0 700 400"></svg>
+          </div>
+        </div>
+
+        <div class="correlation-display">
+          <div class="correlation-value">r = 0.87</div>
+          <div class="correlation-label">Very strong positive correlation</div>
+        </div>
+
+        <div class="content-card">
+          <h3>The Question</h3>
+          <p style="font-size: 1.2rem; text-align: center; padding: var(--space-lg);">
+            <strong>Does ice cream cause drowning?</strong>
+          </p>
+          <p>The correlation is undeniable. Every summer, as ice cream sales surge, drowning deaths increase. The pattern is consistent year after year.</p>
+          <p>If correlation implied causation, we'd have to conclude that ice cream is deadly. Should we ban ice cream to save lives?</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Something else is going on here. What's the hidden factor?</p>
+        </div>
+      </section>
+
+      <!-- Panel 2: The Confounder -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Confounder</h2>
+          <p class="panel-intro">A third factor explains both variables. The correlation is real; the causal interpretation is what fails.</p>
+        </div>
+
+        <div class="content-card">
+          <div class="reveal-container">
+            <button class="reveal-btn" id="reveal-btn">Reveal the Hidden Factor</button>
+          </div>
+
+          <div class="confounder-reveal" id="confounder-reveal">
+            <h3 style="text-align: center; font-size: 1.5rem;">☀️ Hot Weather</h3>
+            <p style="text-align: center; font-size: 1.1rem; margin-top: var(--space-md);">
+              Hot weather causes <em>both</em> more ice cream consumption <em>and</em> more swimming (leading to more drownings).
+            </p>
+            <p>Temperature causes both ice cream sales and drowning. The correlation between them is <strong>spurious</strong>—it exists only because both are driven by the same underlying factor.</p>
+          </div>
+        </div>
+
+        <div class="image-container confounder-image" id="confounder-image" style="display: none;">
+          <img src="assets/spurious-correlation.png" alt="Scatter plot of ice cream sales vs drowning deaths with a sun icon showing that hot weather causes both" />
+          <p class="image-caption">The sun (temperature) is the confounder—it causes both ice cream sales and drowning.</p>
+        </div>
+
+        <p class="definition-transition" id="definition-transition" style="display: none;">
+          Hot weather is an example of a <strong>confounder</strong>. But what exactly makes something a confounder?
+        </p>
+
+        <div class="definition-card">
+          <h3>What Is a Confounder?</h3>
+          <div class="dag-explanation">
+            <div class="dag-text">
+              <p>A <strong>confounder</strong> is a variable that:</p>
+              <ul>
+                <li>Affects the treatment/exposure (ice cream)</li>
+                <li>Affects the outcome (drowning)</li>
+                <li>Is not caused by the treatment</li>
+              </ul>
+              <p>When a confounder exists, the observed correlation between treatment and outcome doesn't represent a causal effect. It's a <strong>spurious correlation</strong>.</p>
+            </div>
+            <div class="dag-image">
+              <img src="assets/confounder-dag.png" alt="DAG showing confounder C affecting both treatment X and outcome Y, with a dashed arrow from X to Y representing the unknown causal effect" style="max-width: 100%; border-radius: var(--radius-md);" />
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do we deal with confounders? Two different approaches...</p>
+        </div>
+      </section>
+
+      <!-- Panel 3: Two Approaches -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Two Approaches</h2>
+          <p class="panel-intro">There are two main strategies for tackling confounding in causal inference. Both are valid; each carries distinct strengths and limitations.</p>
+        </div>
+
+        <div class="image-container">
+          <img src="assets/approach-comparison.png" alt="Side-by-side comparison of adjustment-based approach (control for confounders) and design-based approach (find independent variation)" />
+          <p class="image-caption">Same goal, different strategies for isolating causal effects.</p>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comparison-box epi">
+            <h4>Adjustment-Based Approach</h4>
+            <div class="approach">"Control for confounders"</div>
+            <p><strong>Method:</strong> Measure confounders and include them as control variables.</p>
+            <p><strong>Example:</strong> Regress drowning on ice cream sales, controlling for temperature.</p>
+            <p><strong>Relies on:</strong> Identifying and measuring all relevant confounders.</p>
+            <div class="limitation">
+              <strong>Vulnerability:</strong> Confounders you don't know about—or can't measure—remain a source of bias.
+            </div>
+          </div>
+          <div class="comparison-box econ">
+            <h4>Design-Based Approach</h4>
+            <div class="approach">"Find independent variation"</div>
+            <p><strong>Method:</strong> Find variation in treatment unrelated to confounders.</p>
+            <p><strong>Example:</strong> What if an ice cream truck broke down in some neighborhoods? That variation in ice cream access has nothing to do with weather.</p>
+            <p><strong>Relies on:</strong> A credible source of exogenous variation (randomization, policy change, natural experiment).</p>
+            <div class="limitation">
+              <strong>Vulnerability:</strong> Such variation is context-specific and may not exist for every question.
+            </div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <h3>The Key Difference</h3>
+          <p>Both strategies aim to isolate cause from correlation, but they solve the confounding problem differently.</p>
+          <p>Adjustment requires knowing what to adjust for. Design-based approaches require finding variation that bypasses confounding altogether.</p>
+          <p>When credible independent variation exists, it addresses unmeasured confounding in a way that statistical adjustment cannot.</p>
+
+          <div style="margin-top: var(--space-xl); padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md);">
+            <h4 style="color: var(--color-secondary); margin-bottom: var(--space-md);">Real-World Example</h4>
+            <p>Do hospitals cause death? People who go to hospitals are more likely to die than people who stay home—yet sicker people are more likely to both seek hospital care AND die.</p>
+            <ul style="margin-left: var(--space-xl); margin-bottom: 0;">
+              <li><strong>Adjustment:</strong> Control for severity of illness, comorbidities, age...</li>
+              <li><strong>Design-based:</strong> Compare patients who live near a hospital to those far away (distance affects hospital use but not underlying health)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What's the key takeaway for causal thinking?</p>
+        </div>
+      </section>
+
+      <!-- Panel 4: Key Insight -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">The Key Insight</h2>
+          <p class="panel-intro">Correlation reflects all paths between two variables. Causation requires isolating the direct path.</p>
+        </div>
+
+        <div class="key-insight">
+          <h3>Why Correlation ≠ Causation</h3>
+          <p><strong>Correlation between X and Y can arise from:</strong></p>
+          <ul style="margin-left: var(--space-xl); margin-bottom: var(--space-lg);">
+            <li>X causes Y (the causal effect we want)</li>
+            <li>Y causes X (reverse causation)</li>
+            <li>Something else causes both X and Y (confounding)</li>
+            <li>Conditioning on a common effect (collider bias)</li>
+            <li>Random chance (sampling variation)</li>
+          </ul>
+          <p>A correlation tells you that X and Y move together. It doesn't tell you why.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>The Design-Based Insight</h3>
+          <p>Statistical adjustment controls exclusively for confounders you can <em>measure</em>. The most consequential confounders—ability, motivation, health status, expectations—often resist measurement entirely.</p>
+          <p>This is why causal inference emphasizes <strong>identification</strong>: finding sources of variation in the treatment that are independent of confounders, measured or not.</p>
+
+          <div style="margin-top: var(--space-xl); padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md);">
+            <h4 style="color: var(--color-secondary); margin-bottom: var(--space-md);">Sources of Independent Variation</h4>
+            <ul style="margin-left: var(--space-xl); margin-bottom: 0;">
+              <li><strong>Randomization:</strong> Randomly assign treatment (clinical trials)</li>
+              <li><strong>Policy changes:</strong> Laws or programs that affect some people but not others</li>
+              <li><strong>Geographic boundaries:</strong> Differences at borders or cutoffs</li>
+              <li><strong>Timing:</strong> Before/after a shock that affected treatment but not confounders</li>
+              <li><strong>Natural experiments:</strong> Random events that affected treatment assignment</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="key-insight" style="background: linear-gradient(135deg, var(--color-secondary) 0%, #0F766E 100%);">
+          <h3>Key Takeaway</h3>
+          <p><strong>Correlation reflects all paths between X and Y. Causation requires isolating the direct path.</strong></p>
+          <p>Design-based approaches seek variation in X that bypasses confounders—variation independent of the factors affecting Y. Such variation allows causal estimation regardless of whether confounders can be measured.</p>
+          <p><strong>This is what "identification" means in causal inference.</strong></p>
+        </div>
+
+        <div class="content-card">
+          <h3>Looking Ahead</h3>
+          <p>In the next labs, you'll learn about specific threats to causal inference—and the research designs used to overcome them:</p>
+          <ul style="margin-left: var(--space-xl);">
+            <li><strong>Regression to the mean:</strong> Extreme values naturally move toward average</li>
+            <li><strong>Maturation:</strong> Things change over time regardless of treatment</li>
+            <li><strong>History:</strong> Other events occur alongside treatment</li>
+            <li><strong>Selection:</strong> Who gets treated isn't random</li>
+          </ul>
+          <p style="margin-top: var(--space-lg);">Each threat represents a way that confounding can sneak into your analysis. Each has solutions—if you know where to look.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Panel Navigation
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+    let scatterRendered = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+      });
+    });
+
+    // Scatter Plot Data (ice cream vs drowning)
+    function seededRandom(seed) {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateData() {
+      const data = [];
+      for (let i = 0; i < 30; i++) {
+        const temp = 60 + seededRandom(i * 7) * 40; // 60-100°F
+        const iceCream = (temp - 60) * 2.5 + seededRandom(i * 11) * 30; // Ice cream increases with temp
+        const drowning = (temp - 60) * 0.15 + seededRandom(i * 13) * 3; // Drowning increases with temp
+        data.push({ temp, iceCream, drowning });
+      }
+      return data;
+    }
+
+    const scatterData = generateData();
+
+    function renderScatterChart() {
+      const svg = document.getElementById('scatter-chart');
+      const width = 700, height = 400;
+      const margin = { top: 40, right: 40, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Scales
+      const xMin = 0, xMax = 120;
+      const yMin = 0, yMax = 10;
+      const xScale = (v) => margin.left + (v / xMax) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - (v / yMax) * plotHeight;
+
+      // Grid
+      for (let x = 0; x <= 120; x += 20) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xScale(x));
+        line.setAttribute('y1', margin.top);
+        line.setAttribute('x2', xScale(x));
+        line.setAttribute('y2', height - margin.bottom);
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+      }
+      for (let y = 0; y <= 10; y += 2) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', margin.left - 10);
+        text.setAttribute('y', yScale(y) + 4);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = y;
+        svg.appendChild(text);
+      }
+
+      // X-axis labels
+      for (let x = 0; x <= 120; x += 20) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', xScale(x));
+        text.setAttribute('y', height - margin.bottom + 20);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = '$' + x;
+        svg.appendChild(text);
+      }
+
+      // Axis labels
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', margin.left + plotWidth / 2);
+      xLabel.setAttribute('y', height - 15);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '14');
+      xLabel.setAttribute('fill', '#424242');
+      xLabel.textContent = 'Ice Cream Sales (per 1000 people)';
+      svg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', -margin.top - plotHeight / 2);
+      yLabel.setAttribute('y', 20);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '14');
+      yLabel.setAttribute('fill', '#424242');
+      yLabel.setAttribute('transform', 'rotate(-90)');
+      yLabel.textContent = 'Drowning Deaths';
+      svg.appendChild(yLabel);
+
+      // Trend line
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trendLine.setAttribute('x1', xScale(10));
+      trendLine.setAttribute('y1', yScale(0.5));
+      trendLine.setAttribute('x2', xScale(110));
+      trendLine.setAttribute('y2', yScale(8.5));
+      trendLine.setAttribute('stroke', '#0D9488');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '8,4');
+      trendLine.setAttribute('opacity', '0.7');
+      svg.appendChild(trendLine);
+
+      // Data points
+      scatterData.forEach((d, i) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.iceCream));
+        circle.setAttribute('cy', yScale(d.drowning));
+        circle.setAttribute('r', '8');
+        circle.setAttribute('fill', '#0D9488');
+        circle.setAttribute('opacity', '0.8');
+        circle.style.cursor = 'pointer';
+        svg.appendChild(circle);
+      });
+    }
+
+    // Reveal button
+    document.getElementById('reveal-btn').addEventListener('click', function() {
+      const reveal = document.getElementById('confounder-reveal');
+      const confounderImage = document.getElementById('confounder-image');
+      const definitionTransition = document.getElementById('definition-transition');
+      const isVisible = reveal.classList.contains('visible');
+
+      reveal.classList.toggle('visible');
+      confounderImage.style.display = isVisible ? 'none' : 'block';
+      definitionTransition.style.display = isVisible ? 'none' : 'block';
+
+      this.textContent = !isVisible ? 'Hide the Hidden Factor' : 'Reveal the Hidden Factor';
+      this.style.background = !isVisible ? 'var(--color-text-muted)' : 'var(--color-accent)';
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      renderScatterChart();
+    });
+
+    // Resize handler
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        renderScatterChart();
+      }, 250);
+    });
+  </script>
+</body>
+</html>

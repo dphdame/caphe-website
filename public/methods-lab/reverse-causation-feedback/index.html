@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identifying Reverse Causation and Feedback Loops | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn to identify when Y causes X instead of X causing Y, and when both cause each other. Discover how economists model equilibrium and find intervention leverage points.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: REVERSE CAUSATION
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.forward {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.reverse {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: FEEDBACK LOOPS
+       ============================================ */
+    .feedback-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .simulation-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .control-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .control-slider {
+      width: 180px;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--color-border);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .control-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .btn-simulate {
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-simulate:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .btn-reset {
+      padding: var(--space-sm) var(--space-md);
+      background: transparent;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .feedback-grid { grid-template-columns: 1fr; }
+    }
+
+    .equilibrium-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .equilibrium-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .equilibrium-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .equilibrium-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .equilibrium-row:last-child {
+      border-bottom: none;
+    }
+
+    .equilibrium-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .equilibrium-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .insight-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       9. PANEL 4: BREAKING THE LOOP
+       ============================================ */
+    .intervention-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .intervention-container { grid-template-columns: 1fr; }
+    }
+
+    .intervention-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .intervention-toggle {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-secondary);
+      border-color: var(--color-secondary);
+      color: white;
+    }
+
+    .strategy-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .strategy-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-border);
+    }
+
+    .strategy-card.active {
+      border-left-color: var(--color-secondary);
+      background: rgba(13, 148, 136, 0.03);
+    }
+
+    .strategy-card h4 {
+      font-size: 0.95rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .strategy-card p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .strategy-card .example {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--color-text-muted);
+      margin-top: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    /* Bridging question */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .concepts-grid { grid-template-columns: 1fr; }
+    }
+
+    .concept-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .concept-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .concept-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "\2713";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 240px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Specialized Applications</div>
+      <h1>Identifying Reverse Causation and Feedback Loops</h1>
+      <p class="subtitle">Does poor health cause poverty, or does poverty cause poor health? When causes run both ways, finding where to intervene requires a different kind of analysis.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Reverse Causation</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Feedback Loops</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Breaking the Loop</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Counties with higher chronic disease rates tend to have lower employment rates. At first glance, this suggests poor health leads to unemployment. But could it be the other way around? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Chronic Disease Rate vs Employment Rate</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing chronic disease rate versus employment rate across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Rural Counties</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Urban Counties</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Correlation</h4>
+              <div class="stat-item" style="margin-top: var(--space-sm);">
+                <div class="stat-value" id="stat-correlation">--</div>
+                <div class="stat-label">Disease vs. Employment</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>County Averages</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-avg-disease">--</div>
+                  <div class="stat-label">Disease Rate</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-avg-employment">--</div>
+                  <div class="stat-label">Employment</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>The pattern:</strong> Counties with 10% higher chronic disease rates have, on average, <span id="stat-slope">--</span>% lower employment. But which causes which?
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question -->
+        <div class="bridging-box">
+          <p><strong>A clear negative correlation.</strong></p>
+          <p>But does sickness cause job loss, or does job loss cause sickness?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: REVERSE CAUSATION
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Reverse Causation</h2>
+          <p class="panel-intro">
+            We might assume X causes Y, but the causal arrow might actually point the other way. In health economics, this problem appears constantly: does healthcare improve outcomes, or do healthier people seek more care?
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/reverse-causation-dag.png"
+              alt="Diagram showing two possible causal directions: Disease causing Unemployment, or Unemployment causing Disease, with question marks on both arrows"
+              class="dag-image"
+            >
+            <p class="dag-caption">Two equally plausible stories from the same correlation.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Possible Stories</h4>
+              <div class="pathway-list">
+                <div class="pathway-item forward">
+                  <strong>Disease leads to unemployment</strong>
+                  <p>Chronic illness reduces work capacity. People with diabetes, heart disease, or depression may struggle to maintain employment.</p>
+                </div>
+                <div class="pathway-item reverse">
+                  <strong>Unemployment leads to disease</strong>
+                  <p>Job loss reduces income and insurance access. Stress, poor diet, and delayed care increase chronic disease risk.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The identification problem:</strong> Cross-sectional data showing correlation between X and Y cannot tell us whether X causes Y, Y causes X, or both influence each other. The same regression coefficient is consistent with either causal story.
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question -->
+        <div class="bridging-box">
+          <p><strong>Both directions are plausible.</strong></p>
+          <p>What if both are true at the same time?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: FEEDBACK LOOPS
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Feedback Loops</h2>
+          <p class="panel-intro">
+            When X causes Y and Y causes X simultaneously, you get a feedback loop. Small changes amplify over time. Economists call this an equilibrium system. Adjust the parameters below to see how loops behave.
+          </p>
+        </div>
+
+        <div class="feedback-section">
+          <div class="simulation-controls">
+            <div class="control-group">
+              <span class="control-label">Disease to Unemployment</span>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <input type="range" id="slider-d-to-u" class="control-slider" min="0" max="100" value="40" aria-label="Adjust diabetes to unemployment effect">
+                <span class="control-value" id="value-d-to-u">0.40</span>
+              </div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Unemployment to Disease</span>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <input type="range" id="slider-u-to-d" class="control-slider" min="0" max="100" value="30" aria-label="Adjust unemployment to diabetes effect">
+                <span class="control-value" id="value-u-to-d">0.30</span>
+              </div>
+            </div>
+            <button class="btn-simulate" id="btn-simulate">Run Simulation</button>
+            <button class="btn-reset" id="btn-reset">Reset</button>
+          </div>
+
+          <div class="feedback-grid">
+            <div class="chart-wrapper">
+              <svg id="feedback-chart" class="chart-svg" role="img" aria-label="Time series showing how disease and unemployment rates evolve in a feedback loop"></svg>
+            </div>
+
+            <aside class="equilibrium-sidebar">
+              <div class="equilibrium-card">
+                <h4>Loop Dynamics</h4>
+                <div class="equilibrium-row">
+                  <span class="equilibrium-label">Initial Disease</span>
+                  <span class="equilibrium-value" id="eq-init-disease">15%</span>
+                </div>
+                <div class="equilibrium-row">
+                  <span class="equilibrium-label">Initial Unemployment</span>
+                  <span class="equilibrium-value" id="eq-init-unemp">8%</span>
+                </div>
+                <div class="equilibrium-row" style="border-top: 2px solid var(--color-border); padding-top: var(--space-md);">
+                  <span class="equilibrium-label">Final Disease</span>
+                  <span class="equilibrium-value" id="eq-final-disease">--</span>
+                </div>
+                <div class="equilibrium-row">
+                  <span class="equilibrium-label">Final Unemployment</span>
+                  <span class="equilibrium-value" id="eq-final-unemp">--</span>
+                </div>
+              </div>
+
+              <div class="equilibrium-card">
+                <h4>Multiplier Effect</h4>
+                <div class="equilibrium-row">
+                  <span class="equilibrium-label">Loop strength</span>
+                  <span class="equilibrium-value" id="eq-multiplier">--</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm);">
+                  Higher values mean small shocks amplify more.
+                </p>
+              </div>
+
+              <div class="insight-box">
+                <p><strong>What you're seeing:</strong></p>
+                <p id="feedback-insight">Adjust the sliders and run the simulation to see how feedback amplifies initial conditions.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- Bridging question -->
+        <div class="bridging-box">
+          <p><strong>Feedback loops reach equilibrium.</strong></p>
+          <p>But where should we intervene to shift that equilibrium?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: BREAKING THE LOOP
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Breaking the Loop</h2>
+          <p class="panel-intro">
+            Economists look for "leverage points" where intervention can break feedback and shift equilibrium. The key is finding exogenous variation in one variable that doesn't come from the other.
+          </p>
+        </div>
+
+        <div class="intervention-container">
+          <div class="intervention-wrapper">
+            <div class="intervention-toggle">
+              <button class="toggle-btn active" data-strategy="none">No Intervention</button>
+              <button class="toggle-btn" data-strategy="health">Health Shock</button>
+              <button class="toggle-btn" data-strategy="jobs">Jobs Program</button>
+              <button class="toggle-btn" data-strategy="both">Both</button>
+            </div>
+            <svg id="intervention-chart" class="chart-svg" role="img" aria-label="Chart showing how different interventions affect the feedback loop equilibrium"></svg>
+          </div>
+
+          <aside class="strategy-sidebar">
+            <div class="strategy-card" data-strategy="health">
+              <h4>Target Health Directly</h4>
+              <p>Reduce disease through prevention, screening, or treatment programs that work regardless of employment status.</p>
+              <div class="example">Example: Expand Medicaid, fund community health workers, chronic disease management programs.</div>
+            </div>
+
+            <div class="strategy-card" data-strategy="jobs">
+              <h4>Target Employment Directly</h4>
+              <p>Create jobs or support wages in ways that don't depend on health status (at least initially).</p>
+              <div class="example">Example: Job training subsidies, minimum wage increases, public works programs.</div>
+            </div>
+
+            <div class="strategy-card" data-strategy="instrument">
+              <h4>Identification Strategy</h4>
+              <p>To measure one direction of causation, economists find shocks to X that don't directly affect Y except through X.</p>
+              <div class="example">Example: A factory closure affects employment (job shock) but doesn't directly cause disease except through job loss.</div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question -->
+        <div class="bridging-box">
+          <p><strong>Breaking feedback requires exogenous variation.</strong></p>
+          <p>What does this mean for how we evaluate health programs?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            These questions help identify when reverse causation or feedback loops threaten your analysis. They won't solve the identification problem, but they reveal where standard methods fail.
+          </p>
+        </div>
+
+        <div class="concepts-grid">
+          <div class="concept-card">
+            <h4>Could the outcome cause the exposure?</h4>
+            <p>Before assuming X causes Y, ask whether Y could plausibly cause X. In health economics, this is common: healthier people earn more (health to income) but higher income enables better health (income to health).</p>
+            <div class="concept-prompt">
+              What would it take to rule out reverse causation in your study?
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <h4>What starts the loop?</h4>
+            <p>In feedback systems, initial conditions matter. An external shock that affects only one side of the loop can help identify causal effects. Policy changes and natural experiments provide this.</p>
+            <div class="concept-prompt">
+              What exogenous events affected your variables at different times?
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <h4>Where are the leverage points?</h4>
+            <p>Even in feedback systems, some connections are stronger than others. Understanding loop structure helps identify where intervention yields the biggest equilibrium shift per dollar spent.</p>
+            <div class="concept-prompt">
+              Which link in the loop is most amenable to policy intervention?
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <h4>What's the time structure?</h4>
+            <p>If X takes years to affect Y but Y affects X quickly, careful timing can help. Panel data with enough periods can exploit these lags to identify one direction at a time.</p>
+            <div class="concept-prompt">
+              How quickly does each causal path operate?
+            </div>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Reverse causation:</strong> when the presumed outcome actually causes the presumed exposure</div>
+            <div class="concept-item"><strong>Feedback loops:</strong> when two variables mutually cause each other, creating amplification</div>
+            <div class="concept-item"><strong>Equilibrium:</strong> the stable state where feedback effects balance out</div>
+            <div class="concept-item"><strong>Leverage points:</strong> places where intervention can shift the equilibrium most efficiently</div>
+            <div class="concept-item"><strong>Exogenous variation:</strong> changes in one variable that don't come from the feedback loop</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Correlation between X and Y doesn't tell us whether X causes Y, Y causes X, or both.</strong> When variables influence each other in feedback loops, standard regression can't identify causal effects. The solution isn't more controls. It's finding exogenous variation that affects one variable without coming from the feedback system itself. Natural experiments, policy discontinuities, and timing differences provide this. <strong>This is what economists mean by "finding an instrument."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
+        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
+        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
+        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
+        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
+        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
+        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
+        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
+        'County BC', 'County BD', 'County BE', 'County BF'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // Urban/rural split
+        const isUrban = rand() > 0.45;
+
+        // Base health and employment are correlated through feedback
+        // Simulate equilibrium from mutual causation
+        const baseHealth = 10 + rand() * 20; // 10-30% disease rate
+        const baseEmployment = 85 + rand() * 15; // 85-100% employment (so unemployment is 0-15%)
+
+        // Add feedback effects
+        const healthEffect = baseHealth * 0.3;
+        const employEffect = (100 - baseEmployment) * 0.4;
+
+        // Final values after loop reaches equilibrium
+        const diseaseRate = Math.min(40, Math.max(8, baseHealth + employEffect + (rand() - 0.5) * 8));
+        const employmentRate = Math.min(98, Math.max(75, baseEmployment - healthEffect + (rand() - 0.5) * 6));
+
+        data.push({
+          name: countyNames[i],
+          isUrban: isUrban,
+          diseaseRate: Math.round(diseaseRate * 10) / 10,
+          employmentRate: Math.round(employmentRate * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function calculateCorrelation(data, xKey, yKey) {
+      const n = data.length;
+      const xArr = data.map(d => d[xKey]);
+      const yArr = data.map(d => d[yKey]);
+
+      const xMean = mean(xArr);
+      const yMean = mean(yArr);
+
+      let numerator = 0;
+      let xDenom = 0;
+      let yDenom = 0;
+
+      for (let i = 0; i < n; i++) {
+        const xDiff = xArr[i] - xMean;
+        const yDiff = yArr[i] - yMean;
+        numerator += xDiff * yDiff;
+        xDenom += xDiff * xDiff;
+        yDenom += yDiff * yDiff;
+      }
+
+      return numerator / Math.sqrt(xDenom * yDenom);
+    }
+
+    function calculateSlope(data, xKey, yKey) {
+      const n = data.length;
+      const xArr = data.map(d => d[xKey]);
+      const yArr = data.map(d => d[yKey]);
+
+      const xMean = mean(xArr);
+      const yMean = mean(yArr);
+
+      let numerator = 0;
+      let denominator = 0;
+
+      for (let i = 0; i < n; i++) {
+        const xDiff = xArr[i] - xMean;
+        numerator += xDiff * (yArr[i] - yMean);
+        denominator += xDiff * xDiff;
+      }
+
+      return numerator / denominator;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let feedbackInitialized = false;
+    let interventionInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            } else {
+              renderScatterPlot();
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!feedbackInitialized) {
+              renderFeedbackChart();
+              feedbackInitialized = true;
+            } else {
+              renderFeedbackChart();
+            }
+          }, 50);
+        }
+        if (panelNum === '4') {
+          setTimeout(() => {
+            if (!interventionInitialized) {
+              renderInterventionChart('none');
+              interventionInitialized = true;
+            } else {
+              renderInterventionChart(currentStrategy);
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 5, xMax = 45;
+      const yMin = 70, yMax = 100;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 75; y <= 95; y += 5) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend line
+      const slope = calculateSlope(countyData, 'diseaseRate', 'employmentRate');
+      const avgDisease = mean(countyData.map(d => d.diseaseRate));
+      const avgEmployment = mean(countyData.map(d => d.employmentRate));
+      const intercept = avgEmployment - slope * avgDisease;
+
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trendLine.setAttribute('x1', xScale(xMin));
+      trendLine.setAttribute('y1', yScale(slope * xMin + intercept));
+      trendLine.setAttribute('x2', xScale(xMax));
+      trendLine.setAttribute('y2', yScale(slope * xMax + intercept));
+      trendLine.setAttribute('stroke', 'var(--color-primary)');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '6,4');
+      trendLine.setAttribute('opacity', '0.6');
+      svg.appendChild(trendLine);
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.diseaseRate));
+        circle.setAttribute('cy', yScale(d.employmentRate));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.isUrban ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 10; x <= 40; x += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x + '%';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Chronic Disease Rate (%)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 75; y <= 95; y += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Employment Rate (%)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. FEEDBACK SIMULATION (Panel 3)
+       ============================================ */
+    let simulationData = [];
+    let dToU = 0.4;
+    let uToD = 0.3;
+
+    function runSimulation() {
+      const steps = 20;
+      let disease = 15;
+      let unemployment = 8;
+      simulationData = [{ step: 0, disease, unemployment }];
+
+      for (let i = 1; i <= steps; i++) {
+        // Apply feedback effects
+        const newDisease = Math.max(5, Math.min(50, disease + uToD * unemployment * 0.5 - 0.1 * disease));
+        const newUnemployment = Math.max(2, Math.min(30, unemployment + dToU * disease * 0.3 - 0.05 * unemployment));
+
+        disease = newDisease;
+        unemployment = newUnemployment;
+        simulationData.push({ step: i, disease, unemployment });
+      }
+
+      renderFeedbackChart();
+      updateEquilibriumStats();
+    }
+
+    function renderFeedbackChart() {
+      const svg = document.getElementById('feedback-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 100, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // If no simulation data, show initial state
+      if (simulationData.length === 0) {
+        simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
+      }
+
+      const xMin = 0, xMax = 20;
+      const yMin = 0, yMax = 50;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Grid lines
+      for (let y = 10; y <= 40; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Disease line
+      if (simulationData.length > 1) {
+        const diseasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        let d = `M ${xScale(0)} ${yScale(simulationData[0].disease)}`;
+        for (let i = 1; i < simulationData.length; i++) {
+          d += ` L ${xScale(simulationData[i].step)} ${yScale(simulationData[i].disease)}`;
+        }
+        diseasePath.setAttribute('d', d);
+        diseasePath.setAttribute('stroke', 'var(--color-accent)');
+        diseasePath.setAttribute('stroke-width', '3');
+        diseasePath.setAttribute('fill', 'none');
+        svg.appendChild(diseasePath);
+
+        // Unemployment line
+        const unempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        let u = `M ${xScale(0)} ${yScale(simulationData[0].unemployment)}`;
+        for (let i = 1; i < simulationData.length; i++) {
+          u += ` L ${xScale(simulationData[i].step)} ${yScale(simulationData[i].unemployment)}`;
+        }
+        unempPath.setAttribute('d', u);
+        unempPath.setAttribute('stroke', 'var(--color-secondary)');
+        unempPath.setAttribute('stroke-width', '3');
+        unempPath.setAttribute('fill', 'none');
+        svg.appendChild(unempPath);
+      }
+
+      // Points
+      simulationData.forEach((d, i) => {
+        const circleD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circleD.setAttribute('cx', xScale(d.step));
+        circleD.setAttribute('cy', yScale(d.disease));
+        circleD.setAttribute('r', i === 0 || i === simulationData.length - 1 ? 6 : 4);
+        circleD.setAttribute('fill', 'var(--color-accent)');
+        svg.appendChild(circleD);
+
+        const circleU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circleU.setAttribute('cx', xScale(d.step));
+        circleU.setAttribute('cy', yScale(d.unemployment));
+        circleU.setAttribute('r', i === 0 || i === simulationData.length - 1 ? 6 : 4);
+        circleU.setAttribute('fill', 'var(--color-secondary)');
+        svg.appendChild(circleU);
+      });
+
+      // Legend
+      const legendY = margin.top + 10;
+      const legendX = width - margin.right + 10;
+
+      const legendD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendD.setAttribute('cx', legendX);
+      legendD.setAttribute('cy', legendY);
+      legendD.setAttribute('r', 6);
+      legendD.setAttribute('fill', 'var(--color-accent)');
+      svg.appendChild(legendD);
+
+      const legendDText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendDText.setAttribute('x', legendX + 12);
+      legendDText.setAttribute('y', legendY + 4);
+      legendDText.setAttribute('font-size', '11');
+      legendDText.setAttribute('fill', 'var(--color-text)');
+      legendDText.textContent = 'Disease';
+      svg.appendChild(legendDText);
+
+      const legendU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendU.setAttribute('cx', legendX);
+      legendU.setAttribute('cy', legendY + 25);
+      legendU.setAttribute('r', 6);
+      legendU.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(legendU);
+
+      const legendUText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendUText.setAttribute('x', legendX + 12);
+      legendUText.setAttribute('y', legendY + 29);
+      legendUText.setAttribute('font-size', '11');
+      legendUText.setAttribute('fill', 'var(--color-text)');
+      legendUText.textContent = 'Unemployment';
+      svg.appendChild(legendUText);
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 20; x += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', margin.left + plotWidth / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Time Steps';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 40; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Rate (%)';
+      svg.appendChild(yLabel);
+    }
+
+    function updateEquilibriumStats() {
+      const final = simulationData[simulationData.length - 1];
+      document.getElementById('eq-final-disease').textContent = final.disease.toFixed(1) + '%';
+      document.getElementById('eq-final-unemp').textContent = final.unemployment.toFixed(1) + '%';
+
+      const multiplier = 1 / (1 - dToU * uToD);
+      document.getElementById('eq-multiplier').textContent = multiplier.toFixed(2) + 'x';
+
+      const insightEl = document.getElementById('feedback-insight');
+      if (dToU * uToD > 0.5) {
+        insightEl.innerHTML = '<strong>Strong feedback!</strong> Small initial shocks amplify significantly. The loop has a multiplier of ' + multiplier.toFixed(1) + 'x.';
+      } else if (dToU * uToD > 0.2) {
+        insightEl.innerHTML = 'Moderate feedback. Changes propagate but eventually stabilize. Both variables settle at higher levels than where they started.';
+      } else {
+        insightEl.innerHTML = 'Weak feedback. The system stabilizes quickly without much amplification.';
+      }
+    }
+
+    // Slider handlers
+    document.getElementById('slider-d-to-u').addEventListener('input', (e) => {
+      dToU = e.target.value / 100;
+      document.getElementById('value-d-to-u').textContent = dToU.toFixed(2);
+    });
+
+    document.getElementById('slider-u-to-d').addEventListener('input', (e) => {
+      uToD = e.target.value / 100;
+      document.getElementById('value-u-to-d').textContent = uToD.toFixed(2);
+    });
+
+    document.getElementById('btn-simulate').addEventListener('click', runSimulation);
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
+      dToU = 0.4;
+      uToD = 0.3;
+      document.getElementById('slider-d-to-u').value = 40;
+      document.getElementById('slider-u-to-d').value = 30;
+      document.getElementById('value-d-to-u').textContent = '0.40';
+      document.getElementById('value-u-to-d').textContent = '0.30';
+      document.getElementById('eq-final-disease').textContent = '--';
+      document.getElementById('eq-final-unemp').textContent = '--';
+      document.getElementById('eq-multiplier').textContent = '--';
+      document.getElementById('feedback-insight').textContent = 'Adjust the sliders and run the simulation to see how feedback amplifies initial conditions.';
+      renderFeedbackChart();
+    });
+
+    /* ============================================
+       6. INTERVENTION CHART (Panel 4)
+       ============================================ */
+    let currentStrategy = 'none';
+
+    function renderInterventionChart(strategy) {
+      currentStrategy = strategy;
+      const svg = document.getElementById('intervention-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 100, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Simulate with intervention
+      const steps = 25;
+      const interventionStep = 8;
+      let disease = 25;
+      let unemployment = 12;
+      const data = [{ step: 0, disease, unemployment }];
+
+      for (let i = 1; i <= steps; i++) {
+        // Apply feedback
+        let newDisease = disease + 0.3 * unemployment * 0.5 - 0.1 * disease;
+        let newUnemployment = unemployment + 0.4 * disease * 0.3 - 0.05 * unemployment;
+
+        // Apply intervention after step 8
+        if (i >= interventionStep) {
+          if (strategy === 'health' || strategy === 'both') {
+            newDisease -= 2; // Direct reduction in disease
+          }
+          if (strategy === 'jobs' || strategy === 'both') {
+            newUnemployment -= 1.5; // Direct reduction in unemployment
+          }
+        }
+
+        disease = Math.max(5, Math.min(50, newDisease));
+        unemployment = Math.max(2, Math.min(25, newUnemployment));
+        data.push({ step: i, disease, unemployment });
+      }
+
+      const xMin = 0, xMax = 25;
+      const yMin = 0, yMax = 40;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
+
+      // Intervention zone
+      if (strategy !== 'none') {
+        const zone = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        zone.setAttribute('x', xScale(interventionStep));
+        zone.setAttribute('y', margin.top);
+        zone.setAttribute('width', xScale(xMax) - xScale(interventionStep));
+        zone.setAttribute('height', plotHeight);
+        zone.setAttribute('fill', 'rgba(13, 148, 136, 0.08)');
+        svg.appendChild(zone);
+
+        const zoneLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        zoneLabel.setAttribute('x', xScale(interventionStep) + 5);
+        zoneLabel.setAttribute('y', margin.top + 18);
+        zoneLabel.setAttribute('font-size', '11');
+        zoneLabel.setAttribute('fill', 'var(--color-secondary)');
+        zoneLabel.textContent = 'Intervention';
+        svg.appendChild(zoneLabel);
+      }
+
+      // Grid lines
+      for (let y = 10; y <= 30; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Lines
+      const diseasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      let d = `M ${xScale(0)} ${yScale(data[0].disease)}`;
+      for (let i = 1; i < data.length; i++) {
+        d += ` L ${xScale(data[i].step)} ${yScale(data[i].disease)}`;
+      }
+      diseasePath.setAttribute('d', d);
+      diseasePath.setAttribute('stroke', 'var(--color-accent)');
+      diseasePath.setAttribute('stroke-width', '3');
+      diseasePath.setAttribute('fill', 'none');
+      svg.appendChild(diseasePath);
+
+      const unempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      let u = `M ${xScale(0)} ${yScale(data[0].unemployment)}`;
+      for (let i = 1; i < data.length; i++) {
+        u += ` L ${xScale(data[i].step)} ${yScale(data[i].unemployment)}`;
+      }
+      unempPath.setAttribute('d', u);
+      unempPath.setAttribute('stroke', 'var(--color-secondary)');
+      unempPath.setAttribute('stroke-width', '3');
+      unempPath.setAttribute('fill', 'none');
+      svg.appendChild(unempPath);
+
+      // Endpoint markers
+      const finalD = data[data.length - 1];
+      const endD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      endD.setAttribute('cx', xScale(finalD.step));
+      endD.setAttribute('cy', yScale(finalD.disease));
+      endD.setAttribute('r', 7);
+      endD.setAttribute('fill', 'var(--color-accent)');
+      svg.appendChild(endD);
+
+      const endU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      endU.setAttribute('cx', xScale(finalD.step));
+      endU.setAttribute('cy', yScale(finalD.unemployment));
+      endU.setAttribute('r', 7);
+      endU.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(endU);
+
+      // Legend
+      const legendY = margin.top + 10;
+      const legendX = width - margin.right + 10;
+
+      const legendDot1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendDot1.setAttribute('cx', legendX);
+      legendDot1.setAttribute('cy', legendY);
+      legendDot1.setAttribute('r', 6);
+      legendDot1.setAttribute('fill', 'var(--color-accent)');
+      svg.appendChild(legendDot1);
+
+      const legendText1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendText1.setAttribute('x', legendX + 12);
+      legendText1.setAttribute('y', legendY + 4);
+      legendText1.setAttribute('font-size', '11');
+      legendText1.setAttribute('fill', 'var(--color-text)');
+      legendText1.textContent = 'Disease';
+      svg.appendChild(legendText1);
+
+      const legendDot2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendDot2.setAttribute('cx', legendX);
+      legendDot2.setAttribute('cy', legendY + 25);
+      legendDot2.setAttribute('r', 6);
+      legendDot2.setAttribute('fill', 'var(--color-secondary)');
+      svg.appendChild(legendDot2);
+
+      const legendText2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendText2.setAttribute('x', legendX + 12);
+      legendText2.setAttribute('y', legendY + 29);
+      legendText2.setAttribute('font-size', '11');
+      legendText2.setAttribute('fill', 'var(--color-text)');
+      legendText2.textContent = 'Unemployment';
+      svg.appendChild(legendText2);
+
+      // Axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 25; x += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', margin.left + plotWidth / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Time Steps';
+      svg.appendChild(xLabel);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= 30; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Rate (%)';
+      svg.appendChild(yLabel);
+
+      // Update strategy card highlighting
+      document.querySelectorAll('.strategy-card').forEach(card => {
+        card.classList.remove('active');
+        if (strategy !== 'none' && (card.dataset.strategy === strategy || strategy === 'both')) {
+          card.classList.add('active');
+        }
+      });
+    }
+
+    // Intervention toggle handlers
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderInterventionChart(btn.dataset.strategy);
+      });
+    });
+
+    /* ============================================
+       7. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Disease Rate: ${data.diseaseRate}%</div>
+        <div class="metric">Employment: ${data.employmentRate}%</div>
+        <div class="metric">${data.isUrban ? 'Urban' : 'Rural'} county</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       8. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate initial stats
+      const correlation = calculateCorrelation(countyData, 'diseaseRate', 'employmentRate');
+      const slope = calculateSlope(countyData, 'diseaseRate', 'employmentRate');
+      const avgDisease = mean(countyData.map(d => d.diseaseRate));
+      const avgEmployment = mean(countyData.map(d => d.employmentRate));
+
+      document.getElementById('stat-correlation').textContent = correlation.toFixed(2);
+      document.getElementById('stat-avg-disease').textContent = avgDisease.toFixed(0) + '%';
+      document.getElementById('stat-avg-employment').textContent = avgEmployment.toFixed(0) + '%';
+      document.getElementById('stat-slope').textContent = Math.abs(slope * 10).toFixed(1);
+
+      // Render initial charts
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Initialize simulation data
+      simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const activePanel = document.querySelector('.panel.active');
+          if (activePanel) {
+            if (activePanel.id === 'panel-1') renderScatterPlot();
+            if (activePanel.id === 'panel-3') renderFeedbackChart();
+            if (activePanel.id === 'panel-4') renderInterventionChart(currentStrategy);
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

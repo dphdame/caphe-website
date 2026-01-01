@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controlling Maturation with Interrupted Time Series | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how Interrupted Time Series (ITS) design separates pre-existing trends from intervention effects by testing for slope change at the intervention point.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. CHART CONTAINER
+       ============================================ */
+    .its-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .its-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-line {
+      width: 24px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .legend-line.pre { background: var(--color-secondary); }
+    .legend-line.post { background: var(--color-accent); }
+    .legend-line.counterfactual {
+      background: var(--color-secondary);
+      opacity: 0.4;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+      font-size: 0.9rem;
+    }
+
+    .stat-row:last-child { border-bottom: none; }
+
+    .stat-label { color: var(--color-text-secondary); }
+
+    .stat-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .stat-value.positive { color: var(--color-success); }
+    .stat-value.neutral { color: var(--color-text-muted); }
+
+    /* ============================================
+       7. SLIDER CONTROLS
+       ============================================ */
+    .slider-control {
+      background: var(--color-bg-code);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .slider-control label {
+      display: block;
+      margin-bottom: var(--space-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .slider-control input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--color-border);
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+
+    .slider-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: var(--color-primary);
+      margin-top: var(--space-sm);
+      font-weight: 600;
+    }
+
+    /* ============================================
+       8. CALLOUT BOXES
+       ============================================ */
+    .callout-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .callout-box h4 {
+      color: var(--color-caution);
+      margin-bottom: var(--space-sm);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .callout-box p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .callout-box.success {
+      background: rgba(46, 125, 50, 0.1);
+      border-left-color: var(--color-success);
+    }
+
+    .callout-box.success h4 {
+      color: var(--color-success);
+    }
+
+    /* ============================================
+       9. DEFINITION CARD (KEY CONCEPT)
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      list-style: disc;
+      margin-left: var(--space-lg);
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       10. TWO-COLUMN LAYOUTS
+       ============================================ */
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .two-column { grid-template-columns: 1fr; }
+    }
+
+    .content-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .content-card h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    /* ============================================
+       11. SLOPE COMPARISON
+       ============================================ */
+    .slope-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .slope-card {
+      text-align: center;
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+    }
+
+    .slope-card.pre {
+      background: rgba(13, 148, 136, 0.1);
+      border: 2px solid var(--color-secondary);
+    }
+
+    .slope-card.post {
+      background: rgba(249, 168, 37, 0.1);
+      border: 2px solid var(--color-accent);
+    }
+
+    .slope-card .label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .slope-card .value {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .slope-card.pre .value { color: var(--color-secondary); }
+    .slope-card.post .value { color: var(--color-accent); }
+
+    .slope-card .unit {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .difference-box {
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+      text-align: center;
+    }
+
+    .difference-box.significant {
+      border-color: var(--color-success);
+      background: rgba(46, 125, 50, 0.05);
+    }
+
+    .difference-box.not-significant {
+      border-color: var(--color-text-muted);
+      background: var(--color-bg-code);
+    }
+
+    .difference-title {
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+
+    .difference-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .difference-box.significant .difference-value { color: var(--color-success); }
+    .difference-box.not-significant .difference-value { color: var(--color-text-muted); }
+
+    .p-value {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    /* ============================================
+       12. FORMULA BOX
+       ============================================ */
+    .formula-box {
+      background: var(--color-bg-code);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-lg);
+      overflow-x: auto;
+    }
+
+    .hypothesis-box {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .hypothesis-box .label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .hypothesis-box .content {
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+       13. AUDIT LIST
+       ============================================ */
+    .audit-list {
+      list-style: none;
+    }
+
+    .audit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .audit-item:last-child { border-bottom: none; }
+
+    .audit-status {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .audit-status.met {
+      background: rgba(46, 125, 50, 0.15);
+      color: var(--color-success);
+    }
+
+    .audit-status.uncertain {
+      background: rgba(249, 168, 37, 0.15);
+      color: var(--color-caution);
+    }
+
+    .audit-content { flex: 1; }
+
+    .audit-content .assumption {
+      font-weight: 500;
+      color: var(--color-text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .audit-content .explanation {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       14. SENSITIVITY TABLE
+       ============================================ */
+    .sensitivity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .sensitivity-table th,
+    .sensitivity-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .sensitivity-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      color: var(--color-primary-dark);
+    }
+
+    .sensitivity-table tr:hover td {
+      background: rgba(0, 65, 165, 0.02);
+    }
+
+    .effect-none { color: var(--color-text-muted); }
+    .effect-small { color: var(--color-accent); font-weight: 500; }
+    .effect-large { color: var(--color-success); font-weight: 500; }
+
+    .sig-not { color: var(--color-text-muted); }
+    .sig-marginal { color: var(--color-accent); }
+    .sig-yes { color: var(--color-success); font-weight: 500; }
+
+    /* ============================================
+       15. BRIDGING QUESTION
+       ============================================ */
+    .bridging-question {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       16. TAKEAWAY BOX
+       ============================================ */
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       17. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden { display: none; }
+
+    .tooltip .year-label {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       18. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a { color: var(--color-accent); }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       19. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden { display: none !important; }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Validity & Solutions</div>
+      <h1>Controlling Maturation with Interrupted Time Series</h1>
+      <p class="subtitle">ITS design separates pre-existing trends from intervention effects by testing whether the slope changed at the intervention point.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">How ITS Works</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">The Statistical Test</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Assumptions Audit</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Sensitivity Analysis</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A county launched a preventive screening program in 2019. Screening rates were already rising before the program started. The post-program data looks promising, but was the improvement already happening? Use the slider to adjust the post-program slope and see how ITS detects real effects. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="its-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Screening Rate Over Time (ITS Analysis)</h3>
+            <svg id="its-chart" class="chart-svg" role="img" aria-label="ITS chart showing pre and post program trend lines"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-line pre"></span>
+                <span>Pre-Program Trend</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line post"></span>
+                <span>Post-Program Trend</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-line counterfactual"></span>
+                <span>Counterfactual (no program)</span>
+              </div>
+            </div>
+            <div class="slider-control">
+              <label for="slope-slider">Adjust the post-program slope to explore ITS detection:</label>
+              <input type="range" id="slope-slider" min="1.5" max="4.5" step="0.1" value="2.5" aria-label="Post-program slope adjustment">
+              <div class="slider-value" aria-live="polite" aria-atomic="true">Post-program slope: <span id="slope-display">+2.5</span>% per year</div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>ITS Components</h4>
+              <div class="stat-row">
+                <span class="stat-label">Pre-Program Slope</span>
+                <span class="stat-value" id="pre-slope-stat">+2.5% / year</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Post-Program Slope</span>
+                <span class="stat-value" id="post-slope-stat">+2.5% / year</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Slope Difference</span>
+                <span class="stat-value neutral" id="slope-diff-stat">0.0% / year</span>
+              </div>
+            </div>
+
+            <div class="callout-box" id="effect-callout">
+              <h4 id="effect-title">No Program Effect</h4>
+              <p id="effect-description">The post-program slope equals the pre-program slope. Improvement continues at the same pace as before. The program did not accelerate the trend.</p>
+            </div>
+
+            <div class="stat-card">
+              <h4>Cumulative Impact</h4>
+              <div class="stat-row">
+                <span class="stat-label">After 5 years</span>
+                <span class="stat-value" id="impact-5yr">+0.0 pts</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">After 10 years</span>
+                <span class="stat-value" id="impact-10yr">+0.0 pts</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question to Panel 2 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How exactly does ITS separate the program effect from maturation that was already happening?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: HOW ITS WORKS
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">How ITS Works</h2>
+          <p class="panel-intro">
+            ITS fits separate trend lines before and after the intervention. The key question is whether the post-program slope differs meaningfully from the pre-program slope. If improvement was already happening and continues at the same rate, the program added nothing.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is Interrupted Time Series?</h3>
+          <p>An <strong>Interrupted Time Series (ITS)</strong> design tests whether an intervention changed the trajectory of an outcome. Rather than comparing before vs. after levels, it compares before vs. after <em>slopes</em>.</p>
+          <ul>
+            <li>Fits a regression line to pre-intervention data</li>
+            <li>Fits a separate regression line to post-intervention data</li>
+            <li>Tests whether the post-intervention slope differs from what the pre-intervention trend predicted</li>
+          </ul>
+        </div>
+
+        <div class="two-column">
+          <div class="content-card">
+            <h3>The Core Logic</h3>
+            <p>A before-after comparison would credit the program for any improvement seen after launch. ITS asks a sharper question: Did the <em>rate</em> of improvement change?</p>
+            <ul style="list-style: disc; margin-left: var(--space-lg); color: var(--color-text-secondary);">
+              <li style="margin-bottom: var(--space-sm);">Pre-program slope = baseline rate of change (maturation)</li>
+              <li style="margin-bottom: var(--space-sm);">Post-program slope = rate of change after intervention</li>
+              <li>Slope difference = program-attributable acceleration</li>
+            </ul>
+          </div>
+
+          <div class="content-card">
+            <h3>The Counterfactual</h3>
+            <p>ITS constructs a counterfactual by extending the pre-program trend forward. This shows what would have happened if the pre-existing rate of improvement continued.</p>
+            <div style="margin-top: var(--space-md);">
+              <div class="slope-comparison">
+                <div class="slope-card pre">
+                  <div class="label">Pre-Program Slope</div>
+                  <div class="value" id="pre-slope-compare">+2.5</div>
+                  <div class="unit">% per year</div>
+                </div>
+                <div class="slope-card post">
+                  <div class="label">Post-Program Slope</div>
+                  <div class="value" id="post-slope-compare">+2.5</div>
+                  <div class="unit">% per year</div>
+                </div>
+              </div>
+              <div class="difference-box not-significant" id="diff-result-box">
+                <div class="difference-title">Slope Difference</div>
+                <div class="difference-value" id="diff-value">+0.0% / year</div>
+                <div class="p-value" id="p-value-display">p = 0.95 (not significant)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 3 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do we formally test whether the slope change is statistically significant?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: THE STATISTICAL TEST
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">The Statistical Test</h2>
+          <p class="panel-intro">
+            ITS uses regression with an interaction term to test whether the slope changed at the intervention point. The coefficient on this interaction term tells us whether the program accelerated improvement.
+          </p>
+        </div>
+
+        <div class="two-column">
+          <div class="content-card">
+            <h3>The ITS Regression Model</h3>
+            <div class="formula-box">
+              Y<sub>t</sub> = B<sub>0</sub> + B<sub>1</sub>*Time + B<sub>2</sub>*Post + B<sub>3</sub>*(Time*Post) + e<sub>t</sub>
+            </div>
+            <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Where:</p>
+            <ul style="list-style: none; margin-left: var(--space-md); font-size: 0.9rem; color: var(--color-text-secondary);">
+              <li style="margin-bottom: var(--space-sm);"><strong>B<sub>1</sub></strong> = Pre-program slope (baseline trend)</li>
+              <li style="margin-bottom: var(--space-sm);"><strong>B<sub>2</sub></strong> = Level change at intervention (immediate shift)</li>
+              <li style="margin-bottom: var(--space-sm);"><strong style="color: var(--color-primary);">B<sub>3</sub></strong> = <strong>Slope change</strong> (what we test)</li>
+            </ul>
+
+            <div class="hypothesis-box" style="margin-top: var(--space-lg);">
+              <div class="label">Null Hypothesis (H<sub>0</sub>)</div>
+              <div class="content">B<sub>3</sub> = 0 (no slope change)</div>
+            </div>
+            <div class="hypothesis-box">
+              <div class="label">Alternative Hypothesis (H<sub>A</sub>)</div>
+              <div class="content">B<sub>3</sub> &ne; 0 (program changed the slope)</div>
+            </div>
+          </div>
+
+          <div class="content-card">
+            <h3>Current Results</h3>
+            <div class="stat-card" style="margin-bottom: var(--space-lg); box-shadow: none; background: var(--color-bg-code);">
+              <div class="stat-row">
+                <span class="stat-label">B<sub>3</sub> (slope change)</span>
+                <span class="stat-value" id="beta3-value">+0.0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Standard Error</span>
+                <span class="stat-value" id="se-value">0.45</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">t-statistic</span>
+                <span class="stat-value" id="t-value">0.00</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">p-value</span>
+                <span class="stat-value" id="p-value">0.95</span>
+              </div>
+            </div>
+
+            <div class="callout-box" id="test-conclusion">
+              <h4>Conclusion</h4>
+              <p id="conclusion-text">We fail to reject the null hypothesis. There is no statistically significant slope change. The program did not accelerate improvement beyond the pre-existing trend.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What assumptions must hold for this ITS analysis to give valid conclusions?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: ASSUMPTIONS AUDIT
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Assumptions Audit</h2>
+          <p class="panel-intro">
+            ITS is powerful but requires assumptions. The key threat is concurrent history: something else that changed at the same time as the program. ITS cannot distinguish your intervention from other simultaneous changes.
+          </p>
+        </div>
+
+        <div class="two-column">
+          <div class="content-card">
+            <h3>Key Assumptions</h3>
+            <ul class="audit-list">
+              <li class="audit-item">
+                <span class="audit-status met">&#10003;</span>
+                <div class="audit-content">
+                  <div class="assumption">Pre-program data sufficient for slope estimation</div>
+                  <div class="explanation">We have 5 years of pre-program data (2014-2018), enough to establish a stable baseline trend.</div>
+                </div>
+              </li>
+              <li class="audit-item">
+                <span class="audit-status met">&#10003;</span>
+                <div class="audit-content">
+                  <div class="assumption">Post-program data sufficient for slope estimation</div>
+                  <div class="explanation">We have 6 years of post-program data (2019-2024), enough to detect a new trajectory.</div>
+                </div>
+              </li>
+              <li class="audit-item">
+                <span class="audit-status uncertain">?</span>
+                <div class="audit-content">
+                  <div class="assumption">No concurrent history threat</div>
+                  <div class="explanation">ITS cannot rule out that something else changed in 2019 that also affected screening rates (new state policy, insurance expansion, etc.).</div>
+                </div>
+              </li>
+              <li class="audit-item">
+                <span class="audit-status uncertain">?</span>
+                <div class="audit-content">
+                  <div class="assumption">Linear trends appropriate</div>
+                  <div class="explanation">We assume outcomes follow linear trends. Non-linear patterns (acceleration, ceiling effects) could bias slope estimates.</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="content-card">
+            <h3>Strengthening ITS</h3>
+            <p>Single-group ITS is vulnerable to history threats. Adding a comparison group creates a more robust design.</p>
+            <ul style="list-style: disc; margin-left: var(--space-lg); font-size: 0.9rem; color: var(--color-text-secondary); margin-top: var(--space-md);">
+              <li style="margin-bottom: var(--space-sm);">Add a comparison group that did not receive the intervention</li>
+              <li style="margin-bottom: var(--space-sm);">Document any other policy or environmental changes at intervention time</li>
+              <li style="margin-bottom: var(--space-sm);">Test for autocorrelation in residuals</li>
+              <li style="margin-bottom: var(--space-sm);">Check for seasonality that might confound trends</li>
+            </ul>
+
+            <div class="callout-box" style="margin-top: var(--space-lg);">
+              <h4>The History Threat</h4>
+              <p>If a statewide policy also launched in 2019, ITS cannot determine whether your program or the state policy caused the slope change. This is why comparative ITS (with a control group) is stronger than single-group ITS.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 5 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How much slope change would be needed for statistical and practical significance?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: SENSITIVITY ANALYSIS
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Sensitivity Analysis</h2>
+          <p class="panel-intro">
+            ITS detects changes in trend slope, but not all statistically significant changes are practically meaningful. This table shows how different slope changes translate to effect sizes and statistical significance.
+          </p>
+        </div>
+
+        <div class="content-card" style="max-width: 900px;">
+          <table class="sensitivity-table">
+            <thead>
+              <tr>
+                <th>Post-Program Slope</th>
+                <th>Slope Difference</th>
+                <th>Statistical Significance</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2.5% per year</td>
+                <td>0% difference</td>
+                <td class="sig-not">Not significant (p > 0.05)</td>
+                <td class="effect-none">No effect beyond maturation</td>
+              </tr>
+              <tr>
+                <td>3.0% per year</td>
+                <td>+0.5% difference</td>
+                <td class="sig-marginal">Marginally significant (p ~ 0.10)</td>
+                <td class="effect-small">Small acceleration (+0.5%/yr)</td>
+              </tr>
+              <tr>
+                <td>3.5% per year</td>
+                <td>+1.0% difference</td>
+                <td class="sig-yes">p ~ 0.05</td>
+                <td class="effect-small">Program accelerated by 1%/yr</td>
+              </tr>
+              <tr>
+                <td>4.5% per year</td>
+                <td>+2.0% difference</td>
+                <td class="sig-yes">p &lt; 0.01</td>
+                <td class="effect-large">Program accelerated by 2%/yr</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>What Economists Mean by "Identification"</h3>
+          <p>ITS provides <strong>partial identification</strong> of the program effect. It controls for the maturation threat by accounting for pre-existing trends. However, it cannot rule out history threats (other simultaneous changes).</p>
+          <ul>
+            <li><strong>What ITS controls:</strong> Pre-existing trends (maturation)</li>
+            <li><strong>What ITS cannot control:</strong> Concurrent events (history)</li>
+            <li><strong>Stronger design:</strong> Comparative ITS with a control group addresses both threats</li>
+          </ul>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>ITS asks whether the rate of change shifted, not just whether levels improved.</strong> When pre-existing trends threaten validity, ITS separates program acceleration from natural maturation. The key test is whether the post-intervention slope differs from the pre-intervention slope. For stronger causal claims, combine ITS with a comparison group to also address history threats. <strong>This is what economists mean by "identification through design."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. DATA AND STATE
+       ============================================ */
+    const PRE_SLOPE = 2.5;  // Fixed pre-program slope
+    let postSlope = 2.5;    // Adjustable post-program slope
+
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateTimeSeriesData(preSlope, postSlope) {
+      const data = [];
+      const baseValue = 40;
+      const programYear = 2019;
+      let seed = 54321;
+
+      function rand() {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      }
+
+      for (let year = 2014; year <= 2024; year++) {
+        let expectedValue;
+        if (year < programYear) {
+          const yearsFromStart = year - 2014;
+          expectedValue = baseValue + (preSlope * yearsFromStart);
+        } else {
+          const yearsPreProgram = programYear - 2014;
+          const valueAtLaunch = baseValue + (preSlope * yearsPreProgram);
+          const yearsPostProgram = year - programYear;
+          expectedValue = valueAtLaunch + (postSlope * yearsPostProgram);
+        }
+
+        const noise = (rand() - 0.5) * 3;
+        const actualValue = expectedValue + noise;
+
+        data.push({
+          year: year,
+          value: Math.round(actualValue * 10) / 10,
+          period: year < programYear ? 'pre' : 'post'
+        });
+      }
+
+      return data;
+    }
+
+    /* ============================================
+       2. CHART RENDERING
+       ============================================ */
+    let chartInitialized = false;
+
+    function renderITSChart() {
+      const svg = document.getElementById('its-chart');
+      if (!svg) return;
+
+      const data = generateTimeSeriesData(PRE_SLOPE, postSlope);
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 40, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 2013.5, xMax = 2024.5;
+      const yMin = 30, yMax = 80;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 35; y <= 75; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Program launch line
+      const programLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      programLine.setAttribute('x1', xScale(2019));
+      programLine.setAttribute('x2', xScale(2019));
+      programLine.setAttribute('y1', margin.top);
+      programLine.setAttribute('y2', height - margin.bottom);
+      programLine.setAttribute('stroke', 'var(--color-primary)');
+      programLine.setAttribute('stroke-width', '2');
+      programLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(programLine);
+
+      const programLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      programLabel.setAttribute('x', xScale(2019));
+      programLabel.setAttribute('y', margin.top - 10);
+      programLabel.setAttribute('text-anchor', 'middle');
+      programLabel.setAttribute('fill', 'var(--color-primary)');
+      programLabel.setAttribute('font-size', '11');
+      programLabel.setAttribute('font-weight', '600');
+      programLabel.textContent = 'Program Launch';
+      svg.appendChild(programLabel);
+
+      // Pre-program fitted line
+      const preY2014 = 40;
+      const preY2018 = 40 + (PRE_SLOPE * 4);
+
+      const preLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      preLine.setAttribute('x1', xScale(2014));
+      preLine.setAttribute('y1', yScale(preY2014));
+      preLine.setAttribute('x2', xScale(2018));
+      preLine.setAttribute('y2', yScale(preY2018));
+      preLine.setAttribute('stroke', 'var(--color-secondary)');
+      preLine.setAttribute('stroke-width', '3');
+      svg.appendChild(preLine);
+
+      // Post-program fitted line
+      const postY2019 = preY2018 + PRE_SLOPE;
+      const postY2024 = postY2019 + (postSlope * 5);
+
+      const postLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      postLine.setAttribute('x1', xScale(2019));
+      postLine.setAttribute('y1', yScale(postY2019));
+      postLine.setAttribute('x2', xScale(2024));
+      postLine.setAttribute('y2', yScale(postY2024));
+      postLine.setAttribute('stroke', 'var(--color-accent)');
+      postLine.setAttribute('stroke-width', '3');
+      svg.appendChild(postLine);
+
+      // Counterfactual line
+      const cfY2024 = postY2019 + (PRE_SLOPE * 5);
+      const cfLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      cfLine.setAttribute('x1', xScale(2019));
+      cfLine.setAttribute('y1', yScale(postY2019));
+      cfLine.setAttribute('x2', xScale(2024));
+      cfLine.setAttribute('y2', yScale(cfY2024));
+      cfLine.setAttribute('stroke', 'var(--color-secondary)');
+      cfLine.setAttribute('stroke-width', '2');
+      cfLine.setAttribute('stroke-dasharray', '8,4');
+      cfLine.setAttribute('opacity', '0.4');
+      svg.appendChild(cfLine);
+
+      // Data points
+      data.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.year));
+        circle.setAttribute('cy', yScale(d.value));
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', d.period === 'pre' ? 'var(--color-secondary)' : 'var(--color-accent)');
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('style', 'cursor: pointer; transition: transform 0.2s;');
+        circle.setAttribute('data-year', d.year);
+        circle.setAttribute('data-value', d.value);
+        circle.setAttribute('data-period', d.period);
+
+        circle.addEventListener('mouseenter', showTooltip);
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let year = 2014; year <= 2024; year++) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(year));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.setAttribute('font-size', '11');
+        tick.textContent = year;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.textContent = 'Year';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 35; y <= 75; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 10);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.setAttribute('font-size', '11');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Preventive Screening Rate (%)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       3. UPDATE STATS
+       ============================================ */
+    function updateStats() {
+      const slopeDiff = postSlope - PRE_SLOPE;
+
+      // Panel 1 stats
+      document.getElementById('pre-slope-stat').textContent = '+' + PRE_SLOPE.toFixed(1) + '% / year';
+      document.getElementById('post-slope-stat').textContent = '+' + postSlope.toFixed(1) + '% / year';
+
+      const diffStatEl = document.getElementById('slope-diff-stat');
+      diffStatEl.textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(1) + '% / year';
+      diffStatEl.className = 'stat-value ' + (Math.abs(slopeDiff) > 0.5 ? 'positive' : 'neutral');
+
+      // Effect callout
+      const effectTitle = document.getElementById('effect-title');
+      const effectDesc = document.getElementById('effect-description');
+      const effectCallout = document.getElementById('effect-callout');
+
+      if (Math.abs(slopeDiff) < 0.3) {
+        effectTitle.textContent = 'No Program Effect';
+        effectDesc.textContent = 'The post-program slope equals the pre-program slope. Improvement continues at the same pace as before. The program did not accelerate the trend.';
+        effectCallout.className = 'callout-box';
+      } else if (slopeDiff > 0) {
+        effectTitle.textContent = 'Program Accelerated Improvement';
+        effectDesc.textContent = `The post-program slope is ${slopeDiff.toFixed(1)} percentage points steeper per year. The program appears to have accelerated improvement beyond maturation.`;
+        effectCallout.className = 'callout-box success';
+      } else {
+        effectTitle.textContent = 'Program May Have Slowed Improvement';
+        effectDesc.textContent = `The post-program slope is ${Math.abs(slopeDiff).toFixed(1)} percentage points less steep per year. This warrants investigation.`;
+        effectCallout.className = 'callout-box';
+      }
+
+      // Cumulative impact
+      document.getElementById('impact-5yr').textContent = (slopeDiff >= 0 ? '+' : '') + (slopeDiff * 5).toFixed(1) + ' pts';
+      document.getElementById('impact-10yr').textContent = (slopeDiff >= 0 ? '+' : '') + (slopeDiff * 10).toFixed(1) + ' pts';
+
+      // Panel 2 comparison
+      if (document.getElementById('pre-slope-compare')) {
+        document.getElementById('pre-slope-compare').textContent = '+' + PRE_SLOPE.toFixed(1);
+        document.getElementById('post-slope-compare').textContent = '+' + postSlope.toFixed(1);
+        document.getElementById('diff-value').textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(1) + '% / year';
+
+        const tStat = slopeDiff / 0.45;
+        const pValue = Math.min(1, 2 * (1 - normalCDF(Math.abs(tStat))));
+
+        const diffBox = document.getElementById('diff-result-box');
+        const pValueDisplay = document.getElementById('p-value-display');
+
+        if (pValue < 0.05) {
+          diffBox.className = 'difference-box significant';
+          pValueDisplay.textContent = `p = ${pValue.toFixed(3)} (significant)`;
+        } else {
+          diffBox.className = 'difference-box not-significant';
+          pValueDisplay.textContent = `p = ${pValue.toFixed(2)} (not significant)`;
+        }
+      }
+
+      // Panel 3 statistical test
+      if (document.getElementById('beta3-value')) {
+        const tStat = slopeDiff / 0.45;
+        const pValue = Math.min(1, 2 * (1 - normalCDF(Math.abs(tStat))));
+
+        document.getElementById('beta3-value').textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(2);
+        document.getElementById('t-value').textContent = tStat.toFixed(2);
+        document.getElementById('p-value').textContent = pValue.toFixed(3);
+
+        const conclusionText = document.getElementById('conclusion-text');
+        const testConclusion = document.getElementById('test-conclusion');
+
+        if (pValue < 0.05) {
+          conclusionText.textContent = `We reject the null hypothesis (p = ${pValue.toFixed(3)}). The slope change is statistically significant. The program appears to have accelerated improvement by ${slopeDiff.toFixed(1)} percentage points per year.`;
+          testConclusion.className = 'callout-box success';
+        } else {
+          conclusionText.textContent = `We fail to reject the null hypothesis (p = ${pValue.toFixed(2)}). There is no statistically significant slope change. The program did not accelerate improvement beyond the pre-existing trend.`;
+          testConclusion.className = 'callout-box';
+        }
+      }
+    }
+
+    function normalCDF(x) {
+      const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+      const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+
+      const sign = x < 0 ? -1 : 1;
+      x = Math.abs(x) / Math.sqrt(2);
+
+      const t = 1.0 / (1.0 + p * x);
+      const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+      return 0.5 * (1.0 + sign * y);
+    }
+
+    /* ============================================
+       4. TOOLTIP
+       ============================================ */
+    function showTooltip(event) {
+      const tooltip = document.getElementById('tooltip');
+      const target = event.target;
+
+      const year = target.getAttribute('data-year');
+      const value = target.getAttribute('data-value');
+      const period = target.getAttribute('data-period');
+
+      tooltip.innerHTML = `
+        <div class="year-label">${year}</div>
+        <div class="metric">Screening Rate: ${parseFloat(value).toFixed(1)}%</div>
+        <div class="metric">${period === 'pre' ? 'Before Program' : 'After Program'}</div>
+      `;
+
+      const rect = target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       5. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Re-render chart when panel 1 becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            renderITSChart();
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       6. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderITSChart();
+      chartInitialized = true;
+      updateStats();
+
+      // Slider listener
+      const slider = document.getElementById('slope-slider');
+      const slopeDisplay = document.getElementById('slope-display');
+
+      slider.addEventListener('input', () => {
+        postSlope = parseFloat(slider.value);
+        slopeDisplay.textContent = '+' + postSlope.toFixed(1);
+        renderITSChart();
+        updateStats();
+      });
+
+      // Debounced resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderITSChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

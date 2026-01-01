@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threats from Measurement and Coding Changes | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how changes in measurement systems, diagnostic criteria, or reporting definitions can create artificial trends that look like real program effects.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-xl);
+      text-align: center;
+    }
+
+    .bar-chart-area {
+      position: relative;
+      height: 280px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 60px;
+      padding: 20px 60px 0 70px;
+      border-left: 2px solid var(--color-border);
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: 60px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .bar-pair {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: flex-end;
+    }
+
+    .bar {
+      width: 55px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      transition: height 0.5s ease;
+      position: relative;
+    }
+
+    .bar-pre {
+      background: var(--color-secondary);
+    }
+
+    .bar-post {
+      background: var(--color-accent);
+    }
+
+    .bar-label {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text);
+      font-family: var(--font-mono);
+    }
+
+    .group-label {
+      position: absolute;
+      bottom: -45px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-align: center;
+      max-width: 130px;
+      white-space: nowrap;
+    }
+
+    .y-axis-label {
+      position: absolute;
+      left: -55px;
+      top: 50%;
+      transform: rotate(-90deg);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+
+    .comparison-group {
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 0.4s ease;
+    }
+
+    .comparison-group.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: var(--radius-sm);
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .toggle-section {
+      text-align: center;
+      margin-top: var(--space-xl);
+    }
+
+    .toggle-btn {
+      padding: var(--space-md) var(--space-xl);
+      background: var(--color-secondary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: #0B7C72;
+    }
+
+    /* Bridging Question */
+    .bridging-question {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       7. PANEL 2: THE PROBLEM (DAG)
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .example-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .example-item {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding-left: var(--space-md);
+      border-left: 2px solid var(--color-border);
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. DEFINITION CARD (KEY CONCEPT)
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-top: var(--space-sm);
+      padding-left: var(--space-lg);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       9. PANEL 3: THE TEST
+       ============================================ */
+    .test-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .test-container { grid-template-columns: 1fr; }
+    }
+
+    .comparison-table {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .comparison-table h3 {
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    th {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      font-size: 0.95rem;
+    }
+
+    .numeric {
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    .highlight-row {
+      background: rgba(249, 168, 37, 0.1);
+    }
+
+    .interpretation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .interpretation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .interpretation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      font-size: 0.95rem;
+    }
+
+    .interpretation-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .insight-box {
+      background: rgba(46, 125, 50, 0.1);
+      border-left: 4px solid var(--color-success);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       10. PANEL 4: QUESTIONS TO CONSIDER
+       ============================================ */
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "check";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden { display: none; }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Validity & Solutions</div>
+      <h1>Threats from Measurement and Coding Changes</h1>
+      <p class="subtitle">Did the ruler change, not the thing measured? When diagnostic criteria, reporting systems, or definitions change, trends can be artifacts.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">The Test</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Questions to Consider</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A county launched a Diabetes Wellness Program in January 2023. At the same time, all county clinics upgraded to a new electronic health record (EHR) system with better visit documentation. The chart shows diabetes care visits before and after the program launch. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Diabetes Care Visits per 1,000 Enrollees</h3>
+            <div class="bar-chart-area">
+              <span class="y-axis-label">Visits per 1,000 enrollees</span>
+              <!-- Program County -->
+              <div class="bar-group" id="programGroup">
+                <div class="bar-pair">
+                  <div class="bar bar-pre" id="prog-pre" style="height: 0;">
+                    <span class="bar-label" id="prog-pre-label">0</span>
+                  </div>
+                  <div class="bar bar-post" id="prog-post" style="height: 0;">
+                    <span class="bar-label" id="prog-post-label">0</span>
+                  </div>
+                </div>
+                <span class="group-label">County A<br>(Program + New EHR)</span>
+              </div>
+              <!-- Comparison County (hidden initially) -->
+              <div class="bar-group comparison-group" id="comparisonGroup">
+                <div class="bar-pair">
+                  <div class="bar bar-pre" id="comp-pre" style="height: 0;">
+                    <span class="bar-label" id="comp-pre-label">0</span>
+                  </div>
+                  <div class="bar bar-post" id="comp-post" style="height: 0;">
+                    <span class="bar-label" id="comp-post-label">0</span>
+                  </div>
+                </div>
+                <span class="group-label">County B<br>(New EHR Only)</span>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: var(--color-secondary);"></div>
+                <span>Before (2022)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: var(--color-accent);"></div>
+                <span>After (2023)</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Observed Increase</h4>
+              <div class="stat-value" id="stat-increase">--</div>
+              <div class="stat-label">County A visits increased after program launch</div>
+            </div>
+
+            <div class="observation-box" id="initialCallout">
+              <strong>Initial finding:</strong> Diabetes care visits increased by <span id="progIncrease">--</span> after the Wellness Program launched. Should we credit the program for this improvement?
+            </div>
+
+            <div class="observation-box" id="revealCallout" style="display: none; border-left-color: var(--color-warning);">
+              <strong>Wait:</strong> County B got the same EHR system but no Wellness Program. Their visits also increased by <span id="compIncrease">--</span>. Both counties show nearly identical increases.
+            </div>
+          </aside>
+        </div>
+
+        <div class="toggle-section">
+          <button class="toggle-btn" id="toggleComparison">Show Comparison County</button>
+        </div>
+
+        <!-- Bridging question to Panel 2 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> If both counties show the same increase, what's really driving the change?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            When how we measure something changes at the same time as an intervention, we can mistake better measurement for real improvement. The new EHR system makes it easier to document visits, so visits that were previously recorded as general check-ups now get coded as diabetes care.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is an Instrumentation Threat?</h3>
+          <p>An <strong>instrumentation threat</strong> occurs when the measurement tool or process changes between observations. The change in recorded values reflects the measurement system, not the phenomenon being measured.</p>
+          <ul>
+            <li>A scale that's recalibrated between weigh-ins</li>
+            <li>Survey questions reworded between years</li>
+            <li>Diagnostic criteria updated during a study</li>
+            <li>Data entry procedures that become more thorough</li>
+          </ul>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/measurement-instrumentation-dag.png"
+              alt="Causal diagram showing how EHR System Change affects both the Wellness Program timing and Recorded Visit Counts, while actual care delivery may remain unchanged"
+              class="dag-image"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            >
+            <div style="display: none; padding: 40px; text-align: center; background: var(--color-bg-alt); border-radius: var(--radius-md);">
+              <p style="color: var(--color-text-muted); font-size: 0.9rem;">
+                DAG image not yet generated.<br>
+                See <code>assets/antigravity-prompt.md</code> for generation instructions.
+              </p>
+            </div>
+            <p class="dag-caption">The measurement system change affects what we observe, regardless of whether actual care changed.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Common Measurement Changes</h4>
+              <div class="example-list">
+                <div class="example-item"><strong>EHR upgrades:</strong> Better documentation capture</div>
+                <div class="example-item"><strong>Billing code changes:</strong> New categories create new counts</div>
+                <div class="example-item"><strong>Staff training:</strong> More thorough data entry</div>
+                <div class="example-item"><strong>Definition changes:</strong> What "counts" as a visit changes</div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The trap:</strong> The actual care might not have changed at all. A scale that reads 10 pounds heavier after recalibration doesn't mean you gained weight overnight.
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question to Panel 3 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How can we tell if the increase is real or just better recording?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: THE TEST
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">The Test</h2>
+          <p class="panel-intro">
+            A comparison group that experienced the same measurement change but not the intervention reveals what the measurement change alone would produce. If both groups show similar increases, the measurement system is the likely cause.
+          </p>
+        </div>
+
+        <div class="test-container">
+          <div class="comparison-table">
+            <h3>Comparing the Two Counties</h3>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>County</th>
+                    <th>Program?</th>
+                    <th>New EHR?</th>
+                    <th class="numeric">Before</th>
+                    <th class="numeric">After</th>
+                    <th class="numeric">Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>County A</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td class="numeric" id="table-prog-pre">--</td>
+                    <td class="numeric" id="table-prog-post">--</td>
+                    <td class="numeric" id="table-prog-change">--</td>
+                  </tr>
+                  <tr>
+                    <td>County B</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td class="numeric" id="table-comp-pre">--</td>
+                    <td class="numeric" id="table-comp-post">--</td>
+                    <td class="numeric" id="table-comp-change">--</td>
+                  </tr>
+                  <tr class="highlight-row">
+                    <td colspan="3"><strong>Difference-in-Differences</strong></td>
+                    <td class="numeric">--</td>
+                    <td class="numeric">--</td>
+                    <td class="numeric" id="table-did">--</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <aside class="interpretation-sidebar">
+            <div class="interpretation-card">
+              <h4>Reading the Results</h4>
+              <p>If the Wellness Program had a real effect beyond the EHR change, County A should show a larger increase than County B. The difference-in-differences tells us how much of County A's increase we can attribute to the program itself.</p>
+            </div>
+
+            <div class="insight-box" id="did-insight">
+              <strong>What we find:</strong> The difference-in-differences is very small, suggesting the measurement change explains nearly all of the observed improvement.
+            </div>
+          </aside>
+        </div>
+
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>How to Detect Instrumentation Threats</h3>
+          <p>Ask these questions when evaluating any before-after comparison:</p>
+          <ul>
+            <li><strong>Did anything change about how we count or record the outcome?</strong> New systems, updated definitions, or training changes all matter.</li>
+            <li><strong>Can we find a comparison group with the same measurement change?</strong> If they show the same "improvement," the measurement is likely the cause.</li>
+            <li><strong>Does the timing align with system changes?</strong> Sudden jumps that coincide with administrative changes are suspicious.</li>
+          </ul>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What questions should we ask before trusting any before-after comparison?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: QUESTIONS TO CONSIDER
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Questions to Consider</h2>
+          <p class="panel-intro">
+            These questions help identify instrumentation threats that statistical adjustment cannot fix. They won't prove causation, but they reveal where the analysis is most vulnerable to measurement artifacts.
+          </p>
+        </div>
+
+        <div class="questions-grid">
+          <div class="question-card">
+            <h4>What changed in how we measure?</h4>
+            <p>Any change in data collection, coding systems, or definitions can create artificial trends. Even "improvements" in data quality can bias before-after comparisons.</p>
+            <div class="question-prompt">
+              Were there any administrative or system changes around the time of the intervention?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Can we find a comparison group?</h4>
+            <p>The ideal comparison experienced the same measurement change but not the program. If both groups show similar changes, the measurement system is the likely cause.</p>
+            <div class="question-prompt">
+              Is there another group, region, or time period with the same measurement change but without the intervention?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>How sudden is the change?</h4>
+            <p>Real program effects often build gradually. Sudden jumps that align perfectly with administrative changes suggest measurement artifacts.</p>
+            <div class="question-prompt">
+              Does the timing of the observed change match the intervention, or does it match a system update?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>What would null look like?</h4>
+            <p>If the program had no effect, what would we expect to see? With an EHR change, we'd expect some increase even without a program.</p>
+            <div class="question-prompt">
+              Can we estimate how much change the measurement system alone would produce?
+            </div>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Instrumentation threat:</strong> when the measurement tool changes between observations</div>
+            <div class="concept-item"><strong>Difference-in-differences:</strong> comparing changes across groups to isolate the intervention effect</div>
+            <div class="concept-item"><strong>Measurement artifact:</strong> an apparent change that reflects the measurement process, not reality</div>
+            <div class="concept-item"><strong>Comparison group selection:</strong> choosing a group that shares the measurement change but not the treatment</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>When measurement systems change alongside programs, observed trends may be artifacts.</strong> Better documentation, updated coding systems, and refined definitions can all create the appearance of improvement where none exists. The solution isn't better statistical adjustment. Instead, find a comparison group that experienced the same measurement change but not the intervention. If both groups show similar changes, the ruler changed, not the thing being measured. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    let seed = 1104; // Lab 11 seed
+
+    // Program county: significant increase (measurement effect)
+    const progPre = Math.round(180 + seededRandom(seed++) * 30);   // ~180-210
+    const progPost = Math.round(305 + seededRandom(seed++) * 35);  // ~305-340
+
+    // Comparison county: nearly identical increase (same measurement effect, no program)
+    const compPre = Math.round(175 + seededRandom(seed++) * 30);   // ~175-205
+    const compPost = Math.round(300 + seededRandom(seed++) * 35);  // ~300-335
+
+    // Calculate increases
+    const progChange = progPost - progPre;
+    const compChange = compPost - compPre;
+    const progIncreasePercent = Math.round((progChange / progPre) * 100);
+    const compIncreasePercent = Math.round((compChange / compPre) * 100);
+    const didEffect = progChange - compChange;
+
+    /* ============================================
+       2. DOM UPDATES
+       ============================================ */
+    // Scale for bar heights (max ~400, chart height ~280)
+    const scale = 260 / 400;
+
+    function initBars() {
+      // Set bar heights with animation delay
+      setTimeout(() => {
+        document.getElementById('prog-pre').style.height = (progPre * scale) + 'px';
+        document.getElementById('prog-post').style.height = (progPost * scale) + 'px';
+        document.getElementById('prog-pre-label').textContent = progPre;
+        document.getElementById('prog-post-label').textContent = progPost;
+
+        document.getElementById('comp-pre').style.height = (compPre * scale) + 'px';
+        document.getElementById('comp-post').style.height = (compPost * scale) + 'px';
+        document.getElementById('comp-pre-label').textContent = compPre;
+        document.getElementById('comp-post-label').textContent = compPost;
+      }, 100);
+
+      // Update stats
+      document.getElementById('stat-increase').textContent = '+' + progIncreasePercent + '%';
+      document.getElementById('progIncrease').textContent = progIncreasePercent + '%';
+      document.getElementById('compIncrease').textContent = compIncreasePercent + '%';
+
+      // Update table
+      document.getElementById('table-prog-pre').textContent = progPre;
+      document.getElementById('table-prog-post').textContent = progPost;
+      document.getElementById('table-prog-change').textContent = '+' + progChange;
+      document.getElementById('table-comp-pre').textContent = compPre;
+      document.getElementById('table-comp-post').textContent = compPost;
+      document.getElementById('table-comp-change').textContent = '+' + compChange;
+      document.getElementById('table-did').textContent = (didEffect >= 0 ? '+' : '') + didEffect;
+
+      // Update DiD insight
+      const didInsight = document.getElementById('did-insight');
+      if (Math.abs(didEffect) <= 15) {
+        didInsight.innerHTML = '<strong>What we find:</strong> The difference-in-differences is only ' +
+          (didEffect >= 0 ? '+' : '') + didEffect +
+          ' visits per 1,000. This suggests the EHR change explains nearly all of the observed improvement in County A.';
+      } else {
+        didInsight.innerHTML = '<strong>What we find:</strong> The difference-in-differences is ' +
+          (didEffect >= 0 ? '+' : '') + didEffect +
+          ' visits per 1,000. This represents the estimated program effect after accounting for the measurement change.';
+      }
+    }
+
+    /* ============================================
+       3. TOGGLE COMPARISON
+       ============================================ */
+    let showingComparison = false;
+    const toggleBtn = document.getElementById('toggleComparison');
+    const compGroup = document.getElementById('comparisonGroup');
+    const initialCallout = document.getElementById('initialCallout');
+    const revealCallout = document.getElementById('revealCallout');
+
+    toggleBtn.addEventListener('click', () => {
+      showingComparison = !showingComparison;
+
+      if (showingComparison) {
+        compGroup.classList.add('visible');
+        toggleBtn.textContent = 'Hide Comparison County';
+        initialCallout.style.display = 'none';
+        revealCallout.style.display = 'block';
+      } else {
+        compGroup.classList.remove('visible');
+        toggleBtn.textContent = 'Show Comparison County';
+        initialCallout.style.display = 'block';
+        revealCallout.style.display = 'none';
+      }
+    });
+
+    /* ============================================
+       4. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + panelNum).classList.add('active');
+      });
+    });
+
+    /* ============================================
+       5. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      initBars();
+    });
+  </script>
+</body>
+</html>

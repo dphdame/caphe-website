@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Health Workers and Health Outcomes | CAPHE Methods Lab</title>
+  <meta name="description" content="Explore whether community health worker programs improve health outcomes or if other factors explain the relationship. Learn to identify confounding in observational data.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .policy-question {
+      background: rgba(255,255,255,0.15);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md) var(--space-lg);
+      max-width: 650px;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: THE PROBLEM (DAG)
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.causal {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.confounding {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: SEEING THE CONFOUNDER
+       ============================================ */
+    .stratified-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-right: var(--space-sm);
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .stratified-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .stratified-grid { grid-template-columns: 1fr; }
+    }
+
+    .comparison-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .comparison-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-md);
+    }
+
+    .comparison-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: var(--space-xs) 0;
+    }
+
+    .comparison-label {
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .comparison-row.difference {
+      margin-top: var(--space-xs);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .comparison-row.difference .comparison-value {
+      color: var(--color-primary);
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .insight-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* Unmeasured section */
+    .unmeasured-section {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .unmeasured-section h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-intro {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      max-width: 700px;
+    }
+
+    .unmeasured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .unmeasured-grid { grid-template-columns: 1fr; }
+    }
+
+    .unmeasured-image {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+    }
+
+    .unmeasured-explanation h4 {
+      color: var(--color-accent);
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-explanation p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       9. PANEL 4: QUESTIONS TO CONSIDER
+       ============================================ */
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: "✓";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       10. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       11. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       12. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Causal Inference</div>
+      <h1>Community Health Workers and Health Outcomes</h1>
+      <p class="subtitle">Counties with community health worker programs show better diabetes control. But is that because CHWs help, or because wealthier counties have both CHWs and better outcomes?</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">1. The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. Seeing the Confounder</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">4. What We Can't Measure</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">5. Questions to Consider</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">
+            <span class="panel-number">1</span>
+            The Data
+          </h2>
+          <p class="panel-intro">
+            Each dot represents a California county. Counties with CHW programs tend to have better diabetes control rates. Is this evidence that CHW programs work? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Community Resources vs Diabetes Control</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing community resources versus diabetes control rate across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>No CHW Program</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Has CHW Program</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>County Breakdown</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-chw-count">--</div>
+                  <div class="stat-label">With CHW</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-no-chw-count">--</div>
+                  <div class="stat-label">Without CHW</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Average Diabetes Control</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-chw-avg">--</div>
+                  <div class="stat-label">With CHW</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-no-chw-avg">--</div>
+                  <div class="stat-label">Without CHW</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> Counties with CHW programs have diabetes control rates about <span id="stat-difference">--</span> percentage points higher on average.
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">
+            <span class="panel-number">2</span>
+            The Problem
+          </h2>
+          <p class="panel-intro">
+            Counties with CHW programs also tend to be wealthier with more healthcare resources. That's not a coincidence—it takes resources to fund CHW programs. But those same resources also improve health outcomes directly.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/chw-dag-confounding.png"
+              alt="Causal diagram showing Community Resources affecting both CHW Program adoption and Health Outcomes, with a dashed arrow from CHW Program to Health Outcomes indicating uncertain causal effect"
+              class="dag-image"
+            >
+            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to know about.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Possible Explanations</h4>
+              <div class="pathway-list">
+                <div class="pathway-item causal">
+                  <strong>CHWs actually help</strong>
+                  <p>Community health workers connect patients to care, provide education, and improve follow-up—leading to better outcomes.</p>
+                </div>
+                <div class="pathway-item confounding">
+                  <strong>Resources drive both</strong>
+                  <p>Wealthy counties have money for CHW programs AND for better clinics, more doctors, and healthier food access—all of which improve outcomes.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The confounding problem:</strong> If "Community Resources" causes both CHW presence and health outcomes, then the association we see between CHWs and outcomes is confounded. We can't tell how much of the difference is due to CHWs themselves.
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: SEEING THE CONFOUNDER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">
+            <span class="panel-number">3</span>
+            Seeing the Confounder
+          </h2>
+          <p class="panel-intro">
+            If community resources drive both CHW presence and health outcomes, then comparing counties within the same resource level should show a smaller CHW advantage. Use the filters below to stratify the data.
+          </p>
+        </div>
+
+        <!-- Stratification section -->
+        <div class="stratified-section">
+          <div class="filter-controls">
+            <span class="filter-label">Filter by Resource Level:</span>
+            <button class="filter-btn active" data-filter="all">All Counties</button>
+            <button class="filter-btn" data-filter="low">Low (0–33)</button>
+            <button class="filter-btn" data-filter="medium">Medium (34–66)</button>
+            <button class="filter-btn" data-filter="high">High (67–100)</button>
+          </div>
+
+          <div class="stratified-grid">
+            <div class="chart-wrapper">
+              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing CHW effect within resource levels"></svg>
+            </div>
+
+            <aside class="comparison-sidebar">
+              <div class="comparison-card">
+                <h4>Overall Comparison</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">With CHW:</span>
+                  <span class="comparison-value" id="overall-chw">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Without CHW:</span>
+                  <span class="comparison-value" id="overall-no-chw">--</span>
+                </div>
+                <div class="comparison-row difference">
+                  <span class="comparison-label">Difference:</span>
+                  <span class="comparison-value" id="overall-diff">--</span>
+                </div>
+              </div>
+
+              <div class="comparison-card">
+                <h4>Within This Stratum</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">With CHW:</span>
+                  <span class="comparison-value" id="stratum-chw">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Without CHW:</span>
+                  <span class="comparison-value" id="stratum-no-chw">--</span>
+                </div>
+                <div class="comparison-row difference">
+                  <span class="comparison-label">Difference:</span>
+                  <span class="comparison-value" id="stratum-diff">--</span>
+                </div>
+              </div>
+
+              <div class="insight-box">
+                <p><strong>What's happening?</strong></p>
+                <p id="stratification-insight">Select a resource level to see how the CHW advantage changes when comparing similar counties.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-box" style="background: rgba(249, 168, 37, 0.1); border-left: 4px solid var(--color-accent); padding: var(--space-lg); border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-top: var(--space-xl);">
+          <p style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-sm);">
+            <strong>The effect shrinks when we account for Community Resources.</strong>
+          </p>
+          <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
+            But what about factors we couldn't measure?
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: WHAT WE CAN'T MEASURE
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">
+            <span class="panel-number">4</span>
+            What We Can't Measure
+          </h2>
+          <p class="panel-intro">
+            Stratification helped with what we measured. But some factors that influence both CHW presence and health outcomes don't appear in any dataset.
+          </p>
+        </div>
+
+        <div class="unmeasured-section">
+          <div class="unmeasured-grid">
+            <img
+              src="assets/unmeasured-confounder-dag.png"
+              alt="Causal diagram showing both measured (Community Resources) and unmeasured (Community Trust) confounders affecting CHW programs and health outcomes"
+              class="unmeasured-image"
+            >
+            <div class="unmeasured-explanation">
+              <h4>Community Trust & Social Cohesion</h4>
+              <p>
+                Counties with strong social bonds might both embrace CHW programs more readily AND see better health outcomes through informal support networks.
+              </p>
+              <p>
+                This isn't in any dataset. We can't stratify by it. We can't adjust for it. Yet it could be driving both the "treatment" and the "outcome."
+              </p>
+              <p>
+                <strong>This is the problem of unmeasured confounding.</strong> No matter how carefully we adjust for what we can see, there may be hidden factors we can't account for.
+              </p>
+            </div>
+          </div>
+
+          <div class="key-insight" style="margin-top: var(--space-xl);">
+            <strong>The implication:</strong> Even if we had perfect data on community resources, we still couldn't be sure the remaining CHW effect is causal. Unmeasured confounding can't be fixed by collecting more of the same type of data—it requires a different approach entirely.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: QUESTIONS TO CONSIDER
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">
+            <span class="panel-number">5</span>
+            Questions to Consider
+          </h2>
+          <p class="panel-intro">
+            These questions help identify confounding threats that statistical adjustment cannot fix. They won't prove causation—but they'll reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="questions-grid">
+          <div class="question-card">
+            <h4>What else differs between these counties?</h4>
+            <p>Counties with CHW programs might differ from other counties in many ways beyond just having CHWs.</p>
+            <div class="question-prompt">
+              What other characteristics might explain why some counties have both CHW programs AND better health outcomes?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Is this a fair comparison?</h4>
+            <p>Cross-sectional data shows us a snapshot, not a story. We're comparing different counties at one point in time.</p>
+            <div class="question-prompt">
+              Are counties with CHW programs truly comparable to counties without them? What would make them more comparable?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Which came first?</h4>
+            <p>In this data, we see outcomes and CHW presence at the same time. We don't know the sequence.</p>
+            <div class="question-prompt">
+              Did CHW programs lead to better outcomes, or do counties with better outcomes attract resources including CHWs?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>What study design would help?</h4>
+            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
+            <div class="question-prompt">
+              What kind of study would give you more confidence that CHW programs actually cause better outcomes?
+            </div>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Confounding:</strong> when a third variable affects both treatment and outcome</div>
+            <div class="concept-item"><strong>Selection bias:</strong> systematic differences between groups being compared</div>
+            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we can't adjust for</div>
+            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both treatment and outcomes, the solution isn't better adjustment—it's finding sources of treatment variation that operate independently of unmeasured confounders. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
+        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
+        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
+        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
+        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
+        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
+        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
+        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
+        'County BC', 'County BD', 'County BE', 'County BF'
+      ];
+
+      const data = [];
+      let seed = 42;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // Community resources (confounder) - higher = more resources
+        const resources = rand() * 100;
+
+        // CHW presence is more likely in resource-rich counties
+        const hasCHW = resources > 60 ? (rand() > 0.3) : (rand() > 0.8);
+
+        // Diabetes control depends on resources (and a small true CHW effect)
+        const baseControl = 35 + (resources * 0.35);
+        const chwEffect = hasCHW ? 3 : 0; // Small true effect
+        const noise = (rand() - 0.5) * 15;
+        const diabetesControl = Math.min(85, Math.max(30, baseControl + chwEffect + noise));
+
+        data.push({
+          name: countyNames[i],
+          resources: Math.round(resources),
+          hasCHW: hasCHW,
+          diabetesControl: Math.round(diabetesControl * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let stratifiedInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!stratifiedInitialized) {
+              renderStratifiedChart('all');
+              stratifiedInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 25, yMax = 90;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 30; y <= 85; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.resources));
+        circle.setAttribute('cy', yScale(d.diabetesControl));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.hasCHW ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Community Resources Index';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 30; y <= 85; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Diabetes Control Rate (%)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. STRATIFIED CHART (Panel 3)
+       ============================================ */
+    let currentFilter = 'all';
+
+    function renderStratifiedChart(filter) {
+      currentFilter = filter;
+      const svg = document.getElementById('stratified-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 25, yMax = 90;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.resources <= 33;
+        if (filter === 'medium') return d.resources > 33 && d.resources <= 66;
+        if (filter === 'high') return d.resources > 66;
+        return true;
+      };
+
+      // Background shading for filter region
+      if (filter !== 'all') {
+        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        let x1, x2;
+        if (filter === 'low') { x1 = 0; x2 = 33; }
+        if (filter === 'medium') { x1 = 33; x2 = 66; }
+        if (filter === 'high') { x1 = 66; x2 = 100; }
+        shade.setAttribute('x', xScale(x1));
+        shade.setAttribute('y', margin.top);
+        shade.setAttribute('width', xScale(x2) - xScale(x1));
+        shade.setAttribute('height', plotHeight);
+        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.05)');
+        svg.appendChild(shade);
+      }
+
+      // Grid lines
+      for (let y = 30; y <= 85; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.resources));
+        circle.setAttribute('cy', yScale(d.diabetesControl));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.hasCHW ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Community Resources Index';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 30; y <= 85; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y + '%';
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Diabetes Control Rate (%)';
+      svg.appendChild(yLabel);
+
+      updateComparisonStats(filter);
+    }
+
+    function updateComparisonStats(filter) {
+      const chwAll = countyData.filter(d => d.hasCHW);
+      const noChwAll = countyData.filter(d => !d.hasCHW);
+
+      const overallChwMean = mean(chwAll.map(d => d.diabetesControl));
+      const overallNoChwMean = mean(noChwAll.map(d => d.diabetesControl));
+      const overallDiff = overallChwMean - overallNoChwMean;
+
+      document.getElementById('overall-chw').textContent = overallChwMean.toFixed(1) + '%';
+      document.getElementById('overall-no-chw').textContent = overallNoChwMean.toFixed(1) + '%';
+      document.getElementById('overall-diff').textContent = '+' + overallDiff.toFixed(1) + ' pts';
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.resources <= 33;
+        if (filter === 'medium') return d.resources > 33 && d.resources <= 66;
+        if (filter === 'high') return d.resources > 66;
+        return true;
+      };
+
+      const chwFiltered = countyData.filter(d => d.hasCHW && inFilter(d));
+      const noChwFiltered = countyData.filter(d => !d.hasCHW && inFilter(d));
+
+      const insightEl = document.getElementById('stratification-insight');
+
+      if (chwFiltered.length > 0 && noChwFiltered.length > 0) {
+        const stratumChwMean = mean(chwFiltered.map(d => d.diabetesControl));
+        const stratumNoChwMean = mean(noChwFiltered.map(d => d.diabetesControl));
+        const stratumDiff = stratumChwMean - stratumNoChwMean;
+
+        document.getElementById('stratum-chw').textContent = stratumChwMean.toFixed(1) + '%';
+        document.getElementById('stratum-no-chw').textContent = stratumNoChwMean.toFixed(1) + '%';
+        document.getElementById('stratum-diff').textContent = (stratumDiff >= 0 ? '+' : '') + stratumDiff.toFixed(1) + ' pts';
+
+        if (filter === 'all') {
+          insightEl.textContent = 'Select a resource level to see how the CHW advantage changes when comparing similar counties.';
+        } else {
+          const reduction = ((overallDiff - stratumDiff) / overallDiff * 100).toFixed(0);
+          if (stratumDiff <= 4) {
+            insightEl.innerHTML = '<strong>The advantage shrinks significantly.</strong> Within ' + filter + '-resource counties, the CHW difference is only ' + stratumDiff.toFixed(1) + ' points. Community resources explain much of what we saw overall.';
+          } else {
+            insightEl.innerHTML = 'Within ' + filter + '-resource counties, the CHW difference is ' + stratumDiff.toFixed(1) + ' points (' + reduction + '% smaller than the overall ' + overallDiff.toFixed(1) + ').';
+          }
+        }
+      } else {
+        document.getElementById('stratum-chw').textContent = 'N/A';
+        document.getElementById('stratum-no-chw').textContent = 'N/A';
+        document.getElementById('stratum-diff').textContent = '--';
+        insightEl.textContent = 'Not enough counties in this stratum for both groups.';
+      }
+    }
+
+    // Filter button handlers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderStratifiedChart(btn.dataset.filter);
+      });
+    });
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Resources: ${data.resources}</div>
+        <div class="metric">Diabetes Control: ${data.diabetesControl}%</div>
+        <div class="metric">${data.hasCHW ? '✓ Has CHW Program' : 'No CHW Program'}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const chwCounties = countyData.filter(d => d.hasCHW);
+      const noChwCounties = countyData.filter(d => !d.hasCHW);
+
+      const chwAvg = mean(chwCounties.map(d => d.diabetesControl));
+      const noChwAvg = mean(noChwCounties.map(d => d.diabetesControl));
+      const diff = chwAvg - noChwAvg;
+
+      document.getElementById('stat-chw-count').textContent = chwCounties.length;
+      document.getElementById('stat-no-chw-count').textContent = noChwCounties.length;
+      document.getElementById('stat-chw-avg').textContent = Math.round(chwAvg) + '%';
+      document.getElementById('stat-no-chw-avg').textContent = Math.round(noChwAvg) + '%';
+      document.getElementById('stat-difference').textContent = Math.round(diff);
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderStratifiedChart(currentFilter);
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

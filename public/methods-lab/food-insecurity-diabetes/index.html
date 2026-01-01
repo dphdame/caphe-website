@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Study: Food Security and Diabetes | CAPHE Methods Lab</title>
+  <meta name="description" content="Does hunger cause diabetes complications, or does illness cause poverty? Explore bidirectional causation and unmeasured confounding through interactive data visualization.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: THE PROBLEM (DAG)
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.causal {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.confounding {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* Bridging Question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+    .bridging-question p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+    .bridging-question strong {
+      color: var(--color-text);
+    }
+
+    /* ============================================
+       8. PANEL 3: SEEING THE CONFOUNDER
+       ============================================ */
+    .stratified-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-right: var(--space-sm);
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .stratified-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .stratified-grid { grid-template-columns: 1fr; }
+    }
+
+    .comparison-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .comparison-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-md);
+    }
+
+    .comparison-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: var(--space-xs) 0;
+    }
+
+    .comparison-label {
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .comparison-row.difference {
+      margin-top: var(--space-xs);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .comparison-row.difference .comparison-value {
+      color: var(--color-primary);
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .insight-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* Unmeasured section */
+    .unmeasured-section {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .unmeasured-section h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-intro {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      max-width: 700px;
+    }
+
+    .unmeasured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .unmeasured-grid { grid-template-columns: 1fr; }
+    }
+
+    .unmeasured-image {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+    }
+
+    .unmeasured-explanation h4 {
+      color: var(--color-accent);
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-explanation p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       9. PANEL 5: QUESTIONS TO CONSIDER
+       ============================================ */
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       10. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       11. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       12. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
+      <h1>Case Study: Food Security and Diabetes</h1>
+      <p class="subtitle">Counties with higher food insecurity rates show higher diabetes hospitalization rates. But does hunger cause diabetes complications, or does illness cause poverty? This case reveals both bidirectional causation and unmeasured confounding.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Seeing the Confounder</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't Measure</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Questions to Consider</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Each dot represents a California county. Counties with higher food insecurity rates tend to have higher diabetes hospitalization rates. Is this evidence that food insecurity worsens diabetes outcomes? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Food Insecurity Rate vs Diabetes Hospitalizations</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing food insecurity rate versus diabetes hospitalization rate across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>Low Poverty</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>High Poverty</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>County Breakdown</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-high-poverty-count">--</div>
+                  <div class="stat-label">High Poverty</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-low-poverty-count">--</div>
+                  <div class="stat-label">Low Poverty</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Correlation</h4>
+              <div class="stat-item" style="text-align: center;">
+                <div class="stat-value" id="stat-correlation">--</div>
+                <div class="stat-label">Food Insecurity vs Hospitalization</div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> A clear positive relationship between food insecurity and diabetes hospitalization rates. Counties with the highest food insecurity have hospitalization rates <span id="stat-difference">--</span>x higher than those with the lowest.
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question to Panel 2 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> The correlation is clear. But can we conclude that food insecurity causes worse diabetes outcomes?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            Counties with high food insecurity also tend to have high poverty rates. That's not a coincidence. Poverty limits access to food. But poverty also restricts access to healthcare, medications, and disease management resources. And here is the deeper problem: illness itself can cause poverty, creating a vicious cycle.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/food-diabetes-dag-confounding.png"
+              alt="Causal diagram showing Poverty affecting both Food Insecurity and Diabetes Hospitalization, with a dashed arrow from Food Insecurity to Diabetes Hospitalization indicating uncertain causal effect"
+              class="dag-image"
+            >
+            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to know about.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Possible Explanations</h4>
+              <div class="pathway-list">
+                <div class="pathway-item causal">
+                  <strong>Food insecurity worsens diabetes</strong>
+                  <p>Without reliable food access, people with diabetes can't maintain consistent diets, afford healthy options, or time meals with medications—leading to poor glucose control and hospitalizations.</p>
+                </div>
+                <div class="pathway-item confounding">
+                  <strong>Poverty drives both</strong>
+                  <p>Poor counties have less food access AND fewer healthcare resources, less preventive care, lower medication adherence, and more barriers to managing chronic disease—all increasing hospitalizations.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The confounding problem:</strong> If "Poverty" causes both food insecurity and diabetes hospitalization, then the association we see between food insecurity and hospitalization is confounded. We can't tell how much of the difference is due to food insecurity itself.
+            </div>
+          </aside>
+        </div>
+
+        <!-- KEY CONCEPT: Bidirectional Causation -->
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>Bidirectional Causation</h3>
+          <p><strong>Bidirectional causation</strong> occurs when:</p>
+          <ul>
+            <li>X causes Y (food insecurity may worsen diabetes)</li>
+            <li>Y causes X (diabetes complications may cause job loss, medical debt, and poverty)</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">With cross-sectional data, we cannot distinguish these directions. We see both X and Y at the same moment in time.</p>
+        </div>
+
+        <!-- Bridging question to Panel 3 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Can we isolate the food insecurity effect by comparing counties with similar poverty levels?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: SEEING THE CONFOUNDER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Seeing the Confounder</h2>
+          <p class="panel-intro">
+            If poverty drives both food insecurity and hospitalization, then comparing counties within the same poverty level should show a weaker relationship. Use the filters below to stratify the data.
+          </p>
+        </div>
+
+        <!-- Stratification section -->
+        <div class="stratified-section">
+          <div class="filter-controls">
+            <span class="filter-label">Filter by Poverty Level:</span>
+            <button class="filter-btn active" data-filter="all">All Counties</button>
+            <button class="filter-btn" data-filter="low">Low Poverty</button>
+            <button class="filter-btn" data-filter="medium">Medium Poverty</button>
+            <button class="filter-btn" data-filter="high">High Poverty</button>
+          </div>
+
+          <div class="stratified-grid">
+            <div class="chart-wrapper">
+              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing food insecurity effect within poverty levels"></svg>
+            </div>
+
+            <aside class="comparison-sidebar">
+              <div class="comparison-card">
+                <h4>Overall Relationship</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">Correlation:</span>
+                  <span class="comparison-value" id="overall-correlation">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Slope:</span>
+                  <span class="comparison-value" id="overall-slope">--</span>
+                </div>
+              </div>
+
+              <div class="comparison-card">
+                <h4>Within This Stratum</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">Correlation:</span>
+                  <span class="comparison-value" id="stratum-correlation">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Slope:</span>
+                  <span class="comparison-value" id="stratum-slope">--</span>
+                </div>
+                <div class="comparison-row difference">
+                  <span class="comparison-label">Change:</span>
+                  <span class="comparison-value" id="stratum-change">--</span>
+                </div>
+              </div>
+
+              <div class="insight-box">
+                <p><strong>What's happening?</strong></p>
+                <p id="stratification-insight">Select a poverty level to see how the relationship changes when comparing similar counties.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> The effect shrinks when we account for poverty. But what about factors we couldn't measure?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: WHAT WE CAN'T MEASURE
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">What We Can't Measure</h2>
+          <p class="panel-intro">
+            Stratification helped with what we measured. But some factors that influence both food insecurity and diabetes hospitalization don't appear in any dataset. And the direction of causation itself remains uncertain.
+          </p>
+        </div>
+
+        <div class="unmeasured-section">
+          <div class="unmeasured-grid">
+            <img
+              src="assets/food-diabetes-unmeasured-dag.png"
+              alt="Causal diagram showing both measured (Poverty) and unmeasured (Health Literacy, Transportation Access) confounders affecting food insecurity and diabetes hospitalization"
+              class="unmeasured-image"
+            >
+            <div class="unmeasured-explanation">
+              <h4>Health Literacy & Transportation Access</h4>
+              <p>
+                Counties with low health literacy may have populations who struggle both to navigate food assistance programs AND to manage complex chronic diseases—creating a spurious link between food insecurity and hospitalization.
+              </p>
+              <p>
+                Similarly, limited transportation affects both grocery store access (driving food insecurity) AND access to outpatient diabetes care (driving hospitalizations).
+              </p>
+              <p>
+                These aren't in any standard dataset. We can't stratify by them. We can't adjust for them. Yet they could be driving both the "exposure" and the "outcome."
+              </p>
+              <p>
+                <strong>This is the problem of unmeasured confounding.</strong> No matter how carefully we adjust for what we can see, there may be hidden factors we can't account for.
+              </p>
+            </div>
+          </div>
+
+          <div class="key-insight" style="margin-top: var(--space-xl);">
+            <strong>The implication:</strong> Even if we had perfect data on poverty, we still couldn't be sure the remaining food insecurity effect is causal. Unmeasured confounding can't be fixed by collecting more of the same type of data. It requires a different approach entirely.
+          </div>
+        </div>
+
+        <!-- KEY CONCEPT: Unmeasured Confounding -->
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>Unmeasured Confounding</h3>
+          <p><strong>Unmeasured confounding</strong> occurs when a variable that affects both treatment and outcome is not observed in the data. Unlike measured confounders (which we can adjust for), unmeasured confounders remain invisible threats to causal claims.</p>
+          <p style="margin-top: var(--space-md);">Statistical methods cannot solve this problem. The solution requires finding variation in treatment that is independent of the confounder, often through study design rather than statistical adjustment.</p>
+        </div>
+
+        <!-- Bridging question to Panel 5 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What questions should we ask to identify these hidden threats?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: QUESTIONS TO CONSIDER
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Questions to Consider</h2>
+          <p class="panel-intro">
+            These questions help identify confounding threats that statistical adjustment cannot fix. They won't prove causation, but they'll reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="questions-grid">
+          <div class="question-card">
+            <h4>What else differs between these counties?</h4>
+            <p>Counties with high food insecurity might differ from other counties in many ways beyond just food access.</p>
+            <div class="question-prompt">
+              What other characteristics might explain why some counties have both high food insecurity AND high diabetes hospitalization?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Is this a fair comparison?</h4>
+            <p>Cross-sectional data shows us a snapshot, not a story. We're comparing different counties at one point in time.</p>
+            <div class="question-prompt">
+              Are food-insecure counties truly comparable to food-secure counties? What would make them more comparable?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Which came first?</h4>
+            <p>In this data, we see food insecurity and hospitalization rates at the same time. We don't know the sequence.</p>
+            <div class="question-prompt">
+              Did food insecurity lead to higher hospitalizations, or do counties with more hospitalizations have sicker populations who then face food insecurity?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>What study design would help?</h4>
+            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
+            <div class="question-prompt">
+              What kind of study would give you more confidence that food insecurity actually causes diabetes hospitalization?
+            </div>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Confounding:</strong> when a third variable affects both treatment and outcome</div>
+            <div class="concept-item"><strong>Bidirectional causation:</strong> when X may cause Y and Y may also cause X</div>
+            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we can't adjust for</div>
+            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
+            <div class="concept-item"><strong>Identification:</strong> finding treatment variation that is independent of confounders</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both treatment and outcomes, the solution isn't better adjustment—it's finding sources of treatment variation that operate independently of unmeasured confounders. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function generateCountyData() {
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
+        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
+        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
+        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
+        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
+        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
+        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
+        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
+        'County BC', 'County BD', 'County BE', 'County BF'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // Poverty rate (confounder) - percentage of population below poverty line
+        const povertyRate = 5 + rand() * 25; // 5% to 30%
+
+        // High poverty indicator (for coloring)
+        const highPoverty = povertyRate > 15;
+
+        // Food insecurity depends strongly on poverty + some noise
+        const baseFoodInsecurity = 5 + (povertyRate * 0.6);
+        const foodInsecurityNoise = (rand() - 0.5) * 6;
+        const foodInsecurity = Math.min(25, Math.max(3, baseFoodInsecurity + foodInsecurityNoise));
+
+        // Diabetes hospitalization depends on poverty (direct effect) + small food insecurity effect + noise
+        const baseHospitalization = 50 + (povertyRate * 4); // Poverty drives hospitalization
+        const foodEffect = foodInsecurity * 1.5; // Small true effect of food insecurity
+        const hospNoise = (rand() - 0.5) * 40;
+        const diabetesHospitalization = Math.min(250, Math.max(40, baseHospitalization + foodEffect + hospNoise));
+
+        data.push({
+          name: countyNames[i],
+          povertyRate: Math.round(povertyRate * 10) / 10,
+          highPoverty: highPoverty,
+          foodInsecurity: Math.round(foodInsecurity * 10) / 10,
+          diabetesHospitalization: Math.round(diabetesHospitalization)
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function correlation(xArr, yArr) {
+      if (xArr.length < 3) return 0;
+      const n = xArr.length;
+      const xMean = mean(xArr);
+      const yMean = mean(yArr);
+
+      let numerator = 0;
+      let xSumSq = 0;
+      let ySumSq = 0;
+
+      for (let i = 0; i < n; i++) {
+        const xDiff = xArr[i] - xMean;
+        const yDiff = yArr[i] - yMean;
+        numerator += xDiff * yDiff;
+        xSumSq += xDiff * xDiff;
+        ySumSq += yDiff * yDiff;
+      }
+
+      const denominator = Math.sqrt(xSumSq * ySumSq);
+      return denominator === 0 ? 0 : numerator / denominator;
+    }
+
+    function linearRegression(xArr, yArr) {
+      if (xArr.length < 2) return { slope: 0, intercept: 0 };
+      const n = xArr.length;
+      const xMean = mean(xArr);
+      const yMean = mean(yArr);
+
+      let numerator = 0;
+      let denominator = 0;
+
+      for (let i = 0; i < n; i++) {
+        numerator += (xArr[i] - xMean) * (yArr[i] - yMean);
+        denominator += (xArr[i] - xMean) * (xArr[i] - xMean);
+      }
+
+      const slope = denominator === 0 ? 0 : numerator / denominator;
+      const intercept = yMean - slope * xMean;
+
+      return { slope, intercept };
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let stratifiedInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!stratifiedInitialized) {
+              renderStratifiedChart('all');
+              stratifiedInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 28;
+      const yMin = 30, yMax = 260;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 50; y <= 250; y += 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend line
+      const xVals = countyData.map(d => d.foodInsecurity);
+      const yVals = countyData.map(d => d.diabetesHospitalization);
+      const reg = linearRegression(xVals, yVals);
+
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trendLine.setAttribute('x1', xScale(3));
+      trendLine.setAttribute('x2', xScale(25));
+      trendLine.setAttribute('y1', yScale(reg.intercept + reg.slope * 3));
+      trendLine.setAttribute('y2', yScale(reg.intercept + reg.slope * 25));
+      trendLine.setAttribute('stroke', 'var(--color-primary)');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '6,4');
+      trendLine.setAttribute('opacity', '0.6');
+      svg.appendChild(trendLine);
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.foodInsecurity));
+        circle.setAttribute('cy', yScale(d.diabetesHospitalization));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.highPoverty ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 25; x += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x + '%';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Food Insecurity Rate (%)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 50; y <= 250; y += 50) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Diabetes Hospitalization Rate (per 100k)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. STRATIFIED CHART (Panel 3)
+       ============================================ */
+    let currentFilter = 'all';
+
+    function renderStratifiedChart(filter) {
+      currentFilter = filter;
+      const svg = document.getElementById('stratified-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 28;
+      const yMin = 30, yMax = 260;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.povertyRate <= 10;
+        if (filter === 'medium') return d.povertyRate > 10 && d.povertyRate <= 20;
+        if (filter === 'high') return d.povertyRate > 20;
+        return true;
+      };
+
+      // Background shading for filter region (based on poverty rate, shown via X distribution)
+      if (filter !== 'all') {
+        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        shade.setAttribute('x', margin.left);
+        shade.setAttribute('y', margin.top);
+        shade.setAttribute('width', plotWidth);
+        shade.setAttribute('height', plotHeight);
+        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.03)');
+        svg.appendChild(shade);
+      }
+
+      // Grid lines
+      for (let y = 50; y <= 250; y += 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend line for filtered data
+      const filteredData = countyData.filter(inFilter);
+      if (filteredData.length >= 2) {
+        const xVals = filteredData.map(d => d.foodInsecurity);
+        const yVals = filteredData.map(d => d.diabetesHospitalization);
+        const reg = linearRegression(xVals, yVals);
+
+        const minX = Math.min(...xVals);
+        const maxX = Math.max(...xVals);
+
+        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        trendLine.setAttribute('x1', xScale(minX));
+        trendLine.setAttribute('x2', xScale(maxX));
+        trendLine.setAttribute('y1', yScale(reg.intercept + reg.slope * minX));
+        trendLine.setAttribute('y2', yScale(reg.intercept + reg.slope * maxX));
+        trendLine.setAttribute('stroke', 'var(--color-primary)');
+        trendLine.setAttribute('stroke-width', '2');
+        trendLine.setAttribute('stroke-dasharray', '6,4');
+        trendLine.setAttribute('opacity', '0.7');
+        svg.appendChild(trendLine);
+      }
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.foodInsecurity));
+        circle.setAttribute('cy', yScale(d.diabetesHospitalization));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.highPoverty ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 25; x += 5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x + '%';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Food Insecurity Rate (%)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 50; y <= 250; y += 50) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Diabetes Hospitalization Rate (per 100k)';
+      svg.appendChild(yLabel);
+
+      updateComparisonStats(filter);
+    }
+
+    function updateComparisonStats(filter) {
+      // Overall stats
+      const allX = countyData.map(d => d.foodInsecurity);
+      const allY = countyData.map(d => d.diabetesHospitalization);
+      const overallCorr = correlation(allX, allY);
+      const overallReg = linearRegression(allX, allY);
+
+      document.getElementById('overall-correlation').textContent = overallCorr.toFixed(2);
+      document.getElementById('overall-slope').textContent = overallReg.slope.toFixed(1) + ' per %';
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.povertyRate <= 10;
+        if (filter === 'medium') return d.povertyRate > 10 && d.povertyRate <= 20;
+        if (filter === 'high') return d.povertyRate > 20;
+        return true;
+      };
+
+      const filteredData = countyData.filter(inFilter);
+      const insightEl = document.getElementById('stratification-insight');
+
+      if (filteredData.length >= 3) {
+        const filteredX = filteredData.map(d => d.foodInsecurity);
+        const filteredY = filteredData.map(d => d.diabetesHospitalization);
+        const stratumCorr = correlation(filteredX, filteredY);
+        const stratumReg = linearRegression(filteredX, filteredY);
+
+        document.getElementById('stratum-correlation').textContent = stratumCorr.toFixed(2);
+        document.getElementById('stratum-slope').textContent = stratumReg.slope.toFixed(1) + ' per %';
+
+        const corrChange = ((stratumCorr - overallCorr) / overallCorr * 100).toFixed(0);
+        document.getElementById('stratum-change').textContent = corrChange + '%';
+
+        if (filter === 'all') {
+          insightEl.textContent = 'Select a poverty level to see how the relationship changes when comparing similar counties.';
+        } else {
+          const povertyLabel = filter.charAt(0).toUpperCase() + filter.slice(1);
+          if (Math.abs(stratumCorr) < Math.abs(overallCorr) * 0.7) {
+            insightEl.innerHTML = '<strong>The relationship weakens substantially.</strong> Within ' + povertyLabel + ' Poverty counties, the correlation drops to ' + stratumCorr.toFixed(2) + '. Poverty explains much of what we saw overall.';
+          } else {
+            insightEl.innerHTML = 'Within ' + povertyLabel + ' Poverty counties, the correlation is ' + stratumCorr.toFixed(2) + ' (' + Math.abs(corrChange) + '% ' + (corrChange < 0 ? 'weaker' : 'stronger') + ' than overall).';
+          }
+        }
+      } else {
+        document.getElementById('stratum-correlation').textContent = 'N/A';
+        document.getElementById('stratum-slope').textContent = '--';
+        document.getElementById('stratum-change').textContent = '--';
+        insightEl.textContent = 'Not enough counties in this stratum for meaningful statistics.';
+      }
+    }
+
+    // Filter button handlers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderStratifiedChart(btn.dataset.filter);
+      });
+    });
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">Food Insecurity: ${data.foodInsecurity}%</div>
+        <div class="metric">Diabetes Hosp: ${data.diabetesHospitalization} per 100k</div>
+        <div class="metric">Poverty Rate: ${data.povertyRate}%</div>
+        <div class="metric">${data.highPoverty ? 'High Poverty' : 'Low Poverty'}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const highPovertyCounties = countyData.filter(d => d.highPoverty);
+      const lowPovertyCounties = countyData.filter(d => !d.highPoverty);
+
+      document.getElementById('stat-high-poverty-count').textContent = highPovertyCounties.length;
+      document.getElementById('stat-low-poverty-count').textContent = lowPovertyCounties.length;
+
+      // Calculate correlation
+      const xVals = countyData.map(d => d.foodInsecurity);
+      const yVals = countyData.map(d => d.diabetesHospitalization);
+      const corr = correlation(xVals, yVals);
+      document.getElementById('stat-correlation').textContent = 'r = ' + corr.toFixed(2);
+
+      // Calculate high vs low ratio
+      const sortedByFI = [...countyData].sort((a, b) => a.foodInsecurity - b.foodInsecurity);
+      const lowFICounties = sortedByFI.slice(0, 15);
+      const highFICounties = sortedByFI.slice(-15);
+      const lowFIAvg = mean(lowFICounties.map(d => d.diabetesHospitalization));
+      const highFIAvg = mean(highFICounties.map(d => d.diabetesHospitalization));
+      const ratio = (highFIAvg / lowFIAvg).toFixed(1);
+      document.getElementById('stat-difference').textContent = ratio;
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderStratifiedChart(currentFilter);
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

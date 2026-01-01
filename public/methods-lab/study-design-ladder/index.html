@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hierarchy of Evidence in Study Design | CAPHE Methods Lab</title>
+  <meta name="description" content="Not all study designs are equal for causal inference. What matters is whether the design isolates the causal effect.">
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-success: #2E7D32;
+      --color-error: #C9553A;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem;
+      --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 var(--space-lg); }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white; padding: var(--space-xl) 0; text-align: center;
+    }
+    .header h1 { color: white; margin-bottom: var(--space-sm); }
+    .eyebrow { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: var(--space-xs); }
+    .subtitle { font-size: 1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+    /* Panel Nav */
+    .panel-nav {
+      background: var(--color-bg); border-bottom: 1px solid var(--color-border);
+      position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+    }
+    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
+    .panel-btn {
+      background: transparent; border: 2px solid transparent;
+      padding: var(--space-sm) var(--space-md); font-family: var(--font-sans);
+      font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary);
+      cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease;
+    }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* Main & Panels */
+    .main { padding: var(--space-xl) 0 var(--space-2xl); }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-header h2 { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+    .panel-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 2rem; height: 2rem; background: var(--color-primary); color: white;
+      border-radius: 50%; font-size: 1rem; font-family: var(--font-sans); font-weight: 600;
+    }
+    .panel-intro { font-size: 1rem; color: var(--color-text-secondary); max-width: 700px; }
+
+    /* Ladder Container */
+    .ladder-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Ladder Visual */
+    .ladder {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      max-width: 700px;
+      margin: 0 auto var(--space-xl);
+    }
+
+    .ladder-rung {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: var(--space-md);
+      align-items: center;
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      border-left: 5px solid var(--color-border);
+      background: var(--color-bg-alt);
+      transition: all 0.2s ease;
+    }
+
+    .ladder-rung:hover {
+      transform: translateX(4px);
+    }
+
+    .ladder-rung.rung-1 { border-left-color: #BDBDBD; }
+    .ladder-rung.rung-2 { border-left-color: #9E9E9E; }
+    .ladder-rung.rung-3 { border-left-color: var(--color-secondary); }
+    .ladder-rung.rung-4 { border-left-color: var(--color-primary); }
+
+    .rung-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .rung-1 .rung-number { background: #BDBDBD; }
+    .rung-2 .rung-number { background: #9E9E9E; }
+    .rung-3 .rung-number { background: var(--color-secondary); }
+    .rung-4 .rung-number { background: var(--color-primary); }
+
+    .rung-content h3 {
+      font-family: var(--font-sans);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .rung-metaphor {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .rung-example {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    /* Strength indicator */
+    .strength-dots {
+      display: flex;
+      gap: 4px;
+      margin-top: var(--space-sm);
+    }
+
+    .strength-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-border);
+    }
+
+    .rung-1 .strength-dot:nth-child(1) { background: #BDBDBD; }
+    .rung-2 .strength-dot:nth-child(-n+2) { background: #9E9E9E; }
+    .rung-3 .strength-dot:nth-child(-n+3) { background: var(--color-secondary); }
+    .rung-4 .strength-dot { background: var(--color-primary); }
+
+    .strength-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    /* Key insight box */
+    .key-insight {
+      background: linear-gradient(135deg, rgba(0,65,165,0.06) 0%, rgba(0,65,165,0.02) 100%);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-lg);
+    }
+    .key-insight h4 {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .key-insight p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Quiz Container */
+    .quiz-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .scenario-card {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border: 2px solid var(--color-border);
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .scenario-number {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .scenario-result {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    .scenario-result.correct {
+      background: rgba(46,125,50,0.1);
+      color: var(--color-success);
+      display: inline-block;
+    }
+
+    .scenario-result.incorrect {
+      background: rgba(201,85,58,0.1);
+      color: var(--color-error);
+      display: inline-block;
+    }
+
+    .scenario-text {
+      font-size: 1rem;
+      color: var(--color-text);
+      line-height: 1.7;
+      margin-bottom: var(--space-lg);
+    }
+
+    .answer-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 600px) {
+      .answer-options { grid-template-columns: 1fr; }
+    }
+
+    .answer-btn {
+      padding: var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      border-color: var(--color-primary-light);
+      background: rgba(0,65,165,0.02);
+    }
+
+    .answer-btn.selected {
+      border-color: var(--color-primary);
+      background: rgba(0,65,165,0.05);
+    }
+
+    .answer-btn.correct {
+      border-color: var(--color-success);
+      background: rgba(46,125,50,0.08);
+    }
+
+    .answer-btn.incorrect {
+      border-color: var(--color-error);
+      background: rgba(201,85,58,0.08);
+    }
+
+    .answer-btn:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .explanation {
+      margin-top: var(--space-md);
+      padding: var(--space-md);
+      background: rgba(0,65,165,0.05);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      display: none;
+    }
+
+    .explanation.show {
+      display: block;
+    }
+
+    /* Score */
+    .score-display {
+      text-align: center;
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-lg);
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .score-label {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Comparison Container */
+    .comparison-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .comparison-scenario {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-accent);
+    }
+
+    .comparison-scenario h4 {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .comparison-scenario p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .result-card {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      text-align: center;
+      border-top: 4px solid var(--color-border);
+    }
+
+    .result-card.rung-1 { border-top-color: #BDBDBD; }
+    .result-card.rung-2 { border-top-color: #9E9E9E; }
+    .result-card.rung-3 { border-top-color: var(--color-secondary); }
+    .result-card.rung-4 { border-top-color: var(--color-primary); }
+
+    .result-design {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-effect {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-card.rung-1 .result-effect { color: #595959; }
+    .result-card.rung-2 .result-effect { color: #616161; }
+    .result-card.rung-3 .result-effect { color: var(--color-secondary); }
+    .result-card.rung-4 .result-effect { color: var(--color-primary); }
+
+    .result-interpretation {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Takeaway */
+    .takeaway {
+      background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(13,148,136,0.02) 100%);
+      border-left: 4px solid var(--color-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+    }
+
+    .takeaway h4 {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .takeaway p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .takeaway ul {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding-left: var(--space-lg);
+    }
+
+    .takeaway li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* Bridging Question */
+    .bridging-question {
+      margin-top: var(--space-xl);
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, rgba(0,65,165,0.04) 0%, rgba(0,65,165,0.01) 100%);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-primary-light);
+    }
+    .bridging-question p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid #F57C00;
+      position: relative;
+    }
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: #F57C00;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+    .definition-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: var(--space-md);
+    }
+    .definition-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+    .definition-card ul {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* Footer */
+    .footer { background: var(--color-text); color: white; padding: var(--space-xl) 0; text-align: center; }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; font-size: 0.9rem; }
+    .footer a { color: var(--color-accent); }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
+      <h1>Hierarchy of Evidence in Study Design</h1>
+      <p class="subtitle">Not all study designs are equal for causal inference. What matters is whether the design isolates the causal effect.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Ladder</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">Spot the Design</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Same Data, Different Answers</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't See</button></li>
+      <li><button class="panel-btn" data-panel="5" aria-pressed="false">Identification</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+      <!-- Panel 1: The Ladder -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Ladder</h2>
+          <p class="panel-intro">
+            A county launched a diabetes prevention program in 2020. Hospitalizations dropped 12% by 2023. Did the program work? Your answer depends on how you study the question. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="ladder-container">
+          <div class="ladder">
+            <!-- Rung 4: RCT (top) -->
+            <div class="ladder-rung rung-4">
+              <div class="rung-number">4</div>
+              <div class="rung-content">
+                <h3>Randomized Trial</h3>
+                <p class="rung-metaphor"><strong>The coin flip.</strong> Randomly assign who gets the program.</p>
+                <p class="rung-example">"We randomly assigned 10 clinics to offer the diabetes program; 10 others served as controls."</p>
+                <div class="strength-dots">
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                </div>
+                <p class="strength-label">Strongest evidence</p>
+              </div>
+            </div>
+
+            <!-- Rung 3: DiD -->
+            <div class="ladder-rung rung-3">
+              <div class="rung-number">3</div>
+              <div class="rung-content">
+                <h3>Difference-in-Differences</h3>
+                <p class="rung-metaphor"><strong>Compare the change.</strong> Did the program group improve more than others?</p>
+                <p class="rung-example">"Our county's hospitalizations dropped 12%; the neighboring county without the program dropped 7%. Difference: 5%."</p>
+                <div class="strength-dots">
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                </div>
+                <p class="strength-label">Good evidence (with assumptions)</p>
+              </div>
+            </div>
+
+            <!-- Rung 2: Pre-Post -->
+            <div class="ladder-rung rung-2">
+              <div class="rung-number">2</div>
+              <div class="rung-content">
+                <h3>Pre-Post</h3>
+                <p class="rung-metaphor"><strong>Before and after photo.</strong> Did things change after the program started?</p>
+                <p class="rung-example">"Before the diabetes program: 85 hospitalizations per 10k. After: 75. That's a 12% drop."</p>
+                <div class="strength-dots">
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                </div>
+                <p class="strength-label">Limited evidence</p>
+              </div>
+            </div>
+
+            <!-- Rung 1: Cross-Sectional -->
+            <div class="ladder-rung rung-1">
+              <div class="rung-number">1</div>
+              <div class="rung-content">
+                <h3>Cross-Sectional</h3>
+                <p class="rung-metaphor"><strong>A snapshot.</strong> Compare groups at one point in time.</p>
+                <p class="rung-example">"Counties with the diabetes program have 12% fewer hospitalizations than counties without it."</p>
+                <div class="strength-dots">
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                  <span class="strength-dot"></span>
+                </div>
+                <p class="strength-label">Weakest evidence</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="key-insight">
+            <h4>Why does the rung matter?</h4>
+            <p>Lower rungs cannot tell you whether the program caused the improvement. Maybe those groups were already different. Maybe something else changed at the same time. Higher rungs handle these problems better.</p>
+          </div>
+
+          <div class="bridging-question">
+            <p><strong>Next:</strong> Can you recognize which rung a study is on when you encounter it in the wild?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 2: Spot the Design -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Spot the Design</h2>
+          <p class="panel-intro">
+            Read each scenario and identify which study design is being used. This skill helps you evaluate claims you encounter in reports and news.
+          </p>
+        </div>
+
+        <div class="quiz-container">
+          <!-- Scenario 1 -->
+          <div class="scenario-card" data-scenario="1">
+            <div class="scenario-header">
+              <span class="scenario-number">Scenario 1 of 4</span>
+              <span class="scenario-result" id="result-1"></span>
+            </div>
+            <p class="scenario-text">
+              "A health department report shows that counties participating in the nutrition program have 15% lower rates of food insecurity than counties without the program."
+            </p>
+            <div class="answer-options">
+              <button class="answer-btn" data-answer="cross" data-correct="true">Cross-Sectional</button>
+              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
+              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
+              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
+            </div>
+            <div class="explanation" id="explanation-1">
+              <strong>Cross-Sectional.</strong> This is a snapshot comparison at one time point. We don't know if program counties were already better off before the program, or if something else explains the difference.
+            </div>
+          </div>
+
+          <!-- Scenario 2 -->
+          <div class="scenario-card" data-scenario="2">
+            <div class="scenario-header">
+              <span class="scenario-number">Scenario 2 of 4</span>
+              <span class="scenario-result" id="result-2"></span>
+            </div>
+            <p class="scenario-text">
+              "Before the clinic opened, the neighborhood had 12 emergency room visits per 100 residents per year. Two years after, it dropped to 8 visits per 100 residents."
+            </p>
+            <div class="answer-options">
+              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
+              <button class="answer-btn" data-answer="prepost" data-correct="true">Pre-Post</button>
+              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
+              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
+            </div>
+            <div class="explanation" id="explanation-2">
+              <strong>Pre-Post.</strong> This compares before and after in the same group. But ER visits might have been dropping everywhere—we have no comparison group to know if this change is unusual.
+            </div>
+          </div>
+
+          <!-- Scenario 3 -->
+          <div class="scenario-card" data-scenario="3">
+            <div class="scenario-header">
+              <span class="scenario-number">Scenario 3 of 4</span>
+              <span class="scenario-result" id="result-3"></span>
+            </div>
+            <p class="scenario-text">
+              "We compared diabetes rates before and after the wellness program in participating workplaces AND in similar workplaces that didn't participate. Participating workplaces improved by 4 percentage points more than the comparison workplaces."
+            </p>
+            <div class="answer-options">
+              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
+              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
+              <button class="answer-btn" data-answer="did" data-correct="true">Difference-in-Differences</button>
+              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
+            </div>
+            <div class="explanation" id="explanation-3">
+              <strong>Difference-in-Differences.</strong> This compares the <em>change</em> in two groups. By subtracting out the comparison group's change, we control for trends that affect everyone. This is stronger, but assumes both groups would have followed similar paths without the program.
+            </div>
+          </div>
+
+          <!-- Scenario 4 -->
+          <div class="scenario-card" data-scenario="4">
+            <div class="scenario-header">
+              <span class="scenario-number">Scenario 4 of 4</span>
+              <span class="scenario-result" id="result-4"></span>
+            </div>
+            <p class="scenario-text">
+              "We randomly selected 50 of our 100 clinics to receive the new patient outreach program. After one year, the randomly selected clinics had 20% higher screening rates than the other 50 clinics."
+            </p>
+            <div class="answer-options">
+              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
+              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
+              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
+              <button class="answer-btn" data-answer="rct" data-correct="true">Randomized Trial</button>
+            </div>
+            <div class="explanation" id="explanation-4">
+              <strong>Randomized Trial.</strong> Random assignment means there's no systematic reason why one group would be different from the other at the start. Any difference we see at the end is likely due to the program.
+            </div>
+          </div>
+
+          <div class="score-display">
+            <div class="score-number" id="score">0 / 4</div>
+            <div class="score-label">Correct answers</div>
+          </div>
+
+          <div class="bridging-question">
+            <p><strong>Next:</strong> You can recognize the design. But does it matter which one you use? Watch the same data produce four different answers.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: Same Data, Different Answers -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Same Data, Different Answers</h2>
+          <p class="panel-intro">
+            Return to our diabetes program. Same county, same data, but watch how the "effect" changes depending on the study design.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="comparison-scenario">
+            <h4>The Diabetes Prevention Program</h4>
+            <p>A county launched a diabetes prevention program in 2020. By 2023, hospitalizations for diabetes complications had dropped. The health department wants to know: did the program work?</p>
+          </div>
+
+          <h3 style="margin-bottom: var(--space-lg);">The same data, four different answers:</h3>
+
+          <div class="results-grid">
+            <div class="result-card rung-1">
+              <div class="result-design">Cross-Sectional</div>
+              <div class="result-effect">-12%</div>
+              <div class="result-interpretation">"Program counties have 12% fewer hospitalizations than non-program counties."</div>
+            </div>
+            <div class="result-card rung-2">
+              <div class="result-design">Pre-Post</div>
+              <div class="result-effect">-10%</div>
+              <div class="result-interpretation">"Hospitalizations dropped 10% after the program started."</div>
+            </div>
+            <div class="result-card rung-3">
+              <div class="result-design">Diff-in-Diff</div>
+              <div class="result-effect">-5%</div>
+              <div class="result-interpretation">"Our county improved 5% more than the comparison county."</div>
+            </div>
+            <div class="result-card rung-4">
+              <div class="result-design">Randomized Trial</div>
+              <div class="result-effect">-3%</div>
+              <div class="result-interpretation">"Randomly assigned clinics had 3% fewer hospitalizations."</div>
+            </div>
+          </div>
+
+          <div class="key-insight" style="margin-bottom: var(--space-xl);">
+            <h4>Why do the numbers shrink as we climb?</h4>
+            <p>Lower-rung designs mix up the program effect with other things. Maybe program counties were already healthier. Maybe hospitalization rates were dropping statewide due to Medi-Cal expansion. Higher-rung designs strip away these alternative explanations, leaving only the true program effect.</p>
+          </div>
+
+          <div class="takeaway">
+            <h4>The Real Effect: Probably Around 3-5%</h4>
+            <p>The diabetes program likely reduced hospitalizations by 3-5%, not the 12% that a simple comparison suggests. That's still meaningful, but it's a different story than "the program cut hospitalizations by 12%."</p>
+          </div>
+
+          <div class="bridging-question">
+            <p><strong>Next:</strong> Even with a better design, we still have a 5% effect estimate. But can we be sure that number is right? What might we be missing?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 4: What We Can't See -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">What We Can't See</h2>
+          <p class="panel-intro">
+            Even with a good study design, important questions remain unanswered. Here's what the ladder alone cannot tell you about the diabetes program.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="comparison-scenario">
+            <h4>You've Climbed to Rung 3 (Difference-in-Differences)</h4>
+            <p>You found that the diabetes program reduced hospitalizations by about 5% compared to the neighboring county. The health department is excited. But before they expand the program statewide, someone asks...</p>
+          </div>
+
+          <div class="results-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
+              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Is it worth the cost?</h4>
+              <p class="result-interpretation">The program costs $2 million per year. Is a 5% reduction in hospitalizations a good return on investment? What else could we do with that money?</p>
+            </div>
+            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
+              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Would it work elsewhere?</h4>
+              <p class="result-interpretation">Our county has good primary care access. Would the program work in a rural county with fewer clinics? We studied one comparison—is that enough?</p>
+            </div>
+            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
+              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Are we sure about the comparison?</h4>
+              <p class="result-interpretation">We assumed our county and the neighboring county would have followed similar trends. But what if they wouldn't have? How wrong could we be?</p>
+            </div>
+            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
+              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Who benefits most?</h4>
+              <p class="result-interpretation">The 5% average effect might hide variation. Maybe the program helps some patients a lot and others not at all. Should we target it differently?</p>
+            </div>
+          </div>
+
+          <div class="key-insight">
+            <h4>The Gap</h4>
+            <p>Study design tells you <em>whether</em> something worked. It does not tell you <em>whether it's worth it</em>, <em>where else it would work</em>, or <em>how confident you should be</em> in your answer. These questions require a different toolkit.</p>
+          </div>
+
+          <div class="bridging-question">
+            <p><strong>Next:</strong> Economists have a word for what we're after here: identification. What does it mean, and how does it change the question?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 5: Identification -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Identification</h2>
+          <p class="panel-intro">
+            Climbing the ladder isn't just about "better" designs. It's about identification: finding sources of variation that let you isolate the causal effect from everything else.
+          </p>
+        </div>
+
+        <div class="comparison-container">
+          <div class="definition-card">
+            <h3>What Is Identification?</h3>
+            <p><strong>Identification</strong> is the economist's answer to the question: "What variation in treatment lets us separate cause from correlation?"</p>
+            <ul>
+              <li>An RCT identifies the effect because random assignment creates variation unrelated to confounders</li>
+              <li>A policy cutoff identifies the effect because people just above and below the threshold are otherwise similar</li>
+              <li>A difference-in-differences design identifies the effect if treatment timing is unrelated to pre-existing trends</li>
+            </ul>
+            <p style="margin-top: var(--space-md);">The question isn't "which design is highest on the ladder?" The question is: "What source of variation identifies the causal effect in my setting?"</p>
+          </div>
+
+          <div class="comparison-scenario">
+            <h4>Back to the Diabetes Program</h4>
+            <p>You found a 5% effect using difference-in-differences. The board wants to expand statewide. How do you advise them?</p>
+          </div>
+
+          <h3 style="margin-bottom: var(--space-lg);">Tools that extend the analysis:</h3>
+
+          <div class="results-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="result-card rung-3" style="text-align: left;">
+              <div class="result-design">Sensitivity Analysis</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"How wrong could we be?"</h4>
+              <p class="result-interpretation">Test what happens if your assumptions are violated. If parallel trends didn't hold, the true effect might be anywhere from 2% to 8%. Report a range, not just a point estimate.</p>
+            </div>
+            <div class="result-card rung-3" style="text-align: left;">
+              <div class="result-design">Cost-Effectiveness</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Is it worth it?"</h4>
+              <p class="result-interpretation">At $2M/year preventing 50 hospitalizations, that's $40,000 per hospitalization avoided. Compare to alternatives: what else could $2M buy?</p>
+            </div>
+            <div class="result-card rung-3" style="text-align: left;">
+              <div class="result-design">Heterogeneity Analysis</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Who benefits most?"</h4>
+              <p class="result-interpretation">Break down the effect by subgroup. Maybe the program works best for patients with A1C > 9. Target resources where they'll have the most impact.</p>
+            </div>
+            <div class="result-card rung-3" style="text-align: left;">
+              <div class="result-design">External Validity</div>
+              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Where else would it work?"</h4>
+              <p class="result-interpretation">Compare your county's characteristics to others. If the program worked because of your strong primary care network, it may not transfer to underserved areas without adaptation.</p>
+            </div>
+          </div>
+
+          <div class="takeaway" style="background: linear-gradient(135deg, rgba(0,65,165,0.08) 0%, rgba(0,65,165,0.02) 100%); border-left-color: var(--color-primary);">
+            <h4 style="color: var(--color-primary);">The Economist's Perspective</h4>
+            <p><strong>The ladder is a useful shortcut, but identification is the real goal.</strong> A well-designed observational study with a strong identification strategy can be more credible than a poorly executed RCT. When the board asks "did the program work?", the answer depends on whether you can point to variation in treatment that separates cause from correlation. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Panel navigation
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+      });
+    });
+
+    // Quiz functionality
+    let score = 0;
+    let answered = 0;
+
+    document.querySelectorAll('.answer-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const card = this.closest('.scenario-card');
+        const scenarioNum = card.dataset.scenario;
+        const buttons = card.querySelectorAll('.answer-btn');
+        const explanation = document.getElementById(`explanation-${scenarioNum}`);
+        const result = document.getElementById(`result-${scenarioNum}`);
+
+        // If already answered, ignore
+        if (buttons[0].disabled) return;
+
+        // Disable all buttons
+        buttons.forEach(b => b.disabled = true);
+
+        // Mark selected
+        this.classList.add('selected');
+
+        // Check if correct
+        const isCorrect = this.dataset.correct === 'true';
+
+        if (isCorrect) {
+          this.classList.add('correct');
+          result.textContent = '✓ Correct';
+          result.classList.add('correct');
+          score++;
+        } else {
+          this.classList.add('incorrect');
+          result.textContent = '✗ Incorrect';
+          result.classList.add('incorrect');
+          // Highlight correct answer
+          buttons.forEach(b => {
+            if (b.dataset.correct === 'true') {
+              b.classList.add('correct');
+            }
+          });
+        }
+
+        answered++;
+
+        // Show explanation
+        explanation.classList.add('show');
+
+        // Update score
+        document.getElementById('score').textContent = `${score} / 4`;
+      });
+    });
+  </script>
+</body>
+</html>

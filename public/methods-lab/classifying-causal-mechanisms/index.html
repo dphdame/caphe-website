@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Tool: Classifying Causal Mechanisms | CAPHE Methods Lab</title>
+  <meta name="description" content="Transform a list of possible explanations into testable research designs. Learn the economist's approach: map each causal story to a study design that can distinguish it from alternatives.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* Bridging question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       6. INTRO PANEL
+       ============================================ */
+    .intro-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .intro-container { grid-template-columns: 1fr; }
+    }
+
+    .content-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .content-card h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .scenario-box {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .scenario-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .scenario-text {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--color-text);
+    }
+
+    .explanation-list {
+      list-style: none;
+    }
+
+    .explanation-item {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-sm);
+      border-left: 3px solid var(--color-secondary);
+    }
+
+    .explanation-number {
+      width: 28px;
+      height: 28px;
+      background: var(--color-secondary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .explanation-text {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .sidebar-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .info-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .info-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .info-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .insight-box {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       7. MECHANISM TYPES PANEL
+       ============================================ */
+    .mechanism-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .mechanism-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      border-top: 4px solid var(--color-primary);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mechanism-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .mechanism-card.confounding {
+      border-top-color: var(--color-warning);
+    }
+
+    .mechanism-card.reverse {
+      border-top-color: var(--color-accent);
+    }
+
+    .mechanism-card.selection {
+      border-top-color: var(--color-caution);
+    }
+
+    .mechanism-card.causal {
+      border-top-color: var(--color-success);
+    }
+
+    .mechanism-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: var(--space-md);
+      background: var(--color-bg-alt);
+    }
+
+    .mechanism-card.confounding .mechanism-icon { color: var(--color-warning); }
+    .mechanism-card.reverse .mechanism-icon { color: var(--color-accent); }
+    .mechanism-card.selection .mechanism-icon { color: var(--color-caution); }
+    .mechanism-card.causal .mechanism-icon { color: var(--color-success); }
+
+    .mechanism-card h3 {
+      margin-bottom: var(--space-sm);
+    }
+
+    .mechanism-card .mechanism-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .mechanism-card.confounding .mechanism-tag {
+      background: rgba(245, 124, 0, 0.1);
+      color: var(--color-warning);
+    }
+
+    .mechanism-card.reverse .mechanism-tag {
+      background: rgba(249, 168, 37, 0.1);
+      color: var(--color-accent);
+    }
+
+    .mechanism-card.selection .mechanism-tag {
+      background: rgba(245, 127, 23, 0.1);
+      color: var(--color-caution);
+    }
+
+    .mechanism-card.causal .mechanism-tag {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--color-success);
+    }
+
+    .mechanism-example {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      font-style: italic;
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .mechanism-test {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .mechanism-test strong {
+      color: var(--color-text);
+    }
+
+    /* ============================================
+       8. INTERACTIVE CLASSIFIER PANEL
+       ============================================ */
+    .classifier-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 1000px) {
+      .classifier-container { grid-template-columns: 1fr; }
+    }
+
+    .decision-tree {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .tree-progress {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .progress-step {
+      padding: var(--space-xs) var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .progress-step.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .progress-step.completed {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .tree-question {
+      margin-bottom: var(--space-xl);
+    }
+
+    .question-number {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-family: var(--font-serif);
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-lg);
+    }
+
+    .question-hint {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .answer-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .answer-btn {
+      padding: var(--space-lg);
+      background: var(--color-bg-alt);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .answer-btn:hover {
+      border-color: var(--color-primary);
+      background: rgba(0, 65, 165, 0.05);
+    }
+
+    .answer-btn.selected {
+      border-color: var(--color-primary);
+      background: rgba(0, 65, 165, 0.1);
+    }
+
+    .classification-result {
+      display: none;
+      padding: var(--space-xl);
+      border-radius: var(--radius-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .classification-result.show {
+      display: block;
+    }
+
+    .classification-result.confounding {
+      background: rgba(245, 124, 0, 0.1);
+      border: 2px solid var(--color-warning);
+    }
+
+    .classification-result.reverse {
+      background: rgba(249, 168, 37, 0.1);
+      border: 2px solid var(--color-accent);
+    }
+
+    .classification-result.selection {
+      background: rgba(245, 127, 23, 0.1);
+      border: 2px solid var(--color-caution);
+    }
+
+    .classification-result.causal {
+      background: rgba(46, 125, 50, 0.1);
+      border: 2px solid var(--color-success);
+    }
+
+    .result-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-title {
+      font-size: 1.25rem;
+      font-family: var(--font-serif);
+      margin-bottom: var(--space-md);
+    }
+
+    .result-explanation {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .result-design {
+      padding: var(--space-md);
+      background: white;
+      border-radius: var(--radius-md);
+    }
+
+    .result-design h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-design p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .tree-controls {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .control-btn {
+      padding: var(--space-sm) var(--space-lg);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .control-btn.primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .control-btn.primary:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .classifier-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .path-tracker {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .path-tracker h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .path-list {
+      list-style: none;
+    }
+
+    .path-item {
+      display: flex;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .path-item:last-child {
+      border-bottom: none;
+    }
+
+    .path-q {
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+
+    .path-a {
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+
+    .scenario-selector {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .scenario-selector h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .scenario-btn {
+      width: 100%;
+      padding: var(--space-md);
+      margin-bottom: var(--space-sm);
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: left;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .scenario-btn:hover {
+      border-color: var(--color-primary);
+    }
+
+    .scenario-btn.active {
+      border-color: var(--color-primary);
+      background: rgba(0, 65, 165, 0.05);
+    }
+
+    /* ============================================
+       9. DESIGN RECOMMENDATIONS PANEL
+       ============================================ */
+    .recommendations-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .recommendations-container { grid-template-columns: 1fr; }
+    }
+
+    .design-table-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      overflow-x: auto;
+    }
+
+    .design-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .design-table th,
+    .design-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .design-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      font-size: 0.85rem;
+    }
+
+    .design-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .design-table tr:hover td {
+      background: var(--color-bg-alt);
+    }
+
+    .mechanism-badge {
+      display: inline-block;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .mechanism-badge.confounding {
+      background: rgba(245, 124, 0, 0.1);
+      color: var(--color-warning);
+    }
+
+    .mechanism-badge.reverse {
+      background: rgba(249, 168, 37, 0.1);
+      color: #B8860B;
+    }
+
+    .mechanism-badge.selection {
+      background: rgba(245, 127, 23, 0.1);
+      color: var(--color-caution);
+    }
+
+    .mechanism-badge.causal {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--color-success);
+    }
+
+    .design-name {
+      font-weight: 500;
+      color: var(--color-primary);
+    }
+
+    .design-description {
+      color: var(--color-text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .recommendations-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .decision-checklist {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .decision-checklist h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .checklist-item {
+      display: flex;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .checklist-icon {
+      color: var(--color-secondary);
+      flex-shrink: 0;
+    }
+
+    /* ============================================
+       10. KEY INSIGHT PANEL
+       ============================================ */
+    .insight-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Advanced Methods</div>
+      <h1>Interactive Tool: Classifying Causal Mechanisms</h1>
+      <p class="subtitle">Transform a list of possible explanations into testable research designs. Learn to map each causal story to a study design that can distinguish it from alternatives.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Mechanism Types</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Classifier Tool</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Design Matching</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE PROBLEM (INTRO)
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Problem</h2>
+          <p class="panel-intro">
+            You observe a correlation between X and Y. Someone asks, "Why might this be?" You list several possible explanations. <em style="opacity: 0.7;">(Scenario is illustrative.)</em>
+          </p>
+        </div>
+
+        <div class="intro-container">
+          <div class="content-card">
+            <div class="scenario-box">
+              <div class="scenario-label">Example Scenario</div>
+              <p class="scenario-text">"Counties with community health worker (CHW) programs have lower hospitalization rates. What explains this correlation?"</p>
+            </div>
+
+            <h3>Possible Explanations</h3>
+            <ul class="explanation-list">
+              <li class="explanation-item">
+                <span class="explanation-number">1</span>
+                <span class="explanation-text"><strong>CHWs prevent hospitalizations.</strong> The program itself reduces emergency visits through care coordination and patient education.</span>
+              </li>
+              <li class="explanation-item">
+                <span class="explanation-number">2</span>
+                <span class="explanation-text"><strong>Well-organized counties do both.</strong> Counties with strong public health infrastructure implement CHW programs AND have lower hospitalization rates for unrelated reasons.</span>
+              </li>
+              <li class="explanation-item">
+                <span class="explanation-number">3</span>
+                <span class="explanation-text"><strong>Low hospitalizations enable CHW programs.</strong> Counties with fewer emergencies have more capacity to implement preventive programs.</span>
+              </li>
+              <li class="explanation-item">
+                <span class="explanation-number">4</span>
+                <span class="explanation-text"><strong>Sick patients leave CHW counties.</strong> People who need more hospital care move to counties with better hospital access, leaving CHW counties with healthier populations.</span>
+              </li>
+            </ul>
+          </div>
+
+          <aside class="sidebar-cards">
+            <div class="info-card">
+              <h4>The Adjustment Approach</h4>
+              <p>List possible confounders, then statistically control for them. Add more variables until the association "looks right."</p>
+            </div>
+
+            <div class="info-card">
+              <h4>The Economist Approach</h4>
+              <p>Classify each explanation by type, then design a study that can distinguish between them. Different mechanisms require different research designs.</p>
+            </div>
+
+            <div class="insight-box">
+              <strong>The key difference:</strong> Economists match the research design to the threat. Each mechanism type has specific designs that can test it.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Before we can match explanations to designs, we need to classify them. Each type of causal mechanism requires a different research strategy.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: MECHANISM TYPES
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Mechanism Types</h2>
+          <p class="panel-intro">
+            Causal explanations fall into four categories. Each represents a different causal structure with different implications for research design.
+          </p>
+        </div>
+
+        <div class="mechanism-grid">
+          <div class="mechanism-card confounding">
+            <div class="mechanism-icon">C</div>
+            <span class="mechanism-tag">Alternative Explanation</span>
+            <h3>Confounding</h3>
+            <div class="mechanism-example">
+              "Well-organized counties do both." A third factor (county capacity) causes both CHW programs and low hospitalizations.
+            </div>
+            <p class="mechanism-test">
+              <strong>Key question:</strong> Is there a common cause driving both X and Y?
+            </p>
+          </div>
+
+          <div class="mechanism-card reverse">
+            <div class="mechanism-icon">R</div>
+            <span class="mechanism-tag">Wrong Direction</span>
+            <h3>Reverse Causation</h3>
+            <div class="mechanism-example">
+              "Low hospitalizations enable CHW programs." The outcome actually causes the treatment, not the other way around.
+            </div>
+            <p class="mechanism-test">
+              <strong>Key question:</strong> Did Y happen before X, or could Y have caused X?
+            </p>
+          </div>
+
+          <div class="mechanism-card selection">
+            <div class="mechanism-icon">S</div>
+            <span class="mechanism-tag">Sample Problem</span>
+            <h3>Selection Bias</h3>
+            <div class="mechanism-example">
+              "Sick patients leave CHW counties." Who enters or exits the sample depends on both X and Y, creating a spurious correlation.
+            </div>
+            <p class="mechanism-test">
+              <strong>Key question:</strong> Does being in the sample depend on X, Y, or both?
+            </p>
+          </div>
+
+          <div class="mechanism-card causal">
+            <div class="mechanism-icon">T</div>
+            <span class="mechanism-tag">The Target</span>
+            <h3>True Causal Effect</h3>
+            <div class="mechanism-example">
+              "CHWs prevent hospitalizations." X actually causes Y through a mechanism we can understand and potentially replicate.
+            </div>
+            <p class="mechanism-test">
+              <strong>Key question:</strong> After ruling out alternatives, does X genuinely cause Y?
+            </p>
+          </div>
+        </div>
+
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>Why Classification Matters</h3>
+          <p>Each mechanism type requires a different research strategy:</p>
+          <ul>
+            <li><strong>Confounding</strong> requires finding variation in X that is independent of the confounder</li>
+            <li><strong>Reverse causation</strong> requires establishing timing or finding X variation that could not be caused by Y</li>
+            <li><strong>Selection bias</strong> requires either changing the sample definition or modeling the selection process</li>
+            <li><strong>True effects</strong> can only be confirmed by ruling out the alternatives</li>
+          </ul>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do you classify an explanation? Use the interactive decision tree to categorize any causal story.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: INTERACTIVE CLASSIFIER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Classifier Tool</h2>
+          <p class="panel-intro">
+            Use this decision tree to classify any causal explanation. Answer each question based on the mechanism being proposed.
+          </p>
+        </div>
+
+        <div class="classifier-container">
+          <div class="decision-tree">
+            <div class="tree-progress">
+              <span class="progress-step active" id="step-1">Q1</span>
+              <span class="progress-step" id="step-2">Q2</span>
+              <span class="progress-step" id="step-3">Q3</span>
+              <span class="progress-step" id="step-4">Result</span>
+            </div>
+
+            <div id="tree-content">
+              <!-- Question 1 -->
+              <div class="tree-question" id="question-1">
+                <div class="question-number">Question 1 of 3</div>
+                <div class="question-text">Does this explanation involve a third variable that affects both the treatment and the outcome?</div>
+                <div class="question-hint">
+                  Look for phrases like "both happen because of..." or "a common factor drives..." or "the same underlying reason causes..."
+                </div>
+                <div class="answer-options">
+                  <button class="answer-btn" data-answer="yes" data-question="1" onclick="handleAnswer(1, 'yes')">
+                    <strong>Yes</strong> - A third factor causes both X and Y
+                  </button>
+                  <button class="answer-btn" data-answer="no" data-question="1" onclick="handleAnswer(1, 'no')">
+                    <strong>No</strong> - The explanation is about a direct relationship between X and Y
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="tree-question" id="question-2" style="display: none;">
+                <div class="question-number">Question 2 of 3</div>
+                <div class="question-text">Does this explanation suggest Y might cause X, rather than X causing Y?</div>
+                <div class="question-hint">
+                  Look for phrases like "enables," "allows," "creates conditions for," or any suggestion that the outcome influences the treatment.
+                </div>
+                <div class="answer-options">
+                  <button class="answer-btn" data-answer="yes" data-question="2" onclick="handleAnswer(2, 'yes')">
+                    <strong>Yes</strong> - Y might actually cause or influence X
+                  </button>
+                  <button class="answer-btn" data-answer="no" data-question="2" onclick="handleAnswer(2, 'no')">
+                    <strong>No</strong> - The explanation maintains that X comes before Y
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="tree-question" id="question-3" style="display: none;">
+                <div class="question-number">Question 3 of 3</div>
+                <div class="question-text">Does this explanation involve who enters or leaves the sample based on the treatment or outcome?</div>
+                <div class="question-hint">
+                  Look for phrases like "people leave," "patients move," "cases drop out," "only those who... are observed," or any suggestion that sample composition depends on X or Y.
+                </div>
+                <div class="answer-options">
+                  <button class="answer-btn" data-answer="yes" data-question="3" onclick="handleAnswer(3, 'yes')">
+                    <strong>Yes</strong> - Sample membership depends on X, Y, or both
+                  </button>
+                  <button class="answer-btn" data-answer="no" data-question="3" onclick="handleAnswer(3, 'no')">
+                    <strong>No</strong> - Sample composition is not part of the explanation
+                  </button>
+                </div>
+              </div>
+
+              <!-- Results -->
+              <div class="classification-result confounding" id="result-confounding">
+                <div class="result-label">Classification</div>
+                <div class="result-title">Confounding</div>
+                <p class="result-explanation">
+                  This explanation proposes a third factor that causes both the treatment and the outcome. The observed correlation between X and Y may be entirely spurious.
+                </p>
+                <div class="result-design">
+                  <h4>Recommended Design Strategy</h4>
+                  <p>Find variation in X that is independent of the confounder. Consider instrumental variables, regression discontinuity, or natural experiments where the confounder does not influence treatment assignment.</p>
+                </div>
+              </div>
+
+              <div class="classification-result reverse" id="result-reverse">
+                <div class="result-label">Classification</div>
+                <div class="result-title">Reverse Causation</div>
+                <p class="result-explanation">
+                  This explanation suggests the outcome influences the treatment, not the reverse. The arrow points the wrong direction.
+                </p>
+                <div class="result-design">
+                  <h4>Recommended Design Strategy</h4>
+                  <p>Establish timing with panel data, use leads and lags, or find treatment variation that occurred before the outcome could have influenced it. Consider Granger causality tests or event studies.</p>
+                </div>
+              </div>
+
+              <div class="classification-result selection" id="result-selection">
+                <div class="result-label">Classification</div>
+                <div class="result-title">Selection Bias</div>
+                <p class="result-explanation">
+                  This explanation involves sample composition changing based on treatment, outcome, or both. The correlation may exist only in the observed sample.
+                </p>
+                <div class="result-design">
+                  <h4>Recommended Design Strategy</h4>
+                  <p>Redefine the sample to avoid conditioning on post-treatment variables, model the selection process explicitly, or use bounds analysis to estimate the range of possible effects.</p>
+                </div>
+              </div>
+
+              <div class="classification-result causal" id="result-causal">
+                <div class="result-label">Classification</div>
+                <div class="result-title">Potential Causal Effect</div>
+                <p class="result-explanation">
+                  This explanation proposes that X genuinely causes Y. To confirm, you must rule out confounding, reverse causation, and selection bias.
+                </p>
+                <div class="result-design">
+                  <h4>Recommended Design Strategy</h4>
+                  <p>Design studies to rule out each alternative mechanism. Use experimental or quasi-experimental methods that create as-if-random variation in X. The effect is identified only after alternatives are eliminated.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tree-controls">
+              <button class="control-btn" id="btn-restart" onclick="restartClassifier()">Start Over</button>
+              <button class="control-btn" id="btn-back" onclick="goBack()" style="display: none;">Go Back</button>
+            </div>
+          </div>
+
+          <aside class="classifier-sidebar">
+            <div class="path-tracker">
+              <h4>Your Classification Path</h4>
+              <ul class="path-list" id="path-list">
+                <li class="path-item" style="color: var(--color-text-muted); font-style: italic;">
+                  Answer questions to see your path
+                </li>
+              </ul>
+            </div>
+
+            <div class="scenario-selector">
+              <h4>Try These Scenarios</h4>
+              <button class="scenario-btn active" onclick="loadScenario(1)">
+                CHW & Hospitalizations
+              </button>
+              <button class="scenario-btn" onclick="loadScenario(2)">
+                Education & Income
+              </button>
+              <button class="scenario-btn" onclick="loadScenario(3)">
+                Insurance & Health
+              </button>
+            </div>
+
+            <div class="insight-box">
+              <strong>Remember:</strong> Most observed correlations have multiple possible explanations. Your job is to classify each one, then design a study that can distinguish between them.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Once you have classified each explanation, match it to a research design. Different mechanisms require different methods.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: DESIGN RECOMMENDATIONS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Design Matching</h2>
+          <p class="panel-intro">
+            Each mechanism type has research designs suited to testing it. The table below maps classifications to recommended approaches.
+          </p>
+        </div>
+
+        <div class="recommendations-container">
+          <div class="design-table-wrapper">
+            <table class="design-table">
+              <thead>
+                <tr>
+                  <th>Mechanism</th>
+                  <th>Design Approach</th>
+                  <th>What It Does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="mechanism-badge confounding">Confounding</span></td>
+                  <td>
+                    <div class="design-name">Instrumental Variables</div>
+                    <div class="design-description">Uses a variable that affects X but not Y directly</div>
+                  </td>
+                  <td>Isolates variation in X independent of confounders</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge confounding">Confounding</span></td>
+                  <td>
+                    <div class="design-name">Regression Discontinuity</div>
+                    <div class="design-description">Compares units just above/below a threshold</div>
+                  </td>
+                  <td>Creates as-if-random assignment near cutoff</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge confounding">Confounding</span></td>
+                  <td>
+                    <div class="design-name">Difference-in-Differences</div>
+                    <div class="design-description">Compares changes in treated vs. control groups</div>
+                  </td>
+                  <td>Removes time-invariant confounders</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
+                  <td>
+                    <div class="design-name">Panel Data with Lags</div>
+                    <div class="design-description">Uses past X to predict future Y</div>
+                  </td>
+                  <td>Establishes temporal precedence</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
+                  <td>
+                    <div class="design-name">Event Study</div>
+                    <div class="design-description">Tracks outcomes before and after treatment</div>
+                  </td>
+                  <td>Shows Y was flat before X changed</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
+                  <td>
+                    <div class="design-name">Granger Causality</div>
+                    <div class="design-description">Tests if past X predicts future Y beyond Y's own history</div>
+                  </td>
+                  <td>Distinguishes which variable leads</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
+                  <td>
+                    <div class="design-name">Bounds Analysis</div>
+                    <div class="design-description">Estimates range of effects under different assumptions</div>
+                  </td>
+                  <td>Shows how much selection could matter</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
+                  <td>
+                    <div class="design-name">Heckman Selection Model</div>
+                    <div class="design-description">Jointly models selection and outcome</div>
+                  </td>
+                  <td>Corrects for non-random sample</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
+                  <td>
+                    <div class="design-name">Intent-to-Treat Analysis</div>
+                    <div class="design-description">Analyzes by initial assignment, not actual treatment</div>
+                  </td>
+                  <td>Avoids conditioning on post-treatment behavior</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge causal">True Effect</span></td>
+                  <td>
+                    <div class="design-name">RCT (Gold Standard)</div>
+                    <div class="design-description">Randomly assigns treatment</div>
+                  </td>
+                  <td>Eliminates all confounding by design</td>
+                </tr>
+                <tr>
+                  <td><span class="mechanism-badge causal">True Effect</span></td>
+                  <td>
+                    <div class="design-name">Natural Experiment</div>
+                    <div class="design-description">Exploits as-if-random variation from real-world events</div>
+                  </td>
+                  <td>Approximates random assignment</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <aside class="recommendations-sidebar">
+            <div class="decision-checklist">
+              <h4>Before Choosing a Design</h4>
+              <div class="checklist-item">
+                <span class="checklist-icon">></span>
+                <span>Have you listed all plausible mechanisms?</span>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon">></span>
+                <span>Have you classified each one?</span>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon">></span>
+                <span>Does your design address the most likely threat?</span>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon">></span>
+                <span>Can you explain what variation you are using?</span>
+              </div>
+              <div class="checklist-item">
+                <span class="checklist-icon">></span>
+                <span>What threats does your design NOT address?</span>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <h4>The 80/20 Rule</h4>
+              <p>Most observational studies fail because of confounding. Designs that address confounding (IV, RD, DiD) will solve most problems. Reverse causation and selection bias matter, but less often.</p>
+            </div>
+
+            <div class="insight-box">
+              <strong>No design solves everything.</strong> Be explicit about what threats your chosen design addresses and what threats remain.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> The key insight ties it all together. Classification is the first step; the goal is identification.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Classifying causal mechanisms is not the end goal. It is the first step toward designing research that can distinguish between competing explanations.
+          </p>
+        </div>
+
+        <div class="insight-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/classifying-causal-mechanisms-dag.png"
+              alt="Flowchart showing the classification process: from observed correlation through mechanism classification to matched research design, with four mechanism types (confounding, reverse causation, selection bias, true effect) each pointing to specific design strategies"
+              class="dag-image"
+            >
+            <p class="dag-caption">Classification transforms a list of possible explanations into a research strategy. Each mechanism type maps to designs that can test it.</p>
+          </div>
+
+          <div class="definition-card">
+            <h3>The Classification-to-Design Workflow</h3>
+            <p>The economist's approach to observational data follows a systematic process:</p>
+            <ul>
+              <li><strong>List:</strong> Write down every plausible explanation for the observed correlation</li>
+              <li><strong>Classify:</strong> Sort each explanation into confounding, reverse causation, selection, or true effect</li>
+              <li><strong>Match:</strong> Identify research designs that can distinguish between the classified mechanisms</li>
+              <li><strong>Design:</strong> Choose the design that addresses the most plausible threat given available data</li>
+              <li><strong>Acknowledge:</strong> Be explicit about which threats your design cannot address</li>
+            </ul>
+          </div>
+
+          <div class="concepts-box">
+            <h3>Questions That Drive Better Research</h3>
+            <div class="concept-list">
+              <div class="concept-item"><strong>What would make this explanation false?</strong> Every mechanism should be testable in principle.</div>
+              <div class="concept-item"><strong>What variation am I using?</strong> The source of treatment variation determines what confounders are ruled out.</div>
+              <div class="concept-item"><strong>What is my identifying assumption?</strong> State explicitly what must be true for your design to work.</div>
+              <div class="concept-item"><strong>What threats remain?</strong> No design addresses all mechanisms. Honest research acknowledges limitations.</div>
+            </div>
+          </div>
+
+          <div class="takeaway-box">
+            <h4>Key Takeaway</h4>
+            <p>
+              <strong>Correlation invites multiple explanations; research design narrows them down.</strong> A statistics-focused approach would be to list possible confounders and control for them statistically. Economics classifies explanations by type and designs studies that can rule out each category. The goal is not to find the "right" adjustment, but to find variation in treatment that is independent of the threats you have classified. <strong>This is what economists mean by "identification strategy."</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================
+       1. STATE MANAGEMENT
+       ============================================ */
+    let currentQuestion = 1;
+    let answers = {};
+    let classificationHistory = [];
+
+    const scenarios = {
+      1: {
+        name: 'CHW & Hospitalizations',
+        explanations: [
+          { text: 'CHWs prevent hospitalizations', type: 'causal' },
+          { text: 'Well-organized counties do both', type: 'confounding' },
+          { text: 'Low hospitalizations enable CHW programs', type: 'reverse' },
+          { text: 'Sick patients leave CHW counties', type: 'selection' }
+        ]
+      },
+      2: {
+        name: 'Education & Income',
+        explanations: [
+          { text: 'Education increases earning potential', type: 'causal' },
+          { text: 'Family background drives both', type: 'confounding' },
+          { text: 'Higher income allows more education', type: 'reverse' },
+          { text: 'Only employed people are observed', type: 'selection' }
+        ]
+      },
+      3: {
+        name: 'Insurance & Health',
+        explanations: [
+          { text: 'Insurance improves access to care', type: 'causal' },
+          { text: 'Employed people have both insurance and health', type: 'confounding' },
+          { text: 'Healthy people are more likely to get insured', type: 'reverse' },
+          { text: 'Uninsured who die are not observed', type: 'selection' }
+        ]
+      }
+    };
+
+    /* ============================================
+       2. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+      });
+    });
+
+    /* ============================================
+       3. DECISION TREE LOGIC
+       ============================================ */
+    function handleAnswer(questionNum, answer) {
+      answers[questionNum] = answer;
+      classificationHistory.push({ question: questionNum, answer: answer });
+
+      // Update button states
+      const buttons = document.querySelectorAll(`[data-question="${questionNum}"]`);
+      buttons.forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.answer === answer) {
+          btn.classList.add('selected');
+        }
+      });
+
+      // Update progress
+      document.getElementById(`step-${questionNum}`).classList.remove('active');
+      document.getElementById(`step-${questionNum}`).classList.add('completed');
+
+      // Determine next step
+      setTimeout(() => {
+        if (questionNum === 1 && answer === 'yes') {
+          // Confounding
+          showResult('confounding');
+        } else if (questionNum === 1 && answer === 'no') {
+          showQuestion(2);
+        } else if (questionNum === 2 && answer === 'yes') {
+          // Reverse causation
+          showResult('reverse');
+        } else if (questionNum === 2 && answer === 'no') {
+          showQuestion(3);
+        } else if (questionNum === 3 && answer === 'yes') {
+          // Selection bias
+          showResult('selection');
+        } else if (questionNum === 3 && answer === 'no') {
+          // True causal effect
+          showResult('causal');
+        }
+
+        updatePathTracker();
+      }, 200);
+    }
+
+    function showQuestion(num) {
+      // Hide all questions
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`question-${i}`).style.display = 'none';
+      }
+      // Hide all results
+      document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
+
+      // Show target question
+      document.getElementById(`question-${num}`).style.display = 'block';
+      currentQuestion = num;
+
+      // Update progress
+      document.getElementById(`step-${num}`).classList.add('active');
+
+      // Show back button
+      document.getElementById('btn-back').style.display = 'inline-block';
+    }
+
+    function showResult(type) {
+      // Hide all questions
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`question-${i}`).style.display = 'none';
+      }
+
+      // Show result
+      document.getElementById(`result-${type}`).classList.add('show');
+
+      // Update progress
+      document.getElementById('step-4').classList.add('active');
+      document.getElementById('step-4').classList.add('completed');
+    }
+
+    function restartClassifier() {
+      currentQuestion = 1;
+      answers = {};
+      classificationHistory = [];
+
+      // Reset progress indicators
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`step-${i}`).classList.remove('active', 'completed');
+      }
+      document.getElementById('step-1').classList.add('active');
+
+      // Hide all results
+      document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
+
+      // Reset button states
+      document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
+
+      // Show first question
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`question-${i}`).style.display = i === 1 ? 'block' : 'none';
+      }
+
+      // Hide back button
+      document.getElementById('btn-back').style.display = 'none';
+
+      // Reset path tracker
+      updatePathTracker();
+    }
+
+    function goBack() {
+      if (classificationHistory.length === 0) return;
+
+      // Remove last answer
+      classificationHistory.pop();
+      const lastQuestion = Object.keys(answers).pop();
+      if (lastQuestion) {
+        delete answers[lastQuestion];
+      }
+
+      // Reset to previous state
+      if (classificationHistory.length === 0) {
+        restartClassifier();
+      } else {
+        const prevQuestion = classificationHistory.length === 0 ? 1 :
+          classificationHistory[classificationHistory.length - 1].question + 1;
+
+        // Update progress
+        for (let i = prevQuestion; i <= 4; i++) {
+          document.getElementById(`step-${i}`).classList.remove('active', 'completed');
+        }
+
+        // Hide results
+        document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
+
+        // Show appropriate question
+        showQuestion(prevQuestion > 3 ? 3 : prevQuestion);
+        currentQuestion = prevQuestion;
+
+        updatePathTracker();
+      }
+    }
+
+    function updatePathTracker() {
+      const pathList = document.getElementById('path-list');
+
+      if (classificationHistory.length === 0) {
+        pathList.innerHTML = `
+          <li class="path-item" style="color: var(--color-text-muted); font-style: italic;">
+            Answer questions to see your path
+          </li>
+        `;
+        return;
+      }
+
+      const questionLabels = {
+        1: 'Third variable?',
+        2: 'Y causes X?',
+        3: 'Sample changes?'
+      };
+
+      pathList.innerHTML = classificationHistory.map(item => `
+        <li class="path-item">
+          <span class="path-q">Q${item.question}:</span>
+          <span>${questionLabels[item.question]}</span>
+          <span class="path-a">${item.answer.toUpperCase()}</span>
+        </li>
+      `).join('');
+    }
+
+    function loadScenario(num) {
+      // Update button states
+      document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Reset classifier for new scenario
+      restartClassifier();
+
+      // Could display scenario-specific content here
+      console.log('Loaded scenario:', scenarios[num].name);
+    }
+
+    /* ============================================
+       4. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize classifier state
+      restartClassifier();
+    });
+  </script>
+</body>
+</html>

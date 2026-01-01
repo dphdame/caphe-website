@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controlling for History Threats (DiD) | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how difference-in-differences (DiD) uses parallel trends to isolate treatment effects from common shocks that affect everyone.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-error: #C9553A;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+      --color-did: #059669;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.15rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: white;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+      margin-bottom: var(--space-xs);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto var(--space-md);
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      flex-wrap: wrap;
+    }
+
+    .panel-btn {
+      background: transparent;
+      border: 2px solid transparent;
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-did);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-did);
+      color: white;
+      border-color: var(--color-did);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. COMPONENT STYLES
+       ============================================ */
+    .did-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .did-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-did);
+    }
+
+    /* DiD Table */
+    .did-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin-bottom: var(--space-lg);
+    }
+
+    .did-table th, .did-table td {
+      padding: var(--space-sm) var(--space-md);
+      text-align: center;
+      border: 1px solid var(--color-border);
+    }
+
+    .did-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .did-table td {
+      font-family: var(--font-mono);
+    }
+
+    .did-table .program-row {
+      background: rgba(13, 148, 136, 0.08);
+    }
+
+    .did-table .comparison-row {
+      background: rgba(249, 168, 37, 0.08);
+    }
+
+    .did-table .diff-row {
+      background: rgba(5, 150, 105, 0.12);
+      font-weight: 600;
+    }
+
+    .did-table .highlight-cell {
+      background: rgba(5, 150, 105, 0.2);
+      font-weight: 700;
+      color: var(--color-did);
+    }
+
+    /* Formula Box */
+    .formula-box {
+      background: linear-gradient(135deg, rgba(5,150,105,0.08) 0%, rgba(5,150,105,0.02) 100%);
+      border-left: 4px solid var(--color-did);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+    }
+
+    .formula-box h4 {
+      color: var(--color-did);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .formula-line {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      margin: var(--space-sm) 0;
+      color: var(--color-text);
+    }
+
+    .formula-result {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--color-did);
+      margin-top: var(--space-md);
+      text-align: center;
+    }
+
+    /* Chart */
+    .chart-wrapper {
+      min-height: 320px;
+      position: relative;
+      margin-bottom: var(--space-md);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-wrapper svg {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      align-items: center;
+    }
+
+    .controls-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+
+    .toggle-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--color-did);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-did);
+      color: white;
+      border-color: var(--color-did);
+    }
+
+    /* Legend */
+    .chart-legend {
+      display: flex;
+      gap: var(--space-lg);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.program {
+      background: var(--color-secondary);
+    }
+
+    .legend-dot.comparison {
+      background: var(--color-accent);
+    }
+
+    .legend-line {
+      width: 20px;
+      height: 2px;
+    }
+
+    .legend-line.counterfactual {
+      background: var(--color-secondary);
+      opacity: 0.4;
+    }
+
+    /* ============================================
+       7. DEFINITION CARD (KEY CONCEPT)
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      color: var(--color-text);
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-top: var(--space-sm);
+      padding-left: var(--space-lg);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       8. EXPLANATION CONTAINER
+       ============================================ */
+    .explanation-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .explanation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      margin-top: var(--space-lg);
+    }
+
+    @media (max-width: 750px) {
+      .explanation-grid { grid-template-columns: 1fr; }
+    }
+
+    .concept-card {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      border-top: 4px solid var(--color-did);
+    }
+
+    .concept-card h4 {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+    }
+
+    .concept-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .concept-card ul {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      padding-left: var(--space-lg);
+    }
+
+    .key-insight {
+      background: linear-gradient(135deg, rgba(5,150,105,0.08) 0%, rgba(5,150,105,0.02) 100%);
+      border-left: 4px solid var(--color-did);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-lg);
+    }
+
+    .key-insight h4 {
+      color: var(--color-did);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       9. AUDIT CONTAINER
+       ============================================ */
+    .audit-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .audit-list {
+      list-style: none;
+      margin-top: var(--space-lg);
+    }
+
+    .audit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .audit-item:last-child {
+      border-bottom: none;
+    }
+
+    .audit-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .audit-icon.pass {
+      background: rgba(46,125,50,0.15);
+      color: var(--color-success);
+    }
+
+    .audit-icon.fail {
+      background: rgba(201,85,58,0.15);
+      color: var(--color-error);
+    }
+
+    .audit-icon.uncertain {
+      background: rgba(249,168,37,0.2);
+      color: #B8860B;
+    }
+
+    .audit-content h5 {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-xs);
+      color: var(--color-text);
+    }
+
+    .audit-content p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .interpretation-box {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+
+    .interpretation-box h4 {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-sm);
+      color: var(--color-text);
+    }
+
+    .interpretation-box p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. SENSITIVITY CONTAINER
+       ============================================ */
+    .sensitivity-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+
+    .sensitivity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: var(--space-lg);
+    }
+
+    .sensitivity-table th, .sensitivity-table td {
+      padding: var(--space-sm) var(--space-md);
+      text-align: left;
+      border: 1px solid var(--color-border);
+    }
+
+    .sensitivity-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .sensitivity-table td {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .sensitivity-table tr:nth-child(even) {
+      background: var(--color-bg-alt);
+    }
+
+    .sensitivity-table .baseline-row {
+      background: rgba(5, 150, 105, 0.1);
+    }
+
+    /* ============================================
+       11. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-text);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      opacity: 0.9;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-text);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 280px;
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab - Validity & Solutions</div>
+      <h1>Controlling for History Threats (DiD)</h1>
+      <p class="subtitle">"Add more controls" misses the point. Difference-in-differences uses parallel trends to isolate treatment effects from common shocks that affect everyone.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">How DiD Works</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Assumptions Audit</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">Sensitivity Analysis</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+      <!-- Panel 1: The Data -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Both the program county and the comparison county show improved outcomes after 2020. DiD subtracts out the common trend to isolate what is unique to the program county. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="did-grid">
+          <div class="card">
+            <h3>DiD Calculation Table</h3>
+            <table class="did-table">
+              <thead>
+                <tr>
+                  <th>County</th>
+                  <th>Pre (2019)</th>
+                  <th>Post (2022)</th>
+                  <th>Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="program-row">
+                  <td><strong>County A</strong><br><span style="font-size:0.8em;color:#595959">(Has Program)</span></td>
+                  <td>85.2</td>
+                  <td>70.0</td>
+                  <td style="color:var(--color-success)">-15.2</td>
+                </tr>
+                <tr class="comparison-row">
+                  <td><strong>County B</strong><br><span style="font-size:0.8em;color:#595959">(No Program)</span></td>
+                  <td>88.0</td>
+                  <td>75.2</td>
+                  <td style="color:var(--color-success)">-12.8</td>
+                </tr>
+                <tr class="diff-row">
+                  <td><strong>Difference</strong></td>
+                  <td>-2.8</td>
+                  <td>-5.2</td>
+                  <td class="highlight-cell">-2.4</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="formula-box">
+              <h4>The DiD Formula</h4>
+              <div class="formula-line">DiD = (CountyA<sub>post</sub> - CountyA<sub>pre</sub>) - (CountyB<sub>post</sub> - CountyB<sub>pre</sub>)</div>
+              <div class="formula-line">DiD = (-15.2) - (-12.8)</div>
+              <div class="formula-result">DiD Effect = -2.4 ED visits per 10,000</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Visualizing the Counterfactual</h3>
+            <div class="controls">
+              <span class="controls-label">Show:</span>
+              <button class="toggle-btn active" id="toggle-actual">Actual Data</button>
+              <button class="toggle-btn" id="toggle-counterfactual">+ Counterfactual</button>
+            </div>
+            <div class="chart-wrapper">
+              <h3 class="chart-title">ED Visit Rate Over Time by County</h3>
+              <svg id="did-chart" aria-label="DiD visualization showing actual and counterfactual trends"></svg>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-dot program"></span>County A (Program)</div>
+              <div class="legend-item"><span class="legend-dot comparison"></span>County B (Comparison)</div>
+              <div class="legend-item" id="legend-counterfactual" style="display:none"><span class="legend-line counterfactual"></span>Counterfactual</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 2 -->
+        <div class="bridging-box">
+          <p><strong>County A improved by 15.2 points, but County B also improved by 12.8 points.</strong></p>
+          <p>What changed for everyone? And how do we separate the program effect from these common shocks?</p>
+        </div>
+      </section>
+
+      <!-- Panel 2: How DiD Works -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">How DiD Works</h2>
+          <p class="panel-intro">
+            Difference-in-differences removes the effect of anything that changed for everyone at the same time. What remains is the effect unique to the treated group.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is Difference-in-Differences?</h3>
+          <p>DiD is a quasi-experimental design that estimates causal effects by comparing changes over time between a treated group and a comparison group. It works by:</p>
+          <ul>
+            <li><strong>First difference:</strong> Comparing before vs. after within each group</li>
+            <li><strong>Second difference:</strong> Subtracting the comparison group's change from the treatment group's change</li>
+            <li><strong>Result:</strong> Removing any shared trends that affected both groups equally</li>
+          </ul>
+          <p style="margin-top: var(--space-md);"><strong>Core assumption:</strong> Without treatment, both groups would have followed the same trajectory (parallel trends).</p>
+        </div>
+
+        <div class="explanation-container">
+          <div class="explanation-grid">
+            <div class="concept-card">
+              <h4>The Core Logic</h4>
+              <p>If Medi-Cal expansion helped everyone equally, both counties should improve by the same amount. The <em>extra</em> improvement in County A beyond what County B experienced is attributed to the program.</p>
+              <ul>
+                <li>County B's change = statewide effect only</li>
+                <li>County A's change = statewide + program effect</li>
+                <li>Subtract to isolate program effect</li>
+              </ul>
+            </div>
+            <div class="concept-card">
+              <h4>The Counterfactual</h4>
+              <p>We can never observe what would have happened to County A without the program. DiD <em>constructs</em> this counterfactual by assuming County A would have followed County B's trajectory.</p>
+              <ul>
+                <li>The dashed line shows this "what if"</li>
+                <li>Gap between actual and counterfactual = effect</li>
+                <li>Relies on parallel trends assumption</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="key-insight">
+            <h4>Why This Matters for Policy Evaluation</h4>
+            <p>Without DiD, we might credit County A's program for the full 15.2-point improvement. With DiD, we see that 12.8 points would have happened anyway (it happened in County B too). Only 2.4 points appear attributable to the program.</p>
+            <p style="margin-top: var(--space-sm);"><strong>This is what economists mean by "differencing out common shocks."</strong> The comparison group reveals the counterfactual trend, so we can isolate the treatment effect.</p>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 3 -->
+        <div class="bridging-box">
+          <p><strong>DiD isolates a 2.4-point effect. But should we trust this estimate?</strong></p>
+          <p>The method relies on assumptions that may or may not hold. The next panel audits each assumption for this scenario.</p>
+        </div>
+      </section>
+
+      <!-- Panel 3: Assumptions Audit -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Assumptions Audit</h2>
+          <p class="panel-intro">
+            DiD estimates are only valid if key assumptions hold. This audit evaluates each assumption and flags potential vulnerabilities.
+          </p>
+        </div>
+
+        <div class="audit-container">
+          <h3>Checking DiD Assumptions</h3>
+          <ul class="audit-list">
+            <li class="audit-item">
+              <span class="audit-icon pass">&#10003;</span>
+              <div class="audit-content">
+                <h5>Parallel Pre-Trends</h5>
+                <p>Before 2020, both counties showed similar flat trends in ED visits. This supports (but does not prove) that they would have continued similarly without intervention.</p>
+              </div>
+            </li>
+            <li class="audit-item">
+              <span class="audit-icon uncertain">?</span>
+              <div class="audit-content">
+                <h5>No Spillover Effects</h5>
+                <p>We assume County B was not affected by County A's program. If County A's success attracted patients from neighboring counties, our comparison may be biased.</p>
+              </div>
+            </li>
+            <li class="audit-item">
+              <span class="audit-icon pass">&#10003;</span>
+              <div class="audit-content">
+                <h5>Stable Unit Treatment Value (SUTVA)</h5>
+                <p>Each county's outcome depends only on its own treatment status. No evidence of interference between counties in this scenario.</p>
+              </div>
+            </li>
+            <li class="audit-item">
+              <span class="audit-icon uncertain">?</span>
+              <div class="audit-content">
+                <h5>No Differential Shocks</h5>
+                <p>We assume no other county-specific events occurred around 2020. If County A also opened a new hospital, that confounds our estimate.</p>
+              </div>
+            </li>
+            <li class="audit-item">
+              <span class="audit-icon pass">&#10003;</span>
+              <div class="audit-content">
+                <h5>Correct Timing</h5>
+                <p>We correctly identify 2020 as the treatment year. The program started in January 2020 and we compare 2019 (pre) to 2022 (post).</p>
+              </div>
+            </li>
+          </ul>
+
+          <div class="interpretation-box">
+            <h4>Overall Assessment</h4>
+            <p>This DiD analysis has reasonable support: parallel pre-trends are visible and timing is clear. We cannot rule out spillover or other county-specific shocks. The 2.4-point estimate should be interpreted as suggestive, not definitive.</p>
+          </div>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-box">
+          <p><strong>Some assumptions are uncertain. How sensitive is our conclusion?</strong></p>
+          <p>The next panel explores how the estimated effect changes under different assumption violations.</p>
+        </div>
+      </section>
+
+      <!-- Panel 4: Sensitivity Analysis -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Sensitivity Analysis</h2>
+          <p class="panel-intro">
+            These questions help identify how robust the DiD estimate is to plausible assumption violations. They reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="sensitivity-container">
+          <h3>Effect Estimates Under Different Scenarios</h3>
+          <table class="sensitivity-table">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Assumption Violation</th>
+                <th>Adjusted Effect</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="baseline-row">
+                <td><strong>Baseline DiD</strong></td>
+                <td>None (parallel trends hold)</td>
+                <td><strong>-2.4</strong></td>
+                <td>Program reduces ED visits by 2.4 per 10k</td>
+              </tr>
+              <tr>
+                <td>Diverging Trends</td>
+                <td>County A was improving 1 pt/yr faster pre-2020</td>
+                <td>-0.4</td>
+                <td>Most of "effect" was pre-existing trend</td>
+              </tr>
+              <tr>
+                <td>Positive Spillover</td>
+                <td>Program also helped County B residents</td>
+                <td>-3.5 to -4.5</td>
+                <td>True effect larger than measured</td>
+              </tr>
+              <tr>
+                <td>New Hospital Opened</td>
+                <td>New facility reduced ED use independently</td>
+                <td>-1.0 to -1.5</td>
+                <td>Hospital explains part of the drop</td>
+              </tr>
+              <tr>
+                <td>Measurement Shift</td>
+                <td>County A changed ED coding in 2020</td>
+                <td>Unknown</td>
+                <td>Effect could be artifact of measurement</td>
+              </tr>
+              <tr>
+                <td>Alternative Comparison</td>
+                <td>Using a different comparison county</td>
+                <td>-1.8 to -3.2</td>
+                <td>Effect sensitive to comparison choice</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="interpretation-box">
+            <h4>What This Tells Us</h4>
+            <p>The baseline DiD estimate of -2.4 is sensitive to assumptions. Under plausible violations:</p>
+            <ul style="margin-top: var(--space-sm); padding-left: var(--space-lg); font-size: 0.9rem; color: var(--color-text-secondary);">
+              <li><strong>Lower bound:</strong> If County A was already improving faster, the true effect could be near zero</li>
+              <li><strong>Upper bound:</strong> If the program spilled over to help the comparison county, the true effect could be larger (-4 or more)</li>
+              <li><strong>Recommendation:</strong> Report the 2.4-point effect with bounds of roughly 0 to -4.5 depending on assumptions</li>
+            </ul>
+          </div>
+
+          <div class="key-insight" style="margin-top: var(--space-xl);">
+            <h4>Key Takeaway</h4>
+            <p><strong>DiD does not prove causation, but it reveals which assumptions matter most.</strong> When parallel trends hold and no differential shocks occur, DiD provides a credible estimate of treatment effects. When these assumptions fail, the method can mislead.</p>
+            <p style="margin-top: var(--space-sm);">Policy changes, eligibility cutoffs, and geographic boundaries can provide the variation needed for credible DiD estimates. <strong>This is what economists mean by "identification."</strong></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. DATA FOR VISUALIZATION
+       ============================================ */
+    const years = [2017, 2018, 2019, 2020, 2021, 2022];
+    const programStart = 2020;
+
+    const riversideData = [
+      { year: 2017, value: 84.5 },
+      { year: 2018, value: 85.8 },
+      { year: 2019, value: 85.2 },
+      { year: 2020, value: 78.0 },
+      { year: 2021, value: 73.5 },
+      { year: 2022, value: 70.0 }
+    ];
+
+    const sanJoaquinData = [
+      { year: 2017, value: 87.2 },
+      { year: 2018, value: 88.5 },
+      { year: 2019, value: 88.0 },
+      { year: 2020, value: 82.0 },
+      { year: 2021, value: 78.0 },
+      { year: 2022, value: 75.2 }
+    ];
+
+    // Counterfactual: County A following County B's trajectory
+    const counterfactualData = [
+      { year: 2019, value: 85.2 },
+      { year: 2020, value: 79.2 }, // Same drop as SJ: 88->82 = -6, so 85.2-6 = 79.2
+      { year: 2021, value: 75.2 }, // SJ: 82->78 = -4, so 79.2-4 = 75.2
+      { year: 2022, value: 72.4 }  // SJ: 78->75.2 = -2.8, so 75.2-2.8 = 72.4
+    ];
+
+    let showCounterfactual = false;
+
+    /* ============================================
+       2. CHART RENDERING
+       ============================================ */
+    function renderDidChart() {
+      const svg = document.getElementById('did-chart');
+      const container = svg.parentElement;
+      const width = container.clientWidth || 450;
+      const height = 320;
+      const margin = { top: 30, right: 25, bottom: 45, left: 55 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const xMin = years[0], xMax = years[years.length - 1];
+      const yMin = 65, yMax = 92;
+
+      const xScale = (v) => margin.left + ((v - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Event shading
+      const shadingRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      shadingRect.setAttribute('x', xScale(programStart));
+      shadingRect.setAttribute('y', margin.top);
+      shadingRect.setAttribute('width', xScale(xMax) - xScale(programStart));
+      shadingRect.setAttribute('height', plotHeight);
+      shadingRect.setAttribute('fill', 'rgba(5, 150, 105, 0.06)');
+      svg.appendChild(shadingRect);
+
+      // Event line
+      const eventLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      eventLine.setAttribute('x1', xScale(programStart));
+      eventLine.setAttribute('x2', xScale(programStart));
+      eventLine.setAttribute('y1', margin.top);
+      eventLine.setAttribute('y2', margin.top + plotHeight);
+      eventLine.setAttribute('stroke', '#059669');
+      eventLine.setAttribute('stroke-width', '2');
+      eventLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(eventLine);
+
+      const eventLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      eventLabel.setAttribute('x', xScale(programStart) + 5);
+      eventLabel.setAttribute('y', margin.top + 14);
+      eventLabel.setAttribute('fill', '#059669');
+      eventLabel.setAttribute('font-size', '10');
+      eventLabel.setAttribute('font-weight', '500');
+      eventLabel.textContent = 'Program Start';
+      svg.appendChild(eventLabel);
+
+      // Grid lines
+      for (let i = 0; i <= 4; i++) {
+        const y = yMin + (i / 4) * (yMax - yMin);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        lbl.setAttribute('x', margin.left - 8);
+        lbl.setAttribute('y', yScale(y) + 4);
+        lbl.setAttribute('text-anchor', 'end');
+        lbl.setAttribute('fill', '#595959');
+        lbl.setAttribute('font-size', '11');
+        lbl.textContent = y.toFixed(0);
+        svg.appendChild(lbl);
+      }
+
+      // X-axis labels
+      years.forEach(year => {
+        const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        lbl.setAttribute('x', xScale(year));
+        lbl.setAttribute('y', height - 12);
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('fill', '#424242');
+        lbl.setAttribute('font-size', '11');
+        lbl.textContent = year;
+        svg.appendChild(lbl);
+      });
+
+      // Y-axis label
+      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
+      yAxisLabel.setAttribute('y', 14);
+      yAxisLabel.setAttribute('transform', 'rotate(-90)');
+      yAxisLabel.setAttribute('text-anchor', 'middle');
+      yAxisLabel.setAttribute('fill', '#424242');
+      yAxisLabel.setAttribute('font-size', '12');
+      yAxisLabel.textContent = 'ED Visits per 10,000';
+      svg.appendChild(yAxisLabel);
+
+      // Draw counterfactual first (behind)
+      if (showCounterfactual) {
+        let cfPathD = `M ${xScale(counterfactualData[0].year)} ${yScale(counterfactualData[0].value)}`;
+        counterfactualData.forEach(d => { cfPathD += ` L ${xScale(d.year)} ${yScale(d.value)}`; });
+        const cfPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        cfPath.setAttribute('d', cfPathD);
+        cfPath.setAttribute('fill', 'none');
+        cfPath.setAttribute('stroke', '#0D9488');
+        cfPath.setAttribute('stroke-width', '2');
+        cfPath.setAttribute('stroke-dasharray', '8,4');
+        cfPath.setAttribute('opacity', '0.5');
+        svg.appendChild(cfPath);
+
+        // DiD arrow
+        const arrowY1 = yScale(counterfactualData[3].value);
+        const arrowY2 = yScale(riversideData[5].value);
+        const arrowX = xScale(2022);
+
+        const arrowLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        arrowLine.setAttribute('x1', arrowX + 15);
+        arrowLine.setAttribute('x2', arrowX + 15);
+        arrowLine.setAttribute('y1', arrowY1);
+        arrowLine.setAttribute('y2', arrowY2);
+        arrowLine.setAttribute('stroke', '#059669');
+        arrowLine.setAttribute('stroke-width', '2');
+        arrowLine.setAttribute('marker-end', 'url(#arrowhead)');
+        arrowLine.setAttribute('marker-start', 'url(#arrowhead-up)');
+        svg.appendChild(arrowLine);
+
+        const didLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        didLabel.setAttribute('x', arrowX + 22);
+        didLabel.setAttribute('y', (arrowY1 + arrowY2) / 2 + 4);
+        didLabel.setAttribute('fill', '#059669');
+        didLabel.setAttribute('font-size', '11');
+        didLabel.setAttribute('font-weight', '600');
+        didLabel.textContent = '-2.4';
+        svg.appendChild(didLabel);
+      }
+
+      // Draw lines function
+      function drawLine(data, color) {
+        let pathD = `M ${xScale(data[0].year)} ${yScale(data[0].value)}`;
+        data.forEach(d => { pathD += ` L ${xScale(d.year)} ${yScale(d.value)}`; });
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', '3');
+        svg.appendChild(path);
+
+        data.forEach(d => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(d.year));
+          circle.setAttribute('cy', yScale(d.value));
+          circle.setAttribute('r', '5');
+          circle.setAttribute('fill', color);
+          circle.setAttribute('stroke', 'white');
+          circle.setAttribute('stroke-width', '2');
+          svg.appendChild(circle);
+        });
+      }
+
+      drawLine(sanJoaquinData, '#F9A825');
+      drawLine(riversideData, '#0D9488');
+    }
+
+    /* ============================================
+       3. TOGGLE CONTROLS
+       ============================================ */
+    document.getElementById('toggle-actual').addEventListener('click', () => {
+      showCounterfactual = false;
+      document.getElementById('toggle-actual').classList.add('active');
+      document.getElementById('toggle-counterfactual').classList.remove('active');
+      document.getElementById('legend-counterfactual').style.display = 'none';
+      renderDidChart();
+    });
+
+    document.getElementById('toggle-counterfactual').addEventListener('click', () => {
+      showCounterfactual = true;
+      document.getElementById('toggle-counterfactual').classList.add('active');
+      document.getElementById('toggle-actual').classList.remove('active');
+      document.getElementById('legend-counterfactual').style.display = 'flex';
+      renderDidChart();
+    });
+
+    /* ============================================
+       4. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Re-render chart when panel 1 becomes visible
+        if (panelNum === '1') {
+          setTimeout(renderDidChart, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       5. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDidChart();
+
+      // Debounced resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(renderDidChart, 250);
+      });
+    });
+  </script>
+</body>
+</html>

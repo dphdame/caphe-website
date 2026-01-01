@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History Threat: Concurrent Events Bias | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn how statewide policy changes, economic shifts, or other external events can be mistaken for local program effects when they occur at the same time.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    body { font-family: var(--font-sans); font-size: 16px; line-height: 1.6; color: var(--color-text); background: var(--color-bg-alt); }
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.15rem; }
+    code, .mono { font-family: var(--font-mono); }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
+
+    /* Header */
+    .header { background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%); color: white; padding: var(--space-xl) 0; text-align: center; }
+    .header h1 { color: white; margin-bottom: var(--space-sm); }
+    .eyebrow { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: var(--space-xs); }
+    .subtitle { font-size: 1rem; opacity: 0.9; max-width: 650px; margin: 0 auto; }
+
+    /* Panel Navigation */
+    .panel-nav { background: var(--color-bg); border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
+    .panel-btn { background: transparent; border: 2px solid transparent; padding: var(--space-sm) var(--space-md); font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease; }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* Main & Panels */
+    .main { padding: var(--space-xl) 0 var(--space-2xl); }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-header h2 { margin-bottom: var(--space-md); }
+    .panel-intro { font-size: 1rem; color: var(--color-text-secondary); max-width: 750px; }
+
+    /* Chart Container */
+    .chart-container { display: grid; grid-template-columns: 1fr 260px; gap: var(--space-xl); background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    @media (max-width: 850px) { .chart-container { grid-template-columns: 1fr; } }
+    .chart-wrapper { display: flex; flex-direction: column; position: relative; }
+    .chart-title { font-size: 1rem; font-weight: 600; color: var(--color-text); margin-bottom: var(--space-lg); text-align: center; }
+    .chart-wrapper svg { width: 100%; height: 320px; flex-shrink: 0; }
+
+    /* Stats Sidebar */
+    .stats-sidebar { display: flex; flex-direction: column; gap: var(--space-md); }
+    .stat-card { background: var(--color-bg-alt); border-radius: var(--radius-md); padding: var(--space-md); border-left: 4px solid var(--color-primary); }
+    .stat-card.highlight { border-left-color: var(--color-secondary); }
+    .stat-card.warning { border-left-color: var(--color-warning); }
+    .stat-card.comparison { border-left-color: var(--color-accent); }
+    .stat-label { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--color-primary-dark); font-family: var(--font-mono); }
+    .stat-note { font-size: 0.85rem; color: var(--color-text-secondary); margin-top: var(--space-xs); }
+
+    /* Controls */
+    .controls { display: flex; flex-wrap: wrap; gap: var(--space-md); margin-bottom: var(--space-lg); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); align-items: center; }
+    .controls-label { font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary); }
+    .toggle-btn { padding: var(--space-sm) var(--space-md); background: white; border: 2px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; }
+    .toggle-btn:hover { border-color: var(--color-primary-light); }
+    .toggle-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    /* Event Banner */
+    .event-banner { background: linear-gradient(90deg, rgba(245,124,0,0.1) 0%, rgba(245,124,0,0.02) 100%); border-left: 4px solid var(--color-warning); padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg); }
+    .event-banner h4 { color: var(--color-warning); font-family: var(--font-sans); font-size: 0.95rem; margin-bottom: var(--space-xs); }
+    .event-banner p { font-size: 0.9rem; color: var(--color-text-secondary); }
+
+    /* Chart Legend */
+    .chart-legend { display: flex; gap: var(--space-lg); justify-content: center; margin-top: var(--space-md); flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9rem; color: var(--color-text-secondary); }
+    .legend-line { width: 24px; height: 3px; border-radius: 2px; }
+    .legend-line.program { background: var(--color-secondary); }
+    .legend-line.comparison { background: var(--color-accent); }
+
+    /* Explanation Container */
+    .explanation-container { background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    .explanation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); margin-top: var(--space-lg); }
+    @media (max-width: 750px) { .explanation-grid { grid-template-columns: 1fr; } }
+
+    /* Concept Cards */
+    .concept-card { background: var(--color-bg-alt); border-radius: var(--radius-md); padding: var(--space-lg); border-left: 4px solid var(--color-primary); }
+    .concept-card h4 { font-family: var(--font-sans); font-size: 1rem; margin-bottom: var(--space-sm); color: var(--color-text); }
+    .concept-card p { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+    .concept-card ul { font-size: 0.9rem; color: var(--color-text-secondary); padding-left: var(--space-lg); }
+    .concept-card li { margin-bottom: var(--space-xs); }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); padding-top: var(--space-2xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); border-left: 4px solid var(--color-warning); position: relative; }
+    .definition-card::before { content: "KEY CONCEPT"; position: absolute; top: calc(-0.75rem); left: var(--space-lg); background: var(--color-warning); color: white; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); }
+    .definition-card h3 { margin-bottom: var(--space-sm); }
+    .definition-card p { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+    .definition-card ul { font-size: 0.9rem; color: var(--color-text-secondary); padding-left: var(--space-lg); }
+    .definition-card li { margin-bottom: var(--space-xs); }
+
+    /* Key Insight Box */
+    .key-insight { background: linear-gradient(135deg, rgba(0,65,165,0.08) 0%, rgba(0,65,165,0.02) 100%); border-left: 4px solid var(--color-primary); padding: var(--space-lg); border-radius: var(--radius-md); margin-top: var(--space-lg); }
+    .key-insight h4 { color: var(--color-primary-dark); margin-bottom: var(--space-sm); font-family: var(--font-sans); }
+    .key-insight p { font-size: 0.95rem; margin-bottom: var(--space-sm); }
+
+    /* DAG Container */
+    .dag-container { background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); text-align: center; margin-bottom: var(--space-xl); }
+    .dag-container h3 { margin-bottom: var(--space-md); text-align: left; }
+    .dag-caption { font-size: 0.9rem; color: var(--color-text-secondary); margin-top: var(--space-md); font-style: italic; }
+
+    /* Bridging Question */
+    .bridging-question { margin-top: var(--space-xl); padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md); border-left: 4px solid var(--color-secondary); }
+    .bridging-question p { font-size: 0.95rem; color: var(--color-text-secondary); margin: 0; }
+
+    /* Cross Reference */
+    .cross-ref { margin-top: var(--space-lg); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); font-size: 0.9rem; color: var(--color-text-secondary); text-align: center; }
+    .cross-ref a { color: var(--color-primary); font-weight: 500; }
+
+    /* Questions Container */
+    .questions-container { background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); }
+    .questions-intro { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: var(--space-lg); max-width: 700px; }
+    .question-list { list-style: none; }
+    .question-list li { padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); margin-bottom: var(--space-md); border-left: 4px solid var(--color-secondary); font-size: 0.95rem; color: var(--color-text); }
+
+    /* Key Takeaway */
+    .key-takeaway { background: linear-gradient(135deg, rgba(0,65,165,0.1) 0%, rgba(0,65,165,0.02) 100%); border-left: 4px solid var(--color-primary); padding: var(--space-xl); border-radius: var(--radius-md); margin-top: var(--space-xl); }
+    .key-takeaway p { font-size: 1rem; line-height: 1.7; }
+    .key-takeaway p:not(:last-child) { margin-bottom: var(--space-md); }
+
+    /* Tooltip */
+    .tooltip { position: fixed; background: var(--color-text); color: white; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); font-size: 0.85rem; pointer-events: none; z-index: 1000; max-width: 280px; }
+    .tooltip.hidden { display: none; }
+
+    /* Footer */
+    .footer { background: var(--color-text); color: white; padding: var(--space-xl) 0; text-align: center; }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
+    .footer a { color: var(--color-accent); }
+
+    /* Utility */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .hidden { display: none; }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Design Essentials</div>
+      <h1>History Threat: Concurrent Events Bias</h1>
+      <p class="subtitle">"Outcomes improved after our program launched!" But what else changed at the same time? Economic conditions, other policies, seasonal factors? Concurrent events can masquerade as program effects.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Seeing the Threat</button></li>
+      <li><button class="panel-btn" data-panel="4" aria-pressed="false">Questions to Consider</button></li>
+    </ul>
+  </nav>
+
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+      <!-- Panel 1: The Data -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A county launched a diabetes prevention program in January 2020. Emergency department visits for diabetes complications dropped 18% afterward. Success? Or did something else change? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="event-banner" id="event-banner">
+          <h4>Statewide Event: California Medi-Cal Expansion (January 2020)</h4>
+          <p>All California counties gained expanded insurance coverage at the same time, improving access to preventive care everywhere.</p>
+        </div>
+
+        <div class="controls">
+          <span class="controls-label">View:</span>
+          <button class="toggle-btn active" id="toggle-both">Both Counties</button>
+          <button class="toggle-btn" id="toggle-program">Program County Only</button>
+          <button class="toggle-btn" id="toggle-comparison">Comparison County Only</button>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">ED Visits per 10,000 Residents Over Time</h3>
+            <svg id="timeline-chart" aria-label="Time series showing ED visits in program and comparison counties"></svg>
+            <div class="chart-legend">
+              <div class="legend-item"><span class="legend-line program"></span><span>County A (Has Program)</span></div>
+              <div class="legend-item"><span class="legend-line comparison"></span><span>County B (No Program)</span></div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card highlight">
+              <div class="stat-label">County A Improvement</div>
+              <div class="stat-value">-18%</div>
+              <div class="stat-note">ED visits dropped after 2020</div>
+            </div>
+            <div class="stat-card comparison">
+              <div class="stat-label">County B Improvement</div>
+              <div class="stat-value">-15%</div>
+              <div class="stat-note">Similar drop, no local program</div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-label">Difference</div>
+              <div class="stat-value">~3%</div>
+              <div class="stat-note">Program effect? Or just noise?</div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> If both counties improved similarly, and only one had the program, what does that tell us about what actually caused the improvement?</p>
+        </div>
+      </section>
+
+      <!-- Panel 2: The Problem -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            When something else changes at the same time as your program, any improvement you observe might have nothing to do with your intervention.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is the History Threat?</h3>
+          <p>A <strong>history threat</strong> occurs when external events happen at the same time as your intervention and affect outcomes. Common culprits include:</p>
+          <ul>
+            <li>State or federal policy changes (new regulations, funding shifts)</li>
+            <li>Economic shifts (recession, stimulus payments, job market changes)</li>
+            <li>Other programs launching in the same period</li>
+            <li>Seasonal patterns (flu season, holiday effects)</li>
+            <li>Major public health events (pandemics, environmental disasters)</li>
+          </ul>
+        </div>
+
+        <div class="dag-container">
+          <h3>How Concurrent Events Create Bias</h3>
+          <img
+            src="assets/threat-history-events-dag-confounding.png"
+            alt="DAG showing how an external event (Medi-Cal Expansion) affects both the program timing and health outcomes, creating spurious correlation between program and outcomes"
+            class="dag-image"
+            style="width: 100%; height: auto; max-height: 400px; object-fit: contain;"
+          >
+          <p class="dag-caption">The statewide event affects outcomes in both program and comparison counties. Without accounting for this, we would wrongly attribute all improvement to the local program.</p>
+        </div>
+
+        <div class="key-insight">
+          <h4>The Core Problem</h4>
+          <p><strong>Programs often launch during favorable conditions.</strong> Counties start new initiatives when they receive new funding, when leadership changes, or when a crisis demands action. These same conditions often coincide with broader changes that would have improved outcomes anyway.</p>
+          <p>If you only look at your program area, the timing seems perfect: program starts, outcomes improve. The external event becomes invisible unless you examine comparison areas that experienced the same external change but not your program.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> How do we separate what the program did from what the statewide event did? Let's look at the comparison more closely.</p>
+        </div>
+      </section>
+
+      <!-- Panel 3: Seeing the Threat -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Seeing the Threat</h2>
+          <p class="panel-intro">
+            A comparison county reveals what would have happened without the local program. Toggle between views to see how our interpretation changes.
+          </p>
+        </div>
+
+        <div class="explanation-container">
+          <div class="explanation-grid">
+            <div class="concept-card">
+              <h4>Without Comparison</h4>
+              <p>Looking only at County A, we see an 18% improvement after the program launched. The timing looks compelling.</p>
+              <p><strong>Natural conclusion:</strong> "The diabetes prevention program reduced ED visits by 18%."</p>
+              <p style="color: var(--color-warning); font-weight: 500;">This conclusion ignores what else happened in January 2020.</p>
+            </div>
+            <div class="concept-card">
+              <h4>With Comparison</h4>
+              <p>County B, which had no local diabetes program, also improved by 15% over the same period.</p>
+              <p><strong>Revised conclusion:</strong> "Most of the improvement (15 of 18 percentage points) occurred everywhere. At most 3 percentage points might be due to the program."</p>
+              <p style="color: var(--color-secondary); font-weight: 500;">The comparison reveals the statewide trend.</p>
+            </div>
+          </div>
+
+          <div class="key-insight">
+            <h4>What the Comparison Tells Us</h4>
+            <p>In this example, County A improved by 18% and County B improved by 15%. Since County B had no program, its 15% improvement must come from something else, most likely the statewide Medi-Cal expansion.</p>
+            <p>The difference (18% minus 15% = 3%) is our best estimate of what the local program contributed. That is far less than the 18% we would have claimed without a comparison. And 3% might just be random variation between counties.</p>
+          </div>
+
+          <div class="definition-card">
+            <h3>The Comparison Group Solution</h3>
+            <p>A <strong>comparison group</strong> helps separate program effects from external events by showing what would have happened without the intervention. For this to work:</p>
+            <ul>
+              <li>The comparison area must experience the same external events (economic conditions, statewide policies)</li>
+              <li>The comparison area must NOT receive the local program</li>
+              <li>The comparison area should have similar baseline trends before the intervention</li>
+            </ul>
+            <p style="margin-top: var(--space-md); font-size: 0.9rem; color: var(--color-text-secondary);">When these conditions hold, the difference between how the program area changed and how the comparison area changed provides a cleaner estimate of the program effect.</p>
+          </div>
+
+          <div class="cross-ref">
+            This approach, comparing changes between groups, is formalized in <strong>difference-in-differences</strong> analysis. See <a href="../threat-history-solutions/">Controlling for History Threats (DiD)</a> for the full method.
+          </div>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What questions should we ask before concluding that a program caused improvement? How do we spot history threats in real evaluations?</p>
+        </div>
+      </section>
+
+      <!-- Panel 4: Questions to Consider -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Questions to Consider</h2>
+          <p class="panel-intro">
+            These questions help identify history threats that a simple before-after comparison cannot address. They will not prove causation, but they reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="questions-container">
+          <h3>Before Claiming Program Effects, Ask:</h3>
+          <p class="questions-intro">Each question probes whether an external event might explain the observed improvement.</p>
+
+          <ul class="question-list">
+            <li><strong>What else changed at the same time?</strong> Review news, legislation, and policy announcements around the program launch date. Any statewide or national change could affect all areas equally.</li>
+            <li><strong>Did similar areas without the program also improve?</strong> If comparison areas show similar trends, the improvement is likely not unique to your program.</li>
+            <li><strong>Why did the program launch when it did?</strong> Programs often start during favorable conditions (new funding, political momentum). Those same conditions might independently improve outcomes.</li>
+            <li><strong>Are there seasonal patterns that coincide with launch?</strong> Programs launching in January might show "improvement" simply because winter health crises naturally subside in spring.</li>
+            <li><strong>What was happening in the broader economy?</strong> Economic conditions affect healthcare access, stress levels, and health behaviors across entire regions.</li>
+            <li><strong>Were there other programs or initiatives running concurrently?</strong> Multiple interventions make it impossible to isolate the effect of any single one.</li>
+          </ul>
+        </div>
+
+        <div class="key-takeaway">
+          <p><strong>No amount of statistical adjustment can separate concurrent events from program effects when both happen at the same time everywhere.</strong> The solution is not better adjustment. The solution is finding variation in timing or exposure that allows you to compare what changed in areas that got the program versus areas that did not.</p>
+          <p>Staggered rollouts, geographic variation in implementation, and policy discontinuities can provide this separation. <strong>This is what economists mean by "identification."</strong></p>
+        </div>
+
+        <div class="cross-ref">
+          For strategies to address history threats, see <a href="../threat-history-solutions/">Controlling for History Threats (DiD)</a> and <a href="../study-design-ladder/">Hierarchy of Evidence in Study Design</a>.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    // Generate time series data
+    const years = [2017, 2018, 2019, 2020, 2021, 2022, 2023];
+    const programStart = 2020;
+
+    let seed = 42;
+    function seededRandom() {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    // County A (program county) - baseline around 85 ED visits per 10k
+    const countyABaseline = 85;
+    const countyAData = years.map((year) => {
+      const preNoise = (seededRandom() - 0.5) * 4;
+      let value = countyABaseline + preNoise;
+
+      if (year >= programStart) {
+        const yearsPost = year - programStart;
+        // Statewide effect (affects both counties)
+        const statewideEffect = -12.75 * (1 - Math.exp(-0.8 * (yearsPost + 1)));
+        // Program effect (only County A)
+        const programEffect = -2.5 * (1 - Math.exp(-0.5 * (yearsPost + 1)));
+        value = countyABaseline + statewideEffect + programEffect + (seededRandom() - 0.5) * 3;
+      }
+
+      return { year, value, county: 'County A', hasProgram: true };
+    });
+
+    // County B (comparison county) - baseline around 88 ED visits per 10k
+    const countyBBaseline = 88;
+    seed = 123;
+    const countyBData = years.map((year) => {
+      const preNoise = (seededRandom() - 0.5) * 4;
+      let value = countyBBaseline + preNoise;
+
+      if (year >= programStart) {
+        const yearsPost = year - programStart;
+        // Only statewide effect (no local program)
+        const statewideEffect = -13.2 * (1 - Math.exp(-0.8 * (yearsPost + 1)));
+        value = countyBBaseline + statewideEffect + (seededRandom() - 0.5) * 3;
+      }
+
+      return { year, value, county: 'County B', hasProgram: false };
+    });
+
+    let viewMode = 'both';
+    let chartInitialized = false;
+
+    function renderTimelineChart() {
+      const svg = document.getElementById('timeline-chart');
+      const container = svg.parentElement;
+      const width = container.clientWidth || 500;
+      const height = 320;
+      const margin = { top: 40, right: 30, bottom: 50, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.innerHTML = '';
+
+      const xMin = years[0];
+      const xMax = years[years.length - 1];
+      const yMin = 60;
+      const yMax = 95;
+
+      const xScale = (v) => margin.left + ((v - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Event shading (post-2020 period)
+      const shadingRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      shadingRect.setAttribute('x', xScale(programStart));
+      shadingRect.setAttribute('y', margin.top);
+      shadingRect.setAttribute('width', xScale(xMax) - xScale(programStart));
+      shadingRect.setAttribute('height', plotHeight);
+      shadingRect.setAttribute('fill', 'rgba(245, 124, 0, 0.06)');
+      svg.appendChild(shadingRect);
+
+      // Event line
+      const eventLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      eventLine.setAttribute('x1', xScale(programStart));
+      eventLine.setAttribute('x2', xScale(programStart));
+      eventLine.setAttribute('y1', margin.top);
+      eventLine.setAttribute('y2', margin.top + plotHeight);
+      eventLine.setAttribute('stroke', '#F57C00');
+      eventLine.setAttribute('stroke-width', '2');
+      eventLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(eventLine);
+
+      // Event label
+      const eventLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      eventLabel.setAttribute('x', xScale(programStart) + 6);
+      eventLabel.setAttribute('y', margin.top + 16);
+      eventLabel.setAttribute('fill', '#F57C00');
+      eventLabel.setAttribute('font-size', '10');
+      eventLabel.setAttribute('font-weight', '500');
+      eventLabel.textContent = '2020: Program + Statewide Event';
+      svg.appendChild(eventLabel);
+
+      // Grid lines
+      for (let i = 0; i <= 4; i++) {
+        const y = yMin + (i / 4) * (yMax - yMin);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const ylbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        ylbl.setAttribute('x', margin.left - 8);
+        ylbl.setAttribute('y', yScale(y) + 4);
+        ylbl.setAttribute('text-anchor', 'end');
+        ylbl.setAttribute('fill', '#595959');
+        ylbl.setAttribute('font-size', '11');
+        ylbl.textContent = y.toFixed(0);
+        svg.appendChild(ylbl);
+      }
+
+      // X-axis labels
+      years.forEach(year => {
+        const xlbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xlbl.setAttribute('x', xScale(year));
+        xlbl.setAttribute('y', height - 15);
+        xlbl.setAttribute('text-anchor', 'middle');
+        xlbl.setAttribute('fill', '#424242');
+        xlbl.setAttribute('font-size', '11');
+        xlbl.textContent = year;
+        svg.appendChild(xlbl);
+      });
+
+      // Y-axis label
+      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
+      yAxisLabel.setAttribute('y', 15);
+      yAxisLabel.setAttribute('transform', 'rotate(-90)');
+      yAxisLabel.setAttribute('text-anchor', 'middle');
+      yAxisLabel.setAttribute('fill', '#424242');
+      yAxisLabel.setAttribute('font-size', '12');
+      yAxisLabel.textContent = 'ED Visits per 10,000';
+      svg.appendChild(yAxisLabel);
+
+      function drawLine(data, color, show) {
+        if (!show) return;
+
+        // Draw path
+        let pathD = `M ${xScale(data[0].year)} ${yScale(data[0].value)}`;
+        data.forEach(d => {
+          pathD += ` L ${xScale(d.year)} ${yScale(d.value)}`;
+        });
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', '3');
+        svg.appendChild(path);
+
+        // Draw points
+        data.forEach(d => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(d.year));
+          circle.setAttribute('cy', yScale(d.value));
+          circle.setAttribute('r', '6');
+          circle.setAttribute('fill', color);
+          circle.setAttribute('stroke', 'white');
+          circle.setAttribute('stroke-width', '2');
+          circle.style.cursor = 'pointer';
+
+          circle.addEventListener('mouseenter', (e) => {
+            const tooltip = document.getElementById('tooltip');
+            const note = d.hasProgram ? '(Has local program)' : '(No local program)';
+            tooltip.innerHTML = `
+              <div style="font-weight:600">${d.county} County - ${d.year}</div>
+              <div>ED Visits: ${d.value.toFixed(1)} per 10,000</div>
+              <div style="opacity:0.8;font-size:0.85em">${note}</div>
+            `;
+            const rect = e.target.getBoundingClientRect();
+            tooltip.style.left = rect.left + rect.width / 2 + 'px';
+            tooltip.style.top = rect.top - 10 + 'px';
+            tooltip.style.transform = 'translate(-50%, -100%)';
+            tooltip.classList.remove('hidden');
+            tooltip.setAttribute('aria-hidden', 'false');
+          });
+
+          circle.addEventListener('mouseleave', () => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.add('hidden');
+            tooltip.setAttribute('aria-hidden', 'true');
+          });
+
+          svg.appendChild(circle);
+        });
+      }
+
+      // Draw lines based on view mode
+      drawLine(countyAData, '#0D9488', viewMode === 'both' || viewMode === 'program');
+      drawLine(countyBData, '#F9A825', viewMode === 'both' || viewMode === 'comparison');
+
+      chartInitialized = true;
+    }
+
+    // Toggle controls
+    document.getElementById('toggle-both').addEventListener('click', () => {
+      viewMode = 'both';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-both').classList.add('active');
+      renderTimelineChart();
+    });
+
+    document.getElementById('toggle-program').addEventListener('click', () => {
+      viewMode = 'program';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-program').classList.add('active');
+      renderTimelineChart();
+    });
+
+    document.getElementById('toggle-comparison').addEventListener('click', () => {
+      viewMode = 'comparison';
+      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('toggle-comparison').classList.add('active');
+      renderTimelineChart();
+    });
+
+    // Panel navigation
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Re-render chart if returning to panel 1
+        if (panelNum === '1' && chartInitialized) {
+          setTimeout(() => renderTimelineChart(), 50);
+        }
+      });
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTimelineChart();
+
+      // Debounced resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderTimelineChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

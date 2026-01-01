@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detecting P-Hacking and Multiple Testing Issues | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn to identify specification searching and publication bias. Understand how testing many hypotheses inflates false positive rates and what economists look for when evaluating research credibility.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-danger: #C62828;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.danger { color: var(--color-danger); }
+    .stat-value.success { color: var(--color-success); }
+    .stat-value.warning { color: var(--color-warning); }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: THE PROBLEM
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.danger {
+      border-left-color: var(--color-danger);
+    }
+
+    .pathway-item.caution {
+      border-left-color: var(--color-caution);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: SPECIFICATION CURVE
+       ============================================ */
+    .spec-curve-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .spec-curve-container { grid-template-columns: 1fr; }
+    }
+
+    .spec-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .control-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+
+    .control-group select {
+      padding: var(--space-xs) var(--space-sm);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      background: white;
+    }
+
+    .run-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .run-btn:hover {
+      background: var(--color-primary-dark);
+    }
+
+    .run-btn:disabled {
+      background: var(--color-text-muted);
+      cursor: not-allowed;
+    }
+
+    .spec-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .spec-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .spec-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .spec-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: var(--space-xs) 0;
+    }
+
+    .spec-label {
+      color: var(--color-text-secondary);
+    }
+
+    .spec-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .spec-value.significant {
+      color: var(--color-success);
+    }
+
+    .spec-value.not-significant {
+      color: var(--color-text-muted);
+    }
+
+    .p-value-bar {
+      height: 8px;
+      background: var(--color-border-light);
+      border-radius: 4px;
+      margin-top: var(--space-sm);
+      overflow: hidden;
+    }
+
+    .p-value-fill {
+      height: 100%;
+      background: var(--color-secondary);
+      transition: width 0.3s ease;
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    /* ============================================
+       9. PANEL 4: RED FLAGS
+       ============================================ */
+    .red-flags-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .red-flags-grid { grid-template-columns: 1fr; }
+    }
+
+    .red-flag-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-danger);
+    }
+
+    .red-flag-card h4 {
+      font-size: 1rem;
+      color: var(--color-danger);
+      margin-bottom: var(--space-sm);
+    }
+
+    .red-flag-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .red-flag-example {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       11. BRIDGING BOX
+       ============================================ */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .spec-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    /* Spec curve specific */
+    .spec-line {
+      stroke: var(--color-border);
+      stroke-width: 1;
+    }
+
+    .spec-line.significant {
+      stroke: var(--color-success);
+      stroke-width: 2;
+    }
+
+    .spec-line.not-significant {
+      stroke: var(--color-text-muted);
+      stroke-width: 1;
+      stroke-dasharray: 3,3;
+    }
+
+    .threshold-line {
+      stroke: var(--color-danger);
+      stroke-width: 2;
+      stroke-dasharray: 5,5;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
+      <h1>Detecting P-Hacking and Multiple Testing Issues</h1>
+      <p class="subtitle">A study reports a significant finding. But how many specifications did the researchers try before landing on this one? Multiple testing inflates false positives.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Specification Curve</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Red Flags</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Imagine 100 researchers each testing whether a new health intervention works. In reality, the intervention has no effect. How many researchers will still find a "significant" result at p &lt; 0.05? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Distribution of P-Values (100 Studies, No True Effect)</h3>
+            <svg id="p-value-chart" class="chart-svg" role="img" aria-label="Histogram showing distribution of p-values when testing a null effect"></svg>
+            <div style="display: flex; justify-content: center; gap: var(--space-xl); margin-top: var(--space-md); font-size: 0.85rem;">
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span style="display: inline-block; width: 14px; height: 14px; background: var(--color-danger); border-radius: 2px;"></span>
+                <span>p &lt; 0.05 (False Positive)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span style="display: inline-block; width: 14px; height: 14px; background: var(--color-secondary); border-radius: 2px;"></span>
+                <span>p &ge; 0.05 (Correct)</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Simulation Results</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-studies">100</div>
+                  <div class="stat-label">Studies Run</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value danger" id="stat-significant">--</div>
+                  <div class="stat-label">Found "Significant"</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>The Reality</h4>
+              <div style="text-align: center; padding: var(--space-md) 0;">
+                <div class="stat-value" style="font-size: 2rem;">0</div>
+                <div class="stat-label">True Effect Size</div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> Even when there is no real effect, about <span id="stat-percentage">--</span>% of studies find a "significant" result by chance alone.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>This is the false positive rate in action.</strong></p>
+          <p>With a p-value threshold of 0.05, roughly 5% of null effects will appear significant. What happens when researchers run many tests on the same data?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            Reporting significant findings without revealing the analytic path hides how fragile the results might be.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/p-hacking-multiple-testing-dag-confounding.png"
+              alt="Diagram showing how researcher degrees of freedom (choosing samples, variables, models, and cutoffs) can lead to finding spurious significant results among many null findings"
+              class="dag-image"
+            >
+            <p class="dag-caption">Multiple testing paths increase the chance of finding at least one "significant" result by chance.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Kinds of Testing Problems</h4>
+              <div class="pathway-list">
+                <div class="pathway-item danger">
+                  <strong>P-hacking (specification searching)</strong>
+                  <p>Trying different variable definitions, control sets, subgroups, or models until something reaches p &lt; 0.05. Often unintentional.</p>
+                </div>
+                <div class="pathway-item caution">
+                  <strong>Publication bias (the file drawer)</strong>
+                  <p>Journals publish significant findings; null results stay hidden. The literature becomes skewed toward false positives.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The math problem:</strong> If you test 20 independent hypotheses at p &lt; 0.05 when all are actually null, you have a 64% chance of finding at least one "significant" result. That's not evidence; it's noise.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Researchers have many choices when analyzing data.</strong></p>
+          <p>Each choice creates a potential specification. What if we saw all the specifications, not just the one that was published?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: SPECIFICATION CURVE
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Specification Curve</h2>
+          <p class="panel-intro">
+            A specification curve shows results from many reasonable analytic choices. If only a few specifications produce significance while most do not, the finding may be fragile.
+          </p>
+        </div>
+
+        <div class="spec-controls">
+          <div class="control-group">
+            <label for="sample-select">Sample:</label>
+            <select id="sample-select">
+              <option value="all">All counties</option>
+              <option value="urban">Urban only</option>
+              <option value="rural">Rural only</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="outcome-select">Outcome:</label>
+            <select id="outcome-select">
+              <option value="rate1">Hospitalization rate</option>
+              <option value="rate2">ER visits</option>
+              <option value="rate3">Mortality</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="controls-select">Controls:</label>
+            <select id="controls-select">
+              <option value="minimal">Minimal</option>
+              <option value="standard">Standard</option>
+              <option value="full">Full set</option>
+            </select>
+          </div>
+          <button class="run-btn" id="run-all-btn">Run All 27 Specifications</button>
+        </div>
+
+        <div class="spec-curve-container">
+          <div class="chart-wrapper">
+            <svg id="spec-curve-chart" class="chart-svg" role="img" aria-label="Specification curve showing effect estimates across all analytic choices"></svg>
+          </div>
+
+          <aside class="spec-sidebar">
+            <div class="spec-card">
+              <h4>Current Specification</h4>
+              <div class="spec-row">
+                <span class="spec-label">Sample:</span>
+                <span class="spec-value" id="current-sample">--</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Outcome:</span>
+                <span class="spec-value" id="current-outcome">--</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Controls:</span>
+                <span class="spec-value" id="current-controls">--</span>
+              </div>
+              <div class="spec-row" style="margin-top: var(--space-sm); padding-top: var(--space-sm); border-top: 1px solid var(--color-border-light);">
+                <span class="spec-label">Effect:</span>
+                <span class="spec-value" id="current-effect">--</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">p-value:</span>
+                <span class="spec-value" id="current-pvalue">--</span>
+              </div>
+            </div>
+
+            <div class="spec-card">
+              <h4>All Specifications Summary</h4>
+              <div class="spec-row">
+                <span class="spec-label">Total specs:</span>
+                <span class="spec-value" id="total-specs">27</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Significant (p&lt;0.05):</span>
+                <span class="spec-value significant" id="sig-specs">--</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Not significant:</span>
+                <span class="spec-value not-significant" id="nonsig-specs">--</span>
+              </div>
+              <div class="p-value-bar">
+                <div class="p-value-fill" id="sig-bar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="insight-box" id="spec-insight">
+              <p>Click "Run All 27 Specifications" to see how results vary across reasonable analytic choices.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Transparent research shows all reasonable specifications.</strong></p>
+          <p>What warning signs should you look for when reading a study that reports only one specification?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: RED FLAGS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Red Flags</h2>
+          <p class="panel-intro">
+            These patterns suggest that specification searching or selective reporting may have inflated the reported results. None prove wrongdoing, but each warrants scrutiny.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is P-Hacking?</h3>
+          <p><strong>P-hacking</strong> refers to practices that artificially inflate the chance of finding a statistically significant result:</p>
+          <ul>
+            <li>Testing many outcome variables, but reporting only the significant ones</li>
+            <li>Trying different subgroups until one shows an effect</li>
+            <li>Adding or removing control variables to change significance</li>
+            <li>Stopping data collection when p drops below 0.05</li>
+          </ul>
+          <p>The result looks like evidence, but it's really the product of searching through noise until something appeared significant by chance.</p>
+        </div>
+
+        <div class="red-flags-grid">
+          <div class="red-flag-card">
+            <h4>P-values just below 0.05</h4>
+            <p>A suspicious clustering of p-values at 0.04, 0.03, or 0.049 suggests results were nudged across the threshold.</p>
+            <div class="red-flag-example">
+              "We found p = 0.048 after controlling for baseline characteristics..."
+            </div>
+          </div>
+
+          <div class="red-flag-card">
+            <h4>Unexplained subgroup analysis</h4>
+            <p>Results are significant only in certain subgroups with no pre-specified hypothesis for why.</p>
+            <div class="red-flag-example">
+              "The effect was significant among women aged 45-54 in urban areas..."
+            </div>
+          </div>
+
+          <div class="red-flag-card">
+            <h4>Flexible outcome definitions</h4>
+            <p>The outcome measure differs from what was pre-registered, or multiple outcomes are tested with only one reported.</p>
+            <div class="red-flag-example">
+              "We examined quality of life using our adapted 8-item scale..."
+            </div>
+          </div>
+
+          <div class="red-flag-card">
+            <h4>No pre-registration or protocol</h4>
+            <p>Without a public record of the planned analysis, there's no way to tell if the reported approach was chosen after seeing the data.</p>
+            <div class="red-flag-example">
+              No mention of pre-registration, trial registry, or analysis plan.
+            </div>
+          </div>
+
+          <div class="red-flag-card">
+            <h4>Inconsistent control variables</h4>
+            <p>Different specifications use different controls without clear justification, suggesting selection based on results.</p>
+            <div class="red-flag-example">
+              "We control for income, education, and region (Model 2); and income only (Model 3)..."
+            </div>
+          </div>
+
+          <div class="red-flag-card">
+            <h4>Large effect from small sample</h4>
+            <p>Surprisingly large effects in underpowered studies suggest the "winner's curse" from selecting the most impressive result.</p>
+            <div class="red-flag-example">
+              "In our sample of 47 participants, the treatment reduced risk by 68%..."
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Skepticism is healthy, but so is understanding the fix.</strong></p>
+          <p>What practices help researchers avoid these problems? What should you look for as evidence of credible research?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Understanding multiple testing helps you evaluate research credibility. These concepts distinguish robust findings from statistical artifacts.
+          </p>
+        </div>
+
+        <div class="questions-grid">
+          <div class="question-card">
+            <h4>Was the analysis pre-registered?</h4>
+            <p>Pre-registration commits researchers to a specific analysis plan before seeing the data, preventing post-hoc specification searching.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>Are all specifications shown?</h4>
+            <p>Transparent studies present specification curves or robustness checks showing results across reasonable analytic choices.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>Is the effect consistent?</h4>
+            <p>Robust findings appear across multiple specifications, samples, and outcome measures. Fragile findings depend on specific choices.</p>
+          </div>
+
+          <div class="question-card">
+            <h4>Does the sample size support the effect?</h4>
+            <p>Large effects from small samples are suspicious. Credible studies have adequate power for the claimed effect size.</p>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>False positive rate:</strong> The probability of finding significance when no true effect exists (Type I error)</div>
+            <div class="concept-item"><strong>Multiple testing:</strong> Running many statistical tests, which inflates the chance of spurious findings</div>
+            <div class="concept-item"><strong>P-hacking:</strong> Selectively reporting analyses that achieve p &lt; 0.05</div>
+            <div class="concept-item"><strong>Publication bias:</strong> Journals preferring to publish significant results, hiding null findings</div>
+            <div class="concept-item"><strong>Specification curve:</strong> Showing results across all reasonable analytic choices</div>
+            <div class="concept-item"><strong>Pre-registration:</strong> Committing to an analysis plan before seeing data</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>A single significant p-value tells you little without knowing the research process.</strong> When researchers have many choices about samples, outcomes, and models, the chance of finding at least one "significant" result by chance is high. The solution isn't avoiding statistics; it's demanding transparency about how many tests were run and showing results across all reasonable specifications. <strong>This is what economists mean by "robustness."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual study results.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    // Generate p-values from null hypothesis (uniform distribution)
+    function generateNullPValues(n, seed) {
+      const pValues = [];
+      for (let i = 0; i < n; i++) {
+        const x = Math.sin(seed++) * 10000;
+        pValues.push(x - Math.floor(x));
+      }
+      return pValues;
+    }
+
+    // Generate specification results
+    function generateSpecifications(seed) {
+      const samples = ['all', 'urban', 'rural'];
+      const outcomes = ['rate1', 'rate2', 'rate3'];
+      const controls = ['minimal', 'standard', 'full'];
+
+      const specs = [];
+      let s = seed;
+
+      for (const sample of samples) {
+        for (const outcome of outcomes) {
+          for (const control of controls) {
+            const rand = () => {
+              const x = Math.sin(s++) * 10000;
+              return x - Math.floor(x);
+            };
+
+            // Generate effect estimate (mostly null with some noise)
+            // True effect is zero, so we're generating noise around zero
+            const effect = (rand() - 0.5) * 4; // Effect between -2 and 2
+
+            // Standard error varies by specification
+            const se = 0.8 + rand() * 1.2;
+
+            // t-statistic
+            const t = effect / se;
+
+            // p-value (two-tailed, approximation)
+            // Using simple approximation for illustration
+            const pValue = 2 * (1 - normalCDF(Math.abs(t)));
+
+            specs.push({
+              sample,
+              outcome,
+              controls: control,
+              effect: effect,
+              se: se,
+              pValue: Math.max(0.001, Math.min(0.999, pValue)),
+              significant: pValue < 0.05
+            });
+          }
+        }
+      }
+
+      return specs;
+    }
+
+    // Simple normal CDF approximation
+    function normalCDF(x) {
+      const a1 =  0.254829592;
+      const a2 = -0.284496736;
+      const a3 =  1.421413741;
+      const a4 = -1.453152027;
+      const a5 =  1.061405429;
+      const p  =  0.3275911;
+
+      const sign = x < 0 ? -1 : 1;
+      x = Math.abs(x) / Math.sqrt(2);
+
+      const t = 1.0 / (1.0 + p * x);
+      const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+      return 0.5 * (1.0 + sign * y);
+    }
+
+    const nullPValues = generateNullPValues(100, 42);
+    let allSpecs = generateSpecifications(123);
+    let specsRun = false;
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let pValueChartInitialized = false;
+    let specCurveInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!pValueChartInitialized) {
+              renderPValueHistogram();
+              pValueChartInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!specCurveInitialized) {
+              renderSpecCurve();
+              specCurveInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. P-VALUE HISTOGRAM (Panel 1)
+       ============================================ */
+    function renderPValueHistogram() {
+      const svg = document.getElementById('p-value-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Create histogram bins
+      const numBins = 20;
+      const binWidth = 1.0 / numBins;
+      const bins = Array(numBins).fill(0);
+
+      nullPValues.forEach(p => {
+        const binIndex = Math.min(Math.floor(p / binWidth), numBins - 1);
+        bins[binIndex]++;
+      });
+
+      const maxBin = Math.max(...bins);
+
+      const xScale = (val) => margin.left + (val / 1.0) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / (maxBin + 2)) * plotHeight;
+
+      // Draw bars
+      bins.forEach((count, i) => {
+        const binStart = i * binWidth;
+        const binEnd = (i + 1) * binWidth;
+        const isSignificant = binEnd <= 0.05;
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', xScale(binStart) + 1);
+        rect.setAttribute('y', yScale(count));
+        rect.setAttribute('width', (plotWidth / numBins) - 2);
+        rect.setAttribute('height', yScale(0) - yScale(count));
+        rect.setAttribute('fill', isSignificant ? 'var(--color-danger)' : 'var(--color-secondary)');
+        rect.setAttribute('opacity', '0.8');
+        svg.appendChild(rect);
+      });
+
+      // 0.05 threshold line
+      const thresholdX = xScale(0.05);
+      const threshLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      threshLine.setAttribute('x1', thresholdX);
+      threshLine.setAttribute('x2', thresholdX);
+      threshLine.setAttribute('y1', margin.top);
+      threshLine.setAttribute('y2', height - margin.bottom);
+      threshLine.setAttribute('stroke', 'var(--color-danger)');
+      threshLine.setAttribute('stroke-width', '2');
+      threshLine.setAttribute('stroke-dasharray', '5,5');
+      svg.appendChild(threshLine);
+
+      // Threshold label
+      const threshLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      threshLabel.setAttribute('x', thresholdX + 5);
+      threshLabel.setAttribute('y', margin.top + 20);
+      threshLabel.setAttribute('font-size', '11');
+      threshLabel.setAttribute('fill', 'var(--color-danger)');
+      threshLabel.textContent = 'p = 0.05';
+      svg.appendChild(threshLabel);
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 1; x += 0.2) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'P-Value';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= maxBin + 2; y += 2) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Number of Studies';
+      svg.appendChild(yLabel);
+
+      // Update stats
+      const significant = nullPValues.filter(p => p < 0.05).length;
+      document.getElementById('stat-significant').textContent = significant;
+      document.getElementById('stat-percentage').textContent = significant;
+    }
+
+    /* ============================================
+       5. SPECIFICATION CURVE (Panel 3)
+       ============================================ */
+    function renderSpecCurve() {
+      const svg = document.getElementById('spec-curve-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 80, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Sort specs by effect size for visualization
+      const sortedSpecs = [...allSpecs].sort((a, b) => a.effect - b.effect);
+
+      // Find min/max effect for scaling
+      const effects = sortedSpecs.map(s => s.effect);
+      const minEffect = Math.min(...effects) - 0.5;
+      const maxEffect = Math.max(...effects) + 0.5;
+
+      const xScale = (i) => margin.left + (i / (sortedSpecs.length - 1)) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight / 2 - (val / Math.max(Math.abs(minEffect), Math.abs(maxEffect))) * (plotHeight / 2);
+
+      // Zero line
+      const zeroLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      zeroLine.setAttribute('x1', margin.left);
+      zeroLine.setAttribute('x2', width - margin.right);
+      zeroLine.setAttribute('y1', yScale(0));
+      zeroLine.setAttribute('y2', yScale(0));
+      zeroLine.setAttribute('stroke', 'var(--color-border)');
+      zeroLine.setAttribute('stroke-width', '2');
+      svg.appendChild(zeroLine);
+
+      // Zero label
+      const zeroLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      zeroLabel.setAttribute('x', margin.left - 8);
+      zeroLabel.setAttribute('y', yScale(0) + 4);
+      zeroLabel.setAttribute('text-anchor', 'end');
+      zeroLabel.setAttribute('font-size', '11');
+      zeroLabel.setAttribute('fill', 'var(--color-text-muted)');
+      zeroLabel.textContent = '0';
+      svg.appendChild(zeroLabel);
+
+      if (specsRun) {
+        // Draw specification points and confidence intervals
+        sortedSpecs.forEach((spec, i) => {
+          const x = xScale(i);
+          const y = yScale(spec.effect);
+          const ciTop = yScale(spec.effect + 1.96 * spec.se);
+          const ciBottom = yScale(spec.effect - 1.96 * spec.se);
+
+          // Confidence interval line
+          const ciLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          ciLine.setAttribute('x1', x);
+          ciLine.setAttribute('x2', x);
+          ciLine.setAttribute('y1', ciTop);
+          ciLine.setAttribute('y2', ciBottom);
+          ciLine.setAttribute('stroke', spec.significant ? 'var(--color-success)' : 'var(--color-text-muted)');
+          ciLine.setAttribute('stroke-width', spec.significant ? '2' : '1');
+          ciLine.setAttribute('opacity', '0.6');
+          svg.appendChild(ciLine);
+
+          // Point estimate
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', x);
+          circle.setAttribute('cy', y);
+          circle.setAttribute('r', 5);
+          circle.setAttribute('fill', spec.significant ? 'var(--color-success)' : 'var(--color-text-muted)');
+          circle.setAttribute('style', 'cursor: pointer;');
+
+          circle.addEventListener('mouseenter', (e) => showSpecTooltip(e, spec));
+          circle.addEventListener('mouseleave', hideTooltip);
+          circle.addEventListener('click', () => updateCurrentSpec(spec));
+
+          svg.appendChild(circle);
+        });
+
+        // Update summary stats
+        const sigCount = allSpecs.filter(s => s.significant).length;
+        document.getElementById('sig-specs').textContent = sigCount;
+        document.getElementById('nonsig-specs').textContent = allSpecs.length - sigCount;
+        document.getElementById('sig-bar').style.width = (sigCount / allSpecs.length * 100) + '%';
+
+        // Update insight
+        const insightEl = document.getElementById('spec-insight');
+        if (sigCount === 0) {
+          insightEl.innerHTML = '<strong>No specifications are significant.</strong> The effect appears to be null across all reasonable analytic choices.';
+        } else if (sigCount <= 3) {
+          insightEl.innerHTML = `<strong>Only ${sigCount} of 27 specifications are significant.</strong> The finding is fragile; it depends on specific analytic choices.`;
+        } else if (sigCount < 14) {
+          insightEl.innerHTML = `<strong>${sigCount} of 27 specifications are significant.</strong> Results are mixed; the effect may exist but is not robust.`;
+        } else {
+          insightEl.innerHTML = `<strong>${sigCount} of 27 specifications are significant.</strong> The effect appears robust across analytic choices.`;
+        }
+      } else {
+        // Show placeholder message
+        const placeholder = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        placeholder.setAttribute('x', width / 2);
+        placeholder.setAttribute('y', height / 2);
+        placeholder.setAttribute('text-anchor', 'middle');
+        placeholder.setAttribute('font-size', '14');
+        placeholder.setAttribute('fill', 'var(--color-text-muted)');
+        placeholder.textContent = 'Click "Run All 27 Specifications" to see results';
+        svg.appendChild(placeholder);
+      }
+
+      // Y-axis labels
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Effect Estimate (with 95% CI)';
+      svg.appendChild(yLabel);
+
+      // X-axis label
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Specifications (sorted by effect size)';
+      svg.appendChild(xLabel);
+    }
+
+    function updateCurrentSpec(spec) {
+      const sampleLabels = { all: 'All counties', urban: 'Urban only', rural: 'Rural only' };
+      const outcomeLabels = { rate1: 'Hospitalization rate', rate2: 'ER visits', rate3: 'Mortality' };
+      const controlLabels = { minimal: 'Minimal', standard: 'Standard', full: 'Full set' };
+
+      document.getElementById('current-sample').textContent = sampleLabels[spec.sample];
+      document.getElementById('current-outcome').textContent = outcomeLabels[spec.outcome];
+      document.getElementById('current-controls').textContent = controlLabels[spec.controls];
+      document.getElementById('current-effect').textContent = spec.effect.toFixed(2);
+
+      const pValueEl = document.getElementById('current-pvalue');
+      pValueEl.textContent = spec.pValue.toFixed(3);
+      pValueEl.className = 'spec-value ' + (spec.significant ? 'significant' : 'not-significant');
+    }
+
+    function showSpecTooltip(event, spec) {
+      const sampleLabels = { all: 'All counties', urban: 'Urban only', rural: 'Rural only' };
+      const outcomeLabels = { rate1: 'Hospitalization', rate2: 'ER visits', rate3: 'Mortality' };
+
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="spec-name">${sampleLabels[spec.sample]}, ${outcomeLabels[spec.outcome]}</div>
+        <div class="metric">Effect: ${spec.effect.toFixed(2)} (SE: ${spec.se.toFixed(2)})</div>
+        <div class="metric">p-value: ${spec.pValue.toFixed(3)} ${spec.significant ? '(Significant)' : ''}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    // Run all specifications button
+    document.getElementById('run-all-btn').addEventListener('click', () => {
+      specsRun = true;
+      renderSpecCurve();
+      document.getElementById('run-all-btn').disabled = true;
+      document.getElementById('run-all-btn').textContent = 'All Specifications Run';
+    });
+
+    // Dropdown handlers for current spec display
+    ['sample-select', 'outcome-select', 'controls-select'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => {
+        if (!specsRun) return;
+
+        const sample = document.getElementById('sample-select').value;
+        const outcome = document.getElementById('outcome-select').value;
+        const controls = document.getElementById('controls-select').value;
+
+        const spec = allSpecs.find(s =>
+          s.sample === sample &&
+          s.outcome === outcome &&
+          s.controls === controls
+        );
+
+        if (spec) {
+          updateCurrentSpec(spec);
+        }
+      });
+    });
+
+    /* ============================================
+       6. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render initial chart
+      renderPValueHistogram();
+      pValueChartInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderPValueHistogram();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderSpecCurve();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

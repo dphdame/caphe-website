@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When Identical Data Leads to Opposite Policies | CAPHE Methods Lab</title>
+  <meta name="description" content="Two analysts look at the same data and reach opposite conclusions. Learn why 'Is the association real?' is the wrong question—and why economists ask 'Is the effect identified?' instead.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* Bridging question */
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin: 0;
+    }
+
+    /* ============================================
+       7. ANALYST PANELS
+       ============================================ */
+    .analyst-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .analyst-container { grid-template-columns: 1fr; }
+    }
+
+    .analyst-profile {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .analyst-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .analyst-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .analyst-avatar.expand {
+      background: var(--color-success);
+    }
+
+    .analyst-avatar.cut {
+      background: var(--color-warning);
+    }
+
+    .analyst-info h3 {
+      margin-bottom: var(--space-xs);
+    }
+
+    .analyst-title {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .analyst-reasoning {
+      margin-bottom: var(--space-lg);
+    }
+
+    .analyst-reasoning h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .reasoning-step {
+      display: flex;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .recommendation-box {
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .recommendation-box.expand {
+      background: rgba(46, 125, 50, 0.1);
+      border: 2px solid var(--color-success);
+    }
+
+    .recommendation-box.cut {
+      background: rgba(245, 124, 0, 0.1);
+      border: 2px solid var(--color-warning);
+    }
+
+    .recommendation-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-sm);
+    }
+
+    .recommendation-box.expand .recommendation-label {
+      color: var(--color-success);
+    }
+
+    .recommendation-box.cut .recommendation-label {
+      color: var(--color-warning);
+    }
+
+    .recommendation-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-family: var(--font-serif);
+    }
+
+    .recommendation-box.expand .recommendation-text {
+      color: var(--color-success);
+    }
+
+    .recommendation-box.cut .recommendation-text {
+      color: var(--color-warning);
+    }
+
+    /* Sidebar for analyst panels */
+    .assumption-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .assumption-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .assumption-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .assumption-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .assumption-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .assumption-check {
+      color: var(--color-success);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .assumption-question {
+      color: var(--color-warning);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. THE DIFFERENCE PANEL
+       ============================================ */
+    .difference-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .difference-container { grid-template-columns: 1fr; }
+    }
+
+    .comparison-column {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .comparison-column.expand {
+      border-top: 4px solid var(--color-success);
+    }
+
+    .comparison-column.cut {
+      border-top: 4px solid var(--color-warning);
+    }
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .column-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+    }
+
+    .column-icon.expand {
+      background: var(--color-success);
+    }
+
+    .column-icon.cut {
+      background: var(--color-warning);
+    }
+
+    .belief-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .belief-item {
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .comparison-column.expand .belief-item {
+      border-left-color: var(--color-success);
+    }
+
+    .comparison-column.cut .belief-item {
+      border-left-color: var(--color-warning);
+    }
+
+    .belief-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .belief-text {
+      font-size: 0.95rem;
+      color: var(--color-text);
+    }
+
+    /* Definition Card (KEY CONCEPT) */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ============================================
+       9. KEY INSIGHT PANEL
+       ============================================ */
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       10. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       11. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .county-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       12. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Design Essentials</div>
+      <h1>When Identical Data Leads to Opposite Policies</h1>
+      <p class="subtitle">Two analysts examine the same scatter plot showing a positive correlation. One recommends expanding the program; the other recommends cutting it. How can the same data lead to opposite conclusions?</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Analyst A</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Analyst B</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">The Difference</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            California's Department of Public Health is evaluating a Community Health Worker (CHW) program. County-level data show a clear positive correlation: counties with more CHW hours have better health outcomes. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">CHW Program Intensity vs Preventable Hospitalizations</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing CHW program intensity versus preventable hospitalization rate across California counties"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-primary);"></span>
+                <span>Each dot = 1 California county</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>The Association</h4>
+              <div class="stat-item" style="text-align: left;">
+                <div class="stat-value" id="stat-correlation" style="font-size: 1.5rem;">--</div>
+                <div class="stat-label">Correlation (r)</div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>County Summary</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-counties">58</div>
+                  <div class="stat-label">Counties</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-avg-chw">--</div>
+                  <div class="stat-label">Avg CHW Hours</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we observe:</strong> More CHW hours correlate with lower preventable hospitalization rates. The pattern is clear and statistically significant (p < 0.001).
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Two analysts will interpret this data. Both are competent professionals. Both will reach confident conclusions. Yet their recommendations will be opposites.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: ANALYST A
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Analyst A's Interpretation</h2>
+          <p class="panel-intro">
+            Analyst A approaches the data with a focus on statistical association. The question: Is the relationship between CHW programs and health outcomes real and meaningful?
+          </p>
+        </div>
+
+        <div class="analyst-container">
+          <div class="analyst-profile">
+            <div class="analyst-header">
+              <div class="analyst-avatar expand">A</div>
+              <div class="analyst-info">
+                <h3>Analyst A</h3>
+                <div class="analyst-title">Adjustment-Based Perspective</div>
+              </div>
+            </div>
+
+            <div class="analyst-reasoning">
+              <h4>Reasoning Process</h4>
+              <div class="reasoning-step">
+                <div class="step-number">1</div>
+                <div class="step-content">The correlation is strong (r = -0.72) and statistically significant. This is unlikely due to chance.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">2</div>
+                <div class="step-content">I control for observable confounders: income, insurance rates, urban/rural status. The association persists.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">3</div>
+                <div class="step-content">CHWs provide evidence-based services (care coordination, patient education) known to improve outcomes.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">4</div>
+                <div class="step-content">The dose-response relationship (more CHW hours = better outcomes) supports causality.</div>
+              </div>
+            </div>
+
+            <div class="recommendation-box expand">
+              <div class="recommendation-label">Recommendation</div>
+              <div class="recommendation-text">Expand CHW funding statewide</div>
+            </div>
+          </div>
+
+          <aside class="assumption-sidebar">
+            <div class="assumption-card">
+              <h4>Key Assumptions</h4>
+              <div class="assumption-item">
+                <span class="assumption-check">OK</span>
+                <span>Statistical association is real</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-check">OK</span>
+                <span>Observable confounders controlled</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-check">OK</span>
+                <span>Mechanism is plausible</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-question">?</span>
+                <span>No unmeasured confounders</span>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>Analyst A's logic:</strong> If the association is real and we've controlled for known confounders, then CHWs likely cause better outcomes. Expanding the program should help more counties.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Analyst B looks at the exact same data and controls for the same variables. But Analyst B asks a different question entirely.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: ANALYST B
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Analyst B's Interpretation</h2>
+          <p class="panel-intro">
+            Analyst B asks: Why do some counties have CHW programs while others don't? The answer to this question changes everything.
+          </p>
+        </div>
+
+        <div class="analyst-container">
+          <div class="analyst-profile">
+            <div class="analyst-header">
+              <div class="analyst-avatar cut">B</div>
+              <div class="analyst-info">
+                <h3>Analyst B</h3>
+                <div class="analyst-title">Design-Based Perspective</div>
+              </div>
+            </div>
+
+            <div class="analyst-reasoning">
+              <h4>Reasoning Process</h4>
+              <div class="reasoning-step">
+                <div class="step-number">1</div>
+                <div class="step-content">Which counties adopted CHW programs? Ones with grant-writing capacity, health department infrastructure, and political will.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">2</div>
+                <div class="step-content">These same factors also improve health outcomes directly, regardless of CHWs. They're unmeasured confounders.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">3</div>
+                <div class="step-content">The association may reflect "counties that have their act together" rather than CHW effectiveness.</div>
+              </div>
+              <div class="reasoning-step">
+                <div class="step-number">4</div>
+                <div class="step-content">Mandating CHW programs for struggling counties won't give them the underlying capacity that drives success.</div>
+              </div>
+            </div>
+
+            <div class="recommendation-box cut">
+              <div class="recommendation-label">Recommendation</div>
+              <div class="recommendation-text">Don't expand until effect is identified</div>
+            </div>
+          </div>
+
+          <aside class="assumption-sidebar">
+            <div class="assumption-card">
+              <h4>Key Concerns</h4>
+              <div class="assumption-item">
+                <span class="assumption-check">OK</span>
+                <span>Statistical association is real</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-check">OK</span>
+                <span>Observable confounders controlled</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-question">?</span>
+                <span>Treatment assignment is non-random</span>
+              </div>
+              <div class="assumption-item">
+                <span class="assumption-question">?</span>
+                <span>Selection factors affect outcomes</span>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>Analyst B's logic:</strong> The counties that chose CHW programs may have succeeded anyway. We can't separate the effect of CHWs from the effect of being a county that adopts CHWs.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Same data. Same statistical methods. Opposite conclusions. What explains the difference?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: THE DIFFERENCE
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">The Difference</h2>
+          <p class="panel-intro">
+            Both analysts agree on the data. They disagree on what the data can tell us. The difference lies in one word: <strong>identification</strong>.
+          </p>
+        </div>
+
+        <div class="difference-container">
+          <div class="comparison-column expand">
+            <div class="column-header">
+              <div class="column-icon expand">A</div>
+              <h3>Analyst A's Question</h3>
+            </div>
+            <div class="belief-list">
+              <div class="belief-item">
+                <div class="belief-label">Asks</div>
+                <div class="belief-text">"Is the association between CHWs and outcomes real?"</div>
+              </div>
+              <div class="belief-item">
+                <div class="belief-label">Assumes</div>
+                <div class="belief-text">"If we control for observable confounders, remaining association reflects causation."</div>
+              </div>
+              <div class="belief-item">
+                <div class="belief-label">Ignores</div>
+                <div class="belief-text">"Why did some counties get CHW programs and others didn't?"</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="comparison-column cut">
+            <div class="column-header">
+              <div class="column-icon cut">B</div>
+              <h3>Analyst B's Question</h3>
+            </div>
+            <div class="belief-list">
+              <div class="belief-item">
+                <div class="belief-label">Asks</div>
+                <div class="belief-text">"Is the variation in CHWs independent of factors that affect outcomes?"</div>
+              </div>
+              <div class="belief-item">
+                <div class="belief-label">Assumes</div>
+                <div class="belief-text">"Counties that adopted CHWs differ in ways we cannot fully measure."</div>
+              </div>
+              <div class="belief-item">
+                <div class="belief-label">Requires</div>
+                <div class="belief-text">"Find variation in CHW adoption that's unrelated to underlying county capacity."</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is Identification?</h3>
+          <p>A causal effect is <strong>identified</strong> when the variation in treatment (here, CHW program intensity) is independent of the factors that also affect outcomes.</p>
+          <p style="margin-top: var(--space-md);">In this case, identification would require:</p>
+          <ul>
+            <li>Variation in CHW programs driven by something other than county capacity or political will</li>
+            <li>For example: a policy that randomly assigned CHW funding, or a budget cutoff that affected otherwise-similar counties differently</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">Without identification, we can't distinguish:</p>
+          <ul>
+            <li>"CHWs caused better outcomes" from</li>
+            <li>"Counties that adopt CHWs would have better outcomes anyway"</li>
+          </ul>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Why does this distinction matter so much? Because policies based on unidentified effects may fail spectacularly when scaled.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            The question "Is the association real?" is necessary but insufficient for policy. The question "Is the effect identified?" determines whether we can act on that association.
+          </p>
+        </div>
+
+        <div class="dag-wrapper">
+          <img
+            src="assets/identical-data-opposite-policies-dag.png"
+            alt="Causal diagram showing County Capacity affecting both CHW Program Adoption and Health Outcomes, with a dashed arrow from CHW Programs to Health Outcomes indicating unidentified causal effect"
+            class="dag-image"
+          >
+          <p class="dag-caption">County capacity affects both program adoption and health outcomes. The CHW effect cannot be separated from selection effects.</p>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Questions Economists Ask That Others Might Not</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Selection:</strong> Why did some units get treatment? Could those reasons also affect outcomes?</div>
+            <div class="concept-item"><strong>Counterfactual:</strong> What would have happened to treated units if they hadn't been treated?</div>
+            <div class="concept-item"><strong>Identification:</strong> Is there variation in treatment that's independent of outcome determinants?</div>
+            <div class="concept-item"><strong>External validity:</strong> Even if the effect is real here, will it work the same when scaled elsewhere?</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>Statistical significance doesn't equal causal identification.</strong> An association can be real, robust, and replicated while still failing to identify a causal effect. The crucial question is whether treatment variation is independent of outcome determinants. Policy changes, randomization, and natural experiments can provide this independence. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateCountyData() {
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
+        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
+        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
+        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
+        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
+        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
+        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
+        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
+        'County BC', 'County BD', 'County BE', 'County BF'
+      ];
+
+      const data = [];
+      let seed = 123;
+
+      for (let i = 0; i < 58; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // County capacity (unmeasured confounder) - higher = more capable
+        const capacity = rand() * 100;
+
+        // CHW hours driven by capacity (counties with capacity implement programs)
+        const baseCHW = capacity * 0.8 + (rand() - 0.5) * 30;
+        const chwHours = Math.max(0, Math.min(100, baseCHW));
+
+        // Preventable hospitalizations driven by capacity (and small CHW effect)
+        // Lower = better outcomes
+        const baseHosp = 100 - (capacity * 0.6);
+        const smallCHWEffect = -chwHours * 0.05; // Small true effect
+        const noise = (rand() - 0.5) * 20;
+        const hospRate = Math.max(15, Math.min(85, baseHosp + smallCHWEffect + noise));
+
+        data.push({
+          name: countyNames[i],
+          capacity: Math.round(capacity),
+          chwHours: Math.round(chwHours * 10) / 10,
+          hospRate: Math.round(hospRate * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function calculateCorrelation(data, xKey, yKey) {
+      const n = data.length;
+      const xVals = data.map(d => d[xKey]);
+      const yVals = data.map(d => d[yKey]);
+
+      const xMean = mean(xVals);
+      const yMean = mean(yVals);
+
+      let numerator = 0;
+      let xDenom = 0;
+      let yDenom = 0;
+
+      for (let i = 0; i < n; i++) {
+        const xDiff = xVals[i] - xMean;
+        const yDiff = yVals[i] - yMean;
+        numerator += xDiff * yDiff;
+        xDenom += xDiff * xDiff;
+        yDenom += yDiff * yDiff;
+      }
+
+      return numerator / Math.sqrt(xDenom * yDenom);
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 10, yMax = 90;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 20; y <= 80; y += 15) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend line
+      const xVals = countyData.map(d => d.chwHours);
+      const yVals = countyData.map(d => d.hospRate);
+      const xMean = mean(xVals);
+      const yMean = mean(yVals);
+
+      let numerator = 0;
+      let denominator = 0;
+      for (let i = 0; i < countyData.length; i++) {
+        numerator += (xVals[i] - xMean) * (yVals[i] - yMean);
+        denominator += (xVals[i] - xMean) * (xVals[i] - xMean);
+      }
+      const slope = numerator / denominator;
+      const intercept = yMean - slope * xMean;
+
+      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      trendLine.setAttribute('x1', xScale(0));
+      trendLine.setAttribute('x2', xScale(100));
+      trendLine.setAttribute('y1', yScale(intercept));
+      trendLine.setAttribute('y2', yScale(slope * 100 + intercept));
+      trendLine.setAttribute('stroke', 'var(--color-primary)');
+      trendLine.setAttribute('stroke-width', '2');
+      trendLine.setAttribute('stroke-dasharray', '5,5');
+      trendLine.setAttribute('opacity', '0.5');
+      svg.appendChild(trendLine);
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.chwHours));
+        circle.setAttribute('cy', yScale(d.hospRate));
+        circle.setAttribute('r', 7);
+        circle.setAttribute('fill', 'var(--color-primary)');
+        circle.setAttribute('opacity', '0.7');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'CHW Program Intensity (hours per 1,000 residents)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 20; y <= 80; y += 15) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Preventable Hospitalization Rate (per 10,000)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="county-name">${data.name} County</div>
+        <div class="metric">CHW Hours: ${data.chwHours}</div>
+        <div class="metric">Hosp. Rate: ${data.hospRate}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       6. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const correlation = calculateCorrelation(countyData, 'chwHours', 'hospRate');
+      const avgCHW = mean(countyData.map(d => d.chwHours));
+
+      document.getElementById('stat-correlation').textContent = correlation.toFixed(2);
+      document.getElementById('stat-avg-chw').textContent = Math.round(avgCHW);
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

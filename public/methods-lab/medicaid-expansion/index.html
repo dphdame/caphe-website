@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Study: Medicaid Expansion's Effect on Hospitals | CAPHE Methods Lab</title>
+  <meta name="description" content="Explore whether Medicaid expansion causes higher hospital use or if states with better healthcare infrastructure both expand Medicaid and have different utilization patterns. Learn to identify state-level selection and policy endogeneity.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DEFINITION CARD (KEY CONCEPT)
+       ============================================ */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       7. BRIDGING QUESTION
+       ============================================ */
+    .bridging-question {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    /* ============================================
+       8. PANEL 1: THE DATA
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 420px;
+    }
+
+    .legend {
+      display: flex;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       9. PANEL 2: THE PROBLEM (DAG)
+       ============================================ */
+    .problem-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .problem-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.causal {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.confounding {
+      border-left-color: var(--color-accent);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       10. PANEL 3: SEEING THE CONFOUNDER
+       ============================================ */
+    .stratified-section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .filter-label {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-right: var(--space-sm);
+    }
+
+    .filter-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .stratified-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .stratified-grid { grid-template-columns: 1fr; }
+    }
+
+    .comparison-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .comparison-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-md);
+    }
+
+    .comparison-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: var(--space-xs) 0;
+    }
+
+    .comparison-label {
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-value {
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .comparison-row.difference {
+      margin-top: var(--space-xs);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .comparison-row.difference .comparison-value {
+      color: var(--color-primary);
+    }
+
+    .insight-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.85rem;
+    }
+
+    .insight-box p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .insight-box p:last-child {
+      margin-bottom: 0;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       11. PANEL 4: WHAT WE CAN'T MEASURE
+       ============================================ */
+    .unmeasured-section {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .unmeasured-section h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-intro {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      max-width: 700px;
+    }
+
+    .unmeasured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .unmeasured-grid { grid-template-columns: 1fr; }
+    }
+
+    .unmeasured-image {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+    }
+
+    .unmeasured-explanation h4 {
+      color: var(--color-accent);
+      margin-bottom: var(--space-md);
+    }
+
+    .unmeasured-explanation p {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       12. PANEL 5: QUESTIONS TO CONSIDER
+       ============================================ */
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-prompt {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--color-primary);
+      padding: var(--space-sm);
+      background: rgba(0, 65, 165, 0.05);
+      border-radius: var(--radius-sm);
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       13. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       14. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    .tooltip .state-name {
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .tooltip .metric {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* ============================================
+       15. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
+      <h1>Case Study: Medicaid Expansion's Effect on Hospitals</h1>
+      <p class="subtitle">States that expanded Medicaid show higher emergency department and hospitalization rates. Did sick states expand, or does Medicaid increase utilization? This case explores state-level selection and policy endogeneity.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Seeing the Confounder</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't Measure</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Questions to Consider</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Each dot represents a U.S. state. States that expanded Medicaid tend to have higher hospital utilization rates. Is this evidence that Medicaid expansion increases hospital use? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Hospital Utilization by State Healthcare Index</h3>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing State Healthcare Index versus Hospital Utilization Rate across U.S. states"></svg>
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-secondary);"></span>
+                <span>No Medicaid Expansion</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--color-accent);"></span>
+                <span>Expanded Medicaid</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>State Breakdown</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-expanded-count">--</div>
+                  <div class="stat-label">Expanded</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-not-expanded-count">--</div>
+                  <div class="stat-label">Not Expanded</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Average Utilization Rate</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-expanded-avg">--</div>
+                  <div class="stat-label">Expanded</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="stat-not-expanded-avg">--</div>
+                  <div class="stat-label">Not Expanded</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> States that expanded Medicaid have hospital utilization rates about <span id="stat-difference">--</span> visits per 1,000 higher on average.
+            </div>
+          </aside>
+        </div>
+
+        <!-- Bridging question to Panel 2 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Does this correlation mean Medicaid expansion causes higher hospital use? Or could something else explain both the expansion decision and the utilization rates?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem</h2>
+          <p class="panel-intro">
+            States with stronger healthcare systems were more likely to expand Medicaid. Those same systems also facilitate higher healthcare utilization regardless of insurance coverage.
+          </p>
+        </div>
+
+        <div class="problem-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/medicaid-dag-confounding.png"
+              alt="Causal diagram showing State Healthcare Infrastructure affecting both Medicaid Expansion and Hospital Utilization, with a dashed arrow from Medicaid Expansion to Hospital Utilization indicating uncertain causal effect"
+              class="dag-image"
+            >
+            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow represents the effect we want to measure.</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Possible Explanations</h4>
+              <div class="pathway-list">
+                <div class="pathway-item causal">
+                  <strong>Medicaid expansion increases access</strong>
+                  <p>More people have coverage, so they use hospitals and EDs more because they can finally afford care.</p>
+                </div>
+                <div class="pathway-item confounding">
+                  <strong>Infrastructure drives both</strong>
+                  <p>States with more hospitals, doctors, and healthcare capacity both expand Medicaid AND have higher utilization regardless of coverage.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The confounding problem:</strong> If "State Healthcare Infrastructure" causes both Medicaid expansion and hospital utilization, the association we observe between expansion and utilization is confounded. We cannot determine how much of the difference stems from expansion itself.
+            </div>
+          </aside>
+        </div>
+
+        <!-- KEY CONCEPT card -->
+        <div class="definition-card">
+          <h3>What Is Policy Endogeneity?</h3>
+          <p><strong>Policy endogeneity</strong> occurs when the same factors that influence a policy decision also influence the outcomes we want to measure. In this case:</p>
+          <ul>
+            <li>States with robust healthcare systems are more likely to expand Medicaid</li>
+            <li>Those same states already have higher healthcare utilization due to better access</li>
+            <li>The policy "choice" is not random; it reflects underlying state characteristics</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">This creates a fundamental problem: we cannot simply compare expansion states to non-expansion states because they differ in ways beyond just the policy.</p>
+        </div>
+
+        <!-- Bridging question to Panel 3 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> If healthcare infrastructure confounds this relationship, what happens when we compare states with similar infrastructure levels?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: SEEING THE CONFOUNDER
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Seeing the Confounder</h2>
+          <p class="panel-intro">
+            If healthcare infrastructure drives both Medicaid expansion and hospital use, then comparing states within the same infrastructure level should show a smaller expansion effect. Use the filters below to stratify the data.
+          </p>
+        </div>
+
+        <!-- Stratification section -->
+        <div class="stratified-section">
+          <div class="filter-controls">
+            <span class="filter-label">Filter by Infrastructure Level:</span>
+            <button class="filter-btn active" data-filter="all">All States</button>
+            <button class="filter-btn" data-filter="low">Low (0-33)</button>
+            <button class="filter-btn" data-filter="medium">Medium (34-66)</button>
+            <button class="filter-btn" data-filter="high">High (67-100)</button>
+          </div>
+
+          <div class="stratified-grid">
+            <div class="chart-wrapper">
+              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing Medicaid expansion effect within infrastructure levels"></svg>
+            </div>
+
+            <aside class="comparison-sidebar">
+              <div class="comparison-card">
+                <h4>Overall Comparison</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">Expanded:</span>
+                  <span class="comparison-value" id="overall-expanded">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Not Expanded:</span>
+                  <span class="comparison-value" id="overall-not-expanded">--</span>
+                </div>
+                <div class="comparison-row difference">
+                  <span class="comparison-label">Difference:</span>
+                  <span class="comparison-value" id="overall-diff">--</span>
+                </div>
+              </div>
+
+              <div class="comparison-card">
+                <h4>Within This Stratum</h4>
+                <div class="comparison-row">
+                  <span class="comparison-label">Expanded:</span>
+                  <span class="comparison-value" id="stratum-expanded">--</span>
+                </div>
+                <div class="comparison-row">
+                  <span class="comparison-label">Not Expanded:</span>
+                  <span class="comparison-value" id="stratum-not-expanded">--</span>
+                </div>
+                <div class="comparison-row difference">
+                  <span class="comparison-label">Difference:</span>
+                  <span class="comparison-value" id="stratum-diff">--</span>
+                </div>
+              </div>
+
+              <div class="insight-box">
+                <p><strong>What's happening?</strong></p>
+                <p id="stratification-insight">Select an infrastructure level to see how the expansion effect changes when comparing similar states.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- KEY CONCEPT card -->
+        <div class="definition-card">
+          <h3>What Is State-Level Selection?</h3>
+          <p><strong>State-level selection</strong> describes how states "select into" policies based on their characteristics. States that expand Medicaid are not a random subset of all states. They differ systematically in:</p>
+          <ul>
+            <li>Political orientation and governance priorities</li>
+            <li>Existing healthcare infrastructure and capacity</li>
+            <li>Historical patterns of public health investment</li>
+            <li>Population health needs and demographics</li>
+          </ul>
+          <p style="margin-top: var(--space-md);">When we control for healthcare infrastructure, the apparent effect shrinks. This reveals how much of the original association was driven by selection rather than the policy effect.</p>
+        </div>
+
+        <!-- Bridging question to Panel 4 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> Controlling for infrastructure helped, but what about factors we cannot observe or measure? Political climate, provider attitudes, and health culture may also drive both expansion and utilization.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: WHAT WE CAN'T MEASURE
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">What We Can't Measure</h2>
+          <p class="panel-intro">
+            Stratification helped with what we measured. Some factors that influence both Medicaid expansion and hospital utilization do not appear in any dataset.
+          </p>
+        </div>
+
+        <div class="unmeasured-section">
+          <div class="unmeasured-grid">
+            <img
+              src="assets/medicaid-unmeasured-dag.png"
+              alt="Causal diagram showing both measured (Healthcare Infrastructure) and unmeasured (Political Climate, Provider Willingness) confounders affecting Medicaid expansion and hospital utilization"
+              class="unmeasured-image"
+            >
+            <div class="unmeasured-explanation">
+              <h4>Political Climate and Provider Willingness</h4>
+              <p>
+                States with supportive political climates may both embrace Medicaid expansion more readily AND have healthcare systems more willing to serve newly insured patients.
+              </p>
+              <p>
+                Provider willingness to accept Medicaid patients, community health norms, and public health investment are difficult to capture in datasets. Yet they could drive both the "treatment" (expansion) and the "outcome" (utilization).
+              </p>
+              <p>
+                <strong>This is the problem of unmeasured confounding.</strong> Regardless of how carefully we adjust for what we can see, hidden factors may remain unaccounted for.
+              </p>
+            </div>
+          </div>
+
+          <div class="key-insight" style="margin-top: var(--space-xl);">
+            <strong>The implication:</strong> Even with perfect data on healthcare infrastructure, we still could not be certain the remaining expansion effect is causal. Unmeasured confounding cannot be fixed by collecting more of the same type of data. It requires a different approach entirely.
+          </div>
+        </div>
+
+        <!-- KEY CONCEPT card -->
+        <div class="definition-card" style="margin-top: var(--space-xl);">
+          <h3>What Is Unmeasured Confounding?</h3>
+          <p><strong>Unmeasured confounding</strong> occurs when variables we cannot observe or quantify affect both the treatment and the outcome. Unlike measured confounders (which we can control for through stratification or regression), unmeasured confounders remain hidden sources of bias.</p>
+          <ul>
+            <li>No amount of statistical sophistication can eliminate bias from variables we do not measure</li>
+            <li>Sensitivity analysis can assess how strong an unmeasured confounder would need to be to explain away our findings</li>
+            <li>Better study designs (natural experiments, instrumental variables) can sometimes bypass this problem</li>
+          </ul>
+        </div>
+
+        <!-- Bridging question to Panel 5 -->
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What questions should we ask when evaluating claims about Medicaid expansion's effects? How do economists approach this identification challenge?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: QUESTIONS TO CONSIDER
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Questions to Consider</h2>
+          <p class="panel-intro">
+            These questions help identify confounding threats that statistical adjustment cannot fix. They will not prove causation, but they reveal where the analysis is most vulnerable to bias.
+          </p>
+        </div>
+
+        <div class="questions-grid">
+          <div class="question-card">
+            <h4>What else differs between expansion and non-expansion states?</h4>
+            <p>States that expanded Medicaid might differ from other states in many ways beyond just having expansion.</p>
+            <div class="question-prompt">
+              What other characteristics might explain why some states have both Medicaid expansion AND higher hospital utilization?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Is this a fair comparison?</h4>
+            <p>Cross-sectional data shows us a snapshot, not a story. We compare different states at one point in time.</p>
+            <div class="question-prompt">
+              Are expansion states truly comparable to non-expansion states? What would make them more comparable?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>Which came first?</h4>
+            <p>In this data, we see utilization and expansion status at the same time. We do not know the full sequence.</p>
+            <div class="question-prompt">
+              Did Medicaid expansion lead to higher utilization, or do states with higher utilization patterns tend to expand Medicaid?
+            </div>
+          </div>
+
+          <div class="question-card">
+            <h4>What study design would help?</h4>
+            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
+            <div class="question-prompt">
+              What kind of study would give you more confidence that Medicaid expansion actually causes higher hospital use?
+            </div>
+          </div>
+        </div>
+
+        <div class="concepts-box">
+          <h3>Concepts Demonstrated in This Lab</h3>
+          <div class="concept-list">
+            <div class="concept-item"><strong>Confounding:</strong> a third variable affects both treatment and outcome</div>
+            <div class="concept-item"><strong>Policy endogeneity:</strong> factors driving policy choice also affect outcomes</div>
+            <div class="concept-item"><strong>State-level selection:</strong> systematic differences between states that adopt different policies</div>
+            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we cannot adjust for</div>
+            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
+          </div>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both policy adoption and outcomes, the solution is not better adjustment. It requires finding sources of policy variation that operate independently of unmeasured confounders. Timing of policy rollouts, eligibility thresholds, and geographic discontinuities can provide this. <strong>This is what economists mean by "identification."</strong>
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual state-level statistics.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. SYNTHETIC DATA GENERATION
+       ============================================ */
+    function seededRandom(seed) {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function generateStateData() {
+      const stateNames = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+        'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+        'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
+        'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+        'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+        'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+        'Wisconsin', 'Wyoming'
+      ];
+
+      const data = [];
+      let seed = 42;
+
+      for (let i = 0; i < 50; i++) {
+        const rand = () => {
+          const x = Math.sin(seed++) * 10000;
+          return x - Math.floor(x);
+        };
+
+        // Healthcare infrastructure (confounder) - higher = more infrastructure
+        const infrastructure = rand() * 100;
+
+        // Medicaid expansion is more likely in high-infrastructure states
+        const expanded = infrastructure > 55 ? (rand() > 0.25) : (rand() > 0.75);
+
+        // Hospital utilization depends on infrastructure (and a small true expansion effect)
+        const baseUtilization = 180 + (infrastructure * 1.2);
+        const expansionEffect = expanded ? 15 : 0; // Small true effect
+        const noise = (rand() - 0.5) * 50;
+        const utilizationRate = Math.min(380, Math.max(150, baseUtilization + expansionEffect + noise));
+
+        data.push({
+          name: stateNames[i],
+          infrastructure: Math.round(infrastructure),
+          expanded: expanded,
+          utilizationRate: Math.round(utilizationRate * 10) / 10
+        });
+      }
+
+      return data;
+    }
+
+    const stateData = generateStateData();
+
+    /* ============================================
+       2. HELPER FUNCTIONS
+       ============================================ */
+    function mean(arr) {
+      if (arr.length === 0) return 0;
+      return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    /* ============================================
+       3. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+    let stratifiedInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(() => {
+            if (!scatterInitialized) {
+              renderScatterPlot();
+              scatterInitialized = true;
+            }
+          }, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            if (!stratifiedInitialized) {
+              renderStratifiedChart('all');
+              stratifiedInitialized = true;
+            }
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       4. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 140, yMax = 400;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = 150; y <= 380; y += 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      stateData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.infrastructure));
+        circle.setAttribute('cy', yScale(d.utilizationRate));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.expanded ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'State Healthcare Infrastructure Index';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 150; y <= 380; y += 50) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Hospital Utilization Rate (per 1,000)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. STRATIFIED CHART (Panel 3)
+       ============================================ */
+    let currentFilter = 'all';
+
+    function renderStratifiedChart(filter) {
+      currentFilter = filter;
+      const svg = document.getElementById('stratified-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 420;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 100;
+      const yMin = 140, yMax = 400;
+
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.infrastructure <= 33;
+        if (filter === 'medium') return d.infrastructure > 33 && d.infrastructure <= 66;
+        if (filter === 'high') return d.infrastructure > 66;
+        return true;
+      };
+
+      // Background shading for filter region
+      if (filter !== 'all') {
+        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        let x1, x2;
+        if (filter === 'low') { x1 = 0; x2 = 33; }
+        if (filter === 'medium') { x1 = 33; x2 = 66; }
+        if (filter === 'high') { x1 = 66; x2 = 100; }
+        shade.setAttribute('x', xScale(x1));
+        shade.setAttribute('y', margin.top);
+        shade.setAttribute('width', xScale(x2) - xScale(x1));
+        shade.setAttribute('height', plotHeight);
+        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.05)');
+        svg.appendChild(shade);
+      }
+
+      // Grid lines
+      for (let y = 150; y <= 380; y += 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      stateData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.infrastructure));
+        circle.setAttribute('cy', yScale(d.utilizationRate));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.expanded ? 'var(--color-accent)' : 'var(--color-secondary)');
+        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 100; x += 20) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'State Healthcare Infrastructure Index';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = 150; y <= 380; y += 50) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'Hospital Utilization Rate (per 1,000)';
+      svg.appendChild(yLabel);
+
+      updateComparisonStats(filter);
+    }
+
+    function updateComparisonStats(filter) {
+      const expandedAll = stateData.filter(d => d.expanded);
+      const notExpandedAll = stateData.filter(d => !d.expanded);
+
+      const overallExpandedMean = mean(expandedAll.map(d => d.utilizationRate));
+      const overallNotExpandedMean = mean(notExpandedAll.map(d => d.utilizationRate));
+      const overallDiff = overallExpandedMean - overallNotExpandedMean;
+
+      document.getElementById('overall-expanded').textContent = overallExpandedMean.toFixed(1);
+      document.getElementById('overall-not-expanded').textContent = overallNotExpandedMean.toFixed(1);
+      document.getElementById('overall-diff').textContent = '+' + overallDiff.toFixed(1);
+
+      const inFilter = (d) => {
+        if (filter === 'all') return true;
+        if (filter === 'low') return d.infrastructure <= 33;
+        if (filter === 'medium') return d.infrastructure > 33 && d.infrastructure <= 66;
+        if (filter === 'high') return d.infrastructure > 66;
+        return true;
+      };
+
+      const expandedFiltered = stateData.filter(d => d.expanded && inFilter(d));
+      const notExpandedFiltered = stateData.filter(d => !d.expanded && inFilter(d));
+
+      const insightEl = document.getElementById('stratification-insight');
+
+      if (expandedFiltered.length > 0 && notExpandedFiltered.length > 0) {
+        const stratumExpandedMean = mean(expandedFiltered.map(d => d.utilizationRate));
+        const stratumNotExpandedMean = mean(notExpandedFiltered.map(d => d.utilizationRate));
+        const stratumDiff = stratumExpandedMean - stratumNotExpandedMean;
+
+        document.getElementById('stratum-expanded').textContent = stratumExpandedMean.toFixed(1);
+        document.getElementById('stratum-not-expanded').textContent = stratumNotExpandedMean.toFixed(1);
+        document.getElementById('stratum-diff').textContent = (stratumDiff >= 0 ? '+' : '') + stratumDiff.toFixed(1);
+
+        if (filter === 'all') {
+          insightEl.textContent = 'Select an infrastructure level to see how the expansion effect changes when comparing similar states.';
+        } else {
+          const reduction = ((overallDiff - stratumDiff) / overallDiff * 100).toFixed(0);
+          if (stratumDiff <= 20) {
+            insightEl.innerHTML = '<strong>The difference shrinks significantly.</strong> Within ' + filter + '-infrastructure states, the expansion difference is only ' + stratumDiff.toFixed(1) + ' visits per 1,000. Healthcare infrastructure explains much of what we saw overall.';
+          } else {
+            insightEl.innerHTML = 'Within ' + filter + '-infrastructure states, the expansion difference is ' + stratumDiff.toFixed(1) + ' visits per 1,000 (' + reduction + '% smaller than the overall ' + overallDiff.toFixed(1) + ').';
+          }
+        }
+      } else {
+        document.getElementById('stratum-expanded').textContent = 'N/A';
+        document.getElementById('stratum-not-expanded').textContent = 'N/A';
+        document.getElementById('stratum-diff').textContent = '--';
+        insightEl.textContent = 'Not enough states in this stratum for both groups.';
+      }
+    }
+
+    // Filter button handlers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderStratifiedChart(btn.dataset.filter);
+      });
+    });
+
+    /* ============================================
+       6. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div class="state-name">${data.name}</div>
+        <div class="metric">Infrastructure: ${data.infrastructure}</div>
+        <div class="metric">Utilization: ${data.utilizationRate} per 1,000</div>
+        <div class="metric">${data.expanded ? 'Expanded Medicaid' : 'No Expansion'}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       7. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Calculate stats
+      const expandedStates = stateData.filter(d => d.expanded);
+      const notExpandedStates = stateData.filter(d => !d.expanded);
+
+      const expandedAvg = mean(expandedStates.map(d => d.utilizationRate));
+      const notExpandedAvg = mean(notExpandedStates.map(d => d.utilizationRate));
+      const diff = expandedAvg - notExpandedAvg;
+
+      document.getElementById('stat-expanded-count').textContent = expandedStates.length;
+      document.getElementById('stat-not-expanded-count').textContent = notExpandedStates.length;
+      document.getElementById('stat-expanded-avg').textContent = Math.round(expandedAvg);
+      document.getElementById('stat-not-expanded-avg').textContent = Math.round(notExpandedAvg);
+      document.getElementById('stat-difference').textContent = Math.round(diff);
+
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderStratifiedChart(currentFilter);
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

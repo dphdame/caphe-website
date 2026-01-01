@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Regression Tables for Confounding | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn to interpret adjusted regression coefficients and assess how much unmeasured confounding would be needed to overturn a finding. Interactive sensitivity analysis using Oster bounds.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+    code, .mono { font-family: var(--font-mono); }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. PANEL 1: THE DATA (Regression Table)
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .table-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      overflow-x: auto;
+    }
+
+    .regression-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    .regression-table th,
+    .regression-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .regression-table th {
+      background: var(--color-bg-alt);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .regression-table td.variable {
+      font-weight: 500;
+    }
+
+    .regression-table td.coefficient {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .regression-table td.se {
+      font-family: var(--font-mono);
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+    }
+
+    .regression-table td.stars {
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+
+    .regression-table tr.treatment-row {
+      background: rgba(249, 168, 37, 0.08);
+    }
+
+    .regression-table tr.treatment-row td.coefficient {
+      color: var(--color-primary-dark);
+      font-size: 1.1rem;
+    }
+
+    .table-footer {
+      margin-top: var(--space-md);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .r-squared-row {
+      display: flex;
+      gap: var(--space-xl);
+      margin-top: var(--space-md);
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-sm);
+    }
+
+    .r-squared-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .r-squared-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .r-squared-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .stats-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. PANEL 2: COEFFICIENT CHANGES
+       ============================================ */
+    .coefficient-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .coefficient-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 400px;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .change-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .change-arrow {
+      font-size: 1.5rem;
+      color: var(--color-secondary);
+    }
+
+    .change-text {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       8. PANEL 3: OSTER BOUNDS
+       ============================================ */
+    .oster-container {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 1000px) {
+      .oster-container { grid-template-columns: 1fr; }
+    }
+
+    .oster-visual {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .oster-diagram {
+      width: 100%;
+      height: 350px;
+    }
+
+    .oster-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+      color: var(--color-text-secondary);
+    }
+
+    .formula-box {
+      background: var(--color-bg-code);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .delta-explanation {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .delta-scale {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .delta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .delta-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      min-width: 60px;
+    }
+
+    .delta-meaning {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .delta-item.highlight {
+      background: rgba(249, 168, 37, 0.15);
+    }
+
+    /* ============================================
+       9. PANEL 4: INTERACTIVE SENSITIVITY
+       ============================================ */
+    .sensitivity-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 1000px) {
+      .sensitivity-container { grid-template-columns: 1fr; }
+    }
+
+    .sensitivity-chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .sensitivity-chart {
+      width: 100%;
+      height: 400px;
+    }
+
+    .sensitivity-controls {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .control-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .control-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .slider-container {
+      margin-bottom: var(--space-md);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+      font-size: 0.85rem;
+    }
+
+    .slider-name {
+      color: var(--color-text-secondary);
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--color-border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .result-display {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .result-value.positive {
+      color: var(--color-success);
+    }
+
+    .result-value.negative {
+      color: var(--color-warning);
+    }
+
+    .result-interpretation {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    .verdict-box {
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-md);
+    }
+
+    .verdict-box.robust {
+      background: rgba(46, 125, 50, 0.1);
+      border-left: 4px solid var(--color-success);
+    }
+
+    .verdict-box.fragile {
+      background: rgba(245, 124, 0, 0.1);
+      border-left: 4px solid var(--color-warning);
+    }
+
+    .verdict-title {
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+
+    .verdict-box.robust .verdict-title { color: var(--color-success); }
+    .verdict-box.fragile .verdict-title { color: var(--color-warning); }
+
+    .verdict-text {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. PANEL 5: KEY INSIGHT
+       ============================================ */
+    .insight-container {
+      max-width: 800px;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    /* ============================================
+       11. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       12. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    /* ============================================
+       13. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .hidden { display: none; }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Advanced Methods</div>
+      <h1>Reading Regression Tables for Confounding</h1>
+      <p class="subtitle">Adjusted coefficients look convincing. But how much unmeasured confounding would it take to overturn the finding? Learn to quantify threats that statistics alone cannot eliminate.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Coefficient Changes</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Oster Bounds</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Sensitivity Analysis</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            A researcher claims that a job training program increases earnings by $2,800 per year. The regression table below shows the treatment effect with different control variables. The coefficient stays statistically significant across specifications. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="table-wrapper">
+            <table class="regression-table" role="table">
+              <thead>
+                <tr>
+                  <th scope="col">Variable</th>
+                  <th scope="col">Model 1</th>
+                  <th scope="col">Model 2</th>
+                  <th scope="col">Model 3</th>
+                  <th scope="col">Model 4</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="treatment-row">
+                  <td class="variable">Training Program</td>
+                  <td class="coefficient">4,200***</td>
+                  <td class="coefficient">3,400***</td>
+                  <td class="coefficient">2,950***</td>
+                  <td class="coefficient">2,800***</td>
+                </tr>
+                <tr>
+                  <td class="variable">Age</td>
+                  <td class="se">-</td>
+                  <td class="coefficient">145***</td>
+                  <td class="coefficient">128***</td>
+                  <td class="coefficient">122***</td>
+                </tr>
+                <tr>
+                  <td class="variable">Education (years)</td>
+                  <td class="se">-</td>
+                  <td class="coefficient">890***</td>
+                  <td class="coefficient">720***</td>
+                  <td class="coefficient">685***</td>
+                </tr>
+                <tr>
+                  <td class="variable">Prior Earnings</td>
+                  <td class="se">-</td>
+                  <td class="se">-</td>
+                  <td class="coefficient">0.42***</td>
+                  <td class="coefficient">0.38***</td>
+                </tr>
+                <tr>
+                  <td class="variable">Industry Fixed Effects</td>
+                  <td class="se">No</td>
+                  <td class="se">No</td>
+                  <td class="se">No</td>
+                  <td class="se">Yes</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="r-squared-row">
+              <div class="r-squared-item">
+                <span class="r-squared-label">R-squared (Model 1):</span>
+                <span class="r-squared-value">0.08</span>
+              </div>
+              <div class="r-squared-item">
+                <span class="r-squared-label">Model 2:</span>
+                <span class="r-squared-value">0.31</span>
+              </div>
+              <div class="r-squared-item">
+                <span class="r-squared-label">Model 3:</span>
+                <span class="r-squared-value">0.47</span>
+              </div>
+              <div class="r-squared-item">
+                <span class="r-squared-label">Model 4:</span>
+                <span class="r-squared-value">0.52</span>
+              </div>
+            </div>
+
+            <div class="table-footer">
+              <p>*** p &lt; 0.01, ** p &lt; 0.05, * p &lt; 0.10. Standard errors clustered at county level.</p>
+              <p>N = 2,847 participants across 42 California counties.</p>
+            </div>
+          </div>
+
+          <aside class="stats-sidebar">
+            <div class="stat-card">
+              <h4>Treatment Effect</h4>
+              <div class="stat-value">$2,800</div>
+              <div class="stat-label">Annual earnings increase (fully adjusted)</div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Coefficient Change</h4>
+              <div class="stat-value">-33%</div>
+              <div class="stat-label">From Model 1 to Model 4</div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> The treatment effect dropped from $4,200 to $2,800 as we added controls. But it remains statistically significant. Is this enough to conclude the program works?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-sm);">
+            <strong>The coefficient shrank when we added measured confounders.</strong>
+          </p>
+          <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
+            What does this pattern tell us about unmeasured confounders?
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: COEFFICIENT CHANGES
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Coefficient Changes</h2>
+          <p class="panel-intro">
+            Watch how the treatment coefficient shrinks as we add control variables. Each bar represents a model specification. The pattern of movement reveals information about potential bias from factors we have not measured.
+          </p>
+        </div>
+
+        <div class="coefficient-container">
+          <div class="chart-wrapper">
+            <svg id="coefficient-chart" class="chart-svg" role="img" aria-label="Bar chart showing how treatment coefficient changes across regression specifications"></svg>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Why Coefficients Change</h4>
+              <div class="change-indicator">
+                <span class="change-arrow">$4,200 -> $2,800</span>
+              </div>
+              <div class="change-text">
+                <p>When we add Age and Education, the coefficient drops by $800. These variables were positively correlated with both training participation and earnings.</p>
+                <p style="margin-top: var(--space-sm);">Adding Prior Earnings and Industry effects reduces it further. Each control removes some omitted variable bias.</p>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The economist's question:</strong> If measured confounders reduced the coefficient by 33%, how much would unmeasured confounders reduce it? Could they push it to zero?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-sm);">
+            <strong>We controlled for everything in our dataset.</strong>
+          </p>
+          <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
+            But how do we assess what unmeasured factors might do?
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: OSTER BOUNDS
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Oster Bounds</h2>
+          <p class="panel-intro">
+            Emily Oster developed a method to ask: if unmeasured confounders are as important as measured ones, what would the true effect be? This gives us a bound on how wrong our estimate could be.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Are Oster Bounds?</h3>
+          <p>
+            Oster bounds use the <strong>movement in coefficients</strong> and the <strong>change in R-squared</strong> when adding controls to estimate what would happen if we could control for everything.
+          </p>
+          <p>The method assumes unmeasured confounders have similar predictive power as measured ones. If true, we can calculate:</p>
+          <div class="formula-box">
+            Bias-adjusted effect = Observed effect - (Selection on unobservables / Selection on observables) x Change from controls
+          </div>
+          <ul>
+            <li>The key parameter is <strong>delta</strong>: the ratio of selection on unobservables to selection on observables</li>
+            <li>If delta = 1, unmeasured confounders are equally important as measured ones</li>
+            <li>We calculate what delta would need to be to make the effect zero</li>
+          </ul>
+        </div>
+
+        <div class="oster-container">
+          <div class="oster-visual">
+            <img
+              src="assets/regression-tables-confounding-dag.png"
+              alt="Diagram showing how measured controls explain part of the treatment-outcome relationship, while unmeasured confounders may explain more"
+              class="dag-image"
+              style="width: 100%; height: auto; max-height: 350px; object-fit: contain;"
+            >
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); text-align: center; margin-top: var(--space-md); font-style: italic;">
+              Measured controls removed some bias. Oster bounds estimate how much bias remains.
+            </p>
+          </div>
+
+          <aside class="oster-sidebar">
+            <div class="delta-explanation">
+              <h4 style="color: var(--color-primary); margin-bottom: var(--space-md);">Understanding Delta</h4>
+              <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-bottom: var(--space-md);">
+                Delta measures how important unmeasured confounders are relative to measured ones:
+              </p>
+              <div class="delta-scale">
+                <div class="delta-item">
+                  <span class="delta-value" style="color: var(--color-success);">delta = 0</span>
+                  <span class="delta-meaning">No unmeasured confounding (naive estimate is correct)</span>
+                </div>
+                <div class="delta-item highlight">
+                  <span class="delta-value" style="color: var(--color-accent);">delta = 1</span>
+                  <span class="delta-meaning">Unmeasured = Measured importance (common benchmark)</span>
+                </div>
+                <div class="delta-item">
+                  <span class="delta-value" style="color: var(--color-warning);">delta > 1</span>
+                  <span class="delta-meaning">Unmeasured confounding is worse than what we controlled</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="explanation-card">
+              <h4>For This Training Study</h4>
+              <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
+                R-squared increased from 0.08 to 0.52 when adding controls. The coefficient fell from $4,200 to $2,800.
+              </p>
+              <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-top: var(--space-sm);">
+                Oster bounds ask: assuming R-max = 0.70 (reasonable for earnings data), what delta would make the effect zero?
+              </p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-sm);">
+            <strong>We have the framework. Now let's apply it.</strong>
+          </p>
+          <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
+            How robust is the $2,800 effect to different assumptions about unmeasured confounding?
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: INTERACTIVE SENSITIVITY ANALYSIS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">Sensitivity Analysis</h2>
+          <p class="panel-intro">
+            Adjust the parameters below to see how the bias-corrected estimate changes. The goal: find what assumptions would overturn the finding, then judge whether those assumptions are plausible.
+          </p>
+        </div>
+
+        <div class="sensitivity-container">
+          <div class="sensitivity-chart-wrapper">
+            <svg id="sensitivity-chart" class="sensitivity-chart" role="img" aria-label="Interactive chart showing how bias-adjusted treatment effect changes with delta"></svg>
+          </div>
+
+          <aside class="sensitivity-controls">
+            <div class="control-card">
+              <h4>Adjust Assumptions</h4>
+
+              <div class="slider-container">
+                <div class="slider-label">
+                  <span class="slider-name">Delta (selection ratio)</span>
+                  <span class="slider-value" id="delta-value">1.0</span>
+                </div>
+                <input type="range" id="delta-slider" min="0" max="3" step="0.1" value="1.0" aria-label="Adjust selection on unobservables parameter delta">
+              </div>
+
+              <div class="slider-container">
+                <div class="slider-label">
+                  <span class="slider-name">R-max (maximum R-squared)</span>
+                  <span class="slider-value" id="rmax-value">0.70</span>
+                </div>
+                <input type="range" id="rmax-slider" min="0.52" max="1.0" step="0.02" value="0.70" aria-label="Adjust maximum R-squared">
+              </div>
+            </div>
+
+            <div class="control-card">
+              <div class="result-display">
+                <div class="result-label">Bias-Adjusted Effect</div>
+                <div class="result-value positive" id="adjusted-effect">$2,180</div>
+                <div class="result-interpretation" id="effect-interpretation">
+                  At delta = 1.0, the effect would be $2,180
+                </div>
+              </div>
+            </div>
+
+            <div class="control-card">
+              <div class="result-display">
+                <div class="result-label">Delta to Zero Effect</div>
+                <div class="result-value" id="delta-zero" style="color: var(--color-primary);">2.4</div>
+                <div class="result-interpretation">
+                  Unmeasured confounders would need to be 2.4x as important as measured ones to eliminate the effect
+                </div>
+              </div>
+            </div>
+
+            <div class="verdict-box robust" id="verdict-box">
+              <div class="verdict-title" id="verdict-title">Reasonably Robust</div>
+              <div class="verdict-text" id="verdict-text">
+                The finding survives assuming unmeasured confounders are equally important as measured ones. But it is not immune to stronger confounding.
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Sensitivity analysis does not prove causation. It quantifies how wrong you could be under different assumptions about what you did not measure. This shifts the debate from "Is there confounding?" to "How much confounding is plausible?"
+          </p>
+        </div>
+
+        <div class="insight-container">
+          <div class="concepts-box">
+            <h3>What You Learned in This Lab</h3>
+            <div class="concept-list">
+              <div class="concept-item"><strong>Coefficient stability:</strong> How treatment effects change as controls are added reveals the direction and magnitude of omitted variable bias</div>
+              <div class="concept-item"><strong>Oster bounds:</strong> A method to estimate bias-corrected effects assuming unmeasured confounders are proportionally as important as measured ones</div>
+              <div class="concept-item"><strong>Delta:</strong> The ratio of selection on unobservables to observables; delta = 1 is a common robustness benchmark</div>
+              <div class="concept-item"><strong>R-max:</strong> The assumed maximum R-squared if all confounders were observed; typically set based on similar studies</div>
+              <div class="concept-item"><strong>Breakpoint analysis:</strong> Finding what delta would overturn your finding helps assess how much confounding is needed to change conclusions</div>
+            </div>
+          </div>
+
+          <div class="definition-card">
+            <h3>When to Use Sensitivity Analysis</h3>
+            <p>Sensitivity analysis is most valuable when:</p>
+            <ul>
+              <li>You have observational data without a natural experiment</li>
+              <li>Randomization was not possible or was imperfect</li>
+              <li>Reviewers or policymakers question unmeasured confounding</li>
+              <li>You want to move beyond "we controlled for X" to "here's what it would take to overturn our finding"</li>
+            </ul>
+            <p style="margin-top: var(--space-md);">
+              It does not eliminate the need for strong identification. It helps you communicate the limits of your evidence.
+            </p>
+          </div>
+
+          <div class="takeaway-box">
+            <h4>Key Takeaway</h4>
+            <p>
+              <strong>Controlling for observed variables is not enough.</strong> The question is not whether unmeasured confounding exists. It almost certainly does. The question is whether it is strong enough to overturn your finding. Oster bounds and similar methods let you answer: "How much unmeasured confounding would flip this result?" When the answer is "an implausible amount," your evidence is more credible. When it is "not very much," you know where your analysis is vulnerable. <strong>This is what economists mean by quantifying identification assumptions.</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. DATA AND CONSTANTS
+       ============================================ */
+    const regressionData = {
+      models: [
+        { name: 'Model 1', label: 'No controls', coefficient: 4200, rsquared: 0.08 },
+        { name: 'Model 2', label: '+ Age, Education', coefficient: 3400, rsquared: 0.31 },
+        { name: 'Model 3', label: '+ Prior Earnings', coefficient: 2950, rsquared: 0.47 },
+        { name: 'Model 4', label: '+ Industry FE', coefficient: 2800, rsquared: 0.52 }
+      ],
+      observedCoef: 2800,
+      baseCoef: 4200,
+      rSquaredBase: 0.08,
+      rSquaredFull: 0.52
+    };
+
+    /* ============================================
+       2. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let coefficientChartInitialized = false;
+    let sensitivityChartInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        if (panelNum === '2') {
+          setTimeout(() => {
+            if (!coefficientChartInitialized) {
+              renderCoefficientChart();
+              coefficientChartInitialized = true;
+            }
+          }, 50);
+        }
+
+        if (panelNum === '4') {
+          setTimeout(() => {
+            if (!sensitivityChartInitialized) {
+              renderSensitivityChart();
+              sensitivityChartInitialized = true;
+            }
+            updateSensitivity();
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       3. COEFFICIENT CHART (Panel 2)
+       ============================================ */
+    function renderCoefficientChart() {
+      const svg = document.getElementById('coefficient-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 400;
+      const margin = { top: 40, right: 30, bottom: 80, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const models = regressionData.models;
+      const maxCoef = 4500;
+      const barWidth = plotWidth / models.length * 0.6;
+      const barGap = plotWidth / models.length * 0.4;
+
+      // Y-axis scale
+      const yScale = (val) => margin.top + plotHeight - (val / maxCoef) * plotHeight;
+
+      // Grid lines
+      for (let y = 0; y <= 4500; y += 1000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', margin.left - 10);
+        label.setAttribute('y', yScale(y) + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', 'var(--color-text-muted)');
+        label.textContent = '$' + y.toLocaleString();
+        svg.appendChild(label);
+      }
+
+      // Bars
+      models.forEach((model, i) => {
+        const x = margin.left + i * (barWidth + barGap) + barGap / 2;
+        const barHeight = (model.coefficient / maxCoef) * plotHeight;
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', yScale(model.coefficient));
+        rect.setAttribute('width', barWidth);
+        rect.setAttribute('height', barHeight);
+        rect.setAttribute('fill', i === models.length - 1 ? 'var(--color-accent)' : 'var(--color-primary)');
+        rect.setAttribute('rx', '4');
+        svg.appendChild(rect);
+
+        // Value label on top of bar
+        const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valueLabel.setAttribute('x', x + barWidth / 2);
+        valueLabel.setAttribute('y', yScale(model.coefficient) - 8);
+        valueLabel.setAttribute('text-anchor', 'middle');
+        valueLabel.setAttribute('font-size', '13');
+        valueLabel.setAttribute('font-weight', '600');
+        valueLabel.setAttribute('fill', 'var(--color-text)');
+        valueLabel.textContent = '$' + model.coefficient.toLocaleString();
+        svg.appendChild(valueLabel);
+
+        // Model name below
+        const nameLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        nameLabel.setAttribute('x', x + barWidth / 2);
+        nameLabel.setAttribute('y', height - margin.bottom + 20);
+        nameLabel.setAttribute('text-anchor', 'middle');
+        nameLabel.setAttribute('font-size', '12');
+        nameLabel.setAttribute('font-weight', '500');
+        nameLabel.setAttribute('fill', 'var(--color-text)');
+        nameLabel.textContent = model.name;
+        svg.appendChild(nameLabel);
+
+        // Control description
+        const descLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        descLabel.setAttribute('x', x + barWidth / 2);
+        descLabel.setAttribute('y', height - margin.bottom + 38);
+        descLabel.setAttribute('text-anchor', 'middle');
+        descLabel.setAttribute('font-size', '10');
+        descLabel.setAttribute('fill', 'var(--color-text-muted)');
+        descLabel.textContent = model.label;
+        svg.appendChild(descLabel);
+
+        // R-squared below
+        const r2Label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        r2Label.setAttribute('x', x + barWidth / 2);
+        r2Label.setAttribute('y', height - margin.bottom + 55);
+        r2Label.setAttribute('text-anchor', 'middle');
+        r2Label.setAttribute('font-size', '10');
+        r2Label.setAttribute('fill', 'var(--color-secondary)');
+        r2Label.textContent = 'R² = ' + model.rsquared.toFixed(2);
+        svg.appendChild(r2Label);
+      });
+
+      // Axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      // Y-axis label
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Treatment Effect ($)';
+      svg.appendChild(yLabel);
+
+      // Title
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      title.setAttribute('x', width / 2);
+      title.setAttribute('y', 20);
+      title.setAttribute('text-anchor', 'middle');
+      title.setAttribute('font-size', '14');
+      title.setAttribute('font-weight', '600');
+      title.setAttribute('fill', 'var(--color-text)');
+      title.textContent = 'Treatment Coefficient Across Specifications';
+      svg.appendChild(title);
+    }
+
+    /* ============================================
+       4. SENSITIVITY CHART (Panel 4)
+       ============================================ */
+    function renderSensitivityChart() {
+      const svg = document.getElementById('sensitivity-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 400;
+      const margin = { top: 40, right: 30, bottom: 60, left: 80 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Get current R-max value
+      const rMax = parseFloat(document.getElementById('rmax-slider').value);
+
+      // Calculate delta to zero
+      const deltaToZero = calculateDeltaToZero(rMax);
+
+      // Generate line data
+      const points = [];
+      for (let d = 0; d <= 3; d += 0.1) {
+        const adjustedEffect = calculateAdjustedEffect(d, rMax);
+        points.push({ delta: d, effect: adjustedEffect });
+      }
+
+      // Scales
+      const xMin = 0, xMax = 3;
+      const yMin = -1000, yMax = 3500;
+      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+
+      // Grid lines
+      for (let y = -1000; y <= 3500; y += 1000) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', y === 0 ? 'var(--color-text-muted)' : 'var(--color-border-light)');
+        line.setAttribute('stroke-dasharray', y === 0 ? 'none' : '3,3');
+        line.setAttribute('stroke-width', y === 0 ? '2' : '1');
+        svg.appendChild(line);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', margin.left - 10);
+        label.setAttribute('y', yScale(y) + 4);
+        label.setAttribute('text-anchor', 'end');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', 'var(--color-text-muted)');
+        label.textContent = '$' + y.toLocaleString();
+        svg.appendChild(label);
+      }
+
+      // X-axis labels
+      for (let x = 0; x <= 3; x += 0.5) {
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xScale(x));
+        label.setAttribute('y', height - margin.bottom + 20);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '11');
+        label.setAttribute('fill', 'var(--color-text-muted)');
+        label.textContent = x.toFixed(1);
+        svg.appendChild(label);
+      }
+
+      // Draw line
+      let pathD = '';
+      points.forEach((p, i) => {
+        const x = xScale(p.delta);
+        const y = yScale(Math.max(yMin, Math.min(yMax, p.effect)));
+        if (i === 0) {
+          pathD = `M ${x} ${y}`;
+        } else {
+          pathD += ` L ${x} ${y}`;
+        }
+      });
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathD);
+      path.setAttribute('stroke', 'var(--color-primary)');
+      path.setAttribute('stroke-width', '3');
+      path.setAttribute('fill', 'none');
+      svg.appendChild(path);
+
+      // Highlight delta = 1 point
+      const delta1Effect = calculateAdjustedEffect(1, rMax);
+      const delta1Circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      delta1Circle.setAttribute('cx', xScale(1));
+      delta1Circle.setAttribute('cy', yScale(delta1Effect));
+      delta1Circle.setAttribute('r', '8');
+      delta1Circle.setAttribute('fill', 'var(--color-accent)');
+      delta1Circle.setAttribute('stroke', 'white');
+      delta1Circle.setAttribute('stroke-width', '2');
+      svg.appendChild(delta1Circle);
+
+      // Vertical line at delta = 1
+      const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      vLine.setAttribute('x1', xScale(1));
+      vLine.setAttribute('x2', xScale(1));
+      vLine.setAttribute('y1', margin.top);
+      vLine.setAttribute('y2', height - margin.bottom);
+      vLine.setAttribute('stroke', 'var(--color-accent)');
+      vLine.setAttribute('stroke-dasharray', '5,5');
+      vLine.setAttribute('opacity', '0.5');
+      svg.appendChild(vLine);
+
+      // Delta = 1 annotation
+      const delta1Label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      delta1Label.setAttribute('x', xScale(1) + 10);
+      delta1Label.setAttribute('y', margin.top + 20);
+      delta1Label.setAttribute('font-size', '11');
+      delta1Label.setAttribute('fill', 'var(--color-accent)');
+      delta1Label.textContent = 'delta = 1 benchmark';
+      svg.appendChild(delta1Label);
+
+      // Highlight delta-to-zero point if in range
+      if (deltaToZero > 0 && deltaToZero <= 3) {
+        const zeroCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        zeroCircle.setAttribute('cx', xScale(deltaToZero));
+        zeroCircle.setAttribute('cy', yScale(0));
+        zeroCircle.setAttribute('r', '8');
+        zeroCircle.setAttribute('fill', 'var(--color-warning)');
+        zeroCircle.setAttribute('stroke', 'white');
+        zeroCircle.setAttribute('stroke-width', '2');
+        svg.appendChild(zeroCircle);
+
+        // Annotation
+        const zeroLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        zeroLabel.setAttribute('x', xScale(deltaToZero) + 10);
+        zeroLabel.setAttribute('y', yScale(0) - 10);
+        zeroLabel.setAttribute('font-size', '11');
+        zeroLabel.setAttribute('fill', 'var(--color-warning)');
+        zeroLabel.textContent = 'Effect = 0 at delta = ' + deltaToZero.toFixed(1);
+        svg.appendChild(zeroLabel);
+      }
+
+      // Current slider delta indicator
+      const currentDelta = parseFloat(document.getElementById('delta-slider').value);
+      const currentEffect = calculateAdjustedEffect(currentDelta, rMax);
+
+      const currentCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      currentCircle.setAttribute('cx', xScale(currentDelta));
+      currentCircle.setAttribute('cy', yScale(Math.max(yMin, Math.min(yMax, currentEffect))));
+      currentCircle.setAttribute('r', '10');
+      currentCircle.setAttribute('fill', 'var(--color-secondary)');
+      currentCircle.setAttribute('stroke', 'white');
+      currentCircle.setAttribute('stroke-width', '2');
+      currentCircle.setAttribute('id', 'current-delta-marker');
+      svg.appendChild(currentCircle);
+
+      // Axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      // Axis labels
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 15);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Delta (Selection Ratio)';
+      svg.appendChild(xLabel);
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 20);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
+      yLabel.textContent = 'Bias-Adjusted Effect ($)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       5. OSTER BOUNDS CALCULATIONS
+       ============================================ */
+    function calculateAdjustedEffect(delta, rMax) {
+      // Simplified Oster bounds calculation
+      // Beta* = Beta_controlled - delta * (Beta_uncontrolled - Beta_controlled) * (R_max - R_controlled) / (R_controlled - R_uncontrolled)
+
+      const betaUncontrolled = regressionData.baseCoef;
+      const betaControlled = regressionData.observedCoef;
+      const rUncontrolled = regressionData.rSquaredBase;
+      const rControlled = regressionData.rSquaredFull;
+
+      const coefficientChange = betaUncontrolled - betaControlled;
+      const rSquaredChange = rControlled - rUncontrolled;
+      const remainingVariance = rMax - rControlled;
+
+      if (rSquaredChange === 0) return betaControlled;
+
+      const bias = delta * coefficientChange * (remainingVariance / rSquaredChange);
+      return betaControlled - bias;
+    }
+
+    function calculateDeltaToZero(rMax) {
+      // Find delta where adjusted effect = 0
+      const betaUncontrolled = regressionData.baseCoef;
+      const betaControlled = regressionData.observedCoef;
+      const rUncontrolled = regressionData.rSquaredBase;
+      const rControlled = regressionData.rSquaredFull;
+
+      const coefficientChange = betaUncontrolled - betaControlled;
+      const rSquaredChange = rControlled - rUncontrolled;
+      const remainingVariance = rMax - rControlled;
+
+      if (remainingVariance === 0 || coefficientChange === 0) return Infinity;
+
+      // 0 = betaControlled - delta * coefficientChange * (remainingVariance / rSquaredChange)
+      // delta = betaControlled * rSquaredChange / (coefficientChange * remainingVariance)
+
+      return betaControlled * rSquaredChange / (coefficientChange * remainingVariance);
+    }
+
+    /* ============================================
+       6. SENSITIVITY UPDATE
+       ============================================ */
+    function updateSensitivity() {
+      const delta = parseFloat(document.getElementById('delta-slider').value);
+      const rMax = parseFloat(document.getElementById('rmax-slider').value);
+
+      document.getElementById('delta-value').textContent = delta.toFixed(1);
+      document.getElementById('rmax-value').textContent = rMax.toFixed(2);
+
+      const adjustedEffect = calculateAdjustedEffect(delta, rMax);
+      const deltaToZero = calculateDeltaToZero(rMax);
+
+      const effectEl = document.getElementById('adjusted-effect');
+      const effectInterpEl = document.getElementById('effect-interpretation');
+      const deltaZeroEl = document.getElementById('delta-zero');
+      const verdictBox = document.getElementById('verdict-box');
+      const verdictTitle = document.getElementById('verdict-title');
+      const verdictText = document.getElementById('verdict-text');
+
+      if (adjustedEffect > 0) {
+        effectEl.textContent = '$' + Math.round(adjustedEffect).toLocaleString();
+        effectEl.className = 'result-value positive';
+      } else {
+        effectEl.textContent = '$' + Math.round(adjustedEffect).toLocaleString();
+        effectEl.className = 'result-value negative';
+      }
+
+      effectInterpEl.textContent = `At delta = ${delta.toFixed(1)}, the effect would be $${Math.round(adjustedEffect).toLocaleString()}`;
+
+      if (deltaToZero > 10) {
+        deltaZeroEl.textContent = '>10';
+      } else {
+        deltaZeroEl.textContent = deltaToZero.toFixed(1);
+      }
+
+      // Update verdict
+      if (deltaToZero > 2) {
+        verdictBox.className = 'verdict-box robust';
+        verdictTitle.textContent = 'Reasonably Robust';
+        verdictText.textContent = `Unmeasured confounders would need to be ${deltaToZero.toFixed(1)}x as important as measured ones to eliminate the effect. This is a strong result.`;
+      } else if (deltaToZero > 1) {
+        verdictBox.className = 'verdict-box robust';
+        verdictTitle.textContent = 'Moderately Robust';
+        verdictText.textContent = `The finding survives assuming unmeasured confounders are equally important as measured ones (delta = 1). But stronger confounding could overturn it.`;
+      } else {
+        verdictBox.className = 'verdict-box fragile';
+        verdictTitle.textContent = 'Fragile';
+        verdictText.textContent = `Even if unmeasured confounders are less important than measured ones, the effect could be zero. This finding is vulnerable to moderate confounding.`;
+      }
+
+      // Re-render chart to update current position marker
+      renderSensitivityChart();
+    }
+
+    /* ============================================
+       7. EVENT LISTENERS
+       ============================================ */
+    document.getElementById('delta-slider').addEventListener('input', updateSensitivity);
+    document.getElementById('rmax-slider').addEventListener('input', updateSensitivity);
+
+    /* ============================================
+       8. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Debounced resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-2').classList.contains('active')) {
+            renderCoefficientChart();
+          }
+          if (document.getElementById('panel-4').classList.contains('active')) {
+            renderSensitivityChart();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why "It Works" Isn't Enough | CAPHE Methods Lab</title>
+  <meta name="description" content="Explore why demonstrating that a program improves outcomes isn't enough for policy decisions. Learn about opportunity cost and the economist's approach to resource allocation.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. DATA PANEL
+       ============================================ */
+    .data-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .data-container { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 400px;
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .program-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .program-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-border);
+    }
+
+    .program-card.program-a {
+      border-left-color: var(--color-secondary);
+    }
+
+    .program-card.program-b {
+      border-left-color: var(--color-accent);
+    }
+
+    .program-card h4 {
+      font-size: 1rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .program-card .cost {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .program-card .effect {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .program-card .ratio {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    /* ============================================
+       7. EFFECTIVENESS PANEL
+       ============================================ */
+    .effectiveness-container {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .effectiveness-container { grid-template-columns: 1fr; }
+    }
+
+    .comparison-table {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .comparison-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-md) var(--space-lg);
+      text-align: left;
+    }
+
+    .comparison-table th {
+      background: var(--color-primary);
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table td {
+      border-bottom: 1px solid var(--color-border-light);
+      font-size: 0.95rem;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table .number {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .comparison-table .highlight {
+      background: rgba(249, 168, 37, 0.1);
+    }
+
+    .comparison-table .program-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .comparison-table .color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .verdict-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .verdict-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .verdict-card h4 {
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .verdict-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    .verdict-item .check {
+      color: var(--color-success);
+      font-weight: bold;
+    }
+
+    /* ============================================
+       8. OPPORTUNITY COST PANEL
+       ============================================ */
+    .opportunity-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .opportunity-container { grid-template-columns: 1fr; }
+    }
+
+    .dag-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .dag-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+    }
+
+    .dag-caption {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-md);
+      font-style: italic;
+    }
+
+    .explanation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .explanation-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .explanation-card h4 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-border-light);
+    }
+
+    .pathway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .pathway-item {
+      padding-left: var(--space-md);
+      border-left: 3px solid var(--color-border);
+    }
+
+    .pathway-item.chosen {
+      border-left-color: var(--color-secondary);
+    }
+
+    .pathway-item.forgone {
+      border-left-color: var(--color-text-muted);
+    }
+
+    .pathway-item strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+      font-size: 0.9rem;
+    }
+
+    .pathway-item p {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    /* Definition Card */
+    .definition-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      padding-top: var(--space-2xl);
+      box-shadow: var(--shadow-md);
+      margin-bottom: var(--space-xl);
+      border-left: 4px solid var(--color-warning);
+      position: relative;
+    }
+
+    .definition-card::before {
+      content: "KEY CONCEPT";
+      position: absolute;
+      top: calc(-0.75rem);
+      left: var(--space-lg);
+      background: var(--color-warning);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+    }
+
+    .definition-card h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .definition-card ul {
+      margin-left: var(--space-lg);
+      margin-top: var(--space-sm);
+    }
+
+    .definition-card li {
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ============================================
+       9. THE QUESTION PANEL
+       ============================================ */
+    .question-container {
+      max-width: 800px;
+    }
+
+    .scenario-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .scenario-box h3 {
+      margin-bottom: var(--space-md);
+    }
+
+    .scenario-comparison {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+      margin: var(--space-xl) 0;
+    }
+
+    @media (max-width: 600px) {
+      .scenario-comparison {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .scenario-vs { display: none; }
+    }
+
+    .scenario-option {
+      text-align: center;
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-alt);
+    }
+
+    .scenario-option h4 {
+      font-size: 1rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .scenario-option .big-number {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .scenario-option .unit {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .scenario-vs {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+
+    .questions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 700px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .question-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-secondary);
+    }
+
+    .question-card h4 {
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .question-card p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       10. KEY INSIGHT PANEL
+       ============================================ */
+    .insight-container {
+      max-width: 800px;
+    }
+
+    .concepts-box {
+      background: rgba(13, 148, 136, 0.08);
+      border: 2px solid var(--color-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .concepts-box h3 {
+      color: var(--color-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .concept-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .concept-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.95rem;
+    }
+
+    .concept-item::before {
+      content: ">";
+      color: var(--color-secondary);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* Bridging Box */
+    .bridging-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-box p:first-child {
+      font-size: 1.05rem;
+      color: var(--color-text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .bridging-box p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       11. INTERACTIVE SIMULATOR
+       ============================================ */
+    .simulator-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+
+    .simulator-wrapper h3 {
+      margin-bottom: var(--space-lg);
+    }
+
+    .budget-slider-container {
+      margin-bottom: var(--space-xl);
+    }
+
+    .budget-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    .budget-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .budget-slider {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, var(--color-secondary) 0%, var(--color-secondary) var(--slider-percent, 50%), var(--color-accent) var(--slider-percent, 50%), var(--color-accent) 100%);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .budget-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+    }
+
+    .budget-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      border: none;
+    }
+
+    .allocation-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-lg);
+    }
+
+    @media (max-width: 700px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    .result-card {
+      text-align: center;
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-alt);
+    }
+
+    .result-card.program-a-result {
+      border: 2px solid var(--color-secondary);
+    }
+
+    .result-card.program-b-result {
+      border: 2px solid var(--color-accent);
+    }
+
+    .result-card.total-result {
+      border: 2px solid var(--color-primary);
+      background: rgba(0, 65, 165, 0.05);
+    }
+
+    .result-card h4 {
+      font-size: 0.85rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-card .result-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .result-card .result-detail {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .optimal-hint {
+      margin-top: var(--space-lg);
+      padding: var(--space-md);
+      background: rgba(46, 125, 50, 0.1);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .optimal-hint.is-optimal {
+      background: rgba(46, 125, 50, 0.15);
+      border: 1px solid var(--color-success);
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. TOOLTIP
+       ============================================ */
+    .tooltip {
+      position: fixed;
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 220px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tooltip.hidden {
+      display: none;
+    }
+
+    /* ============================================
+       14. UTILITIES
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+  @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab - Economic Evaluation</div>
+      <h1>Why "It Works" Isn't Enough</h1>
+      <p class="subtitle">A program improves outcomes. That's good news. But before declaring success, economists ask: compared to what we could have done with that money?</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Effectiveness</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Opportunity Cost</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">The Question</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            Two diabetes prevention programs operate in California counties. Both show positive results in their evaluations. A state health department must decide how to allocate its limited budget. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="data-container">
+          <div class="chart-wrapper">
+            <div class="chart-title">Health Outcomes by Program Spending</div>
+            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing QALYs gained versus program cost for two intervention programs"></svg>
+          </div>
+
+          <aside class="program-cards">
+            <div class="program-card program-a">
+              <h4>Program A: Intensive Lifestyle</h4>
+              <div class="cost">$50,000</div>
+              <div class="effect">per 100 participants</div>
+              <div class="effect">Prevents 8 diabetes cases</div>
+              <div class="ratio">20 QALYs gained at $2,500/QALY</div>
+            </div>
+
+            <div class="program-card program-b">
+              <h4>Program B: Community Outreach</h4>
+              <div class="cost">$25,000</div>
+              <div class="effect">per 100 participants</div>
+              <div class="effect">Prevents 3 diabetes cases</div>
+              <div class="ratio">12 QALYs gained at $2,083/QALY</div>
+            </div>
+
+            <div class="observation-box">
+              <strong>Both programs work.</strong> Each prevents diabetes cases and generates health gains. But their costs and effects differ. Which should receive funding?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Program A prevents more cases.</strong></p>
+          <p>Does that make it the better choice?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: EFFECTIVENESS
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">Effectiveness</h2>
+          <p class="panel-intro">
+            When focusing only on effectiveness, the research question is: which program produces more health gain? By this measure, Program A looks superior.
+          </p>
+        </div>
+
+        <div class="effectiveness-container">
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Program A</th>
+                  <th>Program B</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Cost per 100 participants</td>
+                  <td class="number">$50,000</td>
+                  <td class="number">$25,000</td>
+                </tr>
+                <tr>
+                  <td>Diabetes cases prevented</td>
+                  <td class="number">8</td>
+                  <td class="number">3</td>
+                </tr>
+                <tr class="highlight">
+                  <td>QALYs gained</td>
+                  <td class="number">20</td>
+                  <td class="number">12</td>
+                </tr>
+                <tr>
+                  <td>Cost per QALY</td>
+                  <td class="number">$2,500</td>
+                  <td class="number">$2,083</td>
+                </tr>
+                <tr>
+                  <td>Verdict: "Does it work?"</td>
+                  <td><span style="color: var(--color-success); font-weight: 600;">Yes</span></td>
+                  <td><span style="color: var(--color-success); font-weight: 600;">Yes</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <aside class="verdict-sidebar">
+            <div class="verdict-card">
+              <h4>What the Data Shows</h4>
+              <div class="verdict-item">
+                <span class="check">+</span>
+                <span>Program A prevents more cases</span>
+              </div>
+              <div class="verdict-item">
+                <span class="check">+</span>
+                <span>Program A generates more QALYs</span>
+              </div>
+              <div class="verdict-item">
+                <span class="check">+</span>
+                <span>Both are effective interventions</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: var(--space-md);">
+                Conclusion: Fund Program A because it produces more health benefit.
+              </p>
+            </div>
+
+            <div class="key-insight">
+              <strong>The missing question:</strong> What could we have done with that extra $25,000?
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Program A costs twice as much.</strong></p>
+          <p>What happens to the health outcomes we could have bought with those extra dollars?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: OPPORTUNITY COST
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Opportunity Cost</h2>
+          <p class="panel-intro">
+            Every dollar spent on Program A is a dollar not spent elsewhere. Economists call this opportunity cost. The true cost of any program includes the benefits we gave up by not choosing the alternative.
+          </p>
+        </div>
+
+        <div class="definition-card">
+          <h3>What Is Opportunity Cost?</h3>
+          <p><strong>Opportunity cost</strong> is the value of the next best alternative you give up when making a choice.</p>
+          <ul>
+            <li>If you spend $50,000 on Program A, you cannot spend that money on Program B</li>
+            <li>The "cost" of Program A includes the health gains you would have gotten from Program B</li>
+            <li>A program can be effective yet still represent a poor use of resources</li>
+          </ul>
+        </div>
+
+        <div class="opportunity-container">
+          <div class="dag-wrapper">
+            <img
+              src="assets/why-it-works-isnt-enough-dag.png"
+              alt="Diagram showing budget flowing to Program A (chosen) while Program B (forgone) is grayed out. Both paths lead to health outcomes, but only Program A's path is solid."
+              class="dag-image"
+            >
+            <p class="dag-caption">Every spending decision has a counterfactual: what would have happened with that money elsewhere?</p>
+          </div>
+
+          <aside class="explanation-sidebar">
+            <div class="explanation-card">
+              <h4>Two Paths, One Budget</h4>
+              <div class="pathway-list">
+                <div class="pathway-item chosen">
+                  <strong>Path taken: Program A</strong>
+                  <p>$50,000 yields 20 QALYs through intensive lifestyle intervention.</p>
+                </div>
+                <div class="pathway-item forgone">
+                  <strong>Path forgone: Program B</strong>
+                  <p>That same $50,000 could have funded 200 participants in Program B, yielding 24 QALYs.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="key-insight">
+              <strong>The economist's calculation:</strong> Program A generates 20 QALYs for $50,000. Program B would generate 24 QALYs for the same budget. Choosing A means giving up 4 QALYs.
+            </div>
+          </aside>
+        </div>
+
+        <div class="simulator-wrapper">
+          <h3>Budget Allocation Simulator</h3>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--space-lg);">
+            Adjust the slider to allocate a fixed $100,000 budget between programs. Watch how total health outcomes change.
+          </p>
+
+          <div class="budget-slider-container">
+            <div class="budget-label">
+              <span>Program A: <span class="budget-value" id="prog-a-budget">$50,000</span></span>
+              <span>Program B: <span class="budget-value" id="prog-b-budget">$50,000</span></span>
+            </div>
+            <input
+              type="range"
+              id="budget-slider"
+              class="budget-slider"
+              min="0"
+              max="100"
+              value="50"
+              aria-label="Budget allocation between programs"
+            >
+            <div class="allocation-labels">
+              <span>100% Program A</span>
+              <span>100% Program B</span>
+            </div>
+          </div>
+
+          <div class="results-grid">
+            <div class="result-card program-a-result">
+              <h4>Program A</h4>
+              <div class="result-value" id="result-a-qalys">20</div>
+              <div class="result-detail">QALYs gained</div>
+              <div class="result-detail" id="result-a-participants">(100 participants)</div>
+            </div>
+            <div class="result-card program-b-result">
+              <h4>Program B</h4>
+              <div class="result-value" id="result-b-qalys">24</div>
+              <div class="result-detail">QALYs gained</div>
+              <div class="result-detail" id="result-b-participants">(200 participants)</div>
+            </div>
+            <div class="result-card total-result">
+              <h4>Total Health Gain</h4>
+              <div class="result-value" id="result-total-qalys">44</div>
+              <div class="result-detail">QALYs gained</div>
+              <div class="result-detail">from $100,000 budget</div>
+            </div>
+          </div>
+
+          <div class="optimal-hint" id="optimal-hint">
+            Slide to 0% Program A to maximize total health outcomes with this budget.
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>The more efficient program generates more health per dollar.</strong></p>
+          <p>But how do we frame this comparison for decision-makers?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: THE QUESTION
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">The Question</h2>
+          <p class="panel-intro">
+            Economists reframe the evaluation question. Instead of asking "Does it work?" we ask "Is it worth it, given the alternatives?"
+          </p>
+        </div>
+
+        <div class="question-container">
+          <div class="scenario-box">
+            <h3>The State Health Department's Decision</h3>
+            <p>With a fixed $100,000 budget for diabetes prevention, the department can fund:</p>
+
+            <div class="scenario-comparison">
+              <div class="scenario-option">
+                <h4>Option 1: All Program A</h4>
+                <div class="big-number">40</div>
+                <div class="unit">QALYs gained</div>
+                <div class="unit" style="margin-top: var(--space-sm); font-size: 0.8rem; color: var(--color-text-muted);">200 participants served</div>
+              </div>
+              <div class="scenario-vs">vs</div>
+              <div class="scenario-option">
+                <h4>Option 2: All Program B</h4>
+                <div class="big-number">48</div>
+                <div class="unit">QALYs gained</div>
+                <div class="unit" style="margin-top: var(--space-sm); font-size: 0.8rem; color: var(--color-text-muted);">400 participants served</div>
+              </div>
+            </div>
+
+            <p style="text-align: center; color: var(--color-text-secondary);">
+              Program B generates <strong>20% more health benefit</strong> from the same budget.
+            </p>
+          </div>
+
+          <div class="questions-grid">
+            <div class="question-card">
+              <h4>What about effectiveness?</h4>
+              <p>Program A is more effective per person. But with limited budgets, reaching more people at lower cost can produce greater total benefit.</p>
+            </div>
+
+            <div class="question-card">
+              <h4>What about intensity?</h4>
+              <p>Intensive programs work better for individuals. Economists ask whether the marginal benefit justifies the marginal cost.</p>
+            </div>
+
+            <div class="question-card">
+              <h4>What about equity?</h4>
+              <p>Program B reaches twice as many people. If those extra participants come from underserved populations, efficiency and equity may align.</p>
+            </div>
+
+            <div class="question-card">
+              <h4>What about uncertainty?</h4>
+              <p>Effect estimates have confidence intervals. Cost-effectiveness analysis should incorporate uncertainty about both costs and effects.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bridging-box">
+          <p><strong>Effectiveness analysis tells us what works.</strong></p>
+          <p>Efficiency analysis tells us what to do about it.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Effectiveness without efficiency is incomplete analysis. Knowing that a program works tells us nothing about whether we should fund it.
+          </p>
+        </div>
+
+        <div class="insight-container">
+          <div class="concepts-box">
+            <h3>Concepts Demonstrated in This Lab</h3>
+            <div class="concept-list">
+              <div class="concept-item"><strong>Opportunity cost:</strong> the value of the next best alternative forgone</div>
+              <div class="concept-item"><strong>Cost-effectiveness:</strong> health gained per dollar spent</div>
+              <div class="concept-item"><strong>Efficiency:</strong> maximizing outcomes given resource constraints</div>
+              <div class="concept-item"><strong>QALY:</strong> quality-adjusted life year, a measure of health that combines length and quality of life</div>
+              <div class="concept-item"><strong>Marginal analysis:</strong> comparing the additional benefit to the additional cost</div>
+            </div>
+          </div>
+
+          <div class="takeaway-box">
+            <h4>Key Takeaway</h4>
+            <p>
+              <strong>Demonstrating that a program improves outcomes is necessary but not sufficient for policy decisions.</strong> Every dollar spent on one program is a dollar not spent on another. The relevant comparison is not "does it work?" but "does it work better than the alternatives, per dollar spent?" A program can be effective yet still represent a poor use of limited public health resources. <strong>This is what economists mean by efficiency.</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> - California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> - Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only. Not based on actual program evaluations.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script>
+    /* ============================================
+       1. PROGRAM DATA
+       ============================================ */
+    const programA = {
+      name: 'Program A',
+      costPer100: 50000,
+      qalysPer100: 20,
+      casesPrevented: 8,
+      color: '#0D9488'
+    };
+
+    const programB = {
+      name: 'Program B',
+      costPer100: 25000,
+      qalysPer100: 12,
+      casesPrevented: 3,
+      color: '#F9A825'
+    };
+
+    // Generate simulated county-level data
+    function generateCountyData() {
+      const data = [];
+      const countyNames = [
+        'County A', 'County B', 'County C', 'County D', 'County E', 'County F',
+        'County G', 'County H', 'County I', 'County J', 'County K', 'County L',
+        'County M', 'County N', 'County O', 'County P', 'County Q', 'County R'
+      ];
+
+      let seed = 42;
+      const rand = () => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      };
+
+      countyNames.forEach((name, i) => {
+        // Some counties run Program A, some run Program B
+        const program = i % 3 === 0 ? 'A' : 'B';
+        const baseSpending = 20000 + rand() * 80000;
+        const spending = Math.round(baseSpending / 1000) * 1000;
+
+        let qalys;
+        if (program === 'A') {
+          // $50k per 100 participants = $500/participant, 0.2 QALY/participant
+          const participants = spending / 500;
+          qalys = participants * 0.2 + (rand() - 0.5) * 2;
+        } else {
+          // $25k per 100 participants = $250/participant, 0.12 QALY/participant
+          const participants = spending / 250;
+          qalys = participants * 0.12 + (rand() - 0.5) * 1.5;
+        }
+
+        data.push({
+          name: name,
+          program: program,
+          spending: spending,
+          qalys: Math.max(0, Math.round(qalys * 10) / 10)
+        });
+      });
+
+      return data;
+    }
+
+    const countyData = generateCountyData();
+
+    /* ============================================
+       2. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    let scatterInitialized = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1' && !scatterInitialized) {
+          setTimeout(() => {
+            renderScatterPlot();
+            scatterInitialized = true;
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       3. SCATTER PLOT (Panel 1)
+       ============================================ */
+    function renderScatterPlot() {
+      const svg = document.getElementById('scatter-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 400;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Find data ranges
+      const maxSpending = Math.max(...countyData.map(d => d.spending));
+      const maxQalys = Math.max(...countyData.map(d => d.qalys));
+
+      const xScale = (val) => margin.left + (val / maxSpending) * plotWidth;
+      const yScale = (val) => margin.top + plotHeight - (val / maxQalys) * plotHeight;
+
+      // Grid lines
+      for (let y = 0; y <= maxQalys; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#EEEEEE');
+        line.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(line);
+      }
+
+      // Trend lines for each program
+      const programAData = countyData.filter(d => d.program === 'A');
+      const programBData = countyData.filter(d => d.program === 'B');
+
+      // Program A trend line (less efficient - steeper)
+      if (programAData.length > 0) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xScale(0));
+        line.setAttribute('y1', yScale(0));
+        line.setAttribute('x2', xScale(maxSpending));
+        line.setAttribute('y2', yScale(maxSpending * 0.0004)); // 0.2 QALY per $500
+        line.setAttribute('stroke', programA.color);
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-dasharray', '8,4');
+        line.setAttribute('opacity', '0.5');
+        svg.appendChild(line);
+      }
+
+      // Program B trend line (more efficient - less steep but more QALYs per $)
+      if (programBData.length > 0) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xScale(0));
+        line.setAttribute('y1', yScale(0));
+        line.setAttribute('x2', xScale(maxSpending));
+        line.setAttribute('y2', yScale(maxSpending * 0.00048)); // 0.12 QALY per $250
+        line.setAttribute('stroke', programB.color);
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-dasharray', '8,4');
+        line.setAttribute('opacity', '0.5');
+        svg.appendChild(line);
+      }
+
+      // Data points
+      countyData.forEach(d => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xScale(d.spending));
+        circle.setAttribute('cy', yScale(d.qalys));
+        circle.setAttribute('r', 8);
+        circle.setAttribute('fill', d.program === 'A' ? programA.color : programB.color);
+        circle.setAttribute('opacity', '0.8');
+        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
+
+        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
+        circle.addEventListener('mouseleave', hideTooltip);
+
+        svg.appendChild(circle);
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', '#E0E0E0');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= maxSpending; x += 20000) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', '#595959');
+        tick.textContent = '$' + (x / 1000) + 'k';
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', '#1C1C1C');
+      xLabel.textContent = 'Program Spending ($)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', '#E0E0E0');
+      svg.appendChild(yAxis);
+
+      for (let y = 0; y <= maxQalys; y += 10) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', '#595959');
+        tick.textContent = y;
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 18);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', '#1C1C1C');
+      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
+      yLabel.textContent = 'QALYs Gained';
+      svg.appendChild(yLabel);
+
+      // Legend
+      const legendY = margin.top + 10;
+
+      const legendA = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendA.setAttribute('cx', width - margin.right - 100);
+      legendA.setAttribute('cy', legendY);
+      legendA.setAttribute('r', 6);
+      legendA.setAttribute('fill', programA.color);
+      svg.appendChild(legendA);
+
+      const legendAText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendAText.setAttribute('x', width - margin.right - 88);
+      legendAText.setAttribute('y', legendY + 4);
+      legendAText.setAttribute('font-size', '11');
+      legendAText.setAttribute('fill', '#424242');
+      legendAText.textContent = 'Program A';
+      svg.appendChild(legendAText);
+
+      const legendB = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      legendB.setAttribute('cx', width - margin.right - 100);
+      legendB.setAttribute('cy', legendY + 20);
+      legendB.setAttribute('r', 6);
+      legendB.setAttribute('fill', programB.color);
+      svg.appendChild(legendB);
+
+      const legendBText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      legendBText.setAttribute('x', width - margin.right - 88);
+      legendBText.setAttribute('y', legendY + 24);
+      legendBText.setAttribute('font-size', '11');
+      legendBText.setAttribute('fill', '#424242');
+      legendBText.textContent = 'Program B';
+      svg.appendChild(legendBText);
+    }
+
+    /* ============================================
+       4. BUDGET SLIDER (Panel 3)
+       ============================================ */
+    const budgetSlider = document.getElementById('budget-slider');
+    const totalBudget = 100000;
+
+    function updateBudgetAllocation() {
+      const percentA = parseInt(budgetSlider.value);
+      const percentB = 100 - percentA;
+
+      const budgetA = totalBudget * (percentA / 100);
+      const budgetB = totalBudget * (percentB / 100);
+
+      // Update slider gradient
+      budgetSlider.style.setProperty('--slider-percent', percentA + '%');
+
+      // Update budget displays
+      document.getElementById('prog-a-budget').textContent = '$' + budgetA.toLocaleString();
+      document.getElementById('prog-b-budget').textContent = '$' + budgetB.toLocaleString();
+
+      // Calculate outcomes
+      // Program A: $50k per 100 participants, 20 QALYs per 100
+      // So: 0.0004 QALYs per dollar, $500 per participant
+      const participantsA = budgetA / 500;
+      const qalysA = participantsA * 0.2;
+
+      // Program B: $25k per 100 participants, 12 QALYs per 100
+      // So: 0.00048 QALYs per dollar, $250 per participant
+      const participantsB = budgetB / 250;
+      const qalysB = participantsB * 0.12;
+
+      const totalQalys = qalysA + qalysB;
+
+      // Update result displays
+      document.getElementById('result-a-qalys').textContent = Math.round(qalysA);
+      document.getElementById('result-a-participants').textContent = '(' + Math.round(participantsA) + ' participants)';
+
+      document.getElementById('result-b-qalys').textContent = Math.round(qalysB);
+      document.getElementById('result-b-participants').textContent = '(' + Math.round(participantsB) + ' participants)';
+
+      document.getElementById('result-total-qalys').textContent = Math.round(totalQalys);
+
+      // Update optimal hint
+      const hintEl = document.getElementById('optimal-hint');
+      if (percentA === 0) {
+        hintEl.textContent = 'Maximum efficiency reached: 48 QALYs from $100,000.';
+        hintEl.classList.add('is-optimal');
+      } else if (percentA === 100) {
+        hintEl.textContent = 'All funds in Program A. Compare to 100% Program B for maximum health gain.';
+        hintEl.classList.remove('is-optimal');
+      } else {
+        const potentialGain = 48 - Math.round(totalQalys);
+        if (potentialGain > 0) {
+          hintEl.textContent = 'Moving more budget to Program B would gain ' + potentialGain + ' more QALYs.';
+        } else {
+          hintEl.textContent = 'Near optimal allocation.';
+        }
+        hintEl.classList.remove('is-optimal');
+      }
+    }
+
+    budgetSlider.addEventListener('input', updateBudgetAllocation);
+
+    /* ============================================
+       5. TOOLTIP
+       ============================================ */
+    function showTooltip(event, data) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 4px;">${data.name} County</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Program ${data.program}</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">Spending: $${data.spending.toLocaleString()}</div>
+        <div style="font-size: 0.8rem; opacity: 0.9;">QALYs: ${data.qalys}</div>
+      `;
+
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.left = rect.left + rect.width / 2 + 'px';
+      tooltip.style.top = rect.top - 10 + 'px';
+      tooltip.style.transform = 'translate(-50%, -100%)';
+      tooltip.classList.remove('hidden');
+      tooltip.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.classList.add('hidden');
+      tooltip.setAttribute('aria-hidden', 'true');
+    }
+
+    /* ============================================
+       6. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render initial chart
+      renderScatterPlot();
+      scatterInitialized = true;
+
+      // Initialize budget slider
+      updateBudgetAllocation();
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderScatterPlot();
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

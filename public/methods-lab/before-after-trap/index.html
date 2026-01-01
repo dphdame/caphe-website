@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Before-After Trap | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn why before-after comparisons can mislead policy makers. Understand how pre-existing trends create the illusion of program effects.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-error: #D32F2F;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+    body { font-family: var(--font-sans); color: var(--color-text); line-height: 1.6; background: var(--color-bg-alt); }
+    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
+    h1 { font-size: 2rem; margin-bottom: var(--space-sm); }
+    h2 { font-size: 1.5rem; margin-bottom: var(--space-md); }
+    h3 { font-size: 1.25rem; margin-bottom: var(--space-sm); }
+    p { margin-bottom: var(--space-md); }
+    a { color: var(--color-primary); }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
+    .header {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+      color: white; padding: var(--space-2xl) 0; text-align: center;
+    }
+    .header h1 { color: white; }
+    .header .eyebrow { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; margin-bottom: var(--space-sm); }
+    .header .subtitle { font-size: 1.1rem; opacity: 0.95; max-width: 600px; margin: 0 auto; }
+    .panel-nav { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
+    .panel-btn { background: none; border: none; padding: var(--space-sm) var(--space-lg); font-size: 0.95rem; color: var(--color-text-secondary); cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease; font-family: var(--font-sans); }
+    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .panel-btn.active { background: var(--color-primary); color: white; }
+    .panel-btn:focus { outline: 2px solid var(--color-primary-light); outline-offset: 2px; }
+    .main { padding: var(--space-2xl) 0; }
+    .panel { display: none; animation: fadeIn 0.3s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .panel-header { margin-bottom: var(--space-xl); }
+    .panel-intro { color: var(--color-text-secondary); font-size: 1.05rem; max-width: 700px; }
+    .content-card { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
+    .image-container { text-align: center; margin: var(--space-xl) 0; }
+    .image-container img { max-width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+    .image-caption { font-size: 0.9rem; color: var(--color-text-muted); margin-top: var(--space-sm); font-style: italic; }
+
+    /* Chart Container */
+    .chart-container { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
+    .chart-wrapper { position: relative; width: 100%; height: 400px; }
+    .chart-wrapper svg { width: 100%; height: 100%; }
+
+    /* Interactive Controls */
+    .controls { display: flex; gap: var(--space-lg); flex-wrap: wrap; margin-bottom: var(--space-xl); justify-content: center; }
+    .control-btn { padding: var(--space-sm) var(--space-lg); border: 2px solid var(--color-border); background: white; border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-sans); font-size: 0.95rem; transition: all 0.2s ease; }
+    .control-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .control-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .control-btn.claimed { border-color: var(--color-error); }
+    .control-btn.claimed.active { background: var(--color-error); }
+    .control-btn.reality { border-color: var(--color-secondary); }
+    .control-btn.reality.active { background: var(--color-secondary); }
+
+    /* Stat Cards */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin: var(--space-xl) 0; }
+    .stat-card { background: var(--color-bg-alt); padding: var(--space-lg); border-radius: var(--radius-md); text-align: center; border-left: 4px solid var(--color-border); }
+    .stat-card.claimed { border-left-color: var(--color-error); }
+    .stat-card.reality { border-left-color: var(--color-secondary); }
+    .stat-value { font-size: 2rem; font-weight: bold; margin-bottom: var(--space-xs); }
+    .stat-card.claimed .stat-value { color: var(--color-error); }
+    .stat-card.reality .stat-value { color: var(--color-secondary); }
+    .stat-label { font-size: 0.9rem; color: var(--color-text-muted); }
+
+    /* Key Insight */
+    .key-insight { background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%); color: white; padding: var(--space-xl); border-radius: var(--radius-lg); margin: var(--space-xl) 0; }
+    .key-insight h3 { color: white; margin-bottom: var(--space-md); }
+    .key-insight p { opacity: 0.95; margin-bottom: var(--space-md); }
+    .key-insight p:last-child { margin-bottom: 0; }
+    .key-insight strong { color: var(--color-accent-light); }
+
+    /* Bridging Question */
+    .bridging-question { background: var(--color-bg-alt); border-left: 4px solid var(--color-primary); padding: var(--space-lg); margin-top: var(--space-xl); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+    .bridging-question p { margin: 0; color: var(--color-text-secondary); }
+    .bridging-question strong { color: var(--color-primary); }
+
+    /* Futures Grid */
+    .futures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); margin: var(--space-xl) 0; }
+    .future-card { background: white; border: 2px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-lg); text-align: center; }
+    .future-card h4 { color: var(--color-text-secondary); margin-bottom: var(--space-sm); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .future-card .value { font-size: 1.5rem; font-weight: bold; margin-bottom: var(--space-sm); }
+    .future-card.continued { border-color: var(--color-text-muted); }
+    .future-card.continued .value { color: var(--color-text-muted); }
+    .future-card.plateau { border-color: var(--color-secondary); }
+    .future-card.plateau .value { color: var(--color-secondary); }
+    .future-card.regress { border-color: var(--color-accent); }
+    .future-card.regress .value { color: var(--color-accent); }
+
+    /* Footer */
+    .footer { background: var(--color-primary-dark); color: white; padding: var(--space-xl) 0; text-align: center; margin-top: var(--space-2xl); }
+    .footer a { color: var(--color-accent-light); }
+    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
+
+    /* Accessibility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab · Foundational Concepts</div>
+      <h1>The Before-After Trap</h1>
+      <p class="subtitle">Why "it improved after we started" doesn't prove your program worked.</p>
+    </div>
+  </header>
+
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <ul>
+      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Claim</button></li>
+      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Trap</button></li>
+      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Key Insight</button></li>
+    </ul>
+  </nav>
+
+  <main class="main" role="main" id="main-content">
+    <div class="container">
+
+      <!-- Panel 1: The Claim -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Claim</h2>
+          <p class="panel-intro">A county launches a new screening program. Four years later, screening rates have increased dramatically. Success! <em style="opacity: 0.7;">(Data are simulated for illustration.)</em></p>
+        </div>
+
+        <div class="content-card">
+          <h3>The Press Release</h3>
+          <p style="font-style: italic; font-size: 1.1rem; padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md); border-left: 4px solid var(--color-accent);">
+            "Since launching our Community Screening Initiative in 2020, cancer screening rates have increased from 45% to 60%, a remarkable 15 percentage point improvement. This proves our program is saving lives."
+          </p>
+        </div>
+
+        <div class="chart-container">
+          <h3>The Evidence</h3>
+          <div class="chart-wrapper">
+            <svg id="claim-chart" viewBox="0 0 700 350"></svg>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card claimed">
+            <div class="stat-value">+15%</div>
+            <div class="stat-label">Claimed improvement</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">45% → 60%</div>
+            <div class="stat-label">Before vs. After</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">4 years</div>
+            <div class="stat-label">Program duration</div>
+          </div>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What was happening to screening rates <em>before</em> the program launched?</p>
+        </div>
+      </section>
+
+      <!-- Panel 2: The Trap -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Trap</h2>
+          <p class="panel-intro">The full picture, including the years before the program, reveals what the before-after comparison concealed.</p>
+        </div>
+
+        <div class="chart-container">
+          <h3>Toggle the View</h3>
+          <div class="controls">
+            <button class="control-btn claimed active" id="btn-claimed">What They Claimed</button>
+            <button class="control-btn reality" id="btn-reality">The Full Picture</button>
+          </div>
+          <div class="chart-wrapper">
+            <svg id="trap-chart" viewBox="0 0 700 350"></svg>
+          </div>
+        </div>
+
+        <div class="image-container">
+          <img src="assets/before-after-illusion.png" alt="Chart showing the claimed effect (flat before, jump after) versus reality (steady upward trend that was already happening)" />
+          <p class="image-caption">The "program effect" disappears when we see the pre-existing trend.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>What Went Wrong?</h3>
+          <p>Screening rates were <strong>already increasing at 3.75 percentage points per year</strong> before the program launched. The post-program improvement simply continued this pre-existing trend.</p>
+          <p>The county compared screening rates just before the program (45%) to rates four years later (60%). The pre-existing trend alone would have produced the same result: <strong>60%.</strong></p>
+
+          <div class="stat-grid">
+            <div class="stat-card claimed">
+              <div class="stat-value">+15%</div>
+              <div class="stat-label">Claimed effect</div>
+            </div>
+            <div class="stat-card reality">
+              <div class="stat-value">0%</div>
+              <div class="stat-label">Actual effect</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="image-container">
+          <img src="assets/alternative-futures.png" alt="Diagram showing multiple possible counterfactual trajectories: trend continues, improvement stops, or decline" />
+          <p class="image-caption">Without a control group, we can't know which counterfactual is correct.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>The Problem of Unknown Counterfactuals</h3>
+          <p>The before-after comparison assumes that without the program, the screening rate would have stayed flat at 45%. But there are many possible counterfactual futures:</p>
+
+          <div class="futures-grid">
+            <div class="future-card continued">
+              <h4>If Trend Continued</h4>
+              <div class="value">60%</div>
+              <p>Program effect: <strong>0%</strong></p>
+            </div>
+            <div class="future-card plateau">
+              <h4>If Improvement Stopped</h4>
+              <div class="value">45%</div>
+              <p>Program effect: <strong>+15%</strong></p>
+            </div>
+            <div class="future-card regress">
+              <h4>If Rates Declined</h4>
+              <div class="value">40%</div>
+              <p>Program effect: <strong>+20%</strong></p>
+            </div>
+          </div>
+
+          <p style="margin-top: var(--space-lg);">Which scenario is correct? <strong>We can't know from before-after data alone.</strong> That's the trap.</p>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Next:</strong> What's the key lesson for evaluating programs and policies?</p>
+        </div>
+      </section>
+
+      <!-- Panel 3: Key Insight -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">The Key Insight</h2>
+          <p class="panel-intro">Understanding the before-after trap protects you from common evaluation mistakes.</p>
+        </div>
+
+        <div class="key-insight">
+          <h3>The Fundamental Problem</h3>
+          <p><strong>Before-after comparisons assume the counterfactual is "no change."</strong></p>
+          <p>Attributing change to a program requires knowing the counterfactual. Outcomes trend up, trend down, and fluctuate for reasons independent of any intervention, making "no change" a naive assumption.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>Common Causes of Pre-Existing Trends</h3>
+          <ul style="margin-left: var(--space-xl); margin-bottom: var(--space-lg);">
+            <li><strong>Secular trends:</strong> Gradual improvements in technology, awareness, or social norms</li>
+            <li><strong>Policy spillovers:</strong> Other programs or regulations affecting the same outcome</li>
+            <li><strong>Economic cycles:</strong> Recessions and recoveries that affect health behaviors</li>
+            <li><strong>Demographic shifts:</strong> Aging populations, migration patterns</li>
+            <li><strong>Regression to the mean:</strong> Extreme values naturally moving toward average</li>
+          </ul>
+          <p>Any of these could explain the observed improvement—without any program effect at all.</p>
+        </div>
+
+        <div class="content-card">
+          <h3>The Economist's Question</h3>
+          <p>The before-after comparison gives you a number; its meaning depends entirely on the counterfactual—what would have happened without the intervention.</p>
+          <p>The traditional question: <em>"Did screening rates improve after the program launched?"</em></p>
+          <p>The economist's question: <em>"Compared to what alternative future?"</em></p>
+
+          <div style="margin-top: var(--space-xl); padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md);">
+            <h4 style="color: var(--color-secondary); margin-bottom: var(--space-md);">Better Approaches</h4>
+            <ul style="margin-left: var(--space-xl); margin-bottom: 0;">
+              <li><strong>Control groups:</strong> Compare to similar areas that didn't get the program</li>
+              <li><strong>Difference-in-differences:</strong> Compare the <em>change</em> in treated vs. untreated groups</li>
+              <li><strong>Interrupted time series:</strong> Test whether the slope changed at the intervention point</li>
+              <li><strong>Randomized trials:</strong> The gold standard—random assignment creates a valid counterfactual</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="key-insight" style="background: linear-gradient(135deg, var(--color-secondary) 0%, #0F766E 100%);">
+          <h3>Key Takeaway</h3>
+          <p><strong>Without knowing the counterfactual trajectory, we can't attribute post-program changes to the program.</strong></p>
+          <p>Before-after comparisons seduce with simplicity, and simplicity misleads when it obscures the counterfactual. Always ask: "What was the trend before, and what would have happened if we'd done nothing?"</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> · California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> · Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Data shown are synthetic and for illustration only.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2025 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Panel Navigation
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+    let claimChartRendered = false;
+    let trapChartRendered = false;
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        if (panelNum === '1' && !claimChartRendered) {
+          setTimeout(() => { renderClaimChart(); claimChartRendered = true; }, 50);
+        }
+        if (panelNum === '2' && !trapChartRendered) {
+          setTimeout(() => { renderTrapChart('claimed'); trapChartRendered = true; }, 50);
+        }
+      });
+    });
+
+    // Data
+    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
+    const rates = [30, 33.75, 37.5, 41.25, 45, 48.75, 52.5, 56.25, 60];
+    const programStart = 4; // Index of 2020
+
+    function renderClaimChart() {
+      const svg = document.getElementById('claim-chart');
+      const width = 700, height = 350;
+      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      // Scales
+      const xScale = (i) => margin.left + (i / (years.length - 1)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - 20) / 50) * plotHeight;
+
+      // Grid lines
+      for (let y = 20; y <= 70; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', margin.left - 10);
+        text.setAttribute('y', yScale(y) + 4);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = y + '%';
+        svg.appendChild(text);
+      }
+
+      // Program launch line
+      const launchLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      launchLine.setAttribute('x1', xScale(programStart));
+      launchLine.setAttribute('y1', margin.top);
+      launchLine.setAttribute('x2', xScale(programStart));
+      launchLine.setAttribute('y2', height - margin.bottom);
+      launchLine.setAttribute('stroke', '#F9A825');
+      launchLine.setAttribute('stroke-width', '2');
+      launchLine.setAttribute('stroke-dasharray', '5,5');
+      svg.appendChild(launchLine);
+
+      const launchLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      launchLabel.setAttribute('x', xScale(programStart));
+      launchLabel.setAttribute('y', margin.top - 10);
+      launchLabel.setAttribute('text-anchor', 'middle');
+      launchLabel.setAttribute('font-size', '12');
+      launchLabel.setAttribute('fill', '#F9A825');
+      launchLabel.setAttribute('font-weight', 'bold');
+      launchLabel.textContent = 'Program Launches';
+      svg.appendChild(launchLabel);
+
+      // Before point
+      const beforeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      beforeCircle.setAttribute('cx', xScale(programStart));
+      beforeCircle.setAttribute('cy', yScale(rates[programStart]));
+      beforeCircle.setAttribute('r', '8');
+      beforeCircle.setAttribute('fill', '#D32F2F');
+      svg.appendChild(beforeCircle);
+
+      // After point
+      const afterCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      afterCircle.setAttribute('cx', xScale(years.length - 1));
+      afterCircle.setAttribute('cy', yScale(rates[years.length - 1]));
+      afterCircle.setAttribute('r', '8');
+      afterCircle.setAttribute('fill', '#2E7D32');
+      svg.appendChild(afterCircle);
+
+      // Arrow between
+      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const midX = (xScale(programStart) + xScale(years.length - 1)) / 2;
+      arrow.setAttribute('d', `M ${xScale(programStart) + 15} ${yScale(rates[programStart])} L ${xScale(years.length - 1) - 15} ${yScale(rates[years.length - 1])}`);
+      arrow.setAttribute('stroke', '#424242');
+      arrow.setAttribute('stroke-width', '2');
+      arrow.setAttribute('marker-end', 'url(#arrowhead)');
+      svg.appendChild(arrow);
+
+      // Labels
+      const beforeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      beforeLabel.setAttribute('x', xScale(programStart));
+      beforeLabel.setAttribute('y', yScale(rates[programStart]) + 25);
+      beforeLabel.setAttribute('text-anchor', 'middle');
+      beforeLabel.setAttribute('font-size', '14');
+      beforeLabel.setAttribute('fill', '#D32F2F');
+      beforeLabel.setAttribute('font-weight', 'bold');
+      beforeLabel.textContent = '45%';
+      svg.appendChild(beforeLabel);
+
+      const afterLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      afterLabel.setAttribute('x', xScale(years.length - 1));
+      afterLabel.setAttribute('y', yScale(rates[years.length - 1]) - 15);
+      afterLabel.setAttribute('text-anchor', 'middle');
+      afterLabel.setAttribute('font-size', '14');
+      afterLabel.setAttribute('fill', '#2E7D32');
+      afterLabel.setAttribute('font-weight', 'bold');
+      afterLabel.textContent = '60%';
+      svg.appendChild(afterLabel);
+
+      // Effect label
+      const effectLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      effectLabel.setAttribute('x', midX);
+      effectLabel.setAttribute('y', (yScale(rates[programStart]) + yScale(rates[years.length - 1])) / 2 - 10);
+      effectLabel.setAttribute('text-anchor', 'middle');
+      effectLabel.setAttribute('font-size', '16');
+      effectLabel.setAttribute('fill', '#D32F2F');
+      effectLabel.setAttribute('font-weight', 'bold');
+      effectLabel.textContent = '+15% "Effect"';
+      svg.appendChild(effectLabel);
+
+      // X-axis labels
+      years.forEach((year, i) => {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', xScale(i));
+        text.setAttribute('y', height - margin.bottom + 20);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = year;
+        svg.appendChild(text);
+      });
+    }
+
+    function renderTrapChart(view) {
+      const svg = document.getElementById('trap-chart');
+      const width = 700, height = 350;
+      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xScale = (i) => margin.left + (i / (years.length - 1)) * plotWidth;
+      const yScale = (v) => margin.top + plotHeight - ((v - 20) / 50) * plotHeight;
+
+      // Grid
+      for (let y = 20; y <= 70; y += 10) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', margin.left);
+        line.setAttribute('y1', yScale(y));
+        line.setAttribute('x2', width - margin.right);
+        line.setAttribute('y2', yScale(y));
+        line.setAttribute('stroke', '#E0E0E0');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', margin.left - 10);
+        text.setAttribute('y', yScale(y) + 4);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = y + '%';
+        svg.appendChild(text);
+      }
+
+      // Program line
+      const launchLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      launchLine.setAttribute('x1', xScale(programStart));
+      launchLine.setAttribute('y1', margin.top);
+      launchLine.setAttribute('x2', xScale(programStart));
+      launchLine.setAttribute('y2', height - margin.bottom);
+      launchLine.setAttribute('stroke', '#F9A825');
+      launchLine.setAttribute('stroke-width', '2');
+      launchLine.setAttribute('stroke-dasharray', '5,5');
+      svg.appendChild(launchLine);
+
+      if (view === 'claimed') {
+        // Flat line before
+        const flatBefore = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        flatBefore.setAttribute('x1', xScale(0));
+        flatBefore.setAttribute('y1', yScale(45));
+        flatBefore.setAttribute('x2', xScale(programStart));
+        flatBefore.setAttribute('y2', yScale(45));
+        flatBefore.setAttribute('stroke', '#D32F2F');
+        flatBefore.setAttribute('stroke-width', '3');
+        flatBefore.setAttribute('stroke-dasharray', '8,4');
+        svg.appendChild(flatBefore);
+
+        // Jump after
+        const jumpAfter = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        jumpAfter.setAttribute('x1', xScale(programStart));
+        jumpAfter.setAttribute('y1', yScale(45));
+        jumpAfter.setAttribute('x2', xScale(years.length - 1));
+        jumpAfter.setAttribute('y2', yScale(60));
+        jumpAfter.setAttribute('stroke', '#D32F2F');
+        jumpAfter.setAttribute('stroke-width', '3');
+        svg.appendChild(jumpAfter);
+
+        // Effect annotation
+        const effectText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        effectText.setAttribute('x', xScale(years.length - 1) + 10);
+        effectText.setAttribute('y', yScale(52));
+        effectText.setAttribute('font-size', '14');
+        effectText.setAttribute('fill', '#D32F2F');
+        effectText.setAttribute('font-weight', 'bold');
+        effectText.textContent = 'Claimed: +15%';
+        svg.appendChild(effectText);
+      } else {
+        // Full trend line
+        let pathD = `M ${xScale(0)} ${yScale(rates[0])}`;
+        for (let i = 1; i < years.length; i++) {
+          pathD += ` L ${xScale(i)} ${yScale(rates[i])}`;
+        }
+        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        trendLine.setAttribute('d', pathD);
+        trendLine.setAttribute('stroke', '#0D9488');
+        trendLine.setAttribute('stroke-width', '3');
+        trendLine.setAttribute('fill', 'none');
+        svg.appendChild(trendLine);
+
+        // Data points
+        rates.forEach((rate, i) => {
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', xScale(i));
+          circle.setAttribute('cy', yScale(rate));
+          circle.setAttribute('r', '5');
+          circle.setAttribute('fill', '#0D9488');
+          svg.appendChild(circle);
+        });
+
+        // Annotation
+        const realText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        realText.setAttribute('x', xScale(2));
+        realText.setAttribute('y', yScale(rates[2]) - 15);
+        realText.setAttribute('font-size', '14');
+        realText.setAttribute('fill', '#0D9488');
+        realText.setAttribute('font-weight', 'bold');
+        realText.textContent = 'Pre-existing trend: +3.75%/year';
+        svg.appendChild(realText);
+
+        const effectText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        effectText.setAttribute('x', xScale(years.length - 1) + 10);
+        effectText.setAttribute('y', yScale(60));
+        effectText.setAttribute('font-size', '14');
+        effectText.setAttribute('fill', '#0D9488');
+        effectText.setAttribute('font-weight', 'bold');
+        effectText.textContent = 'Actual effect: 0%';
+        svg.appendChild(effectText);
+      }
+
+      // X-axis
+      years.forEach((year, i) => {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', xScale(i));
+        text.setAttribute('y', height - margin.bottom + 20);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#595959');
+        text.textContent = year;
+        svg.appendChild(text);
+      });
+    }
+
+    // Toggle buttons
+    document.getElementById('btn-claimed').addEventListener('click', function() {
+      document.getElementById('btn-claimed').classList.add('active');
+      document.getElementById('btn-reality').classList.remove('active');
+      renderTrapChart('claimed');
+    });
+
+    document.getElementById('btn-reality').addEventListener('click', function() {
+      document.getElementById('btn-reality').classList.add('active');
+      document.getElementById('btn-claimed').classList.remove('active');
+      renderTrapChart('reality');
+    });
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      renderClaimChart();
+      claimChartRendered = true;
+    });
+  </script>
+</body>
+</html>

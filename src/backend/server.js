@@ -245,6 +245,51 @@ app.post('/api/membership/apply', async (req, res) => {
   }
 
   try {
+    // Step 1: Create Supabase user immediately with affiliate tier
+    let userCreated = false;
+    let userAlreadyExists = false;
+
+    if (supabaseAdmin) {
+      const tempPassword = require('crypto').randomBytes(16).toString('hex');
+
+      const { data: userData, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        password: tempPassword,
+        email_confirm: false,
+        user_metadata: {
+          full_name: `${firstName} ${lastName}`.trim(),
+          membership_tier: 'affiliate',
+          application_pending: true
+        }
+      });
+
+      if (createError) {
+        if (createError.message.includes('already been registered')) {
+          userAlreadyExists = true;
+          console.log('User already exists, will update application status');
+        } else {
+          console.error('Supabase user creation error:', createError);
+          throw createError;
+        }
+      } else {
+        userCreated = true;
+
+        // Send password reset email so user can set their own password
+        try {
+          const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
+            type: 'recovery',
+            email: email
+          });
+          if (resetError) {
+            console.error('Password reset email error:', resetError);
+          }
+        } catch (resetErr) {
+          console.error('Failed to send password reset:', resetErr);
+        }
+      }
+    }
+
+    // Step 2: Store application in Brevo applications list
     await subscribeToBrevoList(brevoListIds.applications, {
       email,
       firstName,
@@ -258,7 +303,19 @@ app.post('/api/membership/apply', async (req, res) => {
       linkedin
     });
 
-    // Send notification email to admin
+    // Also add to general listserv for community updates
+    try {
+      await subscribeToBrevoList(brevoListIds.general, {
+        email,
+        firstName,
+        lastName,
+        organization
+      });
+    } catch (listErr) {
+      console.error('Failed to add to general list:', listErr);
+    }
+
+    // Step 3: Send notification email to admin
     try {
       await sendEmail({
         to: process.env.ADMIN_EMAIL || 'info@caphegroup.org',
@@ -274,6 +331,7 @@ app.post('/api/membership/apply', async (req, res) => {
           <p><strong>Economics Work:</strong> ${economicsWork || 'Not provided'}</p>
           <p><strong>LinkedIn:</strong> ${linkedin || 'Not provided'}</p>
           <hr>
+          <p><strong>Account Status:</strong> ${userCreated ? 'Community account created' : userAlreadyExists ? 'Account already exists' : 'Account not created'}</p>
           <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>
         `
       });
@@ -281,17 +339,37 @@ app.post('/api/membership/apply', async (req, res) => {
       console.error('Failed to send admin notification:', emailErr);
     }
 
-    // Send confirmation email to applicant
+    // Step 4: Send confirmation email to applicant (with community access info)
     try {
       await sendEmail({
         to: email,
-        subject: 'CAPHE Membership Application Received',
+        subject: 'CAPHE Membership Application Received - You Have Community Access!',
         html: `
           <h2>Thank you for applying to CAPHE!</h2>
           <p>Dear ${firstName},</p>
-          <p>We've received your membership application for the California Association of Public Health Economists.</p>
-          <p>Our team will review your application and respond within 5 business days. If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
-          <p>In the meantime, feel free to explore our <a href="https://www.caphegroup.org/resources.html">public resources</a> and learn more about our <a href="https://www.caphegroup.org/programs.html">upcoming programs</a>.</p>
+          <p>We've received your application for Professional Membership in the California Association of Public Health Economists.</p>
+
+          <h3>Your Community Access is Ready</h3>
+          <p>While we review your professional membership application, you already have Community Member access! Check your email for a separate message to set up your password.</p>
+          <p>With your Community Member account, you can:</p>
+          <ul>
+            <li>Access community-level Methods Lab tutorials</li>
+            <li>Attend public webinars</li>
+            <li>Receive white paper and resource announcements</li>
+            <li>Get monthly event updates</li>
+          </ul>
+
+          <h3>What Happens Next</h3>
+          <p>Our team will review your professional membership application within 5 business days. Once approved, your account will be upgraded to Professional Member status, giving you access to:</p>
+          <ul>
+            <li>Peer Review Sessions</li>
+            <li>Working Groups</li>
+            <li>Member-only webinars and labs</li>
+            <li>Full webinar archive</li>
+          </ul>
+
+          <p>If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
+
           <p>Best regards,<br>The CAPHE Team</p>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
           <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
@@ -304,7 +382,11 @@ app.post('/api/membership/apply', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Application submitted successfully. We will review your application and be in touch soon.'
+      message: userCreated
+        ? 'Application submitted! Check your email to set up your community account password while we review your professional membership application.'
+        : userAlreadyExists
+          ? 'Application submitted! You already have an account - log in to access your community benefits while we review your professional membership application.'
+          : 'Application submitted successfully. We will review your application and be in touch soon.'
     });
   } catch (error) {
     console.error('Membership application error:', error);
@@ -507,7 +589,7 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Email is required' });
   }
 
-  if (!brevoContactsApi || !supabase) {
+  if (!brevoContactsApi || !supabaseAdmin) {
     return res.status(500).json({ error: 'Service not configured' });
   }
 
@@ -517,28 +599,42 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     const firstName = contactInfo.attributes?.FIRSTNAME || '';
     const lastName = contactInfo.attributes?.LASTNAME || '';
 
-    // Send Supabase invite with member tier
-    const { data, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
-      data: {
-        full_name: `${firstName} ${lastName}`.trim(),
-        membership_tier: 'member'
-      }
-    });
+    // Find existing user and upgrade their tier from affiliate to member
+    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = users?.find(u => u.email === email);
 
-    if (inviteError) {
-      // If user already exists, upgrade their tier
-      if (inviteError.message.includes('already been registered') && supabaseAdmin) {
-        // Find user and update their tier
-        const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
-        const existingUser = users?.find(u => u.email === email);
-        if (existingUser) {
-          await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-            user_metadata: { membership_tier: 'member' }
-          });
+    if (existingUser) {
+      // User exists - upgrade their tier
+      await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+        user_metadata: {
+          ...existingUser.user_metadata,
+          membership_tier: 'member',
+          application_pending: false
         }
-      } else if (!inviteError.message.includes('already been registered')) {
-        throw inviteError;
+      });
+      console.log(`Upgraded ${email} from affiliate to member`);
+    } else {
+      // User doesn't exist (shouldn't happen with new flow) - create with member tier
+      const tempPassword = require('crypto').randomBytes(16).toString('hex');
+      const { error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: email,
+        password: tempPassword,
+        email_confirm: false,
+        user_metadata: {
+          full_name: `${firstName} ${lastName}`.trim(),
+          membership_tier: 'member'
+        }
+      });
+
+      if (createError && !createError.message.includes('already been registered')) {
+        throw createError;
       }
+
+      // Send password reset email for new user
+      await supabaseAdmin.auth.admin.generateLink({
+        type: 'recovery',
+        email: email
+      });
     }
 
     // Move from applications list to members list
@@ -548,17 +644,17 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: 'Welcome to CAPHE - Membership Approved!',
+        subject: 'CAPHE Professional Membership Approved!',
         html: `
-          <h2>Welcome to CAPHE!</h2>
+          <h2>Your Professional Membership is Approved!</h2>
           <p>Dear ${firstName || 'Member'},</p>
-          <p>Your membership application has been approved. You should receive a separate email
-          with a link to set up your member account.</p>
-          <p>Once you've set up your account, you can access:</p>
+          <p>Great news! Your application for Professional Membership with the California Association of Public Health Economists has been approved.</p>
+          <p>Your account has been upgraded to Professional Member status. Log in with your existing credentials to access:</p>
           <ul>
-            <li>Webinar recordings archive</li>
-            <li>Peer review session scheduling</li>
-            <li>Working group documents</li>
+            <li>Peer Review Sessions - present your work and get feedback</li>
+            <li>Working Groups - collaborate on research projects</li>
+            <li>Member-only webinars and advanced Methods Lab tutorials</li>
+            <li>Full webinar recordings archive</li>
             <li>Member directory</li>
           </ul>
           <p>We look forward to collaborating with you!</p>
@@ -571,7 +667,9 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
 
     res.json({
       success: true,
-      message: `Approved ${email}. Invite sent.`
+      message: existingUser
+        ? `Approved ${email}. Account upgraded to Professional Member.`
+        : `Approved ${email}. Account created and invite sent.`
     });
   } catch (error) {
     console.error('Error approving application:', error);
@@ -878,6 +976,306 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
   } catch (error) {
     console.error('LinkedIn OAuth callback error:', error);
     res.redirect('/membership.html?error=' + encodeURIComponent(error.message));
+  }
+});
+
+// =============================================
+// GOOGLE OAUTH (for login)
+// =============================================
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.NODE_ENV === 'production'
+  ? 'https://www.caphegroup.org/api/auth/google/callback'
+  : 'http://localhost:3000/api/auth/google/callback';
+
+// Initiate Google OAuth
+app.get('/api/auth/google', (req, res) => {
+  if (!GOOGLE_CLIENT_ID) {
+    return res.status(500).json({ error: 'Google OAuth not configured' });
+  }
+
+  const state = Buffer.from(Math.random().toString()).toString('base64').slice(0, 16);
+
+  const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+  authUrl.searchParams.set('redirect_uri', GOOGLE_REDIRECT_URI);
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('scope', 'openid email profile');
+  authUrl.searchParams.set('state', state);
+  authUrl.searchParams.set('access_type', 'offline');
+  authUrl.searchParams.set('prompt', 'consent');
+
+  res.redirect(authUrl.toString());
+});
+
+// Google OAuth callback
+app.get('/api/auth/google/callback', async (req, res) => {
+  const { code, error } = req.query;
+
+  if (error) {
+    console.error('Google OAuth error:', error);
+    return res.redirect('/login.html?error=' + encodeURIComponent(error));
+  }
+
+  if (!code) {
+    return res.redirect('/login.html?error=No authorization code received');
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        code: code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+      }).toString(),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.text();
+      console.error('Google token exchange failed:', errorData);
+      throw new Error('Failed to exchange authorization code');
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // Fetch user profile
+    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      throw new Error('Failed to fetch Google profile');
+    }
+
+    const profile = await profileResponse.json();
+
+    // Find or create Supabase user
+    if (!supabaseAdmin) {
+      throw new Error('User management not configured');
+    }
+
+    // Check if user exists
+    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+    let existingUser = users?.find(u => u.email === profile.email);
+
+    if (!existingUser) {
+      // Create new user with affiliate tier
+      const tempPassword = require('crypto').randomBytes(16).toString('hex');
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: profile.email,
+        password: tempPassword,
+        email_confirm: true, // Auto-confirm since Google verified email
+        user_metadata: {
+          full_name: profile.name || `${profile.given_name || ''} ${profile.family_name || ''}`.trim(),
+          membership_tier: 'affiliate',
+          avatar_url: profile.picture
+        }
+      });
+
+      if (createError) {
+        throw createError;
+      }
+
+      existingUser = newUser.user;
+
+      // Add to Brevo general listserv
+      if (brevoContactsApi) {
+        try {
+          await subscribeToBrevoList(brevoListIds.general, {
+            email: profile.email,
+            firstName: profile.given_name || '',
+            lastName: profile.family_name || ''
+          });
+        } catch (brevoErr) {
+          console.error('Brevo subscription error:', brevoErr);
+        }
+      }
+    }
+
+    // Generate a magic link for the user to log in
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: profile.email,
+      options: {
+        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+      }
+    });
+
+    if (linkError) {
+      throw linkError;
+    }
+
+    // Redirect with the magic link token
+    const token = linkData.properties?.hashed_token;
+    if (token) {
+      // Redirect to Supabase auth confirmation URL
+      res.redirect(`${supabaseUrl}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=https://www.caphegroup.org/dashboard.html`);
+    } else {
+      // Fallback: redirect to login with success message
+      res.redirect('/login.html?oauth=google&email=' + encodeURIComponent(profile.email));
+    }
+
+  } catch (error) {
+    console.error('Google OAuth callback error:', error);
+    res.redirect('/login.html?error=' + encodeURIComponent(error.message));
+  }
+});
+
+// =============================================
+// LINKEDIN OAUTH (for login - separate from membership)
+// =============================================
+
+const LINKEDIN_LOGIN_REDIRECT_URI = process.env.NODE_ENV === 'production'
+  ? 'https://www.caphegroup.org/api/auth/linkedin/login/callback'
+  : 'http://localhost:3000/api/auth/linkedin/login/callback';
+
+// Initiate LinkedIn OAuth for login
+app.get('/api/auth/linkedin/login', (req, res) => {
+  if (!LINKEDIN_CLIENT_ID) {
+    return res.status(500).json({ error: 'LinkedIn OAuth not configured' });
+  }
+
+  const state = Buffer.from(Math.random().toString()).toString('base64').slice(0, 16);
+
+  const authUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('client_id', LINKEDIN_CLIENT_ID);
+  authUrl.searchParams.set('redirect_uri', LINKEDIN_LOGIN_REDIRECT_URI);
+  authUrl.searchParams.set('state', state);
+  authUrl.searchParams.set('scope', 'openid profile email');
+
+  res.redirect(authUrl.toString());
+});
+
+// LinkedIn OAuth callback for login
+app.get('/api/auth/linkedin/login/callback', async (req, res) => {
+  const { code, error, error_description } = req.query;
+
+  if (error) {
+    console.error('LinkedIn login OAuth error:', error, error_description);
+    return res.redirect('/login.html?error=' + encodeURIComponent(error_description || error));
+  }
+
+  if (!code) {
+    return res.redirect('/login.html?error=No authorization code received');
+  }
+
+  try {
+    // Exchange code for access token
+    const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        client_id: LINKEDIN_CLIENT_ID,
+        client_secret: LINKEDIN_CLIENT_SECRET,
+        redirect_uri: LINKEDIN_LOGIN_REDIRECT_URI,
+      }).toString(),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorData = await tokenResponse.text();
+      console.error('LinkedIn token exchange failed:', errorData);
+      throw new Error('Failed to exchange authorization code');
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // Fetch user profile
+    const profileResponse = await fetch('https://api.linkedin.com/v2/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      throw new Error('Failed to fetch LinkedIn profile');
+    }
+
+    const profile = await profileResponse.json();
+
+    // Find or create Supabase user
+    if (!supabaseAdmin) {
+      throw new Error('User management not configured');
+    }
+
+    // Check if user exists
+    const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+    let existingUser = users?.find(u => u.email === profile.email);
+
+    if (!existingUser) {
+      // Create new user with affiliate tier
+      const tempPassword = require('crypto').randomBytes(16).toString('hex');
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: profile.email,
+        password: tempPassword,
+        email_confirm: true, // Auto-confirm since LinkedIn verified email
+        user_metadata: {
+          full_name: `${profile.given_name || ''} ${profile.family_name || ''}`.trim(),
+          membership_tier: 'affiliate',
+          avatar_url: profile.picture
+        }
+      });
+
+      if (createError) {
+        throw createError;
+      }
+
+      existingUser = newUser.user;
+
+      // Add to Brevo general listserv
+      if (brevoContactsApi) {
+        try {
+          await subscribeToBrevoList(brevoListIds.general, {
+            email: profile.email,
+            firstName: profile.given_name || '',
+            lastName: profile.family_name || ''
+          });
+        } catch (brevoErr) {
+          console.error('Brevo subscription error:', brevoErr);
+        }
+      }
+    }
+
+    // Generate a magic link for the user to log in
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: profile.email,
+      options: {
+        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+      }
+    });
+
+    if (linkError) {
+      throw linkError;
+    }
+
+    // Redirect with the magic link token
+    const token = linkData.properties?.hashed_token;
+    if (token) {
+      res.redirect(`${supabaseUrl}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=https://www.caphegroup.org/dashboard.html`);
+    } else {
+      res.redirect('/login.html?oauth=linkedin&email=' + encodeURIComponent(profile.email));
+    }
+
+  } catch (error) {
+    console.error('LinkedIn login callback error:', error);
+    res.redirect('/login.html?error=' + encodeURIComponent(error.message));
   }
 });
 

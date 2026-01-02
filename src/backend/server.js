@@ -452,6 +452,36 @@ app.post('/api/membership/apply', async (req, res) => {
   }
 });
 
+// Get application status for a user (for dashboard display)
+app.get('/api/membership/application-status', async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Database not configured' });
+  }
+
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('membership_applications')
+      .select('decision')
+      .eq('email', email)
+      .single();
+
+    if (error || !data) {
+      return res.json({ status: 'none' });
+    }
+
+    return res.json({ status: data.decision });
+  } catch (error) {
+    console.error('Error checking application status:', error);
+    return res.json({ status: 'none' });
+  }
+});
+
 // =============================================
 // COMMUNITY MEMBERSHIP (AFFILIATE TIER)
 // =============================================

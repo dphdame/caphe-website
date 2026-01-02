@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Check if user is a professional member
+  const isProfessional = await checkProfessionalMember();
+  if (!isProfessional) {
+    showProfessionalOnlyMessage();
+    return;
+  }
+
   // Meeting dates are now hardcoded in HTML (last Wednesday of each month)
 
   // Set up form submission
@@ -28,6 +35,53 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load user's existing requests
   await loadMyRequests();
 });
+
+// Check if user is a professional member
+async function checkProfessionalMember() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const membershipTier = user.user_metadata?.membership_tier;
+    return membershipTier === 'member';
+  } catch (error) {
+    console.error('Error checking membership:', error);
+    return false;
+  }
+}
+
+// Show message for non-professional members
+function showProfessionalOnlyMessage() {
+  const formContainer = document.querySelector('.peer-review-form-container');
+  if (formContainer) {
+    formContainer.innerHTML = `
+      <div class="card" style="text-align: center; padding: var(--space-2xl);">
+        <img src="/assets/images/icons/icon-present.png" alt="" style="width: 64px; height: 64px; margin-bottom: var(--space-lg); opacity: 0.5;">
+        <h2 style="margin-bottom: var(--space-md);">Professional Members Only</h2>
+        <p class="text-muted" style="max-width: 400px; margin: 0 auto var(--space-lg);">
+          Peer Review Sessions are available to Professional Members. Upgrade your membership to present your research and receive feedback from fellow health economists.
+        </p>
+        <a href="/membership/professional.html" class="btn btn-primary">Apply for Professional Membership</a>
+      </div>
+    `;
+  }
+
+  // Also update the sidebar
+  const infoContainer = document.querySelector('.peer-review-info');
+  if (infoContainer) {
+    infoContainer.innerHTML = `
+      <div class="card">
+        <h3>Professional Member Benefits</h3>
+        <ul style="list-style: disc; padding-left: var(--space-lg); margin-top: var(--space-md);">
+          <li>Present work-in-progress at monthly peer review sessions</li>
+          <li>Receive constructive feedback from fellow economists</li>
+          <li>Access to member-only webinar recordings</li>
+          <li>Priority registration for workshops</li>
+        </ul>
+      </div>
+    `;
+  }
+}
 
 // Check if user is authenticated
 async function checkDashboardAuth() {

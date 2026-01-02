@@ -397,7 +397,7 @@
       <div class="nav-links">
         <a href="/about.html" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs.html" class="nav-link">Programs</a>
+          <a href="/programs.html" class="nav-link">Programs ▾</a>
           <div class="nav-dropdown-menu">
             <a href="/programs.html#webinars">Webinars</a>
             <a href="/programs.html#workshops">Workshops</a>
@@ -406,7 +406,7 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources.html" class="nav-link active">Resources</a>
+          <a href="/resources.html" class="nav-link active">Resources ▾</a>
           <div class="nav-dropdown-menu">
             <a href="/methods-lab/">Methods Lab</a>
             <a href="/resources.html#external-resources">External Resources</a>
@@ -448,6 +448,7 @@
           <button class="filter-btn active" data-access="all">All</button>
           <button class="filter-btn" data-access="public">Public</button>
           <button class="filter-btn" data-access="affiliate">Affiliate</button>
+          <button class="filter-btn" data-access="member">Member</button>
         </div>
 
         <div class="filter-group">
@@ -685,10 +686,10 @@
             <p class="lab-description">What does "worth it" actually mean in practice?</p>
           </a>
 
-          <a href="comparing-two-programs/" class="lab-card affiliate" data-access="affiliate" data-track="3" data-title="Case Study: Comparing Programs" data-keywords="comparison programs cost effectiveness case study">
+          <a href="comparing-two-programs/" class="lab-card member" data-access="member" data-track="3" data-title="Case Study: Comparing Programs" data-keywords="comparison programs cost effectiveness case study">
             <div class="lab-card-header">
               <span class="lab-title">Case Study: Comparing Programs</span>
-              <span class="lab-badge badge-affiliate">Affiliate</span>
+              <span class="lab-badge badge-member">Member</span>
             </div>
             <p class="lab-description">Head-to-head cost-effectiveness evaluation.</p>
           </a>
@@ -720,18 +721,18 @@
             <p class="lab-description">Mapping what could explain the pattern you're seeing.</p>
           </a>
 
-          <a href="sensitivity-analysis-cea/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="Sensitivity Analysis" data-keywords="sensitivity analysis robustness parameter uncertainty">
+          <a href="sensitivity-analysis-cea/" class="lab-card member" data-access="member" data-track="4" data-title="Sensitivity Analysis" data-keywords="sensitivity analysis robustness parameter uncertainty">
             <div class="lab-card-header">
               <span class="lab-title">Sensitivity Analysis</span>
-              <span class="lab-badge badge-affiliate">Affiliate</span>
+              <span class="lab-badge badge-member">Member</span>
             </div>
             <p class="lab-description">Which assumptions matter most for your conclusions?</p>
           </a>
 
-          <a href="cea-uncertain-effects/" class="lab-card affiliate" data-access="affiliate" data-track="4" data-title="CEA Under Uncertainty" data-keywords="uncertainty evidence incomplete decision making">
+          <a href="cea-uncertain-effects/" class="lab-card member" data-access="member" data-track="4" data-title="CEA Under Uncertainty" data-keywords="uncertainty evidence incomplete decision making">
             <div class="lab-card-header">
               <span class="lab-title">CEA Under Uncertainty</span>
-              <span class="lab-badge badge-affiliate">Affiliate</span>
+              <span class="lab-badge badge-member">Member</span>
             </div>
             <p class="lab-description">Making decisions when the evidence is incomplete.</p>
           </a>
@@ -796,12 +797,12 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
 
     // Initialize Supabase client
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Check auth status and update UI
     async function checkAuthAndUpdateUI() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
 
         if (session?.user) {
           userAuth.authenticated = true;
@@ -809,27 +810,38 @@
 
           // Update top bar to show logged in state
           const topBar = document.querySelector('.nav-top-bar .container');
+          const tierLabel = userAuth.tier === 'member' ? 'Professional' : 'Community';
           if (topBar) {
             topBar.innerHTML = `
-              <span style="color: rgba(255,255,255,0.8);">Welcome, ${session.user.email}</span>
+              <span style="color: rgba(255,255,255,0.8);">${tierLabel} Member</span>
+              <a href="/settings.html">Settings</a>
               <a href="#" id="logout-link">Log Out</a>
             `;
             document.getElementById('logout-link')?.addEventListener('click', async (e) => {
               e.preventDefault();
-              await supabase.auth.signOut();
+              await supabaseClient.auth.signOut();
               window.location.reload();
             });
           }
 
-          // Show affiliate labs
+          console.log('User tier:', userAuth.tier, 'Raw metadata:', session.user.user_metadata);
+
+          // Show labs based on membership tier
           showAffiliateLabs();
+          if (userAuth.tier === 'member') {
+            showMemberLabs();
+          } else {
+            hideMemberLabs();
+          }
         } else {
-          // Not logged in - hide affiliate labs and show login prompts
+          // Not logged in - hide affiliate and member labs
           hideAffiliateLabs();
+          hideMemberLabs();
         }
       } catch (error) {
         console.error('Auth check error:', error);
         hideAffiliateLabs();
+        hideMemberLabs();
       }
     }
 
@@ -855,6 +867,32 @@
     function showAffiliateLabs() {
       // Labs are already rendered with full content - just ensure they're clickable
       document.querySelectorAll('.lab-card.affiliate').forEach(card => {
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+      });
+    }
+
+    // Hide member labs for non-professional members
+    function hideMemberLabs() {
+      document.querySelectorAll('.lab-card.member').forEach(card => {
+        card.style.opacity = '0.6';
+        card.style.pointerEvents = 'none';
+        card.innerHTML = `
+          <div class="lab-card-header">
+            <span class="lab-title">${card.dataset.title}</span>
+            <span class="lab-badge badge-member">Professional Only</span>
+          </div>
+          <p class="lab-description" style="color: var(--color-member);">
+            <a href="/membership/professional.html" style="color: inherit; text-decoration: underline;">Apply for Professional Membership</a> to access this lab.
+          </p>
+        `;
+        card.style.pointerEvents = 'auto';
+      });
+    }
+
+    // Show member labs for professional members
+    function showMemberLabs() {
+      document.querySelectorAll('.lab-card.member').forEach(card => {
         card.style.opacity = '1';
         card.style.pointerEvents = 'auto';
       });

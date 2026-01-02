@@ -75,6 +75,22 @@ async function loadMemberProfile() {
         memberNameEl.textContent = firstName;
       }
 
+      // Display membership tier
+      const tierBadge = document.getElementById('member-tier-badge');
+      if (tierBadge) {
+        const membershipTier = user.user_metadata?.membership_tier || 'affiliate';
+        const tierLabels = {
+          'member': 'Professional Member',
+          'affiliate': 'Community Member'
+        };
+        tierBadge.textContent = tierLabels[membershipTier] || 'Community Member';
+        tierBadge.className = `member-tier-badge tier-${membershipTier}`;
+        tierBadge.style.display = '';
+      }
+
+      // Check if user has a pending professional application
+      await checkPendingApplication(user.email);
+
       // Check if user is admin and show admin action
       if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
         const adminAction = document.getElementById('admin-action');
@@ -85,6 +101,24 @@ async function loadMemberProfile() {
     }
   } catch (error) {
     console.log('Profile not loaded:', error.message);
+  }
+}
+
+// Check if user has a pending professional membership application
+async function checkPendingApplication(email) {
+  try {
+    const response = await fetch(`/api/membership/application-status?email=${encodeURIComponent(email)}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'pending') {
+        const pendingBadge = document.getElementById('application-pending');
+        if (pendingBadge) {
+          pendingBadge.style.display = '';
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Could not check application status:', error.message);
   }
 }
 

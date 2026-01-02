@@ -100,7 +100,8 @@ function createApplicationCard(app) {
   const institution = attrs.INSTITUTION || 'Not provided';
   const currentRole = attrs.CURRENT_ROLE || 'Not provided';
   const economicsWork = attrs.ECONOMICS_WORK || 'Not provided';
-  const linkedin = attrs.LINKEDIN || '';
+  const profileUrl = attrs.PROFILE_URL || attrs.LINKEDIN || '';
+  const degreeAttestation = attrs.DEGREE_ATTESTATION || '';
 
   // Format date if available
   let dateStr = '';
@@ -145,9 +146,9 @@ function createApplicationCard(app) {
           <div class="detail-value">${escapeHtml(institution)}</div>
         </div>
         <div class="detail-item">
-          <div class="detail-label">LinkedIn</div>
+          <div class="detail-label">Professional Profile</div>
           <div class="detail-value">
-            ${linkedin ? `<a href="${escapeHtml(linkedin)}" target="_blank" rel="noopener" class="linkedin-link">View Profile →</a>` : 'Not provided'}
+            ${profileUrl ? `<a href="${escapeHtml(profileUrl)}" target="_blank" rel="noopener" class="profile-link">View Profile →</a>` : 'Not provided'}
           </div>
         </div>
         <div class="detail-item economics-work">

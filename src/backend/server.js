@@ -98,11 +98,33 @@ async function subscribeToBrevoList(listId, contactData) {
 
 // Helper function to get contacts from a Brevo list
 async function getBrevoListContacts(listId) {
-  const result = await brevoContactsApi.getContactsFromList(listId, {
-    limit: 500,
-    offset: 0
-  });
-  return result.contacts || [];
+  try {
+    // Use direct API call for more reliable results
+    const response = await fetch(
+      `https://api.brevo.com/v3/contacts/lists/${listId}/contacts?limit=500&offset=0`,
+      {
+        method: 'GET',
+        headers: {
+          'api-key': process.env.BREVO_API_KEY,
+          'Accept': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return [];
+      }
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Brevo API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.contacts || [];
+  } catch (error) {
+    console.error('Brevo getContactsFromList error:', error.message);
+    throw error;
+  }
 }
 
 // Helper function to remove contact from a list

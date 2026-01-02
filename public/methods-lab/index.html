@@ -444,14 +444,6 @@
         </div>
 
         <div class="filter-group">
-          <span class="filter-label">Access:</span>
-          <button class="filter-btn active" data-access="all">All</button>
-          <button class="filter-btn" data-access="public">Public</button>
-          <button class="filter-btn" data-access="affiliate">Affiliate</button>
-          <button class="filter-btn" data-access="member">Member</button>
-        </div>
-
-        <div class="filter-group">
           <span class="filter-label">Track:</span>
           <button class="filter-btn active" data-track="all">All</button>
           <button class="filter-btn" data-track="1">Impact</button>
@@ -902,13 +894,11 @@
     checkAuthAndUpdateUI();
 
     // Filter state
-    let activeAccess = 'all';
     let activeTrack = 'all';
     let searchQuery = '';
 
     // DOM elements
     const searchInput = document.getElementById('search-input');
-    const accessBtns = document.querySelectorAll('[data-access]');
     const trackBtns = document.querySelectorAll('[data-track]:not(.lab-card):not(.track)');
     const labCards = document.querySelectorAll('.lab-card');
     const trackSections = document.querySelectorAll('.track');
@@ -921,18 +911,16 @@
       let visible = 0;
 
       labCards.forEach(card => {
-        const cardAccess = card.dataset.access;
         const cardTrack = card.dataset.track;
         const cardTitle = card.dataset.title.toLowerCase();
         const cardKeywords = card.dataset.keywords.toLowerCase();
 
-        const matchesAccess = activeAccess === 'all' || cardAccess === activeAccess;
         const matchesTrack = activeTrack === 'all' || cardTrack === activeTrack;
         const matchesSearch = searchQuery === '' ||
           cardTitle.includes(searchQuery) ||
           cardKeywords.includes(searchQuery);
 
-        if (matchesAccess && matchesTrack && matchesSearch) {
+        if (matchesTrack && matchesSearch) {
           card.classList.remove('hidden');
           visible++;
         } else {
@@ -958,25 +946,6 @@
       noResults.classList.toggle('visible', visible === 0);
     }
 
-    // Access filter buttons
-    accessBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        accessBtns.forEach(b => {
-          b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member');
-        });
-
-        const access = btn.dataset.access;
-        activeAccess = access;
-
-        if (access === 'public') btn.classList.add('active-public');
-        else if (access === 'affiliate') btn.classList.add('active-affiliate');
-        else if (access === 'member') btn.classList.add('active-member');
-        else btn.classList.add('active');
-
-        applyFilters();
-      });
-    });
-
     // Track filter buttons
     trackBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -999,15 +968,11 @@
         const role = btn.dataset.role;
 
         // Reset filters first
-        activeAccess = 'all';
         activeTrack = 'all';
         searchQuery = '';
         searchInput.value = '';
 
-        accessBtns.forEach(b => b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member'));
         trackBtns.forEach(b => b.classList.remove('active'));
-
-        document.querySelector('[data-access="all"]').classList.add('active');
         document.querySelector('[data-track="all"]').classList.add('active');
 
         // Apply track-specific filters
@@ -1038,15 +1003,11 @@
 
     // Reset filters function
     function resetFilters() {
-      activeAccess = 'all';
       activeTrack = 'all';
       searchQuery = '';
       searchInput.value = '';
 
-      accessBtns.forEach(b => b.classList.remove('active', 'active-public', 'active-affiliate', 'active-member'));
       trackBtns.forEach(b => b.classList.remove('active'));
-
-      document.querySelector('[data-access="all"]').classList.add('active');
       document.querySelector('[data-track="all"]').classList.add('active');
 
       applyFilters();

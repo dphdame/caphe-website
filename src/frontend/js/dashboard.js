@@ -63,13 +63,16 @@ async function loadMemberProfile() {
 
       const memberNameEl = document.getElementById('member-name');
       if (memberNameEl) {
+        // Extract first name only
+        let firstName = '';
         if (profile && profile.full_name) {
-          memberNameEl.textContent = profile.full_name;
+          firstName = profile.full_name.split(' ')[0];
         } else if (user.user_metadata?.full_name) {
-          memberNameEl.textContent = user.user_metadata.full_name;
+          firstName = user.user_metadata.full_name.split(' ')[0];
         } else {
-          memberNameEl.textContent = user.email.split('@')[0];
+          firstName = user.email.split('@')[0];
         }
+        memberNameEl.textContent = firstName;
       }
 
       // Check if user is admin and show admin card

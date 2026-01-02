@@ -1995,10 +1995,20 @@ img {
 
 /* Quick Actions */
 .quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  max-width: 600px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  max-width: 800px;
+}
+
+.quick-actions-header {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 .quick-actions-header {
@@ -2029,9 +2039,9 @@ img {
 }
 
 .action-button-icon {
-  font-size: 1.25rem;
-  width: 2rem;
-  text-align: center;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 

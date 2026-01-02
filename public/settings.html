@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+  <title>Account Settings - CAPHE</title>
+  <meta name="description" content="Manage your CAPHE account settings and profile.">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/settings.html" class="nav-top-link active">Settings</a>
+      <a href="#" id="logout-link">Sign Out</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about.html" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+            <a href="/programs.html#peer-review">Peer Review Sessions</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/methods-lab/">Methods Lab</a>
+            <a href="/resources.html#external-resources">External Resources</a>
+          </div>
+        </div>
+        <a href="/dashboard.html" class="nav-link nav-link-cta">My Dashboard</a>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header page-header-compact">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/dashboard.html">Dashboard</a> / Settings
+      </nav>
+      <h1 class="page-title">Account Settings</h1>
+    </div>
+  </section>
+
+  <!-- Settings Content -->
+  <section class="section section-sm">
+    <div class="container">
+      <div class="settings-layout">
+        <!-- Profile Settings -->
+        <div class="settings-section">
+          <div class="card">
+            <h2 class="settings-section-title">Profile Information</h2>
+            <p class="text-muted mb-lg">Update your name and organization details.</p>
+
+            <form id="profile-form">
+              <div class="form-group">
+                <label class="form-label" for="full-name">Full Name</label>
+                <input type="text" id="full-name" name="full_name" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="organization">Organization</label>
+                <input type="text" id="organization" name="organization" class="form-input"
+                       placeholder="e.g., County of Santa Clara Public Health">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="county">County</label>
+                <input type="text" id="county" name="county" class="form-input"
+                       placeholder="e.g., Santa Clara">
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="save-profile-btn">
+                Save Changes
+              </button>
+
+              <div id="profile-status" class="mt-md hidden"></div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Account Settings -->
+        <div class="settings-section">
+          <div class="card">
+            <h2 class="settings-section-title">Account</h2>
+            <p class="text-muted mb-lg">Manage your email and password.</p>
+
+            <!-- Email Display -->
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <div class="form-static" id="current-email">Loading...</div>
+              <small class="text-muted">Contact us to change your email address.</small>
+            </div>
+
+            <!-- Membership Tier -->
+            <div class="form-group">
+              <label class="form-label">Membership Tier</label>
+              <div class="form-static">
+                <span id="membership-tier" class="badge">Loading...</span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Password Change -->
+            <h3 class="settings-subsection-title">Change Password</h3>
+
+            <form id="password-form">
+              <div class="form-group">
+                <label class="form-label" for="new-password">New Password</label>
+                <input type="password" id="new-password" name="new_password" class="form-input"
+                       minlength="8" placeholder="Minimum 8 characters">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" name="confirm_password" class="form-input"
+                       minlength="8">
+              </div>
+
+              <button type="submit" class="btn btn-secondary" id="change-password-btn">
+                Update Password
+              </button>
+
+              <div id="password-status" class="mt-md hidden"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: var(--color-text-light);">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A learning collaborative dedicated to applying data-driven methods to public health
+            challenges across California's 57 counties.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs.html#workshops">Workshops</a>
+          <a href="/programs.html#peer-review">Peer Review Sessions</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab/">Methods Lab</a>
+          <a href="/resources.html#external-resources">External Resources</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/membership.html">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 California Association of Public Health Economists. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://linkedin.com/company/caphe" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/src/frontend/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/frontend/js/auth.js"></script>
+  <script src="/src/frontend/js/settings.js"></script>
+</body>
+</html>

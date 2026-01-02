@@ -94,14 +94,9 @@ function createApplicationCard(app) {
   const attrs = app.attributes || {};
   const name = `${attrs.FIRSTNAME || ''} ${attrs.LASTNAME || ''}`.trim() || 'Unknown';
   const email = app.email;
-  const organization = attrs.ORGANIZATION || 'Not provided';
-  const degree = attrs.DEGREE || 'Not provided';
-  const degreeField = attrs.DEGREE_FIELD || 'Not provided';
-  const institution = attrs.INSTITUTION || 'Not provided';
-  const currentRole = attrs.CURRENT_ROLE || 'Not provided';
   const economicsWork = attrs.ECONOMICS_WORK || 'Not provided';
   const profileUrl = attrs.PROFILE_URL || attrs.LINKEDIN || '';
-  const degreeAttestation = attrs.DEGREE_ATTESTATION || '';
+  const degreeAttestation = attrs.DEGREE_ATTESTATION === 'true' || attrs.DEGREE_ATTESTATION === true;
 
   // Format date if available
   let dateStr = '';
@@ -126,33 +121,17 @@ function createApplicationCard(app) {
 
       <div class="application-details">
         <div class="detail-item">
-          <div class="detail-label">Organization</div>
-          <div class="detail-value">${escapeHtml(organization)}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Current Role</div>
-          <div class="detail-value">${escapeHtml(currentRole)}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Degree</div>
-          <div class="detail-value">${escapeHtml(degree)}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Field of Study</div>
-          <div class="detail-value">${escapeHtml(degreeField)}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Institution</div>
-          <div class="detail-value">${escapeHtml(institution)}</div>
-        </div>
-        <div class="detail-item">
           <div class="detail-label">Professional Profile</div>
           <div class="detail-value">
             ${profileUrl ? `<a href="${escapeHtml(profileUrl)}" target="_blank" rel="noopener" class="profile-link">View Profile →</a>` : 'Not provided'}
           </div>
         </div>
+        <div class="detail-item">
+          <div class="detail-label">Economics Degree Confirmed</div>
+          <div class="detail-value">${degreeAttestation ? '✓ Yes' : '✗ No'}</div>
+        </div>
         <div class="detail-item economics-work">
-          <div class="detail-label">Economics Work Description</div>
+          <div class="detail-label">Economics Work & Interests</div>
           <div class="detail-value">${escapeHtml(economicsWork)}</div>
         </div>
       </div>

@@ -89,7 +89,8 @@ async function subscribeToBrevoList(listId, contactData) {
     INSTITUTION: contactData.institution || '',
     CURRENT_ROLE: contactData.currentRole || '',
     ECONOMICS_WORK: contactData.economicsWork || '',
-    LINKEDIN: contactData.linkedin || ''
+    PROFILE_URL: contactData.profileUrl || '',
+    DEGREE_ATTESTATION: contactData.degreeAttestation || ''
   };
   createContact.updateEnabled = true;
 

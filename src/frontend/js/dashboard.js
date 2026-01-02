@@ -75,11 +75,11 @@ async function loadMemberProfile() {
         memberNameEl.textContent = firstName;
       }
 
-      // Check if user is admin and show admin card
+      // Check if user is admin and show admin action
       if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
-        const adminCard = document.getElementById('admin-card');
-        if (adminCard) {
-          adminCard.style.display = '';
+        const adminAction = document.getElementById('admin-action');
+        if (adminAction) {
+          adminAction.style.display = '';
         }
       }
     }

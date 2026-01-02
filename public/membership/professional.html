@@ -187,6 +187,13 @@
               <small class="text-muted">LinkedIn, faculty page, Google Scholar, or personal website to verify your credentials</small>
             </div>
 
+            <div class="form-group">
+              <label class="form-label" for="password">Create Password *</label>
+              <input type="password" id="password" name="password" class="form-input" required
+                     minlength="8" placeholder="At least 8 characters">
+              <small class="text-muted">You'll use this to log in to your CAPHE account</small>
+            </div>
+
             <div class="form-group" style="margin-top: var(--space-lg);">
               <label class="form-checkbox" style="display: flex; align-items: flex-start; gap: var(--space-sm); cursor: pointer;">
                 <input type="checkbox" id="degreeAttestation" name="degreeAttestation" required style="margin-top: 4px;">
@@ -358,13 +365,18 @@
               firstName: linkedinMode ? document.getElementById('firstName').value.trim() : document.getElementById('firstName-input').value.trim(),
               lastName: linkedinMode ? document.getElementById('lastName').value.trim() : document.getElementById('lastName-input').value.trim(),
               email: linkedinMode ? document.getElementById('email').value.trim() : document.getElementById('email-input').value.trim(),
+              password: document.getElementById('password').value,
               economicsWork: document.getElementById('economicsWork').value.trim(),
               profileUrl: document.getElementById('profileUrl').value.trim(),
               degreeAttestation: document.getElementById('degreeAttestation').checked
             };
 
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.economicsWork || !formData.profileUrl) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.economicsWork || !formData.profileUrl) {
               throw new Error('Please fill in all required fields');
+            }
+
+            if (formData.password.length < 8) {
+              throw new Error('Password must be at least 8 characters');
             }
 
             if (!formData.degreeAttestation) {
@@ -391,10 +403,9 @@
               <div style="background: #d4edda; color: #155724; padding: var(--space-xl); border-radius: var(--radius-md); text-align: center;">
                 <div style="font-size: 2rem; margin-bottom: var(--space-md);">&#10003;</div>
                 <strong style="font-size: var(--font-size-lg);">Application Submitted!</strong><br><br>
-                Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.<br>
-                <span style="font-size: var(--font-size-sm); margin-top: var(--space-md); display: block; color: #155724;">
-                  A confirmation email has been sent to the address you provided.
-                </span>
+                Thank you for applying to CAPHE. We'll review your application and respond within 5 business days.<br><br>
+                <strong>You have immediate community member access!</strong><br>
+                <a href="/login.html" style="color: #155724;">Log in now</a> to access our resources, webinar archive, and listserv while your professional membership application is reviewed.
               </div>
             `;
 

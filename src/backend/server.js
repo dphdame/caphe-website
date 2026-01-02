@@ -260,14 +260,20 @@ app.post('/api/events/register', async (req, res) => {
 // Submit membership application
 app.post('/api/membership/apply', async (req, res) => {
   const {
-    email, firstName, lastName, organization,
-    degree, degreeField, institution, currentRole, economicsWork, profileUrl, degreeAttestation
+    email, firstName, lastName, password,
+    economicsWork, profileUrl, degreeAttestation
   } = req.body;
 
-  // Validation - require name, email, economics work, profile URL, and degree attestation
-  if (!email || !firstName || !lastName || !economicsWork || !profileUrl) {
+  // Validation
+  if (!email || !firstName || !lastName || !password || !economicsWork || !profileUrl) {
     return res.status(400).json({
       error: 'Please complete all required fields'
+    });
+  }
+
+  if (password.length < 8) {
+    return res.status(400).json({
+      error: 'Password must be at least 8 characters'
     });
   }
 
@@ -282,17 +288,15 @@ app.post('/api/membership/apply', async (req, res) => {
   }
 
   try {
-    // Step 1: Create Supabase user immediately with affiliate tier
+    // Step 1: Create Supabase user with community (affiliate) tier
     let userCreated = false;
     let userAlreadyExists = false;
 
     if (supabaseAdmin) {
-      const tempPassword = require('crypto').randomBytes(16).toString('hex');
-
       const { data: userData, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: email,
-        password: tempPassword,
-        email_confirm: false,
+        password: password,
+        email_confirm: true, // Auto-confirm since they're applying
         user_metadata: {
           full_name: `${firstName} ${lastName}`.trim(),
           membership_tier: 'affiliate',
@@ -310,19 +314,6 @@ app.post('/api/membership/apply', async (req, res) => {
         }
       } else {
         userCreated = true;
-
-        // Send password reset email so user can set their own password
-        try {
-          const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
-            type: 'recovery',
-            email: email
-          });
-          if (resetError) {
-            console.error('Password reset email error:', resetError);
-          }
-        } catch (resetErr) {
-          console.error('Failed to send password reset:', resetErr);
-        }
       }
     }
 
@@ -331,11 +322,6 @@ app.post('/api/membership/apply', async (req, res) => {
       email,
       firstName,
       lastName,
-      organization,
-      degree,
-      degreeField,
-      institution,
-      currentRole,
       economicsWork,
       profileUrl,
       degreeAttestation: degreeAttestation ? 'Yes' : 'No'
@@ -751,17 +737,10 @@ app.post('/api/admin/reject', verifyAdmin, async (req, res) => {
         subject: 'CAPHE Membership Application Update',
         html: `
           <p>Dear ${firstName || 'Applicant'},</p>
-          <p>Thank you for your interest in CAPHE. After reviewing your application,
-          we've determined that our membership may not be the best fit at this time.</p>
-          <p>CAPHE membership is specifically designed for economists with doctoral-level
-          training in econometrics and causal inference methods.</p>
-          ${reason ? `<p><em>${reason}</em></p>` : ''}
-          <p>You're welcome to:</p>
-          <ul>
-            <li>Join our public listserv to receive updates on free webinars and resources</li>
-            <li>Attend our public events</li>
-            <li>Reapply in the future if your qualifications change</li>
-          </ul>
+          <p>Thank you for your interest in CAPHE. After reviewing your application, we've determined that our community membership, rather than professional membership, is the best fit at this time.</p>
+          <p>CAPHE professional membership is specifically designed for economists with graduate-level training in econometrics and causal inference methods.</p>
+          <p>Community membership gives you access to our listserv, public events, and resources. You're also welcome to reapply in the future if your qualifications change.</p>
+          <p>If you think we missed something, feel free to reply with more info about your background. We're also happy to chat if you'd like to talk it through.</p>
           <p>Best regards,<br>CAPHE Team</p>
         `
       });

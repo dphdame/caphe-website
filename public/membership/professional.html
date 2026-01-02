@@ -181,22 +181,10 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="organization">Organization *</label>
-              <input type="text" id="organization" name="organization" class="form-input" required
-                     placeholder="e.g., County of Santa Clara, UC Berkeley">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="currentRole">Current Role/Title *</label>
-              <input type="text" id="currentRole" name="currentRole" class="form-input" required
-                     placeholder="e.g., Health Economist, Research Analyst">
-            </div>
-
-            <div class="form-group">
               <label class="form-label" for="profileUrl">Professional Profile URL *</label>
               <input type="url" id="profileUrl" name="profileUrl" class="form-input" required
                      placeholder="https://">
-              <small class="text-muted">LinkedIn, faculty page, Google Scholar, or personal website</small>
+              <small class="text-muted">LinkedIn, faculty page, Google Scholar, or personal website to verify your credentials</small>
             </div>
 
             <div class="form-group" style="margin-top: var(--space-lg);">
@@ -370,14 +358,12 @@
               firstName: linkedinMode ? document.getElementById('firstName').value.trim() : document.getElementById('firstName-input').value.trim(),
               lastName: linkedinMode ? document.getElementById('lastName').value.trim() : document.getElementById('lastName-input').value.trim(),
               email: linkedinMode ? document.getElementById('email').value.trim() : document.getElementById('email-input').value.trim(),
-              organization: document.getElementById('organization').value.trim(),
-              currentRole: document.getElementById('currentRole').value.trim(),
               economicsWork: document.getElementById('economicsWork').value.trim(),
               profileUrl: document.getElementById('profileUrl').value.trim(),
               degreeAttestation: document.getElementById('degreeAttestation').checked
             };
 
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.organization || !formData.currentRole || !formData.economicsWork || !formData.profileUrl) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.economicsWork || !formData.profileUrl) {
               throw new Error('Please fill in all required fields');
             }
 

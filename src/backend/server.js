@@ -264,8 +264,8 @@ app.post('/api/membership/apply', async (req, res) => {
     degree, degreeField, institution, currentRole, economicsWork, profileUrl, degreeAttestation
   } = req.body;
 
-  // Validation - require name, email, organization, role, economics work, profile URL, and degree attestation
-  if (!email || !firstName || !lastName || !organization || !currentRole || !economicsWork || !profileUrl) {
+  // Validation - require name, email, economics work, profile URL, and degree attestation
+  if (!email || !firstName || !lastName || !economicsWork || !profileUrl) {
     return res.status(400).json({
       error: 'Please complete all required fields'
     });

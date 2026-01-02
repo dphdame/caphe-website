@@ -94,8 +94,6 @@ function createApplicationCard(app) {
   const attrs = app.attributes || {};
   const name = `${attrs.FIRSTNAME || ''} ${attrs.LASTNAME || ''}`.trim() || 'Unknown';
   const email = app.email;
-  const organization = attrs.ORGANIZATION || 'Not provided';
-  const currentRole = attrs.CURRENT_ROLE || 'Not provided';
   const economicsWork = attrs.ECONOMICS_WORK || 'Not provided';
   const profileUrl = attrs.PROFILE_URL || attrs.LINKEDIN || '';
   const degreeAttestation = attrs.DEGREE_ATTESTATION === 'true' || attrs.DEGREE_ATTESTATION === 'Yes' || attrs.DEGREE_ATTESTATION === true;
@@ -122,14 +120,6 @@ function createApplicationCard(app) {
       </div>
 
       <div class="application-details">
-        <div class="detail-item">
-          <div class="detail-label">Organization</div>
-          <div class="detail-value">${escapeHtml(organization)}</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">Current Role</div>
-          <div class="detail-value">${escapeHtml(currentRole)}</div>
-        </div>
         <div class="detail-item">
           <div class="detail-label">Profile</div>
           <div class="detail-value">

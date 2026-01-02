@@ -468,7 +468,7 @@
             <strong style="font-size: 0.9rem;">Free with Account</strong>
           </div>
           <p style="font-size: 0.875rem; color: var(--color-text-muted); margin: 0;">
-            Advanced methods, case studies, and worked examples. <a href="/login.html" style="color: var(--color-primary);">Sign in</a> or <a href="/membership.html" style="color: var(--color-primary);">join CAPHE</a> (free) to access.
+            Methods, case studies, and worked examples. <a href="/login.html" style="color: var(--color-primary);">Sign in</a> or <a href="/membership.html" style="color: var(--color-primary);">join CAPHE</a> (free) to access.
           </p>
         </div>
       </div>
@@ -850,23 +850,17 @@
       }
     }
 
-    // Hide community labs and replace with login prompts
+    // Style community labs for logged-out users (keep them clickable - preview gate shows on the lab page)
     function hideCommunityLabs() {
       document.querySelectorAll('.lab-card.community').forEach(card => {
-        // Store original href and remove it to prevent navigation
-        card.dataset.originalHref = card.href;
-        card.removeAttribute('href');
-        card.style.opacity = '0.7';
-        card.style.cursor = 'default';
-        card.innerHTML = `
-          <div class="lab-card-header">
-            <span class="lab-title">${card.dataset.title}</span>
-            <span class="lab-badge badge-community">Login Required</span>
-          </div>
-          <p class="lab-description" style="color: var(--color-community);">
-            <a href="/membership/community.html" style="color: inherit; text-decoration: underline;">Join as Community Member</a> to access this lab.
-          </p>
-        `;
+        // Keep the card clickable - the preview gate will show on the actual lab page
+        card.style.opacity = '0.85';
+        // Update badge to indicate login needed
+        const badge = card.querySelector('.lab-badge');
+        if (badge) {
+          badge.textContent = 'Community';
+          badge.classList.add('badge-community');
+        }
       });
     }
 
@@ -878,6 +872,12 @@
         card.style.cursor = 'pointer';
       });
     }
+
+    // Store original member lab HTML for restoration
+    const memberLabOriginalHTML = new Map();
+    document.querySelectorAll('.lab-card.member').forEach(card => {
+      memberLabOriginalHTML.set(card, card.innerHTML);
+    });
 
     // Hide member labs for non-professional members
     function hideMemberLabs() {
@@ -900,6 +900,11 @@
     // Show member labs for professional members
     function showMemberLabs() {
       document.querySelectorAll('.lab-card.member').forEach(card => {
+        // Restore original HTML content
+        const originalHTML = memberLabOriginalHTML.get(card);
+        if (originalHTML) {
+          card.innerHTML = originalHTML;
+        }
         card.style.opacity = '1';
         card.style.pointerEvents = 'auto';
       });

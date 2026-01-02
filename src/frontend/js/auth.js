@@ -48,9 +48,16 @@ async function checkAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (session) {
-    // User is logged in - redirect to dashboard
+    // User is logged in - redirect to intended destination or dashboard
     if (window.location.pathname === '/login.html') {
-      window.location.href = '/dashboard.html';
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      // Only allow redirects to same-origin paths starting with /
+      if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+        window.location.href = redirect;
+      } else {
+        window.location.href = '/dashboard.html';
+      }
     }
   }
 }
@@ -90,9 +97,16 @@ async function handleLogin(e) {
 
     if (error) throw error;
 
-    // Success - redirect to dashboard
+    // Success - redirect to intended destination or dashboard
     console.log('Login successful, redirecting...');
-    window.location.href = '/dashboard.html';
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    // Only allow redirects to same-origin paths starting with /
+    if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+      window.location.href = redirect;
+    } else {
+      window.location.href = '/dashboard.html';
+    }
   } catch (error) {
     console.error('Login error:', error);
     statusDiv.innerHTML = `<p style="color: var(--color-error);">${error.message}</p>`;

@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS peer_review_requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   meeting_date DATE NOT NULL,
-  slots_requested INT DEFAULT 1 CHECK (slots_requested BETWEEN 1 AND 2),
+  meeting_date_2 DATE,  -- Second choice date
+  slots_requested INT DEFAULT 1 CHECK (slots_requested BETWEEN 1 AND 3),
   topic TEXT NOT NULL,
   description TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'completed', 'cancelled')),

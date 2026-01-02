@@ -17,8 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Populate meeting dates
-  populateMeetingDates();
+  // Meeting dates are now hardcoded in HTML (last Wednesday of each month)
 
   // Set up form submission
   const form = document.getElementById('peer-review-form');
@@ -47,67 +46,6 @@ async function checkDashboardAuth() {
   return true;
 }
 
-// Populate upcoming meeting dates (3rd Wednesday of each month)
-function populateMeetingDates() {
-  const select = document.getElementById('meeting-date');
-  if (!select) return;
-
-  const meetings = getUpcomingMeetings(6); // Next 6 meetings
-
-  meetings.forEach(date => {
-    const option = document.createElement('option');
-    option.value = date.toISOString().split('T')[0];
-    option.textContent = date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    select.appendChild(option);
-  });
-}
-
-// Get upcoming 3rd Wednesdays
-function getUpcomingMeetings(count) {
-  const meetings = [];
-  const today = new Date();
-  let date = new Date(today.getFullYear(), today.getMonth(), 1);
-
-  while (meetings.length < count) {
-    // Find 3rd Wednesday of this month
-    const thirdWed = getThirdWednesday(date.getFullYear(), date.getMonth());
-
-    // Only include if it's at least 7 days from now
-    const minDate = new Date(today);
-    minDate.setDate(minDate.getDate() + 7);
-
-    if (thirdWed >= minDate) {
-      meetings.push(thirdWed);
-    }
-
-    // Move to next month
-    date.setMonth(date.getMonth() + 1);
-  }
-
-  return meetings;
-}
-
-// Get the 3rd Wednesday of a given month
-function getThirdWednesday(year, month) {
-  const date = new Date(year, month, 1);
-  let wednesdayCount = 0;
-
-  while (wednesdayCount < 3) {
-    if (date.getDay() === 3) { // Wednesday
-      wednesdayCount++;
-      if (wednesdayCount === 3) break;
-    }
-    date.setDate(date.getDate() + 1);
-  }
-
-  return date;
-}
-
 // Handle form submission
 async function handleSubmitRequest(e) {
   e.preventDefault();
@@ -117,6 +55,7 @@ async function handleSubmitRequest(e) {
   const submitBtn = form.querySelector('button[type="submit"]');
 
   const meetingDate = form.meeting_date.value;
+  const meetingDate2 = form.meeting_date_2.value;
   const slotsRequested = parseInt(form.slots_requested.value);
   const topic = form.topic.value;
   const description = form.description.value;
@@ -132,6 +71,7 @@ async function handleSubmitRequest(e) {
       .insert({
         user_id: user.id,
         meeting_date: meetingDate,
+        meeting_date_2: meetingDate2,
         slots_requested: slotsRequested,
         topic: topic,
         description: description,
@@ -140,7 +80,7 @@ async function handleSubmitRequest(e) {
 
     if (error) throw error;
 
-    statusDiv.innerHTML = '<p style="color: var(--color-success);">Request submitted! You\'ll receive a confirmation email.</p>';
+    statusDiv.innerHTML = '<p style="color: var(--color-success);">Request submitted! You\'ll receive confirmation within 3 business days.</p>';
     statusDiv.classList.remove('hidden');
     form.reset();
 

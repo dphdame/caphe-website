@@ -1119,12 +1119,33 @@ app.get('/api/auth/google/callback', async (req, res) => {
       }
     }
 
-    // Redirect to login page with success - user can now log in with password
-    // If they're a new user, they'll have received a password reset email
-    const isNewUser = !users?.find(u => u.email === profile.email);
-    if (isNewUser) {
-      res.redirect('/login.html?oauth=google&new=true&email=' + encodeURIComponent(profile.email));
+    // Generate a magic link to sign the user in directly
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: profile.email,
+      options: {
+        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+      }
+    });
+
+    if (linkError) {
+      console.error('Failed to generate login link:', linkError);
+      throw linkError;
+    }
+
+    // Redirect to the magic link URL (this logs them in directly)
+    // Extract the token from the action_link and redirect to our auth handler
+    const actionLink = linkData.properties?.action_link;
+    if (actionLink) {
+      // The action_link goes through Supabase, let's extract tokens and handle locally
+      const url = new URL(actionLink);
+      const token = url.searchParams.get('token');
+      const type = url.searchParams.get('type');
+
+      // Redirect to our frontend auth handler with the token
+      res.redirect(`/auth-callback.html?token=${token}&type=${type}&next=/dashboard.html`);
     } else {
+      // Fallback: redirect to login with email prefilled
       res.redirect('/login.html?oauth=google&email=' + encodeURIComponent(profile.email));
     }
 
@@ -1254,11 +1275,31 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
       }
     }
 
-    // Redirect to login page with success - user can now log in with password
-    const isNewUser = !users?.find(u => u.email === profile.email);
-    if (isNewUser) {
-      res.redirect('/login.html?oauth=linkedin&new=true&email=' + encodeURIComponent(profile.email));
+    // Generate a magic link to sign the user in directly
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: profile.email,
+      options: {
+        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+      }
+    });
+
+    if (linkError) {
+      console.error('Failed to generate login link:', linkError);
+      throw linkError;
+    }
+
+    // Redirect to the magic link URL (this logs them in directly)
+    const actionLink = linkData.properties?.action_link;
+    if (actionLink) {
+      const url = new URL(actionLink);
+      const token = url.searchParams.get('token');
+      const type = url.searchParams.get('type');
+
+      // Redirect to our frontend auth handler with the token
+      res.redirect(`/auth-callback.html?token=${token}&type=${type}&next=/dashboard.html`);
     } else {
+      // Fallback: redirect to login with email prefilled
       res.redirect('/login.html?oauth=linkedin&email=' + encodeURIComponent(profile.email));
     }
 

@@ -139,9 +139,18 @@ async function handleForgotPassword(e) {
 
 // Logout function (for use on dashboard)
 async function logout() {
-  if (supabaseClient) {
-    await supabaseClient.auth.signOut();
+  try {
+    // Ensure Supabase is initialized
+    if (!supabaseClient) {
+      initSupabase();
+    }
+    if (supabaseClient) {
+      await supabaseClient.auth.signOut();
+    }
+  } catch (error) {
+    console.error('Logout error:', error);
   }
+  // Always redirect to login
   window.location.href = '/login.html';
 }
 

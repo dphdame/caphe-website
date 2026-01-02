@@ -1,13 +1,15 @@
 // Admin page functionality
+let currentSession = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('applications-container');
 
   try {
     // Check if user is authenticated and admin
-    const session = await checkSession();
-    console.log('Session check result:', session);
+    currentSession = await checkSession();
+    console.log('Session check result:', currentSession);
 
-    if (!session) {
+    if (!currentSession) {
       console.log('No session, redirecting to login...');
       window.location.href = '/login.html?redirect=/admin.html';
       return;
@@ -33,7 +35,9 @@ async function loadApplications() {
 
   try {
     const response = await fetch('/api/admin/applications', {
-      credentials: 'include'
+      headers: {
+        'Authorization': `Bearer ${currentSession.access_token}`
+      }
     });
 
     if (response.status === 403) {
@@ -179,8 +183,10 @@ async function handleApprove(email) {
   try {
     const response = await fetch('/api/admin/approve', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentSession.access_token}`
+      },
       body: JSON.stringify({ email })
     });
 
@@ -230,8 +236,10 @@ async function handleReject(email) {
   try {
     const response = await fetch('/api/admin/reject', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentSession.access_token}`
+      },
       body: JSON.stringify({ email })
     });
 

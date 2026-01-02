@@ -100,9 +100,9 @@
             To be eligible for Professional Membership, you must meet at least one of the following:
           </p>
           <ul style="margin: 0; padding-left: var(--space-lg); color: var(--color-text-secondary);">
-            <li><strong>PhD in Economics</strong> or a related quantitative field</li>
-            <li><strong>Master's degree</strong> with formal training in econometrics, causal inference, or economic evaluation</li>
-            <li><strong>Current enrollment</strong> in a PhD program in economics or related field</li>
+            <li><strong>PhD in Economics</strong> (including health economics, agricultural/applied economics)</li>
+            <li><strong>Master's degree in Economics</strong> with training in econometrics or causal inference</li>
+            <li><strong>Current enrollment</strong> in a PhD program in economics</li>
           </ul>
           <p style="margin-top: var(--space-md); font-size: var(--font-size-sm); color: var(--color-text-muted);">
             Don't meet these criteria? <a href="/membership/community.html">Join as a Community Member</a> instead.
@@ -181,9 +181,16 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="linkedin">LinkedIn Profile URL (optional)</label>
-              <input type="url" id="linkedin" name="linkedin" class="form-input">
-              <small class="text-muted">Helps us verify your economics background</small>
+              <label class="form-label" for="profileUrl">Professional Profile URL *</label>
+              <input type="url" id="profileUrl" name="profileUrl" class="form-input" required>
+              <small class="text-muted">Link to verify your credentials (faculty page, CV, LinkedIn, Google Scholar, ResearchGate, personal website, etc.)</small>
+            </div>
+
+            <div class="form-group" style="margin-top: var(--space-lg);">
+              <label class="form-checkbox" style="display: flex; align-items: flex-start; gap: var(--space-sm); cursor: pointer;">
+                <input type="checkbox" id="degreeAttestation" name="degreeAttestation" required style="margin-top: 4px;">
+                <span>I confirm I hold a master's/doctoral degree in economics *</span>
+              </label>
             </div>
           </div>
 
@@ -351,11 +358,16 @@
               lastName: linkedinMode ? document.getElementById('lastName').value.trim() : document.getElementById('lastName-input').value.trim(),
               email: linkedinMode ? document.getElementById('email').value.trim() : document.getElementById('email-input').value.trim(),
               economicsWork: document.getElementById('economicsWork').value.trim(),
-              linkedin: document.getElementById('linkedin').value.trim() || undefined
+              profileUrl: document.getElementById('profileUrl').value.trim(),
+              degreeAttestation: document.getElementById('degreeAttestation').checked
             };
 
-            if (!formData.firstName || !formData.lastName || !formData.email || !formData.economicsWork) {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.economicsWork || !formData.profileUrl) {
               throw new Error('Please fill in all required fields');
+            }
+
+            if (!formData.degreeAttestation) {
+              throw new Error('Please confirm you hold a master\'s/doctoral degree in economics');
             }
 
             const response = await fetch('/api/membership/apply', {

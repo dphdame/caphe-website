@@ -238,13 +238,19 @@ app.post('/api/events/register', async (req, res) => {
 app.post('/api/membership/apply', async (req, res) => {
   const {
     email, firstName, lastName, organization,
-    degree, degreeField, institution, currentRole, economicsWork, linkedin
+    degree, degreeField, institution, currentRole, economicsWork, profileUrl, degreeAttestation
   } = req.body;
 
-  // Simplified validation - only require name, email, and economics work description
-  if (!email || !firstName || !lastName || !economicsWork) {
+  // Validation - require name, email, economics work, profile URL, and degree attestation
+  if (!email || !firstName || !lastName || !economicsWork || !profileUrl) {
     return res.status(400).json({
-      error: 'Please complete all required fields (name, email, and economics work description)'
+      error: 'Please complete all required fields (name, email, economics work description, and professional profile URL)'
+    });
+  }
+
+  if (!degreeAttestation) {
+    return res.status(400).json({
+      error: 'Please confirm you hold a master\'s/doctoral degree in economics'
     });
   }
 
@@ -308,7 +314,8 @@ app.post('/api/membership/apply', async (req, res) => {
       institution,
       currentRole,
       economicsWork,
-      linkedin
+      profileUrl,
+      degreeAttestation: degreeAttestation ? 'Yes' : 'No'
     });
 
     // Also add to general listserv for community updates
@@ -337,11 +344,9 @@ app.post('/api/membership/apply', async (req, res) => {
           <p><strong>Name:</strong> ${firstName} ${lastName}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Organization:</strong> ${organization || 'Not provided'}</p>
-          <p><strong>Degree:</strong> ${degree} in ${degreeField}</p>
-          <p><strong>Institution:</strong> ${institution}</p>
-          <p><strong>Current Role:</strong> ${currentRole || 'Not provided'}</p>
           <p><strong>Economics Work:</strong> ${economicsWork || 'Not provided'}</p>
-          <p><strong>LinkedIn:</strong> ${linkedin || 'Not provided'}</p>
+          <p><strong>Professional Profile:</strong> <a href="${profileUrl}">${profileUrl}</a></p>
+          <p><strong>Degree Attestation:</strong> ${degreeAttestation ? 'Confirmed master\'s/doctoral in economics' : 'Not confirmed'}</p>
           <hr>
           <p><strong>Account Status:</strong> ${userCreated ? 'Community account created' : userAlreadyExists ? 'Account already exists' : 'Account not created'}</p>
           <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>

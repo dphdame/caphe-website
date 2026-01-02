@@ -188,15 +188,6 @@
           </div>
         </div>
 
-        <div class="auth-benefits">
-          <h3>Member Benefits</h3>
-          <ul>
-            <li>Access to past webinar recordings</li>
-            <li>Request peer review sessions for your work</li>
-            <li>Working group collaboration tools</li>
-            <li>Exclusive datasets and code repositories</li>
-          </ul>
-        </div>
       </div>
     </div>
   </section>
@@ -266,16 +257,32 @@
         window.history.replaceState({}, '', '/login.html');
       }
 
-      // Check for OAuth success (fallback if magic link didn't work)
+      // Check for OAuth success
       if (params.has('oauth')) {
         const provider = params.get('oauth');
         const email = params.get('email');
-        oauthMessage.innerHTML = `
-          Successfully connected with ${provider === 'google' ? 'Google' : 'LinkedIn'}!
-          ${email ? `<br>Check your email (${email}) for a login link.` : ''}
-        `;
+        const isNew = params.get('new') === 'true';
+
+        if (isNew) {
+          oauthMessage.innerHTML = `
+            <strong>Account created with ${provider === 'google' ? 'Google' : 'LinkedIn'}!</strong><br>
+            Check your email (${email}) to set your password, then log in below.
+          `;
+        } else {
+          oauthMessage.innerHTML = `
+            <strong>Welcome back!</strong><br>
+            Please log in with your email and password below.
+          `;
+        }
         oauthMessage.classList.remove('hidden', 'error');
         oauthMessage.classList.add('success');
+
+        // Pre-fill email field
+        if (email) {
+          const emailInput = document.getElementById('email');
+          if (emailInput) emailInput.value = email;
+        }
+
         // Clear URL params
         window.history.replaceState({}, '', '/login.html');
       }

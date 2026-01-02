@@ -1103,26 +1103,12 @@ app.get('/api/auth/google/callback', async (req, res) => {
       }
     }
 
-    // Generate a magic link for the user to log in
-    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'magiclink',
-      email: profile.email,
-      options: {
-        redirectTo: 'https://www.caphegroup.org/dashboard.html'
-      }
-    });
-
-    if (linkError) {
-      throw linkError;
-    }
-
-    // Redirect with the magic link token
-    const token = linkData.properties?.hashed_token;
-    if (token) {
-      // Redirect to Supabase auth confirmation URL
-      res.redirect(`${supabaseUrl}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=https://www.caphegroup.org/dashboard.html`);
+    // Redirect to login page with success - user can now log in with password
+    // If they're a new user, they'll have received a password reset email
+    const isNewUser = !users?.find(u => u.email === profile.email);
+    if (isNewUser) {
+      res.redirect('/login.html?oauth=google&new=true&email=' + encodeURIComponent(profile.email));
     } else {
-      // Fallback: redirect to login with success message
       res.redirect('/login.html?oauth=google&email=' + encodeURIComponent(profile.email));
     }
 
@@ -1252,23 +1238,10 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
       }
     }
 
-    // Generate a magic link for the user to log in
-    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'magiclink',
-      email: profile.email,
-      options: {
-        redirectTo: 'https://www.caphegroup.org/dashboard.html'
-      }
-    });
-
-    if (linkError) {
-      throw linkError;
-    }
-
-    // Redirect with the magic link token
-    const token = linkData.properties?.hashed_token;
-    if (token) {
-      res.redirect(`${supabaseUrl}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=https://www.caphegroup.org/dashboard.html`);
+    // Redirect to login page with success - user can now log in with password
+    const isNewUser = !users?.find(u => u.email === profile.email);
+    if (isNewUser) {
+      res.redirect('/login.html?oauth=linkedin&new=true&email=' + encodeURIComponent(profile.email));
     } else {
       res.redirect('/login.html?oauth=linkedin&email=' + encodeURIComponent(profile.email));
     }

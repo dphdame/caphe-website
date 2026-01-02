@@ -223,11 +223,6 @@
       color: white;
     }
 
-    .results-count {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-left: auto;
-    }
 
     /* Main */
     .main {
@@ -443,7 +438,6 @@
           <button class="filter-btn" data-track="4">Pitfalls</button>
         </div>
 
-        <span class="results-count"><span id="visible-count">28</span> labs</span>
       </div>
     </div>
   </div>
@@ -912,7 +906,6 @@
     const trackBtns = document.querySelectorAll('[data-track]:not(.lab-card):not(.track)');
     const labCards = document.querySelectorAll('.lab-card');
     const trackSections = document.querySelectorAll('.track');
-    const visibleCount = document.getElementById('visible-count');
     const noResults = document.getElementById('no-results');
     const roleBtns = document.querySelectorAll('.role-btn');
 
@@ -958,8 +951,7 @@
         }
       });
 
-      // Update count and no results message
-      visibleCount.textContent = visible;
+      // Show no results message if needed
       noResults.classList.toggle('visible', visible === 0);
     }
 

@@ -47,6 +47,7 @@ if (process.env.BREVO_API_KEY) {
 }
 
 // Helper function to send email via Brevo
+// 'to' can be a string (single email) or array of emails
 async function sendEmail({ to, subject, html, replyTo }) {
   if (!brevoEmailApi) {
     console.error('Brevo email API not configured');
@@ -55,7 +56,14 @@ async function sendEmail({ to, subject, html, replyTo }) {
 
   const sendSmtpEmail = new Brevo.SendSmtpEmail();
   sendSmtpEmail.sender = { name: 'CAPHE', email: 'info@caphegroup.org' };
-  sendSmtpEmail.to = [{ email: to }];
+
+  // Support single email string or array of emails
+  if (Array.isArray(to)) {
+    sendSmtpEmail.to = to.map(email => ({ email }));
+  } else {
+    sendSmtpEmail.to = [{ email: to }];
+  }
+
   sendSmtpEmail.subject = subject;
   sendSmtpEmail.htmlContent = html;
   if (replyTo) {
@@ -315,10 +323,14 @@ app.post('/api/membership/apply', async (req, res) => {
       console.error('Failed to add to general list:', listErr);
     }
 
-    // Step 3: Send notification email to admin
+    // Step 3: Send notification email to all admins
     try {
+      const adminEmails = (process.env.ADMIN_EMAIL || 'info@caphegroup.org')
+        .split(',')
+        .map(e => e.trim())
+        .filter(e => e);
       await sendEmail({
-        to: process.env.ADMIN_EMAIL || 'info@caphegroup.org',
+        to: adminEmails,
         subject: '[CAPHE] New Membership Application',
         html: `
           <h3>New Membership Application</h3>
@@ -541,9 +553,13 @@ async function verifyAdmin(req, res, next) {
     return res.status(401).json({ error: 'Invalid authentication' });
   }
 
-  // Check if user is admin
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!adminEmail || user.email !== adminEmail) {
+  // Check if user is admin (supports comma-separated list of emails)
+  const adminEmails = (process.env.ADMIN_EMAIL || '')
+    .split(',')
+    .map(email => email.trim().toLowerCase())
+    .filter(email => email);
+
+  if (adminEmails.length === 0 || !adminEmails.includes(user.email.toLowerCase())) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 

@@ -676,17 +676,15 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
         to: email,
         subject: 'CAPHE Professional Membership Approved!',
         html: `
-          <h2>Your Professional Membership is Approved!</h2>
           <p>Dear ${firstName || 'Member'},</p>
-          <p>Great news! Your application for Professional Membership with the California Association of Public Health Economists has been approved.</p>
-          <p>Your account has been upgraded to Professional Member status. Log in with your existing credentials to access:</p>
+          <p>Great news! Your application for Professional Membership with the California Association of Public Health Economists has been approved. Log in with your existing credentials to access:</p>
           <ul>
             <li>Peer Review Sessions - present your work and get feedback</li>
             <li>Working Groups - collaborate on research projects</li>
-            <li>Member-only webinars and advanced Methods Lab tutorials</li>
-            <li>Full webinar recordings archive</li>
-            <li>Member directory</li>
+            <li>Webinars and Methods Labs for professional members</li>
           </ul>
+          <p>We also host monthly meetings on the last Wednesday of each month from 11 am to 12 pm. You will find a "Join Call" button on your member landing page to access these sessions.</p>
+          <p>If you have questions about getting connected to the working groups or anything else, feel free to reach out. We're happy to set up a time to chat and help you get started.</p>
           <p>We look forward to collaborating with you!</p>
           <p>Best regards,<br>CAPHE Team</p>
         `

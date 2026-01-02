@@ -317,7 +317,28 @@ app.post('/api/membership/apply', async (req, res) => {
       }
     }
 
-    // Step 2: Store application in Brevo applications list
+    // Step 2: Store application in database
+    if (supabaseAdmin) {
+      const { error: dbError } = await supabaseAdmin
+        .from('membership_applications')
+        .upsert({
+          email,
+          first_name: firstName,
+          last_name: lastName,
+          profile_url: profileUrl,
+          economics_work: economicsWork,
+          degree_attestation: degreeAttestation,
+          decision: 'pending',
+          applied_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+
+      if (dbError) {
+        console.error('Database insert error:', dbError);
+        // Continue anyway - Brevo is backup
+      }
+    }
+
+    // Step 3: Store application in Brevo applications list (backup)
     await subscribeToBrevoList(brevoListIds.applications, {
       email,
       firstName,
@@ -583,28 +604,36 @@ async function verifyAdmin(req, res, next) {
 
 // Get pending applications (admin only)
 app.get('/api/admin/applications', verifyAdmin, async (req, res) => {
-  if (!brevoContactsApi) {
+  if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Service not configured' });
   }
 
   try {
-    const contacts = await getBrevoListContacts(brevoListIds.applications);
+    // Get pending applications from database
+    const { data: applications, error } = await supabaseAdmin
+      .from('membership_applications')
+      .select('*')
+      .eq('decision', 'pending')
+      .order('applied_at', { ascending: false });
 
-    const applications = contacts.map(contact => ({
-      email: contact.email,
-      firstName: contact.attributes?.FIRSTNAME || '',
-      lastName: contact.attributes?.LASTNAME || '',
-      organization: contact.attributes?.ORGANIZATION || '',
-      degree: contact.attributes?.DEGREE || '',
-      degreeField: contact.attributes?.DEGREE_FIELD || '',
-      institution: contact.attributes?.INSTITUTION || '',
-      currentRole: contact.attributes?.CURRENT_ROLE || '',
-      economicsWork: contact.attributes?.ECONOMICS_WORK || '',
-      linkedin: contact.attributes?.LINKEDIN || '',
-      createdAt: contact.createdAt
+    if (error) {
+      throw error;
+    }
+
+    // Format for frontend compatibility
+    const formattedApplications = (applications || []).map(app => ({
+      email: app.email,
+      attributes: {
+        FIRSTNAME: app.first_name,
+        LASTNAME: app.last_name,
+        PROFILE_URL: app.profile_url,
+        ECONOMICS_WORK: app.economics_work,
+        DEGREE_ATTESTATION: app.degree_attestation ? 'Yes' : 'No'
+      },
+      createdAt: app.applied_at
     }));
 
-    res.json({ success: true, applications });
+    res.json({ success: true, applications: formattedApplications });
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({ error: 'Failed to fetch applications' });
@@ -667,7 +696,23 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
       });
     }
 
-    // Move from applications list to members list
+    // Record decision in database
+    if (supabaseAdmin) {
+      const { error: dbError } = await supabaseAdmin
+        .from('membership_applications')
+        .update({
+          decision: 'approved',
+          decided_at: new Date().toISOString(),
+          decided_by: req.user?.email || 'admin'
+        })
+        .eq('email', email);
+
+      if (dbError) {
+        console.error('Database update error:', dbError);
+      }
+    }
+
+    // Move from applications list to members list in Brevo
     await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
 
     // Send approval email
@@ -725,7 +770,23 @@ app.post('/api/admin/reject', verifyAdmin, async (req, res) => {
     const contactInfo = await brevoContactsApi.getContactInfo(encodeURIComponent(email));
     const firstName = contactInfo.attributes?.FIRSTNAME || '';
 
-    // Remove from applications list
+    // Record decision in database
+    if (supabaseAdmin) {
+      const { error: dbError } = await supabaseAdmin
+        .from('membership_applications')
+        .update({
+          decision: 'declined',
+          decided_at: new Date().toISOString(),
+          decided_by: req.user?.email || 'admin'
+        })
+        .eq('email', email);
+
+      if (dbError) {
+        console.error('Database update error:', dbError);
+      }
+    }
+
+    // Remove from applications list in Brevo
     await removeFromBrevoList(email, brevoListIds.applications);
 
     // Send polite decline email

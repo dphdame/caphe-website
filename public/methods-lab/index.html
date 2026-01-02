@@ -879,21 +879,10 @@
       memberLabOriginalHTML.set(card, card.innerHTML);
     });
 
-    // Hide member labs for non-professional members
+    // Hide member labs for non-professional members (completely invisible)
     function hideMemberLabs() {
       document.querySelectorAll('.lab-card.member').forEach(card => {
-        card.style.opacity = '0.6';
-        card.style.pointerEvents = 'none';
-        card.innerHTML = `
-          <div class="lab-card-header">
-            <span class="lab-title">${card.dataset.title}</span>
-            <span class="lab-badge badge-member">Professional Only</span>
-          </div>
-          <p class="lab-description" style="color: var(--color-member);">
-            <a href="/membership/professional.html" style="color: inherit; text-decoration: underline;">Apply for Professional Membership</a> to access this lab.
-          </p>
-        `;
-        card.style.pointerEvents = 'auto';
+        card.style.display = 'none';
       });
     }
 
@@ -905,6 +894,7 @@
         if (originalHTML) {
           card.innerHTML = originalHTML;
         }
+        card.style.display = '';
         card.style.opacity = '1';
         card.style.pointerEvents = 'auto';
       });
@@ -934,6 +924,13 @@
         const cardTrack = card.dataset.track;
         const cardTitle = card.dataset.title.toLowerCase();
         const cardKeywords = card.dataset.keywords.toLowerCase();
+        const isMemberLab = card.classList.contains('member');
+
+        // Skip member labs if user isn't a professional member
+        if (isMemberLab && userAuth.tier !== 'member') {
+          card.classList.add('hidden');
+          return;
+        }
 
         const matchesTrack = activeTrack === 'all' || cardTrack === activeTrack;
         const matchesSearch = searchQuery === '' ||
@@ -952,7 +949,7 @@
       trackSections.forEach(section => {
         const trackNum = section.dataset.track;
         const hasVisibleCards = Array.from(section.querySelectorAll('.lab-card'))
-          .some(card => !card.classList.contains('hidden'));
+          .some(card => !card.classList.contains('hidden') && card.style.display !== 'none');
 
         if (hasVisibleCards && (activeTrack === 'all' || activeTrack === trackNum)) {
           section.classList.remove('hidden');

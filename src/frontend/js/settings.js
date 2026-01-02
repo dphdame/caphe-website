@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (passwordForm) {
     passwordForm.addEventListener('submit', handlePasswordChange);
   }
+
+  const emailForm = document.getElementById('email-form');
+  if (emailForm) {
+    emailForm.addEventListener('submit', handleEmailChange);
+  }
 });
 
 // Check if user is authenticated
@@ -55,10 +60,10 @@ async function loadProfileData() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
-      // Display email
-      const emailEl = document.getElementById('current-email');
-      if (emailEl) {
-        emailEl.textContent = user.email;
+      // Populate email field
+      const emailInput = document.getElementById('new-email');
+      if (emailInput) {
+        emailInput.value = user.email;
       }
 
       // Display membership tier
@@ -208,5 +213,50 @@ async function handlePasswordChange(e) {
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Update Password';
+  }
+}
+
+// Handle email change
+async function handleEmailChange(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const statusDiv = document.getElementById('email-status');
+  const submitBtn = document.getElementById('change-email-btn');
+
+  const newEmail = form.new_email.value.trim();
+
+  // Get current email to check if it changed
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (user && user.email === newEmail) {
+    statusDiv.innerHTML = '<p class="text-muted">This is already your current email address.</p>';
+    statusDiv.classList.remove('hidden');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Updating...';
+
+  try {
+    const { error } = await supabaseClient.auth.updateUser({
+      email: newEmail
+    });
+
+    if (error) throw error;
+
+    statusDiv.innerHTML = `
+      <p class="text-success">
+        Verification email sent to <strong>${newEmail}</strong>.<br>
+        Please click the link in that email to confirm the change.
+      </p>
+    `;
+    statusDiv.classList.remove('hidden');
+
+  } catch (error) {
+    statusDiv.innerHTML = `<p class="text-error">${error.message}</p>`;
+    statusDiv.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Update Email';
   }
 }

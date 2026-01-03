@@ -225,20 +225,36 @@
 
   // Check authentication and membership tier on page load
   async function checkMemberLabAccess() {
+    console.log('[Member Lab] Starting access check...');
+
     // Wait for Supabase to be available
     if (!window.supabase) {
-      // If Supabase isn't loaded, show gate and lock scrolling
+      console.log('[Member Lab] Supabase not loaded, showing gate');
       document.documentElement.classList.add('member-access-locked');
       document.body.appendChild(createMemberGate(false));
       return;
     }
 
     try {
+      console.log('[Member Lab] Creating Supabase client...');
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { data: { session } } = await supabaseClient.auth.getSession();
+
+      console.log('[Member Lab] Getting session...');
+      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+      if (sessionError) {
+        console.error('[Member Lab] Session error:', sessionError);
+      }
+
+      console.log('[Member Lab] Session exists:', !!session);
+      if (session) {
+        console.log('[Member Lab] User email:', session.user?.email);
+        console.log('[Member Lab] User metadata:', session.user?.user_metadata);
+      }
 
       if (!session) {
         // User is not logged in - show gate
+        console.log('[Member Lab] No session, showing login gate');
         document.documentElement.classList.add('member-access-locked');
         document.body.appendChild(createMemberGate(false));
         return;
@@ -249,17 +265,30 @@
       // Accept both 'professional' and legacy 'member' values
       const isProfessional = (rawTier === 'professional' || rawTier === 'member');
 
+      console.log('[Member Lab] Raw tier:', rawTier, '| Is professional:', isProfessional);
+
       if (!isProfessional) {
         // User is community member, not professional - show gate
+        console.log('[Member Lab] Community member, showing upgrade gate');
         document.documentElement.classList.add('member-access-locked');
         document.body.appendChild(createMemberGate(true));
         return;
       }
 
       // Professional member - allow full access
-      console.log('Member lab access granted for professional member');
+      console.log('[Member Lab] ACCESS GRANTED for professional member');
+
+      // Set up auth state change listener to detect any logout
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        console.log('[Member Lab] Auth state changed:', event, '| Session:', !!session);
+        if (event === 'SIGNED_OUT') {
+          console.log('[Member Lab] User signed out - redirecting to login');
+          window.location.href = '/login.html';
+        }
+      });
+
     } catch (error) {
-      console.error('Member auth check failed:', error);
+      console.error('[Member Lab] Auth check failed:', error);
       // On error, default to gated state for security
       document.documentElement.classList.add('member-access-locked');
       document.body.appendChild(createMemberGate(false));

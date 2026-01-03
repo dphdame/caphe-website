@@ -94,17 +94,14 @@
         }
 
         #access-preview-gate .value-prop {
-          background: #f8f9fa;
-          border-radius: 8px;
-          padding: 1rem;
           margin-bottom: 1.5rem;
-          text-align: left;
           font-size: 0.875rem;
           color: #424242;
+          line-height: 1.6;
         }
 
         #access-preview-gate .value-prop strong {
-          color: #1565C0;
+          color: #003080;
         }
 
         #access-preview-gate .cta-buttons {
@@ -162,18 +159,6 @@
           text-decoration: underline;
         }
 
-        #access-preview-gate .free-badge {
-          display: inline-block;
-          background: #e8f5e9;
-          color: #2e7d32;
-          padding: 0.2rem 0.5rem;
-          border-radius: 4px;
-          font-size: 0.7rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          margin-left: 0.5rem;
-        }
-
         @media (max-width: 600px) {
           #access-preview-gate {
             height: 80%;
@@ -195,20 +180,19 @@
           }
         }
       </style>
-      <div class="gate-content">
-        <span class="tier-badge">Free Community Content</span>
-        <h2>Continue Reading: ${labTitle}</h2>
-        <p class="subtitle">
-          Create a free account to unlock this lab and all community resources.
+      <div class="gate-content" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-description">
+        <span class="tier-badge">Community Content</span>
+        <h2 id="gate-title">Access: ${labTitle}</h2>
+        <p class="subtitle" id="gate-description">
+          Create an account to continue this lab and explore our full methods library.
         </p>
-        <div class="value-prop">
-          <strong>Free members get access to:</strong><br>
-          16 advanced methodology labs &bull; California case studies &bull; Webinar recordings
-        </div>
+        <p class="value-prop">
+          <strong>Community membership includes:</strong><br>
+          Interactive methodology labs &bull; California case studies &bull; Webinar recordings
+        </p>
         <div class="cta-buttons">
           <a href="/membership.html?redirect=${encodeURIComponent(currentPath)}" class="btn-create">
-            Create Free Account
-            <span class="free-badge">Free</span>
+            Create Account
           </a>
           <a href="/login.html?redirect=${encodeURIComponent(currentPath)}" class="btn-signin">Sign In</a>
         </div>

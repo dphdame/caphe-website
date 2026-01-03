@@ -43,7 +43,8 @@ async function checkProfessionalMember() {
     if (!user) return false;
 
     const membershipTier = user.user_metadata?.membership_tier;
-    return membershipTier === 'member';
+    // Accept both 'professional' and legacy 'member'
+    return membershipTier === 'professional' || membershipTier === 'member';
   } catch (error) {
     console.error('Error checking membership:', error);
     return false;

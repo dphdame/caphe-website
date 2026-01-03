@@ -805,11 +805,14 @@
 
         if (session?.user) {
           userAuth.authenticated = true;
-          userAuth.tier = session.user.user_metadata?.membership_tier || 'community';
+          // Tier values: 'community' or 'professional' (also accept legacy 'member')
+          const rawTier = session.user.user_metadata?.membership_tier || 'community';
+          // Normalize legacy 'member' to 'professional'
+          userAuth.tier = (rawTier === 'member') ? 'professional' : rawTier;
 
           // Update top bar to show logged in state
           const topBar = document.querySelector('.nav-top-bar .container');
-          const tierLabel = userAuth.tier === 'member' ? 'Professional' : 'Community';
+          const tierLabel = userAuth.tier === 'professional' ? 'Professional' : 'Community';
           if (topBar) {
             topBar.innerHTML = `
               <span style="color: rgba(255,255,255,0.8);">${tierLabel} Member</span>
@@ -823,13 +826,22 @@
             });
           }
 
-          console.log('User tier:', userAuth.tier, 'Raw metadata:', session.user.user_metadata);
+          console.log('User tier:', userAuth.tier, 'Raw tier from metadata:', rawTier);
+          console.log('Full user metadata:', session.user.user_metadata);
 
-          // Show labs based on membership tier
+          // Show community labs for all logged-in users
           showCommunityLabs();
-          if (userAuth.tier === 'member') {
+
+          // Show member labs ONLY for professional members
+          // Accept both 'professional' and legacy 'member' values
+          const isProfessional = (userAuth.tier === 'professional' || userAuth.tier === 'member');
+          console.log('Is professional member:', isProfessional, '(tier value:', userAuth.tier + ')');
+
+          if (isProfessional) {
+            console.log('Showing member labs');
             showMemberLabs();
           } else {
+            console.log('Hiding member labs');
             hideMemberLabs();
           }
         } else {
@@ -871,6 +883,8 @@
     const memberLabOriginalHTML = new Map();
     document.querySelectorAll('.lab-card.member').forEach(card => {
       memberLabOriginalHTML.set(card, card.innerHTML);
+      // Hide by default until auth check confirms professional membership
+      card.style.display = 'none';
     });
 
     // Hide member labs for non-professional members (completely invisible)
@@ -919,8 +933,9 @@
         const cardKeywords = card.dataset.keywords.toLowerCase();
         const isMemberLab = card.classList.contains('member');
 
-        // Skip member labs if user isn't a professional member
-        if (isMemberLab && userAuth.tier !== 'member') {
+        // Member labs only visible to professional members (accept both 'professional' and 'member' tier values)
+        const isProfessionalUser = (userAuth.tier === 'professional' || userAuth.tier === 'member');
+        if (isMemberLab && !isProfessionalUser) {
           card.classList.add('hidden');
           return;
         }

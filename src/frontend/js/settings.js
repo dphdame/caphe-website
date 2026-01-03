@@ -69,14 +69,15 @@ async function loadProfileData() {
       // Display membership tier
       const tierEl = document.getElementById('membership-tier');
       if (tierEl) {
-        const tier = user.user_metadata?.membership_tier || 'community';
+        const rawTier = user.user_metadata?.membership_tier || 'community';
+        // Normalize legacy 'member' to 'professional'
+        const tier = (rawTier === 'member') ? 'professional' : rawTier;
         const tierLabels = {
-          'member': 'Professional Member',
-          'affiliate': 'Community Member',
+          'professional': 'Professional Member',
           'community': 'Community Member'
         };
         tierEl.textContent = tierLabels[tier] || tier;
-        tierEl.className = `badge badge-${tier === 'member' ? 'primary' : 'secondary'}`;
+        tierEl.className = `badge badge-${tier === 'professional' ? 'primary' : 'secondary'}`;
       }
 
       // Try to get profile from profiles table

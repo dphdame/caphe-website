@@ -288,7 +288,7 @@ app.post('/api/membership/apply', async (req, res) => {
   }
 
   try {
-    // Step 1: Create Supabase user with community (affiliate) tier
+    // Step 1: Create Supabase user with community tier
     let userCreated = false;
     let userAlreadyExists = false;
 
@@ -299,7 +299,7 @@ app.post('/api/membership/apply', async (req, res) => {
         email_confirm: true, // Auto-confirm since they're applying
         user_metadata: {
           full_name: `${firstName} ${lastName}`.trim(),
-          membership_tier: 'affiliate',
+          membership_tier: 'community',
           application_pending: true
         }
       });
@@ -500,7 +500,7 @@ if (supabaseUrl && supabaseServiceKey) {
   console.log('Supabase admin client initialized');
 }
 
-// Community membership signup (creates affiliate-tier account)
+// Community membership signup (creates community-tier account)
 app.post('/api/membership/community', async (req, res) => {
   const { name, email, organization } = req.body;
 
@@ -512,7 +512,7 @@ app.post('/api/membership/community', async (req, res) => {
   const tempPassword = require('crypto').randomBytes(16).toString('hex');
 
   try {
-    // Create Supabase user with affiliate tier
+    // Create Supabase user with community tier
     if (supabaseAdmin) {
       const { data: userData, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: email,
@@ -520,7 +520,7 @@ app.post('/api/membership/community', async (req, res) => {
         email_confirm: false, // Will send confirmation email
         user_metadata: {
           full_name: name,
-          membership_tier: 'affiliate'
+          membership_tier: 'community'
         }
       });
 
@@ -688,7 +688,7 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     const firstName = contactInfo.attributes?.FIRSTNAME || '';
     const lastName = contactInfo.attributes?.LASTNAME || '';
 
-    // Find existing user and upgrade their tier from affiliate to member
+    // Find existing user and upgrade their tier from community to professional
     const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
     const existingUser = users?.find(u => u.email === email);
 
@@ -697,13 +697,13 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
       await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
         user_metadata: {
           ...existingUser.user_metadata,
-          membership_tier: 'member',
+          membership_tier: 'professional',
           application_pending: false
         }
       });
-      console.log(`Upgraded ${email} from affiliate to member`);
+      console.log(`Upgraded ${email} from community to professional`);
     } else {
-      // User doesn't exist (shouldn't happen with new flow) - create with member tier
+      // User doesn't exist (shouldn't happen with new flow) - create with professional tier
       const tempPassword = require('crypto').randomBytes(16).toString('hex');
       const { error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: email,
@@ -711,7 +711,7 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
         email_confirm: false,
         user_metadata: {
           full_name: `${firstName} ${lastName}`.trim(),
-          membership_tier: 'member'
+          membership_tier: 'professional'
         }
       });
 
@@ -1182,7 +1182,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
     let existingUser = users?.find(u => u.email === profile.email);
 
     if (!existingUser) {
-      // Create new user with affiliate tier
+      // Create new user with community tier
       const tempPassword = require('crypto').randomBytes(16).toString('hex');
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: profile.email,
@@ -1190,7 +1190,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
         email_confirm: true, // Auto-confirm since Google verified email
         user_metadata: {
           full_name: profile.name || `${profile.given_name || ''} ${profile.family_name || ''}`.trim(),
-          membership_tier: 'affiliate',
+          membership_tier: 'community',
           avatar_url: profile.picture
         }
       });
@@ -1338,7 +1338,7 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
     let existingUser = users?.find(u => u.email === profile.email);
 
     if (!existingUser) {
-      // Create new user with affiliate tier
+      // Create new user with community tier
       const tempPassword = require('crypto').randomBytes(16).toString('hex');
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: profile.email,
@@ -1346,7 +1346,7 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
         email_confirm: true, // Auto-confirm since LinkedIn verified email
         user_metadata: {
           full_name: `${profile.given_name || ''} ${profile.family_name || ''}`.trim(),
-          membership_tier: 'affiliate',
+          membership_tier: 'community',
           avatar_url: profile.picture
         }
       });
@@ -1470,7 +1470,7 @@ app.get('/api/auth/status', async (req, res) => {
     }
 
     // Get tier from user metadata or profile
-    const tier = user.user_metadata?.membership_tier || 'affiliate';
+    const tier = user.user_metadata?.membership_tier || 'community';
 
     res.json({
       authenticated: true,

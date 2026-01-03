@@ -78,10 +78,12 @@ async function loadMemberProfile() {
       // Display membership tier
       const tierBadge = document.getElementById('member-tier-badge');
       if (tierBadge) {
-        const membershipTier = user.user_metadata?.membership_tier || 'affiliate';
+        const rawTier = user.user_metadata?.membership_tier || 'community';
+        // Normalize legacy 'member' to 'professional'
+        const membershipTier = (rawTier === 'member') ? 'professional' : rawTier;
         const tierLabels = {
-          'member': 'Professional Member',
-          'affiliate': 'Community Member'
+          'professional': 'Professional Member',
+          'community': 'Community Member'
         };
         tierBadge.textContent = tierLabels[membershipTier] || 'Community Member';
         tierBadge.className = `member-tier-badge tier-${membershipTier}`;

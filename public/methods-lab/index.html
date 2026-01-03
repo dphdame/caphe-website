@@ -896,7 +896,10 @@
 
     // Show member labs for professional members
     function showMemberLabs() {
-      document.querySelectorAll('.lab-card.member').forEach(card => {
+      const memberCards = document.querySelectorAll('.lab-card.member');
+      console.log('showMemberLabs: Found', memberCards.length, 'member lab cards');
+      memberCards.forEach((card, index) => {
+        console.log('Showing member lab', index + 1, ':', card.dataset.title);
         // Restore original HTML content
         const originalHTML = memberLabOriginalHTML.get(card);
         if (originalHTML) {
@@ -905,6 +908,7 @@
         card.style.display = '';
         card.style.opacity = '1';
         card.style.pointerEvents = 'auto';
+        card.classList.remove('hidden');
       });
     }
 

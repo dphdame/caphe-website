@@ -1,6 +1,6 @@
 /**
  * CAPHE Methods Lab - Member Lab Access Control
- * Protects member-tier labs - requires professional membership
+ * Protects professional-tier labs - requires professional membership
  */
 
 (function() {
@@ -8,12 +8,39 @@
   const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
 
+  let supabaseClient = null;
+
   // Get the lab title from the page
   function getLabTitle() {
     const titleEl = document.querySelector('h1');
     if (titleEl) return titleEl.textContent.trim();
     const pageTitle = document.title.split('|')[0].trim();
     return pageTitle || 'This Lab';
+  }
+
+  // Update the nav bar to show logged-in state
+  function updateNavBar(session, tier) {
+    const topBar = document.querySelector('.nav-top-bar .container');
+    if (!topBar) return;
+
+    const tierLabel = (tier === 'professional' || tier === 'member') ? 'Professional' : 'Community';
+    topBar.innerHTML = `
+      <span style="color: rgba(255,255,255,0.8);">${tierLabel} Member</span>
+      <a href="/settings.html">Settings</a>
+      <a href="#" id="logout-link">Log Out</a>
+    `;
+
+    // Set up logout handler
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (supabaseClient) {
+          await supabaseClient.auth.signOut();
+        }
+        window.location.href = '/login.html';
+      });
+    }
   }
 
   // Create the access gate overlay for non-professional members
@@ -223,75 +250,93 @@
     return overlay;
   }
 
+  // Show the gate
+  function showGate(isLoggedIn) {
+    document.documentElement.classList.add('member-access-locked');
+    document.body.appendChild(createMemberGate(isLoggedIn));
+  }
+
+  // Wait for Supabase to be available (max 3 seconds)
+  function waitForSupabase(maxWait = 3000) {
+    return new Promise((resolve) => {
+      if (window.supabase) {
+        resolve(true);
+        return;
+      }
+
+      const startTime = Date.now();
+      const checkInterval = setInterval(() => {
+        if (window.supabase) {
+          clearInterval(checkInterval);
+          resolve(true);
+        } else if (Date.now() - startTime > maxWait) {
+          clearInterval(checkInterval);
+          resolve(false);
+        }
+      }, 50);
+    });
+  }
+
   // Check authentication and membership tier on page load
   async function checkMemberLabAccess() {
     console.log('[Member Lab] Starting access check...');
 
     // Wait for Supabase to be available
-    if (!window.supabase) {
-      console.log('[Member Lab] Supabase not loaded, showing gate');
-      document.documentElement.classList.add('member-access-locked');
-      document.body.appendChild(createMemberGate(false));
+    const supabaseAvailable = await waitForSupabase();
+
+    if (!supabaseAvailable) {
+      console.log('[Member Lab] Supabase not available after waiting, showing gate');
+      showGate(false);
       return;
     }
 
     try {
       console.log('[Member Lab] Creating Supabase client...');
-      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       console.log('[Member Lab] Getting session...');
       const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
 
       if (sessionError) {
         console.error('[Member Lab] Session error:', sessionError);
-      }
-
-      console.log('[Member Lab] Session exists:', !!session);
-      if (session) {
-        console.log('[Member Lab] User email:', session.user?.email);
-        console.log('[Member Lab] User metadata:', session.user?.user_metadata);
-      }
-
-      if (!session) {
-        // User is not logged in - show gate
-        console.log('[Member Lab] No session, showing login gate');
-        document.documentElement.classList.add('member-access-locked');
-        document.body.appendChild(createMemberGate(false));
+        showGate(false);
         return;
       }
 
-      // User is logged in - check tier
+      console.log('[Member Lab] Session exists:', !!session);
+
+      if (!session) {
+        console.log('[Member Lab] No session, showing login gate');
+        showGate(false);
+        return;
+      }
+
+      // User is logged in
+      console.log('[Member Lab] User email:', session.user?.email);
+      console.log('[Member Lab] User metadata:', session.user?.user_metadata);
+
+      // Check tier
       const rawTier = session.user.user_metadata?.membership_tier || 'community';
       // Accept both 'professional' and legacy 'member' values
       const isProfessional = (rawTier === 'professional' || rawTier === 'member');
 
       console.log('[Member Lab] Raw tier:', rawTier, '| Is professional:', isProfessional);
 
+      // Update nav bar to show logged-in state
+      updateNavBar(session, rawTier);
+
       if (!isProfessional) {
-        // User is community member, not professional - show gate
         console.log('[Member Lab] Community member, showing upgrade gate');
-        document.documentElement.classList.add('member-access-locked');
-        document.body.appendChild(createMemberGate(true));
+        showGate(true);
         return;
       }
 
       // Professional member - allow full access
       console.log('[Member Lab] ACCESS GRANTED for professional member');
 
-      // Set up auth state change listener to detect any logout
-      supabaseClient.auth.onAuthStateChange((event, session) => {
-        console.log('[Member Lab] Auth state changed:', event, '| Session:', !!session);
-        if (event === 'SIGNED_OUT') {
-          console.log('[Member Lab] User signed out - redirecting to login');
-          window.location.href = '/login.html';
-        }
-      });
-
     } catch (error) {
       console.error('[Member Lab] Auth check failed:', error);
-      // On error, default to gated state for security
-      document.documentElement.classList.add('member-access-locked');
-      document.body.appendChild(createMemberGate(false));
+      showGate(false);
     }
   }
 

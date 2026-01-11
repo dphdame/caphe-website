@@ -1,0 +1,17 @@
+#!/bin/bash
+# Pre-commit hook for SEO validation
+
+echo "🔍 Running SEO validation..."
+
+if [ -f "scripts/validate-seo.js" ]; then
+  node scripts/validate-seo.js
+  if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ SEO validation failed. Fix errors before committing."
+    echo "   Run: node scripts/validate-seo.js"
+    exit 1
+  fi
+fi
+
+echo "✅ SEO validation passed"
+exit 0

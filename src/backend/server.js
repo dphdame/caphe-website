@@ -9,6 +9,15 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Redirect non-www to www for SEO canonicalization
+app.use((req, res, next) => {
+  const host = req.get('host');
+  if (host === 'caphegroup.org') {
+    return res.redirect(301, `https://www.caphegroup.org${req.originalUrl}`);
+  }
+  next();
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, '../../public')));
 app.use('/src', express.static(path.join(__dirname, '../../src')));
@@ -1487,9 +1496,9 @@ app.get('/api/auth/status', async (req, res) => {
 // SERVE HTML PAGES
 // =============================================
 
-// Catch-all: serve index.html for client-side routing
+// Catch-all: return 404 for unknown routes (prevents soft 404s for SEO)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/index.html'));
+  res.status(404).sendFile(path.join(__dirname, '../../public/404.html'));
 });
 
 app.listen(PORT, () => {

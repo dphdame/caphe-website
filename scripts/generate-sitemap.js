@@ -85,12 +85,16 @@ function generateSitemap() {
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
   for (const file of htmlFiles.sort()) {
-    // Convert file path to URL
+    // Convert file path to clean URL (no .html extension)
     let urlPath = file.replace(/\\/g, '/');
+
+    // Handle index files and .html extensions
     if (urlPath === 'index.html') {
       urlPath = '';
     } else if (urlPath.endsWith('/index.html')) {
       urlPath = urlPath.replace('/index.html', '/');
+    } else if (urlPath.endsWith('.html')) {
+      urlPath = urlPath.slice(0, -5); // Remove .html extension
     }
 
     const url = `${BASE_URL}/${urlPath}`;

@@ -18,8 +18,33 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname, '../../public')));
+// Clean URL handling: redirect .html to extensionless, serve extensionless
+app.use((req, res, next) => {
+  const urlPath = req.path;
+
+  // Skip API routes and static assets
+  if (urlPath.startsWith('/api/') ||
+      urlPath.startsWith('/src/') ||
+      urlPath.startsWith('/assets/') ||
+      urlPath.startsWith('/data/') ||
+      urlPath.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|json|xml|txt)$/i)) {
+    return next();
+  }
+
+  // Redirect .html URLs to clean URLs (301 for SEO)
+  if (urlPath.endsWith('.html')) {
+    const cleanUrl = urlPath.slice(0, -5); // Remove .html
+    const redirectTo = cleanUrl === '/index' ? '/' : cleanUrl;
+    return res.redirect(301, redirectTo + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
+  }
+
+  next();
+});
+
+// Serve static files with .html extension resolution
+app.use(express.static(path.join(__dirname, '../../public'), {
+  extensions: ['html', 'htm']
+}));
 app.use('/src', express.static(path.join(__dirname, '../../src')));
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/data', express.static(path.join(__dirname, '../../data')));

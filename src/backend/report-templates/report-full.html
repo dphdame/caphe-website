@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Health ROI Analysis: {{county}} County</title>
+  <link rel="stylesheet" href="report-styles.css">
+</head>
+<body>
+  <!-- Page 1: Executive Summary -->
+  <main role="main">
+    <header class="report-header">
+      <div class="header-top">
+        <img src="{{logoPath}}" alt="CAPHE - California Association of Public Health Economists" class="logo">
+        <div class="header-divider"></div>
+      </div>
+      <div class="header-title-block">
+        <h1>Public Health ROI Analysis</h1>
+        <p class="report-subtitle">{{county}} County | Fiscal Year {{fiscalYear}}</p>
+      </div>
+    </header>
+
+    <section aria-labelledby="key-findings-heading">
+      <h2 id="key-findings-heading">Key Findings</h2>
+
+      <!-- County-specific headline per Style Spec (inverted pyramid) -->
+      <p class="executive-headline">{{county}} County's public health investment of {{totalExpenditure}} is estimated to save {{livesSaved}} lives annually, generating {{socialValue}} in social value.</p>
+
+      <div class="metrics-grid" role="list">
+        <div class="metric-card" role="listitem">
+          <div class="metric-value" aria-label="{{livesSaved}} lives saved, annual estimate">{{livesSaved}}</div>
+          <div class="metric-label">Lives Saved (Annual Estimate)</div>
+          <div class="metric-subtitle">Based on statistical relationship between spending and mortality</div>
+        </div>
+
+        <div class="metric-card" role="listitem">
+          <div class="metric-value" aria-label="Benefit-cost ratio of {{bcr}} to 1">{{bcr}}:1</div>
+          <div class="metric-label">Benefit-Cost Ratio</div>
+          <div class="metric-subtitle">Dollars of benefit per dollar invested</div>
+        </div>
+
+        <div class="metric-card" role="listitem">
+          <div class="metric-value" aria-label="{{socialValue}} in social value">{{socialValue}}</div>
+          <div class="metric-label">Social Value</div>
+          <div class="metric-subtitle">Monetary value of lives saved using federal guidelines</div>
+        </div>
+
+        <div class="metric-card" role="listitem">
+          <div class="metric-value" aria-label="{{costPerLife}} cost per life saved">{{costPerLife}}</div>
+          <div class="metric-label">Cost Per Life Saved</div>
+          <div class="metric-subtitle">Investment required to save one statistical life (vs. $13.6M federal VSL)</div>
+        </div>
+      </div>
+
+      <div class="investment-summary">
+        <p><strong>Total Investment:</strong> {{totalExpenditure}} ({{perCapita}} per capita)</p>
+        <p><strong>Population Served:</strong> {{population}}</p>
+      </div>
+    </section>
+
+    <!-- Page break for print -->
+    <div class="page-break"></div>
+
+    <!-- Page 2: Spending Breakdown + Methodology -->
+    <section aria-labelledby="spending-heading">
+      <h2 id="spending-heading">Spending by Program Area</h2>
+
+      <!-- Chart with accessible data table -->
+      <figure role="figure" aria-labelledby="chart-title">
+        <figcaption id="chart-title" class="visually-hidden">
+          Horizontal bar chart showing public health spending distribution:
+          Chronic Disease Prevention {{chronicPercent}}%,
+          Communicable Disease Control {{communicablePercent}}%,
+          Maternal &amp; Child Health {{maternalPercent}}%,
+          Environmental Health {{environmentalPercent}}%,
+          Other Programs {{otherPercent}}%.
+        </figcaption>
+
+        <div class="bar-chart" aria-hidden="true">
+          <div class="bar-row">
+            <span class="bar-label">Chronic Disease</span>
+            <div class="bar-container">
+              <div class="bar bar-chronic" style="width: {{chronicPercent}}%">
+                <span class="bar-value">{{chronicPercent}}%</span>
+              </div>
+            </div>
+            <span class="bar-amount">{{chronicAmount}}</span>
+          </div>
+
+          <div class="bar-row">
+            <span class="bar-label">Communicable Disease</span>
+            <div class="bar-container">
+              <div class="bar bar-communicable" style="width: {{communicablePercent}}%">
+                <span class="bar-value">{{communicablePercent}}%</span>
+              </div>
+            </div>
+            <span class="bar-amount">{{communicableAmount}}</span>
+          </div>
+
+          <div class="bar-row">
+            <span class="bar-label">Maternal/Child Health</span>
+            <div class="bar-container">
+              <div class="bar bar-maternal" style="width: {{maternalPercent}}%">
+                <span class="bar-value">{{maternalPercent}}%</span>
+              </div>
+            </div>
+            <span class="bar-amount">{{maternalAmount}}</span>
+          </div>
+
+          <div class="bar-row">
+            <span class="bar-label">Environmental Health</span>
+            <div class="bar-container">
+              <div class="bar bar-environmental" style="width: {{environmentalPercent}}%">
+                <span class="bar-value">{{environmentalPercent}}%</span>
+              </div>
+            </div>
+            <span class="bar-amount">{{environmentalAmount}}</span>
+          </div>
+
+          <div class="bar-row">
+            <span class="bar-label">Other Programs</span>
+            <div class="bar-container">
+              <div class="bar bar-other" style="width: {{otherPercent}}%">
+                <span class="bar-value">{{otherPercent}}%</span>
+              </div>
+            </div>
+            <span class="bar-amount">{{otherAmount}}</span>
+          </div>
+        </div>
+      </figure>
+
+      <!-- Accessible data table (visible for screen readers and as fallback) -->
+      <table class="spending-table" aria-label="Spending breakdown by program area">
+        <thead>
+          <tr>
+            <th scope="col">Program Area</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chronic Disease Prevention</td>
+            <td>{{chronicAmount}}</td>
+            <td>{{chronicPercent}}%</td>
+          </tr>
+          <tr>
+            <td>Communicable Disease Control</td>
+            <td>{{communicableAmount}}</td>
+            <td>{{communicablePercent}}%</td>
+          </tr>
+          <tr>
+            <td>Maternal &amp; Child Health</td>
+            <td>{{maternalAmount}}</td>
+            <td>{{maternalPercent}}%</td>
+          </tr>
+          <tr>
+            <td>Environmental Health</td>
+            <td>{{environmentalAmount}}</td>
+            <td>{{environmentalPercent}}%</td>
+          </tr>
+          <tr>
+            <td>Other Programs</td>
+            <td>{{otherAmount}}</td>
+            <td>{{otherPercent}}%</td>
+          </tr>
+          <tr class="total-row">
+            <td><strong>Total</strong></td>
+            <td><strong>{{totalExpenditure}}</strong></td>
+            <td><strong>100%</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section aria-labelledby="methodology-heading">
+      <h2 id="methodology-heading">Methodology</h2>
+
+      <!-- Plain-language opener for non-economists -->
+      <p>This analysis estimates how public health spending affects mortality rates and translates that effect into lives saved and economic value.</p>
+
+      <p>The underlying research uses Lewbel IV estimation on California county panel data (2003-2023) to identify the causal effect of public health spending on mortality rates.</p>
+
+      <div class="key-finding-box">
+        <p><strong>Key Finding:</strong> Each $10 per capita in public health spending reduces mortality by 9.16 deaths per 100,000 population.</p>
+        <p class="coefficient-context">For context: if a county of 1 million people increases spending by $10 per person, approximately 92 fewer deaths would occur annually.</p>
+      </div>
+
+      <p>Social value is calculated using the U.S. Department of Health and Human Services Value of Statistical Life (VSL): <strong>$13.6 million</strong> (2024 dollars).</p>
+
+      <h3>Data Sources</h3>
+      <ul>
+        <li>Expenditure data: {{dataSource}}</li>
+        <li>Population data: California Department of Finance</li>
+        <li>Mortality coefficient: Lewbel IV estimation (Cholette, Patton &amp; Zaragoza-Gonzalez, 2026)</li>
+      </ul>
+
+      <!-- Limitations acknowledgment per Style Spec -->
+      <h3>Limitations</h3>
+      <p>These estimates are based on historical county-level data. Actual results may vary based on program implementation. The coefficient represents an average effect across all public health activities; specific interventions may have higher or lower returns.</p>
+
+      <!-- Practical closing per Style Spec -->
+      <p class="practical-note">This report is designed for presentations to boards, budget committees, and other stakeholders. Full methodology is available in the attached working paper.</p>
+    </section>
+
+    <footer class="report-footer">
+      <div class="citation">
+        <p><strong>Full Citation:</strong></p>
+        <p class="citation-text">Cholette, V., Patton, D., &amp; Zaragoza-Gonzalez, M. (2026). The Causal Effect of Public Health Infrastructure Spending on Mortality: Evidence from California Counties. SSRN Working Paper.</p>
+      </div>
+
+      <div class="research-callout">
+        <p><strong>Interested in deeper analysis?</strong> CAPHE is conducting ongoing research into ROI variation across program areas. Partner with us and receive more detailed, individualized findings for your county. Contact info@caphegroup.org to learn more.</p>
+      </div>
+
+      <div class="contact-info">
+        <p>California Association of Public Health Economists (CAPHE)</p>
+        <p><a href="https://www.caphegroup.org">www.caphegroup.org</a> | info@caphegroup.org</p>
+      </div>
+
+      <p class="report-date">Report generated: {{generatedDate}}</p>
+    </footer>
+  </main>
+</body>
+</html>

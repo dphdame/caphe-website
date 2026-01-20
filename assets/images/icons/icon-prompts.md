@@ -4,7 +4,7 @@ Use these prompts to generate clean icons with solid white backgrounds.
 
 **Save all icons to:**
 ```
-/Users/victoriaperez/Projects/CAPHE/website/assets/images/icons/
+/Users/victoriaperez/Projects/CAPHE/07_website/assets/images/icons/
 ```
 
 ---
@@ -81,8 +81,47 @@ Flat vector icon of a price tag with percentage symbol, simple minimalist design
 
 ---
 
+## 15. icon-roi-calculator.webp
+```
+Flat vector icon of a bar chart with upward trending arrow and dollar sign, representing ROI and financial returns, simple minimalist design, solid white background, professional corporate style, blue and gold color scheme (#0041A5 blue, #F9A825 gold), clean lines, no gradients, centered composition, square format, icon design for website
+```
+
+## 16. icon-file-upload.webp
+
+**Filename:** `icon-file-upload.webp`
+**Save to:** `/Users/victoriaperez/Projects/CAPHE/07_website/assets/images/icons/`
+
+```
+Flat vector icon of a document with an upward arrow, representing file upload or drag-and-drop, simple minimalist design, solid white background, professional corporate style, blue and gold color scheme (#0041A5 blue, #F9A825 gold), clean lines, no gradients, centered composition, square format, icon design for website
+```
+
+---
+
 ## Instructions
-1. Copy each prompt into Antigravity
+
+### For Generating Icons
+1. Copy the prompt into Antigravity (or Gemini MCP)
 2. Download the generated image
-3. Rename to the filename shown (e.g., `icon-video-archive.png`)
-4. Replace the existing file in this folder
+3. Save with the exact filename shown
+4. Place in the directory specified
+
+### Template for New Icons
+
+When adding new icons, use this format:
+
+```markdown
+## [NUMBER]. [filename].webp
+
+**Filename:** `[filename].webp`
+**Save to:** `/Users/victoriaperez/Projects/CAPHE/07_website/assets/images/icons/`
+
+\`\`\`
+[Antigravity prompt here]
+\`\`\`
+```
+
+**Why this format?**
+- Explicit filename prevents naming confusion
+- Full save path ensures correct location
+- Numbered entries make tracking easier
+- `.webp` format preferred for web performance

@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const Brevo = require('@getbrevo/brevo');
 const { createClient } = require('@supabase/supabase-js');
+const { generateCountyReport, generateFilename } = require('./pdf-generator');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -82,7 +83,8 @@ if (process.env.BREVO_API_KEY) {
 
 // Helper function to send email via Brevo
 // 'to' can be a string (single email) or array of emails
-async function sendEmail({ to, subject, html, replyTo }) {
+// 'attachments' is optional array of { content: Buffer, name: string }
+async function sendEmail({ to, subject, html, replyTo, attachments }) {
   if (!brevoEmailApi) {
     console.error('Brevo email API not configured');
     return;
@@ -102,6 +104,14 @@ async function sendEmail({ to, subject, html, replyTo }) {
   sendSmtpEmail.htmlContent = html;
   if (replyTo) {
     sendSmtpEmail.replyTo = { email: replyTo };
+  }
+
+  // Add attachments if provided
+  if (attachments && attachments.length > 0) {
+    sendSmtpEmail.attachment = attachments.map(att => ({
+      content: att.content.toString('base64'),
+      name: att.name
+    }));
   }
 
   return brevoEmailApi.sendTransacEmail(sendSmtpEmail);
@@ -1018,6 +1028,213 @@ app.get('/api/counties/:countyName/roi', (req, res) => {
       vsl: VSL,
       note: 'Based on Lewbel IV estimation using California county panel data 2003-2023'
     }
+  });
+});
+
+// =============================================
+// LHA CALCULATOR SUBMISSIONS
+// =============================================
+
+// Store for LHA submissions (in production, use database)
+const lhaSubmissions = [];
+
+// Submit LHA spending data
+app.post('/api/lha/submit', async (req, res) => {
+  const {
+    county,
+    fiscal_year,
+    name,
+    title,
+    email,
+    communicable_disease,
+    chronic_disease,
+    environmental_health,
+    maternal_child,
+    other_programs,
+    total_expenditure,
+    data_source,
+    confidence,
+    research_consent
+  } = req.body;
+
+  // Validation
+  if (!county || !fiscal_year || !name || !email) {
+    return res.status(400).json({ error: 'Missing required fields: county, fiscal_year, name, email' });
+  }
+
+  if (!total_expenditure || total_expenditure <= 0) {
+    return res.status(400).json({ error: 'Total expenditure must be greater than zero' });
+  }
+
+  // Check for existing submission for this county-year
+  const existingIndex = lhaSubmissions.findIndex(
+    s => s.county === county && s.fiscal_year === fiscal_year
+  );
+
+  const submission = {
+    id: `lha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    county,
+    fiscal_year,
+    submitter_name: name,
+    submitter_title: title,
+    submitter_email: email,
+    communicable_disease: communicable_disease || 0,
+    chronic_disease: chronic_disease || 0,
+    environmental_health: environmental_health || 0,
+    maternal_child: maternal_child || 0,
+    other_programs: other_programs || 0,
+    total_expenditure,
+    data_source: data_source || 'unknown',
+    confidence: confidence || 3,
+    research_consent: research_consent || false,
+    consent_timestamp: research_consent ? new Date().toISOString() : null,
+    submitted_at: new Date().toISOString(),
+    verified: email.endsWith('.gov') || email.endsWith('.ca.gov'),
+    verification_notes: email.endsWith('.gov') ? 'Auto-verified: .gov email' : null
+  };
+
+  // Replace or add submission
+  if (existingIndex >= 0) {
+    // Notify about existing submission
+    console.log(`Updating existing submission for ${county} FY${fiscal_year}`);
+    lhaSubmissions[existingIndex] = submission;
+  } else {
+    lhaSubmissions.push(submission);
+  }
+
+  // Log submission (in production, save to database)
+  console.log('LHA Submission:', {
+    county,
+    fiscal_year,
+    total: total_expenditure,
+    research_consent,
+    verified: submission.verified
+  });
+
+  // Generate PDF report and send confirmation email
+  try {
+    const population = countyData[county]?.population || 500000;
+    const perCapita = total_expenditure / population;
+    // Coefficient: 9.16 deaths per 100,000 per $10 per capita (matching ROI calculator)
+    const perCapitaUnits = perCapita / 10; // Convert to $10 units
+    const livesSaved = (Math.abs(9.16) * perCapitaUnits / 100000) * population;
+    const socialValue = livesSaved * 13600000;
+    const bcr = socialValue / total_expenditure;
+
+    // Prepare submission data for PDF generation
+    const pdfSubmissionData = {
+      county,
+      fiscal_year,
+      total_expenditure,
+      communicable_disease: communicable_disease || 0,
+      chronic_disease: chronic_disease || 0,
+      environmental_health: environmental_health || 0,
+      maternal_child: maternal_child || 0,
+      other_programs: other_programs || 0,
+      data_source: data_source || 'self-reported'
+    };
+
+    // Generate PDF report
+    let pdfBuffer = null;
+    let pdfFilename = null;
+    try {
+      pdfBuffer = await generateCountyReport(pdfSubmissionData, population);
+      pdfFilename = generateFilename(county, fiscal_year);
+      console.log(`Generated PDF report: ${pdfFilename} (${(pdfBuffer.length / 1024).toFixed(1)} KB)`);
+    } catch (pdfError) {
+      console.error('Failed to generate PDF report:', pdfError);
+      // Continue without PDF if generation fails
+    }
+
+    const emailHtml = `
+      <h2>Public Health ROI Analysis: ${county} County (FY ${fiscal_year})</h2>
+
+      <p>Thank you for your submission, ${name}.</p>
+
+      ${pdfBuffer ? '<p><strong>Your detailed PDF report is attached to this email.</strong></p>' : ''}
+
+      <h3>Key Results</h3>
+      <ul>
+        <li><strong>Total Public Health Expenditure:</strong> $${total_expenditure.toLocaleString()}</li>
+        <li><strong>Per Capita Spending:</strong> $${perCapita.toFixed(2)}</li>
+        <li><strong>Estimated Lives Saved:</strong> ${livesSaved.toFixed(1)}</li>
+        <li><strong>Benefit-Cost Ratio:</strong> ${bcr.toFixed(0)}:1</li>
+        <li><strong>Social Value (VSL):</strong> $${(socialValue / 1e6).toFixed(1)} million</li>
+      </ul>
+
+      <h3>Spending Breakdown</h3>
+      <ul>
+        <li>Communicable Disease Control: $${(communicable_disease || 0).toLocaleString()}</li>
+        <li>Chronic Disease Prevention: $${(chronic_disease || 0).toLocaleString()}</li>
+        <li>Environmental Health: $${(environmental_health || 0).toLocaleString()}</li>
+        <li>Maternal/Child Health: $${(maternal_child || 0).toLocaleString()}</li>
+        <li>Other Programs: $${(other_programs || 0).toLocaleString()}</li>
+      </ul>
+
+      <h3>Methodology</h3>
+      <p>Estimates based on Lewbel IV analysis of California county public health spending (2003-2023).
+      Each $1 per capita spending reduces mortality by 9.16 deaths per 100,000.
+      Social value calculated using HHS Value of Statistical Life ($13.6 million).</p>
+
+      <p><strong>Citation:</strong> Cholette, V., Patton, D., &amp; Zaragoza-Gonzalez, M. (2026). "The Causal Effect of Public Health Infrastructure Spending on Mortality:
+      Evidence from California Counties." SSRN Working Paper.</p>
+
+      ${research_consent ? '<p><em>Thank you for consenting to include your data in our research on California public health spending patterns.</em></p>' : ''}
+
+      <hr>
+      <p style="color: #666; font-size: 12px;">
+        California Association of Public Health Economists (CAPHE)<br>
+        <a href="https://www.caphegroup.org">www.caphegroup.org</a>
+      </p>
+    `;
+
+    // Send email with PDF attachment if available
+    const emailOptions = {
+      to: email,
+      subject: `Public Health ROI Analysis: ${county} County (FY ${fiscal_year})`,
+      html: emailHtml
+    };
+
+    if (pdfBuffer && pdfFilename) {
+      emailOptions.attachments = [{
+        content: pdfBuffer,
+        name: pdfFilename
+      }];
+    }
+
+    await sendEmail(emailOptions);
+  } catch (emailError) {
+    console.error('Failed to send confirmation email:', emailError);
+    // Don't fail the request if email fails
+  }
+
+  res.json({
+    success: true,
+    message: 'Submission received',
+    submission_id: submission.id,
+    research_consent: submission.research_consent,
+    verified: submission.verified
+  });
+});
+
+// Get LHA submissions (admin only - add auth in production)
+app.get('/api/lha/submissions', (req, res) => {
+  // In production, add authentication check here
+  const { research_only, verified_only } = req.query;
+
+  let results = [...lhaSubmissions];
+
+  if (research_only === 'true') {
+    results = results.filter(s => s.research_consent);
+  }
+
+  if (verified_only === 'true') {
+    results = results.filter(s => s.verified);
+  }
+
+  res.json({
+    count: results.length,
+    submissions: results
   });
 });
 

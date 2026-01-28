@@ -1334,7 +1334,7 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
     params.set('email', profileData.email);
     if (profileData.picture) params.set('picture', profileData.picture);
 
-    res.redirect('/membership.html?' + params.toString() + '#apply');
+    res.redirect('/membership/professional.html?' + params.toString());
 
   } catch (error) {
     console.error('LinkedIn OAuth callback error:', error);

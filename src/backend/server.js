@@ -20,6 +20,9 @@ app.use((req, res, next) => {
 });
 
 // Clean URL handling: redirect .html to extensionless, serve extensionless
+const fs = require('fs');
+const publicDir = path.join(__dirname, '../../public');
+
 app.use((req, res, next) => {
   const urlPath = req.path;
 
@@ -39,11 +42,26 @@ app.use((req, res, next) => {
     return res.redirect(301, redirectTo + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
   }
 
+  // Redirect trailing slashes to non-trailing (except root)
+  if (urlPath.length > 1 && urlPath.endsWith('/')) {
+    const cleanUrl = urlPath.slice(0, -1); // Remove trailing slash
+    return res.redirect(301, cleanUrl + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
+  }
+
+  // Handle paths where both file.html and file/ directory exist (e.g., /membership)
+  // Explicitly serve the .html file to prevent express.static directory confusion
+  if (urlPath.length > 1 && !urlPath.includes('.')) {
+    const htmlFilePath = path.join(publicDir, urlPath + '.html');
+    if (fs.existsSync(htmlFilePath)) {
+      return res.sendFile(htmlFilePath);
+    }
+  }
+
   next();
 });
 
 // Serve static files with .html extension resolution
-app.use(express.static(path.join(__dirname, '../../public'), {
+app.use(express.static(publicDir, {
   extensions: ['html', 'htm']
 }));
 app.use('/src', express.static(path.join(__dirname, '../../src')));

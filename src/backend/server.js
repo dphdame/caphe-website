@@ -323,14 +323,24 @@ app.post('/api/events/register', async (req, res) => {
 app.post('/api/membership/apply', async (req, res) => {
   const {
     email, firstName, lastName, password,
-    economicsWork, profileUrl, degreeAttestation
+    economicsWork, profileUrl, degreeAttestation, linkedinId
   } = req.body;
 
-  // Validation
-  if (!email || !firstName || !lastName || !password || !economicsWork || !profileUrl) {
-    return res.status(400).json({
-      error: 'Please complete all required fields'
-    });
+  // Validation - LinkedIn users don't need profileUrl or economicsWork
+  const isLinkedInUser = !!linkedinId;
+
+  if (isLinkedInUser) {
+    if (!email || !firstName || !lastName || !password) {
+      return res.status(400).json({
+        error: 'Please complete all required fields'
+      });
+    }
+  } else {
+    if (!email || !firstName || !lastName || !password || !economicsWork || !profileUrl) {
+      return res.status(400).json({
+        error: 'Please complete all required fields'
+      });
+    }
   }
 
   if (password.length < 8) {
@@ -387,9 +397,10 @@ app.post('/api/membership/apply', async (req, res) => {
           email,
           first_name: firstName,
           last_name: lastName,
-          profile_url: profileUrl,
-          economics_work: economicsWork,
+          profile_url: isLinkedInUser ? 'LinkedIn verified' : profileUrl,
+          economics_work: economicsWork || (isLinkedInUser ? 'Applied via LinkedIn' : null),
           degree_attestation: degreeAttestation,
+          linkedin_id: linkedinId || null,
           decision: 'pending',
           applied_at: new Date().toISOString()
         }, { onConflict: 'email' });
@@ -1350,6 +1361,7 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
     params.set('firstName', profileData.firstName);
     params.set('lastName', profileData.lastName);
     params.set('email', profileData.email);
+    params.set('linkedinId', profileData.linkedinId);
     if (profileData.picture) params.set('picture', profileData.picture);
 
     res.redirect('/membership/professional.html?' + params.toString());

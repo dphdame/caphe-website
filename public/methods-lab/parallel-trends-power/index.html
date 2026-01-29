@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When Parallel Trends Tests Lie: Why Passing Does Not Mean Valid | CAPHE Methods Lab</title>
+  <meta name="description" content="Learn why a high p-value on a parallel trends test does not guarantee your causal identification is valid. Interactive demonstration of statistical power, Rambachan-Roth sensitivity analysis, and county-specific trends.">
+  <style>
+    /* ============================================
+       1. RESET & BASE
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ============================================
+       2. CSS CUSTOM PROPERTIES
+       ============================================ */
+    :root {
+      /* Colors - CAPHE Brand */
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFC107;
+      --color-success: #2E7D32;
+      --color-warning: #F57C00;
+      --color-caution: #F57F17;
+      --color-danger: #C62828;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #FAFAF8;
+      --color-bg-panel: #FFFFFF;
+      --color-bg-code: #F5F5F5;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #424242;
+      --color-text-muted: #595959;
+      --color-border: #E0E0E0;
+      --color-border-light: #EEEEEE;
+
+      /* Typography */
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Shadows & Radii */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* ============================================
+       3. TYPOGRAPHY
+       ============================================ */
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg-alt);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--color-primary-dark);
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1rem; }
+
+    p { margin-bottom: var(--space-md); }
+    p:last-child { margin-bottom: 0; }
+
+    a { color: var(--color-primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    code {
+      font-family: var(--font-mono);
+      background: var(--color-bg-code);
+      padding: 0.1em 0.3em;
+      border-radius: var(--radius-sm);
+      font-size: 0.9em;
+    }
+
+    /* ============================================
+       4. LAYOUT
+       ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg);
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+      color: white;
+      padding: var(--space-2xl) 0;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 2.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.9;
+      margin-bottom: var(--space-sm);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 700px;
+    }
+
+    /* Panel Navigation */
+    .panel-nav {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .panel-nav ul {
+      list-style: none;
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-sm) 0;
+      overflow-x: auto;
+    }
+
+    .panel-btn {
+      padding: var(--space-sm) var(--space-lg);
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .panel-btn:hover {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .panel-btn.active,
+    .panel-btn[aria-pressed="true"] {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+
+    /* Main Content */
+    .main {
+      padding: var(--space-xl) 0 var(--space-2xl);
+    }
+
+    /* ============================================
+       5. PANELS
+       ============================================ */
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .panel-header h2 {
+      margin-bottom: var(--space-md);
+    }
+
+    .panel-intro {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      max-width: 800px;
+    }
+
+    /* ============================================
+       6. CONTENT CARDS
+       ============================================ */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-xl);
+    }
+
+    @media (max-width: 900px) {
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-wrapper {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 380px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .stat-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      font-family: var(--font-mono);
+    }
+
+    .stat-value.danger {
+      color: var(--color-danger);
+    }
+
+    .stat-value.success {
+      color: var(--color-success);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .observation-box {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .observation-box strong {
+      color: var(--color-primary-dark);
+    }
+
+    .warning-box {
+      background: rgba(198, 40, 40, 0.08);
+      border-left: 4px solid var(--color-danger);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .warning-box strong {
+      color: var(--color-danger);
+    }
+
+    .key-insight {
+      background: rgba(0, 65, 165, 0.05);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 0.9rem;
+    }
+
+    .bridging-question {
+      background: rgba(249, 168, 37, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: var(--space-xl);
+    }
+
+    .bridging-question p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    .bridging-question p:last-child {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-sm);
+    }
+
+    /* ============================================
+       7. SLIDER CONTROLS
+       ============================================ */
+    .slider-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-header h3 {
+      margin: 0;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: var(--color-bg-alt);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+    }
+
+    .slider-value.breakdown {
+      color: var(--color-danger);
+      background: rgba(198, 40, 40, 0.1);
+    }
+
+    .slider-wrapper {
+      margin-bottom: var(--space-lg);
+    }
+
+    .slider-track {
+      position: relative;
+      height: 8px;
+      background: var(--color-border);
+      border-radius: 4px;
+      margin-bottom: var(--space-md);
+    }
+
+    .slider-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-success) 0%, var(--color-accent) 35%, var(--color-danger) 100%);
+      border-radius: 4px;
+      transition: width 0.1s ease;
+    }
+
+    .slider-marker {
+      position: absolute;
+      top: -6px;
+      width: 4px;
+      height: 20px;
+      background: var(--color-danger);
+      border-radius: 2px;
+      transform: translateX(-50%);
+    }
+
+    .slider-marker-label {
+      position: absolute;
+      top: 18px;
+      font-size: 0.7rem;
+      color: var(--color-danger);
+      white-space: nowrap;
+      transform: translateX(-50%);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      z-index: 10;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid white;
+      box-shadow: var(--shadow-md);
+      cursor: grab;
+      margin-top: -8px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid white;
+      box-shadow: var(--shadow-md);
+      cursor: grab;
+    }
+
+    input[type="range"]:active::-webkit-slider-thumb {
+      cursor: grabbing;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .slider-description {
+      margin-top: var(--space-md);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* ============================================
+       8. RESULTS DISPLAY
+       ============================================ */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    .result-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .result-card.highlight {
+      border: 2px solid var(--color-primary);
+    }
+
+    .result-card.danger {
+      border: 2px solid var(--color-danger);
+      background: rgba(198, 40, 40, 0.03);
+    }
+
+    .result-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+    }
+
+    .result-value.danger {
+      color: var(--color-danger);
+    }
+
+    .result-value.success {
+      color: var(--color-success);
+    }
+
+    .result-unit {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    /* ============================================
+       9. COMPARISON TABLE
+       ============================================ */
+    .comparison-table {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      overflow-x: auto;
+    }
+
+    .comparison-table h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .comparison-table table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .comparison-table th {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .comparison-table td {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table .highlight {
+      background: rgba(249, 168, 37, 0.1);
+    }
+
+    .comparison-table .danger-row {
+      background: rgba(198, 40, 40, 0.05);
+    }
+
+    .verdict-pass {
+      color: var(--color-success);
+      font-weight: 600;
+    }
+
+    .verdict-fail {
+      color: var(--color-danger);
+      font-weight: 600;
+    }
+
+    /* ============================================
+       10. CHECKLIST
+       ============================================ */
+    .checklist-container {
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .checklist-container h3 {
+      margin-bottom: var(--space-lg);
+      color: var(--color-primary);
+    }
+
+    .checklist {
+      list-style: none;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .checklist li:last-child {
+      border-bottom: none;
+    }
+
+    .check-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .check-icon.question {
+      background: var(--color-accent);
+      color: white;
+    }
+
+    .check-text strong {
+      display: block;
+      color: var(--color-text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .check-text p {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    /* ============================================
+       11. TAKEAWAY BOX
+       ============================================ */
+    .takeaway-box {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .takeaway-box h4 {
+      color: white;
+      margin-bottom: var(--space-md);
+      font-size: 1.1rem;
+    }
+
+    .takeaway-box p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.95;
+    }
+
+    /* ============================================
+       12. FOOTER
+       ============================================ */
+    .footer {
+      background: var(--color-primary-dark);
+      color: white;
+      padding: var(--space-xl) 0;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--color-accent);
+    }
+
+    .footer p {
+      margin-bottom: var(--space-sm);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================
+       13. ACCESSIBILITY
+       ============================================ */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      z-index: 100;
+      text-decoration: none;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Focus styles */
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="eyebrow">CAPHE Methods Lab &middot; Causal Inference</div>
+      <h1>When Parallel Trends Tests Lie</h1>
+      <p class="subtitle">A high p-value on your parallel trends test does not mean your causal identification is valid. Statistical power, sensitivity analysis, and alternative specifications tell a more complete story.</p>
+    </div>
+  </header>
+
+  <!-- Panel Navigation -->
+  <nav class="panel-nav" role="navigation" aria-label="Module panels">
+    <div class="container">
+      <ul>
+        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
+        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
+        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Rambachan-Roth</button></li>
+        <li><button class="panel-btn" data-panel="4" aria-pressed="false">County Trends</button></li>
+        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+        <li><button class="panel-btn" data-panel="6" aria-pressed="false">References</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="main" role="main">
+    <div class="container">
+
+      <!-- ==========================================
+           PANEL 1: THE DATA
+           ========================================== -->
+      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
+        <div class="panel-header">
+          <h2 id="panel-1-heading">The Data</h2>
+          <p class="panel-intro">
+            We analyzed how bank branch closures affect SNAP (food stamp) participation across 1,408 US counties. Bank closures might affect SNAP enrollment by increasing transaction costs for benefit delivery. Our parallel trends test passed with a remarkably high p-value. <em style="opacity: 0.7;">(Based on real analysis, simplified for illustration.)</em>
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Event Study: SNAP Participation After Bank Closures</h3>
+            <svg id="event-study-chart" class="chart-svg" role="img" aria-labelledby="event-study-title event-study-desc">
+              <title id="event-study-title">Event Study: SNAP Participation After Bank Closures</title>
+              <desc id="event-study-desc">Chart showing pre-treatment coefficients (e=-3 to e=-1) near zero with wide confidence intervals spanning roughly -1.2 to +1.2 percentage points. Post-treatment coefficients (e=0 to e=6) trend negative, reaching -0.9 percentage points by year 6. A vertical dashed red line marks the treatment timing.</desc>
+            </svg>
+            <!-- Accessible data table alternative -->
+            <details style="margin-top: var(--space-md); font-size: 0.85rem;">
+              <summary>View data table</summary>
+              <table style="width: 100%; margin-top: var(--space-sm); font-size: 0.8rem;">
+                <thead><tr><th scope="col">Event Time</th><th scope="col">ATT (pp)</th><th scope="col">95% CI</th></tr></thead>
+                <tbody>
+                  <tr><td>e = -3</td><td>-0.06</td><td>[-1.27, +1.16]</td></tr>
+                  <tr><td>e = -2</td><td>-0.03</td><td>[-1.17, +1.11]</td></tr>
+                  <tr><td>e = -1</td><td>+0.00</td><td>[-1.08, +1.08]</td></tr>
+                  <tr><td>e = 0</td><td>-0.08</td><td>[-0.90, +0.74]</td></tr>
+                  <tr><td>e = 3</td><td>-0.47</td><td>[-0.90, -0.04]</td></tr>
+                  <tr><td>e = 6</td><td>-0.90</td><td>[-1.64, -0.16]</td></tr>
+                </tbody>
+              </table>
+            </details>
+            <div style="display: flex; gap: var(--space-lg); margin-top: var(--space-md); font-size: 0.85rem; justify-content: center; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span style="width: 12px; height: 12px; background: var(--color-secondary);" aria-hidden="true"></span>
+                <span>Pre-treatment (square)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--color-primary);" aria-hidden="true"></span>
+                <span>Post-treatment (circle)</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span style="width: 24px; height: 2px; background: var(--color-border);" aria-hidden="true"></span>
+                <span>95% CI</span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="sidebar">
+            <div class="stat-card">
+              <h4>Sample</h4>
+              <div class="stat-grid">
+                <div class="stat-item">
+                  <div class="stat-value">1,408</div>
+                  <div class="stat-label">Counties</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">3</div>
+                  <div class="stat-label">Pre-periods</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Main Estimate</h4>
+              <div class="stat-item">
+                <div class="stat-value">-0.47 pp</div>
+                <div class="stat-label">Effect on SNAP participation</div>
+              </div>
+              <div style="margin-top: var(--space-md); text-align: center;">
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);">p = 0.036</span>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <h4>Parallel Trends Test</h4>
+              <div class="stat-item">
+                <div class="stat-value success">p = 0.9997</div>
+                <div class="stat-label">Joint test of pre-treatment coefficients</div>
+              </div>
+            </div>
+
+            <div class="observation-box">
+              <strong>What we see:</strong> The parallel trends test passes with flying colors. Pre-treatment coefficients are indistinguishable from zero. The effect appears statistically significant.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>The crucial question:</strong> A p-value of 0.9997 seems like strong validation. Why might this be misleading?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 2: THE PROBLEM
+           ========================================== -->
+      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
+        <div class="panel-header">
+          <h2 id="panel-2-heading">The Problem: Statistical Power</h2>
+          <p class="panel-intro">
+            The parallel trends test asks whether pre-treatment coefficients are jointly different from zero. With wide standard errors and few pre-periods, even meaningful violations can fail to be detected. A "passing" test may simply reflect low statistical power, not satisfied assumptions.
+          </p>
+        </div>
+
+        <div class="comparison-table">
+          <h3>Pre-Treatment Coefficients</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Event Time</th>
+                <th scope="col">Coefficient (pp)</th>
+                <th scope="col">Standard Error</th>
+                <th scope="col">95% CI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>e = -3</td>
+                <td>-0.056</td>
+                <td>0.620</td>
+                <td>[-1.27, +1.16]</td>
+              </tr>
+              <tr>
+                <td>e = -2</td>
+                <td>-0.030</td>
+                <td>0.582</td>
+                <td>[-1.17, +1.11]</td>
+              </tr>
+              <tr class="highlight">
+                <td>e = -1</td>
+                <td>+0.000</td>
+                <td>0.549</td>
+                <td>[-1.08, +1.08]</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-label">Pre-Treatment Periods</div>
+            <div class="result-value">3</div>
+            <div class="result-unit">Limited data points</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Typical Standard Error</div>
+            <div class="result-value">0.58</div>
+            <div class="result-unit">Wide confidence bands</div>
+          </div>
+          <div class="result-card danger">
+            <div class="result-label">Fake Timing Test</div>
+            <div class="result-value danger">p = 0.04</div>
+            <div class="result-unit">Alternative test fails</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="stat-card">
+            <h4>Why Low Power Matters</h4>
+            <p>The confidence intervals are about 2.2 percentage points wide. The treatment effect we estimated is only -0.47 pp. A pre-trend of similar magnitude would not be detectable.</p>
+            <p style="margin-top: var(--space-md);">With standard errors this large, pre-treatment coefficients between -1.0 and +1.0 would all "pass" the test. This is not evidence of parallel trends. It is evidence that we lack the power to detect violations.</p>
+          </div>
+
+          <aside class="sidebar">
+            <div class="warning-box">
+              <strong>Warning sign ignored:</strong> The fake timing test (shifting treatment backward) produced p = 0.04, suggesting "pre-treatment" periods still showed negative effects. This was the correct warning signal.
+            </div>
+
+            <div class="key-insight">
+              <strong>The key insight:</strong> A high p-value on a diagnostic test can reflect two things: (1) the assumption holds, or (2) the test lacks power to detect violations. With only 3 pre-periods and SEs of 0.5-0.6, option (2) is more likely.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>Beyond the p-value:</strong> If the standard parallel trends test lacks power, how can we assess whether our causal claims are robust?</p>
+          <p>We need methods that explicitly characterize how sensitive our results are to violations.</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 3: RAMBACHAN-ROTH SENSITIVITY
+           ========================================== -->
+      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
+        <div class="panel-header">
+          <h2 id="panel-3-heading">Rambachan-Roth Sensitivity Analysis</h2>
+          <p class="panel-intro">
+            Instead of assuming parallel trends hold exactly, Rambachan and Roth (2023) parameterize potential violations. The key parameter <strong>M</strong> measures how large violations can be relative to observed pre-treatment movement. Use the slider to see how identified bounds expand as we allow for larger violations.
+          </p>
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-header">
+            <h3>Violation Parameter: M</h3>
+            <div class="slider-value" id="m-value">0.00</div>
+          </div>
+
+          <div class="slider-wrapper">
+            <div class="slider-track">
+              <div class="slider-fill" id="slider-fill" style="width: 0%;"></div>
+              <div class="slider-marker" id="breakdown-marker" style="left: 17.5%;">
+                <span class="slider-marker-label">Breakdown: 0.35</span>
+              </div>
+            </div>
+            <input type="range" id="m-slider" min="0" max="2" step="0.05" value="0" aria-label="Violation parameter M">
+            <div class="slider-labels">
+              <span>M = 0 (exact parallel trends)</span>
+              <span>M = 1 (violations = max pre-trend)</span>
+              <span>M = 2</span>
+            </div>
+          </div>
+
+          <div class="slider-description" id="slider-description">
+            <strong>M = 0:</strong> Assumes parallel trends hold exactly. The identified set equals the point estimate.
+          </div>
+        </div>
+
+        <!-- Live region for screen reader announcements -->
+        <div id="slider-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+        <div class="results-grid">
+          <div class="result-card" id="bounds-card">
+            <div class="result-label">ATT Bounds</div>
+            <div class="result-value" id="att-bounds">-0.47</div>
+            <div class="result-unit" id="bounds-unit">Point estimate</div>
+          </div>
+          <div class="result-card" id="ci-card">
+            <div class="result-label">95% Confidence Interval</div>
+            <div class="result-value" id="ci-bounds">[-0.91, -0.03]</div>
+            <div class="result-unit" id="ci-unit">Excludes zero</div>
+          </div>
+          <div class="result-card" id="verdict-card">
+            <div class="result-label">Excludes Zero?</div>
+            <div class="result-value success" id="verdict">Yes</div>
+            <div class="result-unit" id="verdict-unit">Effect is robust</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="chart-wrapper">
+            <h3 class="chart-title">Sensitivity of ATT to Parallel Trends Violations</h3>
+            <svg id="sensitivity-chart" class="chart-svg" role="img" aria-labelledby="sensitivity-title sensitivity-desc">
+              <title id="sensitivity-title">Sensitivity of ATT to Parallel Trends Violations</title>
+              <desc id="sensitivity-desc">Chart showing how the identified bounds for the treatment effect expand as the violation parameter M increases. At M=0, the point estimate is -0.47. At the breakdown point M=0.35 (marked with a red vertical line), the 95% confidence interval first includes zero. By M=2, the confidence interval spans from -1.08 to +0.15.</desc>
+            </svg>
+          </div>
+
+          <aside class="sidebar">
+            <div class="stat-card">
+              <h4>Breakdown Value</h4>
+              <div class="stat-item">
+                <div class="stat-value danger">M = 0.35</div>
+                <div class="stat-label">Smallest M where bounds include zero</div>
+              </div>
+            </div>
+
+            <div class="warning-box">
+              <strong>Interpretation:</strong> The effect is only robust to violations that are 35% as large as the maximum observed pre-trend movement. This is well below the M > 1 threshold for credible claims.
+            </div>
+
+            <div class="key-insight">
+              <strong>What M = 0.35 means:</strong> Even modest deviations from parallel trends can explain away the entire effect. The causal claim is sensitive.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>One more check:</strong> Sensitivity analysis shows our result is fragile. Can we directly test whether county-specific trends explain the effect?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 4: COUNTY TRENDS
+           ========================================== -->
+      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
+        <div class="panel-header">
+          <h2 id="panel-4-heading">County-Specific Trends</h2>
+          <p class="panel-intro">
+            An alternative robustness check: add county-specific linear time trends to absorb pre-existing trajectories. If the treatment effect survives, it is identified off deviations from each county's own trend. If it disappears, pre-existing trajectories explain the result.
+          </p>
+        </div>
+
+        <div class="comparison-table">
+          <h3>Effect Under Different Specifications</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Specification</th>
+                <th scope="col">ATT (pp)</th>
+                <th scope="col">SE</th>
+                <th scope="col">p-value</th>
+                <th scope="col">Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Baseline (County + Year FE)</td>
+                <td>-0.47</td>
+                <td>0.22</td>
+                <td>0.036</td>
+                <td class="verdict-pass">Significant</td>
+              </tr>
+              <tr class="danger-row">
+                <td><strong>With County Trends</strong></td>
+                <td><strong>+0.003</strong></td>
+                <td><strong>0.016</strong></td>
+                <td><strong>0.87</strong></td>
+                <td class="verdict-fail">Effect disappears</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-label">Baseline Effect</div>
+            <div class="result-value">-0.47 pp</div>
+            <div class="result-unit">Significant at p < 0.05</div>
+          </div>
+          <div class="result-card danger">
+            <div class="result-label">With Trends</div>
+            <div class="result-value danger">+0.003 pp</div>
+            <div class="result-unit">Effect disappears</div>
+          </div>
+          <div class="result-card danger">
+            <div class="result-label">Change</div>
+            <div class="result-value danger">+109%</div>
+            <div class="result-unit">Sign flips</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="stat-card">
+            <h4>What This Tells Us</h4>
+            <p>The entire "effect" is absorbed by county-specific trends. Counties that experienced bank closures were already on declining SNAP trajectories before treatment.</p>
+            <p style="margin-top: var(--space-md);">The treatment did not cause the decline. It happened in places that were already declining. This is selection into treatment, not a causal effect.</p>
+          </div>
+
+          <aside class="sidebar">
+            <div class="warning-box">
+              <strong>Verdict:</strong> The effect does not survive. Adding county trends reverses the sign (+0.003) and eliminates statistical significance (p = 0.87). The baseline result reflected pre-existing trajectories.
+            </div>
+
+            <div class="key-insight">
+              <strong>Revised interpretation:</strong> Bank closures are associated with SNAP declines, but causality cannot be established. Counties experiencing closures were already on declining trajectories.
+            </div>
+          </aside>
+        </div>
+
+        <div class="bridging-question">
+          <p><strong>The lesson:</strong> A parallel trends test with p = 0.9997 did not protect us from bias. What should we do differently?</p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 5: KEY INSIGHT
+           ========================================== -->
+      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
+        <div class="panel-header">
+          <h2 id="panel-5-heading">Key Insight</h2>
+          <p class="panel-intro">
+            Passing a parallel trends test is not validation. It is one piece of evidence. These questions help assess whether your causal identification is credible.
+          </p>
+        </div>
+
+        <div class="checklist-container">
+          <h3>Before Claiming Causality: A Checklist</h3>
+          <ul class="checklist">
+            <li>
+              <span class="check-icon question">?</span>
+              <div class="check-text">
+                <strong>How many pre-treatment periods do you have?</strong>
+                <p>Three or fewer pre-periods often mean low power to detect violations. Consider whether your test can actually detect meaningful pre-trends.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon question">?</span>
+              <div class="check-text">
+                <strong>How large are your pre-treatment standard errors?</strong>
+                <p>Wide confidence intervals around pre-treatment coefficients mean even large violations would not be detected. Compare SE magnitude to your treatment effect.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon question">?</span>
+              <div class="check-text">
+                <strong>What is your Rambachan-Roth breakdown M?</strong>
+                <p>If M &lt; 1, your effect is sensitive to violations smaller than observed pre-treatment movement. M &gt; 1 suggests more robustness. M &lt; 0.5 is a warning sign.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon question">?</span>
+              <div class="check-text">
+                <strong>Does your effect survive unit-specific trends?</strong>
+                <p>Adding unit-specific linear (or quadratic) trends absorbs pre-existing trajectories. If the effect disappears, you may have selection into treatment.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon question">?</span>
+              <div class="check-text">
+                <strong>Do alternative diagnostic tests agree?</strong>
+                <p>Fake timing tests, placebo treatments, and pre-trend extrapolation provide additional evidence. If they disagree with the joint test, investigate why.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="comparison-table">
+          <h3>Summary: What We Learned</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Test</th>
+                <th scope="col">Result</th>
+                <th scope="col">What It Actually Tells Us</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Parallel trends joint test</td>
+                <td class="verdict-pass">p = 0.9997</td>
+                <td>Low power with 3 pre-periods and SEs of 0.5-0.6</td>
+              </tr>
+              <tr>
+                <td>Fake timing test</td>
+                <td class="verdict-fail">p = 0.04</td>
+                <td>Correct warning signal that pre-trends exist</td>
+              </tr>
+              <tr>
+                <td>Rambachan-Roth sensitivity</td>
+                <td class="verdict-fail">M = 0.35</td>
+                <td>Effect only robust to small violations</td>
+              </tr>
+              <tr class="danger-row">
+                <td>County-specific trends</td>
+                <td class="verdict-fail">Effect disappears</td>
+                <td>Pre-existing trajectories explain the result</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="takeaway-box">
+          <h4>Key Takeaway</h4>
+          <p>
+            <strong>A high p-value on a parallel trends test often reflects low statistical power, not satisfied assumptions.</strong> When pre-treatment periods are limited and standard errors are wide, even large violations will not be detected. Sensitivity analysis (Rambachan-Roth) and alternative specifications (unit-specific trends) provide more informative evidence about whether your causal claims are robust. In this case, all three additional checks pointed in the same direction: the effect was not robust. Reporting the association is appropriate. Claiming causation is not.
+          </p>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           PANEL 6: REFERENCES
+           ========================================== -->
+      <section id="panel-6" class="panel" aria-labelledby="panel-6-heading">
+        <div class="panel-header">
+          <h2 id="panel-6-heading">References &amp; Data Sources</h2>
+          <p class="panel-intro">
+            The analysis in this lab draws on publicly available banking data and builds on established methods in the causal inference literature.
+          </p>
+        </div>
+
+        <div class="content-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="stat-card">
+            <h4>Data Source</h4>
+            <h3 style="margin: var(--space-md) 0; color: var(--color-primary);">Federal Reserve Bank of New York</h3>
+            <p style="margin-bottom: var(--space-md);">
+              Bank balance sheet and income statement data used in this analysis comes from the NY Fed's Banking Research Data repository. This comprehensive dataset tracks the financial health and branch networks of US banking institutions over time.
+            </p>
+            <a href="https://www.newyorkfed.org/research/banking_research/balance-sheets-income-statements"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="display: inline-block; padding: var(--space-sm) var(--space-md); background: var(--color-primary); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 500;">
+              Access the Data &rarr;
+            </a>
+          </div>
+
+          <div class="stat-card">
+            <h4>Successful Application</h4>
+            <h3 style="margin: var(--space-md) 0; color: var(--color-primary);">Correia, Luck &amp; Verner (2026)</h3>
+            <p style="margin-bottom: var(--space-md);">
+              For an example of how banking data can support credible causal claims when the identification strategy is sound, see "Failing Banks" in the <em>Quarterly Journal of Economics</em> (Volume 141, Issue 1, pp. 147–204).
+            </p>
+            <a href="https://academic.oup.com/qje/article-abstract/141/1/147/8249276"
+               target="_blank"
+               rel="noopener noreferrer"
+               style="display: inline-block; padding: var(--space-sm) var(--space-md); background: var(--color-primary); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 500;">
+              Read the Paper &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div class="comparison-table" style="margin-top: var(--space-xl);">
+          <h3>Methods References</h3>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Citation</th>
+                <th scope="col">Key Contribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Staggered DiD Estimator</td>
+                <td>Callaway &amp; Sant'Anna (2021)</td>
+                <td>Handles heterogeneous treatment timing without negative weights</td>
+              </tr>
+              <tr>
+                <td>Sensitivity Analysis</td>
+                <td>Rambachan &amp; Roth (2023)</td>
+                <td>Parameterizes violations to assess robustness of causal claims</td>
+              </tr>
+              <tr>
+                <td>Parallel Trends Testing</td>
+                <td>Roth (2022)</td>
+                <td>Documents low power of pre-trend tests in typical settings</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="observation-box" style="margin-top: var(--space-xl);">
+          <strong>A note on learning from failure:</strong> This lab demonstrates what happens when an analysis does not survive sensitivity checks. The Contreras, Ghosh &amp; Perez paper shows that the same data source can support robust causal claims when the research design provides cleaner identification. Both successful and unsuccessful analyses teach us something valuable about the data and methods.
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
+      <p><a href="https://caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
+      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
+        Based on actual research analysis. Some values simplified for pedagogical clarity.
+      </p>
+      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
+        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================
+       1. PANEL NAVIGATION
+       ============================================ */
+    const panelBtns = document.querySelectorAll('.panel-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    panelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelNum = btn.dataset.panel;
+
+        // Update button states
+        panelBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Update panel visibility
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${panelNum}`).classList.add('active');
+
+        // Render charts when panel becomes visible
+        if (panelNum === '1') {
+          setTimeout(renderEventStudy, 50);
+        }
+        if (panelNum === '3') {
+          setTimeout(() => {
+            renderSensitivityChart(parseFloat(document.getElementById('m-slider').value));
+          }, 50);
+        }
+      });
+    });
+
+    /* ============================================
+       2. EVENT STUDY CHART (Panel 1)
+       ============================================ */
+    const eventStudyData = [
+      { e: -3, att: -0.056, se: 0.620 },
+      { e: -2, att: -0.030, se: 0.582 },
+      { e: -1, att: 0.000, se: 0.549 },
+      { e: 0, att: -0.08, se: 0.42 },
+      { e: 1, att: -0.16, se: 0.38 },
+      { e: 2, att: -0.24, se: 0.35 },
+      { e: 3, att: -0.47, se: 0.22 },
+      { e: 4, att: -0.69, se: 0.28 },
+      { e: 5, att: -0.74, se: 0.32 },
+      { e: 6, att: -0.90, se: 0.38 }
+    ];
+
+    function renderEventStudy() {
+      const svg = document.getElementById('event-study-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 380;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = -4, xMax = 7;
+      const yMin = -2, yMax = 1.5;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + ((yMax - val) / (yMax - yMin)) * plotHeight;
+
+      // Zero line
+      const zeroLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      zeroLine.setAttribute('x1', margin.left);
+      zeroLine.setAttribute('x2', width - margin.right);
+      zeroLine.setAttribute('y1', yScale(0));
+      zeroLine.setAttribute('y2', yScale(0));
+      zeroLine.setAttribute('stroke', 'var(--color-border)');
+      zeroLine.setAttribute('stroke-width', '2');
+      svg.appendChild(zeroLine);
+
+      // Treatment line (at e = 0)
+      const treatLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      treatLine.setAttribute('x1', xScale(-0.5));
+      treatLine.setAttribute('x2', xScale(-0.5));
+      treatLine.setAttribute('y1', margin.top);
+      treatLine.setAttribute('y2', height - margin.bottom);
+      treatLine.setAttribute('stroke', 'var(--color-danger)');
+      treatLine.setAttribute('stroke-width', '2');
+      treatLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(treatLine);
+
+      // Treatment label
+      const treatLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      treatLabel.setAttribute('x', xScale(-0.5));
+      treatLabel.setAttribute('y', margin.top - 10);
+      treatLabel.setAttribute('text-anchor', 'middle');
+      treatLabel.setAttribute('font-size', '11');
+      treatLabel.setAttribute('fill', 'var(--color-danger)');
+      treatLabel.textContent = 'Treatment';
+      svg.appendChild(treatLabel);
+
+      // Confidence intervals and points
+      eventStudyData.forEach(d => {
+        const x = xScale(d.e);
+        const y = yScale(d.att);
+        const ciUpper = yScale(d.att + 1.96 * d.se);
+        const ciLower = yScale(d.att - 1.96 * d.se);
+
+        // CI line
+        const ciLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        ciLine.setAttribute('x1', x);
+        ciLine.setAttribute('x2', x);
+        ciLine.setAttribute('y1', ciUpper);
+        ciLine.setAttribute('y2', ciLower);
+        ciLine.setAttribute('stroke', 'var(--color-border)');
+        ciLine.setAttribute('stroke-width', '2');
+        svg.appendChild(ciLine);
+
+        // CI caps
+        [ciUpper, ciLower].forEach(capY => {
+          const cap = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          cap.setAttribute('x1', x - 6);
+          cap.setAttribute('x2', x + 6);
+          cap.setAttribute('y1', capY);
+          cap.setAttribute('y2', capY);
+          cap.setAttribute('stroke', 'var(--color-border)');
+          cap.setAttribute('stroke-width', '2');
+          svg.appendChild(cap);
+        });
+
+        // Point - use different shapes for pre/post treatment (accessibility)
+        if (d.e < 0) {
+          // Pre-treatment: square
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x - 5);
+          rect.setAttribute('y', y - 5);
+          rect.setAttribute('width', 10);
+          rect.setAttribute('height', 10);
+          rect.setAttribute('fill', 'var(--color-secondary)');
+          rect.setAttribute('aria-label', `Pre-treatment e=${d.e}: ${d.att.toFixed(2)} pp`);
+          svg.appendChild(rect);
+        } else {
+          // Post-treatment: circle
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', x);
+          circle.setAttribute('cy', y);
+          circle.setAttribute('r', 6);
+          circle.setAttribute('fill', 'var(--color-primary)');
+          circle.setAttribute('aria-label', `Post-treatment e=${d.e}: ${d.att.toFixed(2)} pp`);
+          svg.appendChild(circle);
+        }
+      });
+
+      // X-axis
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = -3; x <= 6; x++) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x;
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'Event Time (years relative to bank closure)';
+      svg.appendChild(xLabel);
+
+      // Y-axis
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = -1.5; y <= 1.5; y += 0.5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 15);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 15, ${height / 2})`);
+      yLabel.textContent = 'ATT (percentage points)';
+      svg.appendChild(yLabel);
+    }
+
+    /* ============================================
+       3. RAMBACHAN-ROTH SLIDER & CHART (Panel 3)
+       ============================================ */
+    const rrData = [
+      { m: 0.00, lower: -0.47, upper: -0.47, ciLower: -0.91, ciUpper: -0.03 },
+      { m: 0.25, lower: -0.49, upper: -0.45, ciLower: -0.93, ciUpper: -0.01 },
+      { m: 0.35, lower: -0.50, upper: -0.44, ciLower: -0.94, ciUpper: 0.00 }, // Breakdown
+      { m: 0.50, lower: -0.51, upper: -0.42, ciLower: -0.95, ciUpper: 0.01 },
+      { m: 0.75, lower: -0.53, upper: -0.40, ciLower: -0.97, ciUpper: 0.04 },
+      { m: 1.00, lower: -0.56, upper: -0.38, ciLower: -0.99, ciUpper: 0.06 },
+      { m: 1.25, lower: -0.58, upper: -0.35, ciLower: -1.02, ciUpper: 0.09 },
+      { m: 1.50, lower: -0.61, upper: -0.32, ciLower: -1.05, ciUpper: 0.12 },
+      { m: 1.75, lower: -0.63, upper: -0.30, ciLower: -1.07, ciUpper: 0.14 },
+      { m: 2.00, lower: -0.64, upper: -0.29, ciLower: -1.08, ciUpper: 0.15 }
+    ];
+
+    function interpolateRR(m) {
+      const below = rrData.filter(d => d.m <= m).pop() || rrData[0];
+      const above = rrData.find(d => d.m > m) || rrData[rrData.length - 1];
+
+      if (below.m === above.m) return below;
+
+      const t = (m - below.m) / (above.m - below.m);
+      return {
+        m: m,
+        lower: below.lower + t * (above.lower - below.lower),
+        upper: below.upper + t * (above.upper - below.upper),
+        ciLower: below.ciLower + t * (above.ciLower - below.ciLower),
+        ciUpper: below.ciUpper + t * (above.ciUpper - below.ciUpper)
+      };
+    }
+
+    function updateSliderUI(m) {
+      const valueEl = document.getElementById('m-value');
+      const fillEl = document.getElementById('slider-fill');
+      const descEl = document.getElementById('slider-description');
+      const boundsEl = document.getElementById('att-bounds');
+      const ciEl = document.getElementById('ci-bounds');
+      const verdictEl = document.getElementById('verdict');
+      const verdictCard = document.getElementById('verdict-card');
+      const boundsCard = document.getElementById('bounds-card');
+      const ciCard = document.getElementById('ci-card');
+      const boundsUnit = document.getElementById('bounds-unit');
+      const ciUnit = document.getElementById('ci-unit');
+      const verdictUnit = document.getElementById('verdict-unit');
+
+      const data = interpolateRR(m);
+      const breakdown = m >= 0.35;
+
+      // Update value display
+      valueEl.textContent = m.toFixed(2);
+      valueEl.classList.toggle('breakdown', breakdown);
+
+      // Update fill
+      fillEl.style.width = (m / 2 * 100) + '%';
+
+      // Update description
+      if (m === 0) {
+        descEl.innerHTML = '<strong>M = 0:</strong> Assumes parallel trends hold exactly. The identified set equals the point estimate.';
+      } else if (m < 0.35) {
+        descEl.innerHTML = `<strong>M = ${m.toFixed(2)}:</strong> Allows violations up to ${(m * 100).toFixed(0)}% of max pre-trend. Effect still robust.`;
+      } else if (m < 1) {
+        descEl.innerHTML = `<strong>M = ${m.toFixed(2)}:</strong> <span style="color: var(--color-danger);">Past breakdown point.</span> Confidence interval now includes zero. Effect not robust to violations this large.`;
+      } else {
+        descEl.innerHTML = `<strong>M = ${m.toFixed(2)}:</strong> <span style="color: var(--color-danger);">Violations as large as observed pre-trends.</span> The identified set is wide. Causality uncertain.`;
+      }
+
+      // Update results
+      boundsEl.textContent = `[${data.lower.toFixed(2)}, ${data.upper.toFixed(2)}]`;
+      ciEl.textContent = `[${data.ciLower.toFixed(2)}, ${data.ciUpper.toFixed(2)}]`;
+
+      const excludesZero = data.ciUpper < 0;
+      verdictEl.textContent = excludesZero ? 'Yes' : 'No';
+      verdictEl.classList.toggle('success', excludesZero);
+      verdictEl.classList.toggle('danger', !excludesZero);
+
+      verdictCard.classList.toggle('danger', !excludesZero);
+      boundsUnit.textContent = m === 0 ? 'Point estimate' : 'Identified set';
+      ciUnit.textContent = excludesZero ? 'Excludes zero' : 'Includes zero';
+      verdictUnit.textContent = excludesZero ? 'Effect is robust' : 'Effect is sensitive';
+
+      // Update aria-valuetext for screen readers
+      const slider = document.getElementById('m-slider');
+      let ariaText = `M equals ${m.toFixed(2)}`;
+      if (m === 0) {
+        ariaText += ', exact parallel trends assumed, effect is robust';
+      } else if (m < 0.35) {
+        ariaText += `, allows violations up to ${(m * 100).toFixed(0)} percent of pre-trend, effect is robust`;
+      } else if (m < 1) {
+        ariaText += ', past breakdown point, effect is NOT robust';
+      } else {
+        ariaText += ', large violations allowed, causality uncertain';
+      }
+      slider.setAttribute('aria-valuetext', ariaText);
+
+      // Announce significant changes to screen readers
+      const announcementEl = document.getElementById('slider-announcement');
+      if (announcementEl) {
+        if (m === 0.35 || (m > 0.30 && m < 0.40)) {
+          announcementEl.textContent = `At M equals ${m.toFixed(2)}, approaching breakdown point. Confidence interval ${excludesZero ? 'still excludes' : 'now includes'} zero.`;
+        } else if (!excludesZero && m > 0.35) {
+          announcementEl.textContent = `Effect is not robust. Confidence interval includes zero.`;
+        }
+      }
+    }
+
+    function renderSensitivityChart(currentM) {
+      const svg = document.getElementById('sensitivity-chart');
+      if (!svg) return;
+
+      const width = svg.clientWidth || 700;
+      const height = svg.clientHeight || 380;
+      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+
+      svg.innerHTML = '';
+
+      const xMin = 0, xMax = 2;
+      const yMin = -1.2, yMax = 0.3;
+
+      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
+      const yScale = (val) => margin.top + ((yMax - val) / (yMax - yMin)) * plotHeight;
+
+      // Zero line
+      const zeroLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      zeroLine.setAttribute('x1', margin.left);
+      zeroLine.setAttribute('x2', width - margin.right);
+      zeroLine.setAttribute('y1', yScale(0));
+      zeroLine.setAttribute('y2', yScale(0));
+      zeroLine.setAttribute('stroke', 'var(--color-danger)');
+      zeroLine.setAttribute('stroke-width', '2');
+      zeroLine.setAttribute('stroke-dasharray', '6,4');
+      svg.appendChild(zeroLine);
+
+      // Breakdown line
+      const breakdownLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      breakdownLine.setAttribute('x1', xScale(0.35));
+      breakdownLine.setAttribute('x2', xScale(0.35));
+      breakdownLine.setAttribute('y1', margin.top);
+      breakdownLine.setAttribute('y2', height - margin.bottom);
+      breakdownLine.setAttribute('stroke', 'var(--color-danger)');
+      breakdownLine.setAttribute('stroke-width', '1');
+      breakdownLine.setAttribute('stroke-dasharray', '4,2');
+      svg.appendChild(breakdownLine);
+
+      // Breakdown label
+      const breakLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      breakLabel.setAttribute('x', xScale(0.35) + 5);
+      breakLabel.setAttribute('y', margin.top + 15);
+      breakLabel.setAttribute('font-size', '10');
+      breakLabel.setAttribute('fill', 'var(--color-danger)');
+      breakLabel.textContent = 'Breakdown';
+      svg.appendChild(breakLabel);
+
+      // CI band (polygon)
+      const ciPoints = rrData.map(d => `${xScale(d.m)},${yScale(d.ciUpper)}`).join(' ') +
+        ' ' + rrData.slice().reverse().map(d => `${xScale(d.m)},${yScale(d.ciLower)}`).join(' ');
+      const ciBand = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      ciBand.setAttribute('points', ciPoints);
+      ciBand.setAttribute('fill', 'rgba(0, 65, 165, 0.1)');
+      svg.appendChild(ciBand);
+
+      // Identified set band
+      const boundPoints = rrData.map(d => `${xScale(d.m)},${yScale(d.upper)}`).join(' ') +
+        ' ' + rrData.slice().reverse().map(d => `${xScale(d.m)},${yScale(d.lower)}`).join(' ');
+      const boundBand = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      boundBand.setAttribute('points', boundPoints);
+      boundBand.setAttribute('fill', 'rgba(0, 65, 165, 0.3)');
+      svg.appendChild(boundBand);
+
+      // Current M indicator
+      const currentData = interpolateRR(currentM);
+      const currentLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      currentLine.setAttribute('x1', xScale(currentM));
+      currentLine.setAttribute('x2', xScale(currentM));
+      currentLine.setAttribute('y1', yScale(currentData.ciUpper));
+      currentLine.setAttribute('y2', yScale(currentData.ciLower));
+      currentLine.setAttribute('stroke', 'var(--color-primary)');
+      currentLine.setAttribute('stroke-width', '3');
+      svg.appendChild(currentLine);
+
+      // Current M point
+      const currentPoint = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      currentPoint.setAttribute('cx', xScale(currentM));
+      currentPoint.setAttribute('cy', yScale((currentData.upper + currentData.lower) / 2));
+      currentPoint.setAttribute('r', 6);
+      currentPoint.setAttribute('fill', 'var(--color-primary)');
+      svg.appendChild(currentPoint);
+
+      // Axes
+      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      xAxis.setAttribute('x1', margin.left);
+      xAxis.setAttribute('x2', width - margin.right);
+      xAxis.setAttribute('y1', height - margin.bottom);
+      xAxis.setAttribute('y2', height - margin.bottom);
+      xAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(xAxis);
+
+      for (let x = 0; x <= 2; x += 0.5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', xScale(x));
+        tick.setAttribute('y', height - margin.bottom + 20);
+        tick.setAttribute('text-anchor', 'middle');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = x.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      xLabel.setAttribute('x', width / 2);
+      xLabel.setAttribute('y', height - 10);
+      xLabel.setAttribute('text-anchor', 'middle');
+      xLabel.setAttribute('font-size', '12');
+      xLabel.setAttribute('fill', 'var(--color-text)');
+      xLabel.textContent = 'M (violation parameter)';
+      svg.appendChild(xLabel);
+
+      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      yAxis.setAttribute('x1', margin.left);
+      yAxis.setAttribute('x2', margin.left);
+      yAxis.setAttribute('y1', margin.top);
+      yAxis.setAttribute('y2', height - margin.bottom);
+      yAxis.setAttribute('stroke', 'var(--color-border)');
+      svg.appendChild(yAxis);
+
+      for (let y = -1; y <= 0; y += 0.5) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', margin.left - 8);
+        tick.setAttribute('y', yScale(y) + 4);
+        tick.setAttribute('text-anchor', 'end');
+        tick.setAttribute('font-size', '11');
+        tick.setAttribute('fill', 'var(--color-text-muted)');
+        tick.textContent = y.toFixed(1);
+        svg.appendChild(tick);
+      }
+
+      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      yLabel.setAttribute('x', 15);
+      yLabel.setAttribute('y', height / 2);
+      yLabel.setAttribute('text-anchor', 'middle');
+      yLabel.setAttribute('font-size', '12');
+      yLabel.setAttribute('fill', 'var(--color-text)');
+      yLabel.setAttribute('transform', `rotate(-90, 15, ${height / 2})`);
+      yLabel.textContent = 'ATT (percentage points)';
+      svg.appendChild(yLabel);
+
+      // Legend
+      const legendY = margin.top + 10;
+      const legendItems = [
+        { color: 'rgba(0, 65, 165, 0.3)', label: 'Identified set' },
+        { color: 'rgba(0, 65, 165, 0.1)', label: '95% CI' }
+      ];
+      legendItems.forEach((item, i) => {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', width - margin.right - 100);
+        rect.setAttribute('y', legendY + i * 20);
+        rect.setAttribute('width', 14);
+        rect.setAttribute('height', 14);
+        rect.setAttribute('fill', item.color);
+        svg.appendChild(rect);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', width - margin.right - 80);
+        text.setAttribute('y', legendY + i * 20 + 11);
+        text.setAttribute('font-size', '11');
+        text.setAttribute('fill', 'var(--color-text-muted)');
+        text.textContent = item.label;
+        svg.appendChild(text);
+      });
+    }
+
+    // Slider event listener
+    const slider = document.getElementById('m-slider');
+    slider.addEventListener('input', (e) => {
+      const m = parseFloat(e.target.value);
+      updateSliderUI(m);
+      renderSensitivityChart(m);
+    });
+
+    /* ============================================
+       4. INITIALIZATION
+       ============================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderEventStudy();
+      updateSliderUI(0);
+
+      // Resize handler
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.getElementById('panel-1').classList.contains('active')) {
+            renderEventStudy();
+          }
+          if (document.getElementById('panel-3').classList.contains('active')) {
+            renderSensitivityChart(parseFloat(slider.value));
+          }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

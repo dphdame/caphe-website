@@ -751,15 +751,25 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Email is required' });
   }
 
-  if (!brevoContactsApi || !supabaseAdmin) {
+  if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Service not configured' });
   }
 
   try {
-    // Get applicant info from Brevo
-    const contactInfo = await brevoContactsApi.getContactInfo(encodeURIComponent(email));
-    const firstName = contactInfo.attributes?.FIRSTNAME || '';
-    const lastName = contactInfo.attributes?.LASTNAME || '';
+    // Get applicant info from database
+    const { data: application, error: fetchError } = await supabaseAdmin
+      .from('membership_applications')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !application) {
+      console.error('Application not found:', fetchError);
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const firstName = application.first_name || '';
+    const lastName = application.last_name || '';
 
     // Find existing user and upgrade their tier from community to professional
     const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
@@ -815,8 +825,14 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
       }
     }
 
-    // Move from applications list to members list in Brevo
-    await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
+    // Move from applications list to members list in Brevo (optional - don't fail if Brevo not configured)
+    try {
+      if (brevoContactsApi) {
+        await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
+      }
+    } catch (brevoErr) {
+      console.log('Brevo sync skipped or failed (non-critical):', brevoErr.message);
+    }
 
     // Send approval email
     try {

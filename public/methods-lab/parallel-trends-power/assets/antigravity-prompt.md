@@ -1,6 +1,6 @@
 # Antigravity Image Prompts: Parallel Trends Power Lab
 
-**Lab:** When Parallel Trends Tests Lie
+**Lab:** Understanding the Limits of Parallel Trends Tests
 **Author:** Victoria Cholette
 **Date:** 2026-01-29
 

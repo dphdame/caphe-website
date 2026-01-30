@@ -55,6 +55,12 @@ app.use((req, res, next) => {
     if (fs.existsSync(htmlFilePath)) {
       return res.sendFile(htmlFilePath);
     }
+
+    // Also check for directories with index.html (e.g., /methods-lab/parallel-trends-power)
+    const indexFilePath = path.join(publicDir, urlPath, 'index.html');
+    if (fs.existsSync(indexFilePath)) {
+      return res.sendFile(indexFilePath);
+    }
   }
 
   next();

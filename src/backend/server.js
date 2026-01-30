@@ -48,6 +48,28 @@ app.use((req, res, next) => {
     return res.redirect(301, cleanUrl + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
   }
 
+  // Redirect broken lab URLs (e.g., /selection-into-treatment -> /methods-lab/selection-into-treatment)
+  // This handles old bookmarks, cached links, and incorrectly shared URLs
+  const labSlugs = [
+    'before-after-trap', 'budget-impact', 'cea-uncertain-effects', 'chw-health-outcomes',
+    'classifying-causal-mechanisms', 'collider-bias', 'comparator-choice', 'comparing-two-programs',
+    'confounding-assessment-checklist', 'control-groups-not-enough', 'correlation-causation-interactive',
+    'cost-effectiveness-ratio', 'counterfactual-basics', 'decision-thresholds', 'food-insecurity-diabetes',
+    'geographic-variables', 'identical-data-opposite-policies', 'measurement-error-claims',
+    'measuring-health-common-unit', 'medicaid-expansion', 'observational-to-experimental',
+    'p-hacking-multiple-testing', 'parallel-trends-power', 'regression-tables-confounding',
+    'reverse-causation-feedback', 'selection-into-treatment', 'sensitivity-analysis-cea',
+    'study-design-ladder', 'threat-confounding-selection', 'threat-history-events',
+    'threat-history-maturation', 'threat-history-solutions', 'threat-maturation-solutions',
+    'threat-maturation-trends', 'threat-measurement-instrumentation', 'threat-regression-to-mean',
+    'why-it-works-isnt-enough'
+  ];
+  const pathWithoutSlash = urlPath.replace(/\/$/, '');
+  const slug = pathWithoutSlash.slice(1); // Remove leading /
+  if (labSlugs.includes(slug)) {
+    return res.redirect(301, `/methods-lab/${slug}`);
+  }
+
   // Handle paths where both file.html and file/ directory exist (e.g., /membership)
   // Explicitly serve the .html file to prevent express.static directory confusion
   if (urlPath.length > 1 && !urlPath.includes('.')) {

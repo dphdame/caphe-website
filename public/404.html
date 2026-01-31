@@ -55,7 +55,7 @@
   </nav>
 
   <!-- 404 Content -->
-  <section class="hero" style="min-height: 60vh;">
+  <section class="hero" style="min-height: auto; padding-bottom: 2rem;">
     <div class="container">
       <div class="hero-content hero-content-centered">
         <div class="hero-eyebrow">Error 404</div>
@@ -70,6 +70,132 @@
       </div>
     </div>
   </section>
+
+  <!-- Report Issue Section -->
+  <section style="padding: 2rem 0 4rem; background: var(--color-bg-light, #fafafa);">
+    <div class="container" style="max-width: 600px;">
+      <div style="background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="margin: 0 0 0.5rem; color: var(--color-primary, #003080); font-size: 1.25rem;">
+          Found a broken link?
+        </h3>
+        <p style="margin: 0 0 1.5rem; color: #666; font-size: 0.95rem;">
+          Help us fix it. Let us know what page you were trying to reach.
+        </p>
+
+        <form id="report-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label for="broken-url" style="display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem;">
+              URL you tried to visit
+            </label>
+            <input
+              type="text"
+              id="broken-url"
+              name="url"
+              readonly
+              style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; font-size: 0.9rem; box-sizing: border-box;"
+            >
+          </div>
+
+          <div>
+            <label for="referrer" style="display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem;">
+              Where did you click the link? <span style="font-weight: normal; color: #999;">(optional)</span>
+            </label>
+            <input
+              type="text"
+              id="referrer"
+              name="referrer"
+              placeholder="e.g., Google search, another page on our site, an email"
+              style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; box-sizing: border-box;"
+            >
+          </div>
+
+          <div>
+            <label for="message" style="display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem;">
+              Additional details <span style="font-weight: normal; color: #999;">(optional)</span>
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows="2"
+              placeholder="Any other context that might help us fix this"
+              style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="align-self: flex-start; padding: 0.75rem 1.5rem;"
+          >
+            Report Issue
+          </button>
+        </form>
+
+        <div id="report-success" style="display: none; padding: 1rem; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+          <strong>Thanks for letting us know!</strong> We'll look into this broken link.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Auto-fill the broken URL
+    document.getElementById('broken-url').value = window.location.href;
+
+    // Auto-fill referrer if available
+    if (document.referrer) {
+      document.getElementById('referrer').value = document.referrer;
+    }
+
+    // Handle form submission
+    document.getElementById('report-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+
+      const url = document.getElementById('broken-url').value;
+      const referrer = document.getElementById('referrer').value;
+      const message = document.getElementById('message').value;
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Broken Link Reporter',
+            email: 'noreply@caphegroup.org',
+            subject: 'Broken Link Report: ' + url,
+            message: 'Broken URL: ' + url + '\n\n' +
+                     'Referrer: ' + (referrer || 'Not specified') + '\n\n' +
+                     'Additional details: ' + (message || 'None') + '\n\n' +
+                     'Reported: ' + new Date().toLocaleString()
+          })
+        });
+
+        if (response.ok) {
+          document.getElementById('report-form').style.display = 'none';
+          document.getElementById('report-success').style.display = 'block';
+        } else {
+          throw new Error('Failed to send');
+        }
+      } catch (err) {
+        // Fallback to mailto if API fails
+        const subject = encodeURIComponent('Broken Link Report: ' + url);
+        const body = encodeURIComponent(
+          'Broken URL: ' + url + '\n\n' +
+          'Referrer: ' + (referrer || 'Not specified') + '\n\n' +
+          'Additional details: ' + (message || 'None')
+        );
+        window.location.href = 'mailto:info@caphegroup.org?subject=' + subject + '&body=' + body;
+      }
+
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
+  </script>
 
   <!-- Footer -->
   <footer class="footer">
@@ -104,7 +230,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 California Association of Public Health Economists. All rights reserved.</p>
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
         <p style="margin-top: 0.5rem; font-size: 0.875rem;">
           <a href="/privacy.html" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> ·
           <a href="/terms.html" style="color: rgba(255,255,255,0.7);">Terms of Use</a>

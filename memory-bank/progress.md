@@ -133,7 +133,9 @@
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Jan 30, 2026 | v155 | 404 page: added issue reporting form with /api/contact integration |
 | Jan 30, 2026 | - | Created 2026 webinar series slides (Feb, April, June) |
+| Jan 30, 2026 | - | Created backlink research prompts for SEO outreach |
 | Jan 2, 2026 | v125 | Remove lab count from filter bar |
 | Jan 2, 2026 | v124 | Hide professional labs from non-members |
 | Jan 2, 2026 | v123 | Fix scroll locking, member lab restoration |

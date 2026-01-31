@@ -105,10 +105,35 @@
 2. Sensitivity Analysis
 3. CEA Under Uncertainty
 
+## 2026 Webinar Series - Slides Complete
+
+### February 12: Introduction to Health Economics
+- **Slides:** 22 slides in `outputs/presentations/CAPHE_Webinar_HealthEconomicsIntro_2026-02-12.pptx`
+- **Generator:** `scripts/generate_health_economics_intro_slides.py`
+- **Images:** 9 figures in `outputs/presentations/images/slide-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-health-econ-intro-20260130.md`
+
+### April 9: Understanding Cost-Effectiveness: The Basics
+- **Slides:** 24 slides in `outputs/presentations/CAPHE_Webinar_CEABasics_2026-04-09.pptx`
+- **Generator:** `scripts/generate_cea_basics_slides.py`
+- **Images:** 8 figures in `outputs/presentations/images/cea-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-cea-basics-20260130.md`
+- **Polls:** `outputs/presentations/teams-polls-cea-basics-20260409.md`
+
+### June 11: Return on Investment in Public Health
+- **Slides:** 26 slides in `outputs/presentations/CAPHE_Webinar_ROI_2026-06-11.pptx`
+- **Generator:** `scripts/generate_roi_webinar_slides.py`
+- **Images:** 8 figures in `outputs/presentations/images/roi-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-roi-20260130.md`
+- **Polls:** `outputs/presentations/teams-polls-roi-20260611.md`
+
+---
+
 ## Deployment History
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Jan 30, 2026 | - | Created 2026 webinar series slides (Feb, April, June) |
 | Jan 2, 2026 | v125 | Remove lab count from filter bar |
 | Jan 2, 2026 | v124 | Hide professional labs from non-members |
 | Jan 2, 2026 | v123 | Fix scroll locking, member lab restoration |

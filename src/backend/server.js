@@ -10,12 +10,24 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Redirect non-www to www for SEO canonicalization
+// HTTPS and www canonicalization (fixes duplicate URL issue in GSC)
+// Priority order: 1) Force HTTPS, 2) Force www
 app.use((req, res, next) => {
   const host = req.get('host');
-  if (host === 'caphegroup.org') {
-    return res.redirect(301, `https://www.caphegroup.org${req.originalUrl}`);
+  const proto = req.get('x-forwarded-proto') || req.protocol;
+
+  // Build canonical URL
+  let canonicalHost = 'www.caphegroup.org';
+  let canonicalProto = 'https';
+
+  // Check if redirect needed
+  const needsHttpsRedirect = proto === 'http';
+  const needsWwwRedirect = host === 'caphegroup.org';
+
+  if (needsHttpsRedirect || needsWwwRedirect) {
+    return res.redirect(301, `${canonicalProto}://${canonicalHost}${req.originalUrl}`);
   }
+
   next();
 });
 
@@ -33,6 +45,11 @@ app.use((req, res, next) => {
       urlPath.startsWith('/data/') ||
       urlPath.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|json|xml|txt)$/i)) {
     return next();
+  }
+
+  // Redirect /home to / (legacy URL getting search impressions)
+  if (urlPath === '/home' || urlPath === '/home/') {
+    return res.redirect(301, '/');
   }
 
   // Redirect .html URLs to clean URLs (301 for SEO)

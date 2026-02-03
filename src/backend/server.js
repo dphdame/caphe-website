@@ -368,7 +368,7 @@ app.post('/api/events/register', async (req, res) => {
 app.post('/api/membership/apply', async (req, res) => {
   const {
     email, firstName, lastName, password,
-    economicsWork, profileUrl, degreeAttestation, linkedinId
+    economicsWork, profileUrl, degreeAttestation, linkedinId, organization
   } = req.body;
 
   // Validation - LinkedIn users don't need profileUrl or economicsWork
@@ -445,14 +445,15 @@ app.post('/api/membership/apply', async (req, res) => {
           profile_url: isLinkedInUser ? 'LinkedIn verified' : profileUrl,
           economics_work: economicsWork || (isLinkedInUser ? 'Applied via LinkedIn' : null),
           degree_attestation: degreeAttestation,
-          linkedin_id: linkedinId || null,
+          organization: organization || null,
           decision: 'pending',
           applied_at: new Date().toISOString()
         }, { onConflict: 'email' });
 
       if (dbError) {
         console.error('Database insert error:', dbError);
-        // Continue anyway - Brevo is backup
+        // Don't silently fail - throw so the user knows something went wrong
+        throw new Error('Failed to save application. Please try again or contact info@caphegroup.org');
       }
     }
 

@@ -445,7 +445,6 @@ app.post('/api/membership/apply', async (req, res) => {
           profile_url: isLinkedInUser ? 'LinkedIn verified' : profileUrl,
           economics_work: economicsWork || (isLinkedInUser ? 'Applied via LinkedIn' : null),
           degree_attestation: degreeAttestation,
-          organization: organization || null,
           decision: 'pending',
           applied_at: new Date().toISOString()
         }, { onConflict: 'email' });

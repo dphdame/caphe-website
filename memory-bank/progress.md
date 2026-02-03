@@ -64,9 +64,15 @@
 - ~~Users could scroll past preview gate~~ - Fixed with scroll locking
 - ~~Professional labs visible (dimmed) to non-members~~ - Fixed, now completely hidden
 - ~~Login didn't redirect back to intended page~~ - Fixed redirect parameter handling
+- ~~HTTP not redirecting to HTTPS~~ - Fixed with middleware in server.js
+- ~~Sitemap URLs with trailing slashes causing GSC redirect errors~~ - Fixed by removing trailing slashes
+- ~~Membership applications silently failing to save~~ - Fixed by removing non-existent columns (linkedin_id, organization) and adding error throwing
+- ~~Dashboard "Submit Work for Review" opened email~~ - Fixed to link to Google Drive upload folder
+- ~~Dashboard "Review Open Submissions" wrong folder~~ - Fixed link
+- ~~Dashboard upcoming events were static~~ - Added JS to filter past events dynamically
 
 ### Current
-- None known
+- Brevo registration forms on programs page may be blocked by ad blockers (consider native form replacement)
 
 ## Lab Inventory
 
@@ -133,6 +139,7 @@
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Feb 3, 2026 | v156+ | Fixed HTTP→HTTPS canonical redirect, sitemap trailing slashes, membership application database bug, recovered 3 lost applications via Brevo sync |
 | Jan 30, 2026 | v155 | 404 page: added issue reporting form with /api/contact integration |
 | Jan 30, 2026 | - | Created 2026 webinar series slides (Feb, April, June) |
 | Jan 30, 2026 | - | Created backlink research prompts for SEO outreach |

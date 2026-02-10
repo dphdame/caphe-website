@@ -64,9 +64,15 @@
 - ~~Users could scroll past preview gate~~ - Fixed with scroll locking
 - ~~Professional labs visible (dimmed) to non-members~~ - Fixed, now completely hidden
 - ~~Login didn't redirect back to intended page~~ - Fixed redirect parameter handling
+- ~~HTTP not redirecting to HTTPS~~ - Fixed with middleware in server.js
+- ~~Sitemap URLs with trailing slashes causing GSC redirect errors~~ - Fixed by removing trailing slashes
+- ~~Membership applications silently failing to save~~ - Fixed by removing non-existent columns (linkedin_id, organization) and adding error throwing
+- ~~Dashboard "Submit Work for Review" opened email~~ - Fixed to link to Google Drive upload folder
+- ~~Dashboard "Review Open Submissions" wrong folder~~ - Fixed link
+- ~~Dashboard upcoming events were static~~ - Added JS to filter past events dynamically
 
 ### Current
-- None known
+- Brevo registration forms on programs page may be blocked by ad blockers (consider native form replacement)
 
 ## Lab Inventory
 
@@ -105,10 +111,38 @@
 2. Sensitivity Analysis
 3. CEA Under Uncertainty
 
+## 2026 Webinar Series - Slides Complete
+
+### February 12: Introduction to Health Economics
+- **Slides:** 22 slides in `outputs/presentations/CAPHE_Webinar_HealthEconomicsIntro_2026-02-12.pptx`
+- **Generator:** `scripts/generate_health_economics_intro_slides.py`
+- **Images:** 9 figures in `outputs/presentations/images/slide-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-health-econ-intro-20260130.md`
+
+### April 9: Understanding Cost-Effectiveness: The Basics
+- **Slides:** 24 slides in `outputs/presentations/CAPHE_Webinar_CEABasics_2026-04-09.pptx`
+- **Generator:** `scripts/generate_cea_basics_slides.py`
+- **Images:** 8 figures in `outputs/presentations/images/cea-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-cea-basics-20260130.md`
+- **Polls:** `outputs/presentations/teams-polls-cea-basics-20260409.md`
+
+### June 11: Return on Investment in Public Health
+- **Slides:** 26 slides in `outputs/presentations/CAPHE_Webinar_ROI_2026-06-11.pptx`
+- **Generator:** `scripts/generate_roi_webinar_slides.py`
+- **Images:** 8 figures in `outputs/presentations/images/roi-*.png`
+- **Prompts:** `outputs/presentations/antigravity-prompts-roi-20260130.md`
+- **Polls:** `outputs/presentations/teams-polls-roi-20260611.md`
+
+---
+
 ## Deployment History
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Feb 3, 2026 | v156+ | Fixed HTTP→HTTPS canonical redirect, sitemap trailing slashes, membership application database bug, recovered 3 lost applications via Brevo sync |
+| Jan 30, 2026 | v155 | 404 page: added issue reporting form with /api/contact integration |
+| Jan 30, 2026 | - | Created 2026 webinar series slides (Feb, April, June) |
+| Jan 30, 2026 | - | Created backlink research prompts for SEO outreach |
 | Jan 2, 2026 | v125 | Remove lab count from filter bar |
 | Jan 2, 2026 | v124 | Hide professional labs from non-members |
 | Jan 2, 2026 | v123 | Fix scroll locking, member lab restoration |

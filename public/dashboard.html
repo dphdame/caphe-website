@@ -82,13 +82,13 @@
       <div class="quick-actions">
         <h2 class="quick-actions-header">Get Involved</h2>
 
-        <a href="mailto:info@caphegroup.org?subject=Document%20Submission%20for%20Review" class="action-button">
+        <a href="https://drive.google.com/drive/folders/1luw3Ci3OIYuO-Apl0l-vjG0j8Y5YcBY4?usp=sharing" target="_blank" rel="noopener" class="action-button">
           <img src="/assets/images/icons/icon-submit-document.png" alt="" class="action-button-icon">
           <div class="action-button-content">
             <div class="action-button-title">Submit Work for Review</div>
             <div class="action-button-subtitle">Share a draft for 30-day peer feedback</div>
           </div>
-          <span class="action-button-arrow">→</span>
+          <span class="action-button-arrow">↗</span>
         </a>
 
         <a href="/peer-review.html" class="action-button">
@@ -100,7 +100,7 @@
           <span class="action-button-arrow">→</span>
         </a>
 
-        <a href="https://drive.google.com/drive/folders/10Dpa5GfdZ5NSnjB_mr_syzRfMPJOXXoY" target="_blank" rel="noopener" class="action-button">
+        <a href="https://drive.google.com/drive/folders/1ILAbJXtB0HY-6DZt2Ew6rrM63_btKsL6?usp=drive_link" target="_blank" rel="noopener" class="action-button">
           <img src="/assets/images/icons/icon-feedback.png" alt="" class="action-button-icon">
           <div class="action-button-content">
             <div class="action-button-title">Review Open Submissions</div>
@@ -318,5 +318,33 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/frontend/js/auth.js"></script>
   <script src="/src/frontend/js/dashboard.js"></script>
+  <script>
+    // Filter out past events
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const currentYear = today.getFullYear();
+
+      const monthMap = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+
+      document.querySelectorAll('.events-list .event-card').forEach(function(card) {
+        const monthEl = card.querySelector('.event-date-month');
+        const dayEl = card.querySelector('.event-date-day');
+
+        if (monthEl && dayEl) {
+          const month = monthMap[monthEl.textContent.trim()];
+          const day = parseInt(dayEl.textContent.trim(), 10);
+          const eventDate = new Date(currentYear, month, day);
+
+          if (eventDate < today) {
+            card.style.display = 'none';
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>

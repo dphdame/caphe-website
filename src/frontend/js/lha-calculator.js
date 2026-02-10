@@ -36,10 +36,12 @@ const COUNTY_POPULATIONS = {
   'Yolo': 216403, 'Yuba': 81575
 };
 
-// Model parameters from research
+// Model parameters from Cholette, Patton & Zarate-Gomez (2026)
+// Lewbel IV estimate: -9.16 deaths per 100,000 per $10 per capita
+// Equivalent: -0.916 deaths per 100,000 per $1 per capita
 const MODEL = {
-  coefficient: -9.16,        // Deaths per 100,000 per $1 per capita
-  vsl: 13600000,            // Value of Statistical Life ($13.6M)
+  coefficient: -0.916,       // Deaths per 100,000 per $1 per capita
+  vsl: 13600000,            // Value of Statistical Life ($13.6M, HHS 2025)
   costPerLife: 109000       // Approximate cost per life saved
 };
 
@@ -516,7 +518,7 @@ function calculateQuickROI(county, spending) {
   const perCapita = spending / population;
 
   // Calculate mortality reduction
-  // coefficient is deaths per 100,000 per $1 per capita
+  // Coefficient is deaths per 100,000 per $1 per capita (0.916)
   const mortalityReduction = Math.abs(MODEL.coefficient) * perCapita;
   const livesSaved = (mortalityReduction / 100000) * population;
 
@@ -704,11 +706,11 @@ function displayDetailedResults(formData, result) {
 
     <div class="methodology-note">
       <strong>Methodology:</strong> Based on Lewbel IV analysis of California county public health spending (2003-2023).
-      The model uses a uniform statewide coefficient: each $1 per capita spending reduces mortality by 9.16 deaths per 100,000.
+      The model uses a uniform statewide coefficient: each $10 per capita in public health spending reduces mortality by 9.16 deaths per 100,000.
       Your results reflect ${formData.county} County's population (${population.toLocaleString()}) and your entered spending—the benefit-cost ratio is the same across counties at equal per-capita spending levels.
-      Social value uses the HHS Value of Statistical Life ($13.6M).
+      Social value uses the HHS Value of Statistical Life ($13.6M, 2025).
       <br><br>
-      <strong>Citation:</strong> Cholette, V. (2025). "The Causal Effect of Public Health Infrastructure Spending on Mortality: Evidence from California Counties." CAPHE Working Paper.
+      <strong>Citation:</strong> Cholette, V., Patton, T., &amp; Zarate-Gomez, G. (2026). "The Crisis Response Value of Public Health Infrastructure: Evidence from California Counties." SSRN Working Paper.
     </div>
 
     <div style="text-align: center; margin-top: var(--space-xl);">

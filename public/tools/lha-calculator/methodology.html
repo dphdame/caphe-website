@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+
+  <title>Research Methodology: Public Health ROI Calculator - CAPHE</title>
+  <meta name="description" content="Learn how the CAPHE ROI Calculator estimates lives saved from public health spending, based on peer-reviewed causal inference research.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/lha-calculator/methodology">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    .methodology-content {
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: var(--color-text-secondary);
+    }
+
+    .methodology-content h2 {
+      font-family: var(--font-heading);
+      color: var(--color-primary);
+      margin-top: var(--space-2xl);
+      margin-bottom: var(--space-md);
+      font-size: var(--font-size-2xl);
+    }
+
+    .methodology-content h3 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-sm);
+      font-size: var(--font-size-xl);
+    }
+
+    .methodology-content p {
+      margin-bottom: var(--space-md);
+    }
+
+    .key-finding {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-xl);
+      border-radius: var(--radius-md);
+      margin: var(--space-xl) 0;
+    }
+
+    .key-finding .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
+    }
+
+    .key-finding .stat {
+      text-align: center;
+    }
+
+    .key-finding .stat .number {
+      display: block;
+      font-family: var(--font-heading);
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .key-finding .stat .label {
+      display: block;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    @media (max-width: 600px) {
+      .key-finding .stat-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-lg) 0;
+      font-size: var(--font-size-sm);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-sm) var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .comparison-table th {
+      background: var(--color-bg-alt);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .comparison-table td:first-child {
+      font-weight: 600;
+    }
+
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-md) 0;
+    }
+
+    .references-list li {
+      padding: var(--space-sm) 0;
+      padding-left: var(--space-lg);
+      position: relative;
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+
+    .references-list li::before {
+      content: attr(data-num);
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: var(--space-xl);
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact</a>
+      <a href="/login.html">Log In</a>
+      <a href="/membership.html" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about.html" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+            <a href="/programs.html#peer-review">Peer Review Sessions</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/methods-lab/">Methods Lab</a>
+            <a href="/resources.html#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator/">ROI Calculator</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">Research Methodology</h1>
+      <p class="page-subtitle">How the ROI Calculator estimates the mortality impact of public health spending</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main>
+  <section class="section">
+    <div class="container">
+      <div class="methodology-content">
+
+        <h2>The Research Question</h2>
+        <p>
+          Does local public health spending reduce mortality? This question is difficult to answer because counties that spend more on public health may differ systematically from those that spend less. Simply comparing mortality rates across counties would conflate the effect of spending with other factors like income, demographics, and healthcare access.
+        </p>
+        <p>
+          The estimates in this calculator come from a causal inference approach that addresses this challenge directly, building on a line of research that began with Brown (2014, 2016).
+        </p>
+
+        <h2>Background: The Original Research</h2>
+        <p>
+          Timothy T. Brown published foundational work examining whether public health departments reduce mortality. In a 2014 study, Brown applied Lewbel's heteroskedasticity-based instrumental variables (IV) method to California county data, establishing that public health spending has a statistically significant, causal effect on mortality: each additional $10 per capita reduces all-cause mortality by approximately 9.1 deaths per 100,000 population. A 2016 follow-up translated this into a return-on-investment framework, estimating that each dollar invested in California county public health departments yields roughly $88 in social value.
+        </p>
+        <p>
+          These findings were notable because the Lewbel IV method addresses the endogeneity problem without requiring an external instrument, which is typically unavailable in public health financing research.
+        </p>
+
+        <h2>Our Extension: California Counties, 2003&ndash;2023</h2>
+        <p>
+          Cholette, Patton, and Zarate-Gomez (2026) replicate and extend Brown's analysis using a 21-year panel covering all 57 California counties from 2003 to 2023. The replication achieves 99.4% accuracy relative to Brown's original estimate, finding a coefficient of &minus;9.16 deaths per 100,000 per $10 per capita (compared to Brown's &minus;9.1).
+        </p>
+        <p>
+          The extension incorporates the COVID-19 pandemic period (2020&ndash;2023), during which the relationship between public health spending and mortality was amplified. The model includes county and year fixed effects, meaning the COVID-era coefficient reflects the finding that counties with higher public health spending experienced relatively lower mortality during the pandemic, not simply that more people died.
+        </p>
+
+        <div class="key-finding">
+          <h3 style="margin-top: 0; color: var(--color-primary);">Key Finding</h3>
+          <p style="margin-bottom: 0;">
+            Each additional <strong>$10 per capita</strong> in local public health spending prevents an estimated <strong>9.16 deaths per 100,000</strong> population per year.
+          </p>
+          <div class="stat-row">
+            <div class="stat">
+              <span class="number">~125:1</span>
+              <span class="label">Benefit-cost ratio</span>
+            </div>
+            <div class="stat">
+              <span class="number">~$109K</span>
+              <span class="label">Cost per life saved</span>
+            </div>
+          </div>
+        </div>
+
+        <h2>The Method: Lewbel IV Estimation</h2>
+        <p>
+          Standard regression analysis cannot establish that public health spending <em>causes</em> lower mortality because spending levels may be driven by the same factors that affect mortality. For example, wealthier counties may both spend more on public health and have lower mortality for unrelated reasons.
+        </p>
+        <p>
+          Traditional instrumental variables (IV) estimation solves this by finding a variable that affects spending but has no direct effect on mortality. In practice, such instruments are rare in public health finance.
+        </p>
+        <p>
+          Lewbel (2012) developed an alternative approach that generates instruments internally from the data by exploiting heteroskedasticity (variation in the spread of regression residuals). This method works when the relationship between spending and its determinants varies in strength across observations, which is a testable condition.
+        </p>
+
+        <h3>Model Specification</h3>
+        <p>
+          The model estimates the effect of per-capita public health expenditure on age-adjusted mortality rates, controlling for county fixed effects (time-invariant county characteristics), year fixed effects (nationwide trends), and time-varying covariates including median household income, poverty rates, uninsured rates, and demographic composition.
+        </p>
+
+        <h3>Diagnostic Tests</h3>
+        <table class="comparison-table" aria-label="Diagnostic test results">
+          <thead>
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Result</th>
+              <th scope="col">Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>First-stage F-statistic</td>
+              <td>314.1</td>
+              <td>Strong instruments (threshold: 10)</td>
+            </tr>
+            <tr>
+              <td>Hansen J test</td>
+              <td>4.49 (p = 0.343)</td>
+              <td>Cannot reject instrument validity</td>
+            </tr>
+            <tr>
+              <td>Coefficient (p-value)</td>
+              <td>&minus;9.158 (p &lt; 0.001)</td>
+              <td>Highly statistically significant</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>How the Calculator Uses These Estimates</h2>
+        <p>
+          The ROI calculator applies the estimated coefficient to county-level spending data:
+        </p>
+        <ol style="padding-left: var(--space-xl); margin-bottom: var(--space-md);">
+          <li style="margin-bottom: var(--space-sm);"><strong>Per-capita spending</strong> is calculated by dividing total public health expenditure by county population.</li>
+          <li style="margin-bottom: var(--space-sm);"><strong>Mortality reduction</strong> is estimated as: (per-capita spending &divide; $10) &times; 9.16 deaths per 100,000.</li>
+          <li style="margin-bottom: var(--space-sm);"><strong>Lives saved</strong> scales the mortality reduction to the county's population.</li>
+          <li style="margin-bottom: var(--space-sm);"><strong>Social value</strong> multiplies lives saved by the HHS Value of Statistical Life ($13.6 million, 2025), which represents the economic value society places on reducing mortality risk.</li>
+        </ol>
+        <p>
+          Because the underlying coefficient is a fixed ratio between spending and mortality, the benefit-cost ratio is constant across counties regardless of spending level. This is a property of the linear model, not an assumption.
+        </p>
+
+        <h3>Sensitivity to VSL Assumptions</h3>
+        <p>
+          The benefit-cost ratio depends heavily on the Value of Statistical Life used. HHS publishes a range for regulatory analysis (February 2025):
+        </p>
+        <table class="comparison-table" aria-label="VSL sensitivity analysis">
+          <thead>
+            <tr>
+              <th scope="col">VSL Estimate</th>
+              <th scope="col">Value (2024$)</th>
+              <th scope="col">Implied BCR</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HHS Low</td>
+              <td>$6.3 million</td>
+              <td>~58:1</td>
+              <td>HHS (2025)</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--color-primary);">HHS Central (used here)</td>
+              <td style="font-weight: 700;">$13.6 million</td>
+              <td style="font-weight: 700;">~125:1</td>
+              <td>HHS (2025)</td>
+            </tr>
+            <tr>
+              <td>HHS High</td>
+              <td>$20.7 million</td>
+              <td>~190:1</td>
+              <td>HHS (2025)</td>
+            </tr>
+            <tr>
+              <td>EPA (current)</td>
+              <td>$11.2 million</td>
+              <td>~103:1</td>
+              <td>EPA (2025)</td>
+            </tr>
+            <tr>
+              <td>Brown (2016) original</td>
+              <td>~$9.1 million</td>
+              <td>~88:1</td>
+              <td>EPA (2010$, inflation-adjusted)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The calculator uses the HHS central estimate because HHS guidance is designed specifically for health policy regulatory analysis. Even under the most conservative assumption (HHS low, $6.3M), the benefit-cost ratio remains strongly positive at 58:1.
+        </p>
+
+        <h2>Limitations</h2>
+        <ul style="padding-left: var(--space-xl); margin-bottom: var(--space-md);">
+          <li style="margin-bottom: var(--space-sm);">Estimates are based on California county data and may not generalize directly to other states.</li>
+          <li style="margin-bottom: var(--space-sm);">The model captures the average effect across all types of public health spending; effects may vary by program category.</li>
+          <li style="margin-bottom: var(--space-sm);">The inclusion of COVID-era data (2020&ndash;2023) amplifies the measured effect relative to pre-pandemic estimates.</li>
+          <li style="margin-bottom: var(--space-sm);">The linear specification implies constant marginal returns, which may not hold at very high or very low spending levels.</li>
+        </ul>
+
+        <h2>References</h2>
+        <ol class="references-list">
+          <li data-num="1.">Brown, T. T. (2014). How effective are public health departments at preventing mortality? <em>Economics and Human Biology</em>, 13, 34&ndash;45. <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener" style="color: var(--color-primary);">[DOI]</a></li>
+          <li data-num="2.">Brown, T. T. (2016). Returns on investment in California county departments of public health. <em>American Journal of Public Health</em>, 106(8), 1477&ndash;1482. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4940648/" target="_blank" rel="noopener" style="color: var(--color-primary);">[PMC]</a></li>
+          <!-- TODO PRE-LAUNCH: Update with SSRN link once paper is posted -->
+          <li data-num="3.">Cholette, V., Patton, T., &amp; Zarate-Gomez, G. (2026). The crisis response value of public health infrastructure: Evidence from California counties. SSRN Working Paper.</li>
+          <li data-num="4.">Lewbel, A. (2012). Using heteroscedasticity to identify and estimate mismeasured and endogenous regressor models. <em>Journal of Business &amp; Economic Statistics</em>, 30(1), 67&ndash;80.</li>
+          <li data-num="5.">U.S. Department of Health and Human Services. (2025). Guidelines for regulatory impact analysis: Value of a statistical life.</li>
+        </ol>
+
+        <a href="/tools/lha-calculator/" class="back-link">&larr; Back to ROI Calculator</a>
+
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="background: var(--color-bg-alt); padding: var(--space-xl) 0; margin-top: var(--space-2xl);">
+    <div class="container" style="text-align: center; color: var(--color-text-muted);">
+      <p>&copy; 2025 Center for Applied Public Health Economics. All rights reserved.</p>
+      <p style="margin-top: var(--space-sm);">
+        <a href="/privacy" style="color: var(--color-text-muted);">Privacy Policy</a> &middot;
+        <a href="/terms" style="color: var(--color-text-muted);">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

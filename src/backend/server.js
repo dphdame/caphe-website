@@ -20,6 +20,9 @@ app.use((req, res, next) => {
 });
 
 // Clean URL handling: redirect .html to extensionless, serve extensionless
+const fs = require('fs');
+const publicDir = path.join(__dirname, '../../public');
+
 app.use((req, res, next) => {
   const urlPath = req.path;
 
@@ -39,11 +42,54 @@ app.use((req, res, next) => {
     return res.redirect(301, redirectTo + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
   }
 
+  // Redirect trailing slashes to non-trailing (except root)
+  if (urlPath.length > 1 && urlPath.endsWith('/')) {
+    const cleanUrl = urlPath.slice(0, -1); // Remove trailing slash
+    return res.redirect(301, cleanUrl + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
+  }
+
+  // Redirect broken lab URLs (e.g., /selection-into-treatment -> /methods-lab/selection-into-treatment)
+  // This handles old bookmarks, cached links, and incorrectly shared URLs
+  const labSlugs = [
+    'before-after-trap', 'budget-impact', 'cea-uncertain-effects', 'chw-health-outcomes',
+    'classifying-causal-mechanisms', 'collider-bias', 'comparator-choice', 'comparing-two-programs',
+    'confounding-assessment-checklist', 'control-groups-not-enough', 'correlation-causation-interactive',
+    'cost-effectiveness-ratio', 'counterfactual-basics', 'decision-thresholds', 'food-insecurity-diabetes',
+    'geographic-variables', 'identical-data-opposite-policies', 'measurement-error-claims',
+    'measuring-health-common-unit', 'medicaid-expansion', 'observational-to-experimental',
+    'p-hacking-multiple-testing', 'parallel-trends-power', 'regression-tables-confounding',
+    'reverse-causation-feedback', 'selection-into-treatment', 'sensitivity-analysis-cea',
+    'study-design-ladder', 'threat-confounding-selection', 'threat-history-events',
+    'threat-history-maturation', 'threat-history-solutions', 'threat-maturation-solutions',
+    'threat-maturation-trends', 'threat-measurement-instrumentation', 'threat-regression-to-mean',
+    'why-it-works-isnt-enough'
+  ];
+  const pathWithoutSlash = urlPath.replace(/\/$/, '');
+  const slug = pathWithoutSlash.slice(1); // Remove leading /
+  if (labSlugs.includes(slug)) {
+    return res.redirect(301, `/methods-lab/${slug}`);
+  }
+
+  // Handle paths where both file.html and file/ directory exist (e.g., /membership)
+  // Explicitly serve the .html file to prevent express.static directory confusion
+  if (urlPath.length > 1 && !urlPath.includes('.')) {
+    const htmlFilePath = path.join(publicDir, urlPath + '.html');
+    if (fs.existsSync(htmlFilePath)) {
+      return res.sendFile(htmlFilePath);
+    }
+
+    // Also check for directories with index.html (e.g., /methods-lab/parallel-trends-power)
+    const indexFilePath = path.join(publicDir, urlPath, 'index.html');
+    if (fs.existsSync(indexFilePath)) {
+      return res.sendFile(indexFilePath);
+    }
+  }
+
   next();
 });
 
 // Serve static files with .html extension resolution
-app.use(express.static(path.join(__dirname, '../../public'), {
+app.use(express.static(publicDir, {
   extensions: ['html', 'htm']
 }));
 app.use('/src', express.static(path.join(__dirname, '../../src')));
@@ -305,14 +351,24 @@ app.post('/api/events/register', async (req, res) => {
 app.post('/api/membership/apply', async (req, res) => {
   const {
     email, firstName, lastName, password,
-    economicsWork, profileUrl, degreeAttestation
+    economicsWork, profileUrl, degreeAttestation, linkedinId
   } = req.body;
 
-  // Validation
-  if (!email || !firstName || !lastName || !password || !economicsWork || !profileUrl) {
-    return res.status(400).json({
-      error: 'Please complete all required fields'
-    });
+  // Validation - LinkedIn users don't need profileUrl or economicsWork
+  const isLinkedInUser = !!linkedinId;
+
+  if (isLinkedInUser) {
+    if (!email || !firstName || !lastName || !password) {
+      return res.status(400).json({
+        error: 'Please complete all required fields'
+      });
+    }
+  } else {
+    if (!email || !firstName || !lastName || !password || !economicsWork || !profileUrl) {
+      return res.status(400).json({
+        error: 'Please complete all required fields'
+      });
+    }
   }
 
   if (password.length < 8) {
@@ -369,9 +425,10 @@ app.post('/api/membership/apply', async (req, res) => {
           email,
           first_name: firstName,
           last_name: lastName,
-          profile_url: profileUrl,
-          economics_work: economicsWork,
+          profile_url: isLinkedInUser ? 'LinkedIn verified' : profileUrl,
+          economics_work: economicsWork || (isLinkedInUser ? 'Applied via LinkedIn' : null),
           degree_attestation: degreeAttestation,
+          linkedin_id: linkedinId || null,
           decision: 'pending',
           applied_at: new Date().toISOString()
         }, { onConflict: 'email' });
@@ -722,15 +779,25 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Email is required' });
   }
 
-  if (!brevoContactsApi || !supabaseAdmin) {
+  if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Service not configured' });
   }
 
   try {
-    // Get applicant info from Brevo
-    const contactInfo = await brevoContactsApi.getContactInfo(encodeURIComponent(email));
-    const firstName = contactInfo.attributes?.FIRSTNAME || '';
-    const lastName = contactInfo.attributes?.LASTNAME || '';
+    // Get applicant info from database
+    const { data: application, error: fetchError } = await supabaseAdmin
+      .from('membership_applications')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (fetchError || !application) {
+      console.error('Application not found:', fetchError);
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const firstName = application.first_name || '';
+    const lastName = application.last_name || '';
 
     // Find existing user and upgrade their tier from community to professional
     const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
@@ -786,8 +853,14 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
       }
     }
 
-    // Move from applications list to members list in Brevo
-    await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
+    // Move from applications list to members list in Brevo (optional - don't fail if Brevo not configured)
+    try {
+      if (brevoContactsApi) {
+        await moveBrevoContact(email, brevoListIds.applications, brevoListIds.members);
+      }
+    } catch (brevoErr) {
+      console.log('Brevo sync skipped or failed (non-critical):', brevoErr.message);
+    }
 
     // Send approval email
     try {
@@ -990,10 +1063,10 @@ app.get('/api/counties/:countyName/roi', (req, res) => {
   const county = countyData[countyKey];
   const investment = parseFloat(investmentAmount) || 1000000; // Default $1M
 
-  // Brown (2016) coefficient: -9.16 deaths per 100,000 per $10 per capita
-  // Converted: -0.916 deaths per 100,000 per $1 per capita
+  // Cholette, Patton & Zarate-Gomez (2026) Lewbel IV coefficient
+  // -9.16 deaths per 100,000 per $10 per capita (= -0.916 per $1)
   const COEFFICIENT = -9.16; // deaths per 100,000 per $10 per capita
-  const VSL = 10000000; // Value of Statistical Life ($10M)
+  const VSL = 13600000; // Value of Statistical Life ($13.6M, HHS 2025)
 
   const perCapitaInvestment = investment / county.population;
   const perCapitaUnits = perCapitaInvestment / 10; // Convert to $10 units
@@ -1022,7 +1095,7 @@ app.get('/api/counties/:countyName/roi', (req, res) => {
       costPerLifeSaved: parseFloat((investment / livesSaved).toFixed(0))
     },
     methodology: {
-      source: 'Brown (2016)',
+      source: 'Cholette, Patton & Zarate-Gomez (2026)',
       coefficient: COEFFICIENT,
       coefficientUnit: 'deaths per 100,000 per $10 per capita',
       vsl: VSL,
@@ -1173,10 +1246,10 @@ app.post('/api/lha/submit', async (req, res) => {
 
       <h3>Methodology</h3>
       <p>Estimates based on Lewbel IV analysis of California county public health spending (2003-2023).
-      Each $1 per capita spending reduces mortality by 9.16 deaths per 100,000.
-      Social value calculated using HHS Value of Statistical Life ($13.6 million).</p>
+      Each $10 per capita in public health spending reduces mortality by 9.16 deaths per 100,000.
+      Social value calculated using HHS Value of Statistical Life ($13.6 million, 2025).</p>
 
-      <p><strong>Citation:</strong> Cholette, V., Patton, D., &amp; Zaragoza-Gonzalez, M. (2026). "The Causal Effect of Public Health Infrastructure Spending on Mortality:
+      <p><strong>Citation:</strong> Cholette, V., Patton, T., &amp; Zarate-Gomez, G. (2026). "The Crisis Response Value of Public Health Infrastructure:
       Evidence from California Counties." SSRN Working Paper.</p>
 
       ${research_consent ? '<p><em>Thank you for consenting to include your data in our research on California public health spending patterns.</em></p>' : ''}
@@ -1332,9 +1405,10 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
     params.set('firstName', profileData.firstName);
     params.set('lastName', profileData.lastName);
     params.set('email', profileData.email);
+    params.set('linkedinId', profileData.linkedinId);
     if (profileData.picture) params.set('picture', profileData.picture);
 
-    res.redirect('/membership.html?' + params.toString() + '#apply');
+    res.redirect('/membership/professional.html?' + params.toString());
 
   } catch (error) {
     console.error('LinkedIn OAuth callback error:', error);

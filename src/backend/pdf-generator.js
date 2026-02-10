@@ -48,10 +48,10 @@ function formatNumber(num) {
  * @returns {Object} Calculated metrics
  */
 function calculateMetrics(data, population) {
-  // Brown (2016) / Cholette et al. (2026) coefficient
-  // Coefficient is -9.16 deaths per 100,000 per $10 per capita
+  // Cholette, Patton & Zarate-Gomez (2026) Lewbel IV coefficient
+  // Coefficient is -9.16 deaths per 100,000 per $10 per capita (= -0.916 per $1)
   const COEFFICIENT = 9.16; // deaths per 100,000 per $10 per capita
-  const VSL = 13600000; // HHS Value of Statistical Life 2024
+  const VSL = 13600000; // HHS Value of Statistical Life (2025)
 
   const totalExpenditure = data.total_expenditure || 0;
   const perCapita = totalExpenditure / population;

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+
+  <title>Public Health ROI Calculator for Local Health Authorities - CAPHE</title>
+  <meta name="description" content="Calculate the return on investment for county public health spending. Generate detailed ROI reports based on peer-reviewed research.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/lha-calculator">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Override the default calculator-container grid from style.css */
+    .calculator-container {
+      display: block;
+      grid-template-columns: none;
+    }
+
+    /* Two-column layout: form left, results right */
+    .calculator-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .results-column {
+      position: sticky;
+      top: var(--space-xl);
+    }
+
+    @media (max-width: 1024px) {
+      .calculator-layout {
+        grid-template-columns: 1fr;
+      }
+      .results-column {
+        position: static;
+      }
+    }
+
+    .calculator-tabs {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: var(--space-sm);
+    }
+
+    .tab-btn {
+      padding: var(--space-sm) var(--space-lg);
+      border: none;
+      background: none;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--color-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .data-entry-toggle {
+      display: flex;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .toggle-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+    }
+
+    .toggle-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-primary);
+    }
+
+    .upload-area {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-xl);
+      text-align: center;
+      background: var(--color-bg-alt);
+      margin-bottom: var(--space-lg);
+      transition: all 0.2s ease;
+    }
+
+    .upload-area:hover {
+      border-color: var(--color-primary);
+      background: #f0f4f8;
+    }
+
+    .upload-area.dragover {
+      border-color: var(--color-primary);
+      background: #e3f2fd;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .template-links {
+      display: flex;
+      gap: var(--space-lg);
+      justify-content: center;
+      margin-top: var(--space-md);
+    }
+
+    .template-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .template-link:hover {
+      text-decoration: underline;
+    }
+
+    .file-info {
+      display: none;
+      padding: var(--space-md);
+      background: #e8f5e9;
+      border-radius: var(--radius-md);
+      margin-top: var(--space-md);
+    }
+
+    .file-info.show {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .file-info.error {
+      background: #ffebee;
+      color: var(--color-error);
+    }
+
+    .remove-file {
+      background: none;
+      border: none;
+      color: var(--color-error);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .spending-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md) var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .spending-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .spending-total {
+      grid-column: 1 / -1;
+      padding: var(--space-md);
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .consent-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .consent-checkbox input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--color-primary);
+    }
+
+    .learn-more-toggle {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    .research-details {
+      display: none;
+      margin-top: var(--space-md);
+      padding: var(--space-md);
+      background: white;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+
+    .research-details.show {
+      display: block;
+    }
+
+    .results-section {
+      display: none;
+      padding: var(--space-xl);
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .results-section.show {
+      display: block;
+    }
+
+    /* Adjust result cards for side-by-side layout */
+    .results-column .result-cards {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .results-column .result-card .value {
+      font-size: 1.5rem;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .results-header h3 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .result-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .result-card {
+      background: white;
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .result-card .label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .result-card .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .result-card .value.highlight {
+      color: var(--color-success);
+    }
+
+    .methodology-note {
+      margin-top: var(--space-xl);
+      padding: var(--space-md);
+      background: white;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Email validation messaging */
+    .email-validation-msg {
+      margin-top: var(--space-xs);
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .email-validation-msg.trusted {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .email-validation-msg.blocked {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    /* Live currency preview */
+    .currency-preview {
+      margin-top: var(--space-xs);
+      padding: var(--space-sm);
+      background: #e3f2fd;
+      border-radius: var(--radius-sm);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    /* Info tooltips for result cards */
+    .label-with-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+    }
+
+    .info-tooltip {
+      position: relative;
+      display: inline-flex;
+      cursor: help;
+    }
+
+    .info-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-text-muted);
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-tooltip .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: white;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: normal;
+      width: 220px;
+      text-align: left;
+      z-index: 100;
+      transition: opacity 0.2s;
+      line-height: 1.4;
+    }
+
+    .info-tooltip .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+
+    .info-tooltip:hover .tooltip-text,
+    .info-tooltip:focus .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Accessibility & UX Enhancements */
+    .optional-badge {
+      display: inline-block;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-accent);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+    }
+
+    .field-help {
+      display: block;
+      margin-top: var(--space-xs);
+      color: var(--color-text-muted);
+      font-size: 0.85rem;
+    }
+
+    .form-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-top: var(--space-xs);
+      padding: var(--space-sm);
+      background: #ffebee;
+      color: var(--color-error);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+    }
+
+    .form-input.error,
+    .form-select.error {
+      border-color: var(--color-error);
+      background-color: #fff5f5;
+    }
+
+    /* Focus states for accessibility */
+    .tab-btn:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .upload-area:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-color: var(--color-primary);
+      background: #e3f2fd;
+    }
+
+    /* Results announcement for screen readers */
+    .results-section[aria-live] {
+      transition: opacity 0.3s ease;
+    }
+
+    /* Mobile touch targets */
+    @media (max-width: 768px) {
+      .form-input,
+      .form-select,
+      .btn {
+        min-height: 48px;
+      }
+
+      .tab-btn {
+        padding: var(--space-md) var(--space-lg);
+      }
+
+      .consent-checkbox input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    /* Calculator explainer sections (right column before results) */
+    .calculator-explainer,
+    .upload-explainer {
+      padding: var(--space-xl);
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .benefit-list {
+      list-style: none;
+      padding: 0;
+      margin: var(--space-md) 0;
+    }
+
+    .benefit-list li {
+      padding: var(--space-sm) 0;
+      padding-left: var(--space-lg);
+      position: relative;
+      color: var(--color-text-secondary);
+    }
+
+    .benefit-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--color-success);
+      font-weight: bold;
+    }
+
+    /* Hide explainers on mobile (content is in left column) */
+    @media (max-width: 1024px) {
+      .calculator-explainer,
+      .upload-explainer {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact</a>
+      <a href="/login.html">Log In</a>
+      <a href="/membership.html" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about.html" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+            <a href="/programs.html#peer-review">Peer Review Sessions</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources ▾</a>
+          <div class="nav-dropdown-menu">
+            <a href="/methods-lab/">Methods Lab</a>
+            <a href="/resources.html#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator/">ROI Calculator</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">Public Health ROI Calculator</h1>
+      <p class="page-subtitle">Calculate the mortality reduction and return on investment from county public health spending using peer-reviewed estimates.</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main>
+  <section class="section">
+    <div class="container">
+      <div class="calculator-layout" id="calculator-layout">
+      <div class="calculator-container">
+
+        <!-- Tabs with ARIA -->
+        <div class="calculator-tabs" role="tablist" aria-label="Calculator options">
+          <button class="tab-btn active"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="tab-quick"
+                  id="tab-btn-quick"
+                  data-tab="quick">Quick Estimate</button>
+          <button class="tab-btn"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tab-detailed"
+                  id="tab-btn-detailed"
+                  data-tab="detailed">Detailed Analysis</button>
+        </div>
+
+        <!-- Tab 1: Quick Estimate -->
+        <div id="tab-quick" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-quick">
+          <p style="margin-bottom: var(--space-lg); color: var(--color-text-secondary);">Get instant ROI numbers for presentations or quick reference.</p>
+
+          <form id="quick-form">
+            <div class="form-group">
+              <label class="form-label" for="quick-county">California County</label>
+              <input type="text" id="quick-county" name="county" class="form-input" placeholder="Start typing county name..." autocomplete="off" required>
+              <div id="quick-county-suggestions" class="county-suggestions"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quick-spending">Total Public Health Expenditure (in $1,000s)</label>
+              <input type="number" id="quick-spending" name="spending" class="form-input" placeholder="e.g., 45 = $45,000" min="0" step="1" required>
+              <div id="quick-spending-preview" class="currency-preview" style="display: none;"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+              Calculate ROI
+            </button>
+          </form>
+
+        </div>
+
+        <!-- Tab 2: Detailed Analysis -->
+        <div id="tab-detailed" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-detailed">
+          <h3 style="margin: 0 0 var(--space-sm) 0; color: var(--color-primary);">Get a County ROI Analysis</h3>
+          <p style="margin-bottom: var(--space-md); color: var(--color-text-secondary);">
+            Upload spending data to receive a customized PDF report showing the return on investment for public health programs—including ROI calculations, peer benchmarks, and presentation-ready documentation.
+          </p>
+
+          <!-- Collapsible Report Details -->
+          <details style="margin-bottom: var(--space-lg);">
+            <summary style="cursor: pointer; color: var(--color-primary); font-weight: 600; padding: var(--space-xs) 0;">
+              What's included in the report?
+            </summary>
+            <div style="padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md); margin-top: var(--space-sm); font-size: 0.9rem;">
+              <ul style="margin: 0; padding-left: var(--space-lg); color: var(--color-text-secondary);">
+                <li>Executive summary with key metrics</li>
+                <li>Mortality impact estimates and benefit-cost analysis</li>
+                <li>Peer county benchmarks for context</li>
+                <li>Full methodology documentation (<a href="/tools/lha-calculator/methodology" style="color: var(--color-primary);">Cholette, Patton, &amp; Zarate-Gomez, 2026</a>; extending Brown, 2016)</li>
+              </ul>
+              <p style="margin: var(--space-sm) 0 0 0; color: var(--color-text-muted); font-size: 0.85rem;">
+                Submit multiple fiscal years in a single upload. Report delivered via email within 24 hours.
+              </p>
+            </div>
+          </details>
+
+          <form id="detailed-form">
+            <!-- Combined: Contact + County Information -->
+            <h4 style="margin-bottom: var(--space-md);">Report Details</h4>
+            <div class="spending-grid" style="margin-bottom: var(--space-lg);">
+              <div class="form-group">
+                <label class="form-label" for="detail-name">Name *</label>
+                <input type="text" id="detail-name" name="name" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="detail-title">Title/Role *</label>
+                <input type="text" id="detail-title" name="title" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="detail-county">California County *</label>
+                <select id="detail-county" name="county" class="form-select" required>
+                  <option value="">Select county...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="data-source">Data Source *</label>
+                <select id="data-source" name="data_source" class="form-select" required>
+                  <option value="">Select source...</option>
+                  <option value="budget">Adopted Budget</option>
+                  <option value="cafr">CAFR / Actuals</option>
+                  <option value="internal">Internal Records</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label" for="detail-email">Work Email *</label>
+                <input type="email" id="detail-email" name="email" class="form-input" required>
+                <small id="email-help" style="color: var(--color-text-muted);">Use a .gov, .edu, or official county email address</small>
+                <div id="email-validation-msg" class="email-validation-msg" style="display: none;"></div>
+              </div>
+            </div>
+
+            <!-- Spending Data - Upload in right column, hidden input to track -->
+            <input type="hidden" name="entry_method" value="upload">
+
+            <!-- Research Consent - Condensed -->
+            <div class="consent-checkbox" style="padding: var(--space-md); background: #f5f5f5; border-radius: var(--radius-md); border-left: 3px solid var(--color-primary);">
+              <input type="checkbox" id="research-consent" name="research_consent" value="true" aria-describedby="consent-description">
+              <label for="research-consent" id="consent-description">
+                <strong>Include my data in anonymized public health research</strong>
+                <span style="display: block; font-size: 0.85rem; color: var(--color-text-muted); font-weight: normal;">
+                  <button type="button" class="learn-more-toggle" id="research-toggle" style="background: none; border: none; color: var(--color-primary); cursor: pointer; padding: 0; font-size: inherit; text-decoration: underline;">Learn more</button>
+                </span>
+              </label>
+            </div>
+
+            <!-- Research Details (hidden by default) -->
+            <div id="research-details" style="display: none; margin-top: var(--space-sm); padding: var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.9rem;">
+              <p style="margin: 0 0 var(--space-sm) 0;"><strong>Research Study:</strong> California Public Health Spending Patterns</p>
+              <p style="margin: 0 0 var(--space-sm) 0;"><strong>Principal Investigator:</strong> Victoria Cholette, Center for Applied Public Health Economics</p>
+              <p style="margin: 0 0 var(--space-sm) 0;"><strong>What happens:</strong> Spending figures are combined with other counties into aggregate datasets. County names are never published.</p>
+              <p style="margin: 0;"><strong>Rights:</strong> Withdraw anytime by emailing <a href="mailto:research@caphegroup.org">research@caphegroup.org</a>.</p>
+            </div>
+
+            <!-- Newsletter Signup -->
+            <div class="consent-checkbox" style="margin-top: var(--space-md); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md);">
+              <input type="checkbox" id="newsletter-consent" name="newsletter_consent" value="true">
+              <label for="newsletter-consent">
+                <strong>Join the community for updates</strong>
+                <span style="display: block; font-size: 0.85rem; color: var(--color-text-muted); font-weight: normal;">Public health economics research, new tools, and member events (1-2 emails/month)</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large" style="width: 100%; margin-top: var(--space-lg);">
+              Generate My County's Report
+            </button>
+
+            <div id="detailed-status" class="mt-lg text-center hidden"></div>
+          </form>
+        </div>
+
+      </div><!-- end calculator-container -->
+
+      <!-- Results Column -->
+      <div class="results-column">
+        <!-- Quick Estimate Explainer (shown before calculation) -->
+        <div id="quick-explainer" class="calculator-explainer">
+          <h3 style="margin-top: 0; color: var(--color-primary);">What this calculator estimates</h3>
+          <ul class="benefit-list">
+            <li>Annual lives saved from public health spending</li>
+            <li>Return on investment using federal Value of Statistical Life</li>
+            <li>Cost per life saved vs. federal benchmarks</li>
+          </ul>
+
+          <div class="methodology-preview" style="margin-top: var(--space-lg); padding: var(--space-md); background: white; border-radius: var(--radius-md);">
+            <p style="margin: 0; color: var(--color-text-secondary); font-size: 0.9rem;">
+              Using California county data (2003-2023): each $10 per capita in public health spending is estimated to reduce mortality by 9.16 deaths per 100,000.
+            </p>
+            <p style="margin: var(--space-sm) 0 0 0; font-size: 0.85rem; color: var(--color-text-muted);">
+              Based on <a href="/tools/lha-calculator/methodology" style="color: var(--color-primary);">Cholette, Patton, &amp; Zarate-Gomez (2026)</a>, extending Brown (2016). <a href="/tools/lha-calculator/methodology" style="color: var(--color-primary); font-weight: 600;">Learn more &rarr;</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Detailed Analysis Upload Area (moved from left column) -->
+        <div id="detailed-upload-column" class="upload-explainer" style="display: none;">
+          <h3 style="margin-top: 0; color: var(--color-primary);">Upload Spending Data</h3>
+
+          <div class="upload-area" id="drop-zone" tabindex="0" role="button" aria-label="Upload spending data file. Click or press Enter to browse files.">
+            <img src="/assets/images/icons/icon-file-upload.webp" alt="" style="width: 64px; height: 64px; margin-bottom: var(--space-sm);" aria-hidden="true">
+            <p><strong>Drag and drop CSV file here</strong></p>
+            <p style="color: var(--color-text-muted);">or click to browse</p>
+            <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: var(--space-sm);">Enter amounts in $1,000s (e.g., 5000 = $5,000,000)</p>
+            <input type="file" id="file-input" accept=".csv" style="display: none;" aria-label="Choose file to upload">
+
+            <div class="template-links">
+              <a href="/templates/lha-spending-template.csv" class="template-link" download>
+                <span aria-hidden="true">⬇</span> Download CSV Template
+              </a>
+            </div>
+          </div>
+
+          <div id="file-info" class="file-info" role="status">
+            <span><span aria-hidden="true">✓</span> <span id="file-name"></span></span>
+            <button type="button" class="remove-file" id="remove-file" aria-label="Remove uploaded file">✕</button>
+          </div>
+
+          <div id="file-validation" class="file-info" role="alert" aria-live="polite" style="margin-top: var(--space-sm);"></div>
+        </div>
+
+        <div id="quick-results" class="results-section" role="region" aria-label="ROI calculation results" aria-live="polite">
+          <div class="results-header">
+            <h3>ROI Analysis for <span id="result-county-name"></span></h3>
+            <p>Based on <span id="result-spending-display"></span> in public health spending</p>
+          </div>
+
+          <div class="result-cards" style="grid-template-columns: 1fr 1fr;">
+            <div class="result-card">
+              <div class="label label-with-info">
+                Estimated Lives Saved
+                <span class="info-tooltip" tabindex="0">
+                  <span class="info-icon">?</span>
+                  <span class="tooltip-text">Annual deaths prevented based on mortality reduction from public health spending, scaled to county population.</span>
+                </span>
+              </div>
+              <div class="value highlight" id="result-lives"></div>
+              <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-xs);">per year</div>
+            </div>
+            <div class="result-card">
+              <div class="label label-with-info">
+                Total Social Value
+                <span class="info-tooltip" tabindex="0">
+                  <span class="info-icon">?</span>
+                  <span class="tooltip-text">Monetary value of lives saved using the HHS Value of Statistical Life ($13.6M per life). Represents the economic benefit to society.</span>
+                </span>
+              </div>
+              <div class="value highlight" id="result-social-value"></div>
+              <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-xs);">benefit-cost ratio: <span id="result-bcr"></span></div>
+            </div>
+          </div>
+
+          <div style="margin-top: var(--space-lg); padding: var(--space-md); background: white; border-radius: var(--radius-md); text-align: center;">
+            <span style="color: var(--color-text-muted);">Cost per life saved: </span>
+            <strong id="result-cost-per-life"></strong>
+            <span style="color: var(--color-text-muted); font-size: 0.85rem;"> (vs. $13.6M federal VSL)</span>
+          </div>
+
+          <div class="methodology-note">
+            <strong>Methodology:</strong> Based on Cholette, Patton, &amp; Zarate-Gomez (2026), extending <a href="https://doi.org/10.1016/j.ehb.2013.10.001" style="color: var(--color-primary);" target="_blank" rel="noopener">Brown (2014</a>, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4940648/" style="color: var(--color-primary);" target="_blank" rel="noopener">2016)</a>. The model uses Lewbel IV estimation on California county data (2003&ndash;2023): each $10 per capita in public health spending reduces mortality by 9.16 deaths per 100,000. Social value uses the HHS Value of Statistical Life ($13.6M, 2025). <a href="/tools/lha-calculator/methodology" style="color: var(--color-primary); font-weight: 600;">Full methodology &rarr;</a>
+          </div>
+        </div>
+
+        <div id="detailed-results" class="results-section" role="region" aria-label="Detailed ROI analysis results" aria-live="polite">
+          <!-- Results populated by JS -->
+        </div>
+      </div><!-- end results-column -->
+
+      </div><!-- end calculator-layout -->
+    </div>
+  </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="background: var(--color-bg-alt); padding: var(--space-xl) 0; margin-top: var(--space-2xl);">
+    <div class="container" style="text-align: center; color: var(--color-text-muted);">
+      <p>&copy; 2025 Center for Applied Public Health Economics. All rights reserved.</p>
+      <p style="margin-top: var(--space-sm);">
+        <a href="/privacy" style="color: var(--color-text-muted);">Privacy Policy</a> ·
+        <a href="/terms" style="color: var(--color-text-muted);">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="/src/frontend/js/lha-calculator.js"></script>
+</body>
+</html>

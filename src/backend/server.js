@@ -1931,6 +1931,87 @@ async function supabaseKeepAlive() {
 }
 
 // =============================================
+// EVENTS API
+// =============================================
+
+let eventsData = null;
+const eventsPath = path.join(__dirname, '../../data/events.json');
+
+const loadEvents = () => {
+  try {
+    if (fs.existsSync(eventsPath)) {
+      eventsData = JSON.parse(fs.readFileSync(eventsPath, 'utf8'));
+      console.log(`Loaded ${eventsData.events.length} events`);
+    }
+  } catch (error) {
+    console.error('Error loading events:', error);
+  }
+};
+loadEvents();
+
+app.get('/api/events', (req, res) => {
+  if (!eventsData) {
+    return res.status(500).json({ error: 'Events data not loaded' });
+  }
+
+  const { filter = 'upcoming', type, limit } = req.query;
+
+  // Use Pacific Time for comparison since all events are PT
+  const now = new Date();
+
+  // Parse end time from time string like "12:00 PM - 1:00 PM PT"
+  function getEventEndUTC(event) {
+    const dateStr = event.date; // "2026-02-12"
+    const timeStr = event.time; // "12:00 PM - 1:00 PM PT"
+    const endMatch = timeStr.match(/-\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!endMatch) {
+      // Fallback: end of day PT (midnight = 8:00 AM UTC next day)
+      return new Date(dateStr + 'T23:59:00-08:00');
+    }
+    let hours = parseInt(endMatch[1], 10);
+    const minutes = parseInt(endMatch[2], 10);
+    const ampm = endMatch[3].toUpperCase();
+    if (ampm === 'PM' && hours !== 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    const h = String(hours).padStart(2, '0');
+    const m = String(minutes).padStart(2, '0');
+    // PT is UTC-8 (PST); close enough for event cutoff purposes
+    return new Date(`${dateStr}T${h}:${m}:00-08:00`);
+  }
+
+  let events = eventsData.events.map(event => {
+    const endTime = getEventEndUTC(event);
+    return {
+      ...event,
+      status: endTime > now ? 'upcoming' : 'past'
+    };
+  });
+
+  // Filter by upcoming/past/all
+  if (filter === 'upcoming') {
+    events = events.filter(e => e.status === 'upcoming');
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  } else if (filter === 'past') {
+    events = events.filter(e => e.status === 'past');
+    events.sort((a, b) => new Date(b.date) - new Date(a.date));
+  } else {
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+
+  // Filter by event type
+  if (type) {
+    events = events.filter(e => e.type.toLowerCase() === type.toLowerCase());
+  }
+
+  // Limit results
+  if (limit) {
+    events = events.slice(0, parseInt(limit, 10));
+  }
+
+  res.json({ events });
+});
+
+// =============================================
 // SERVE HTML PAGES
 // =============================================
 

@@ -1809,6 +1809,128 @@ app.get('/api/auth/status', async (req, res) => {
 });
 
 // =============================================
+// HEALTH CHECK & SUPABASE KEEPALIVE
+// =============================================
+
+// Check Supabase connectivity
+async function checkSupabaseHealth() {
+  if (!supabaseUrl) {
+    return { status: 'unconfigured', message: 'SUPABASE_URL not set' };
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+      method: 'HEAD',
+      headers: {
+        'apikey': supabaseAnonKey || '',
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    return {
+      status: response.ok || response.status === 400 ? 'healthy' : 'degraded',
+      httpStatus: response.status,
+    };
+  } catch (error) {
+    return {
+      status: 'down',
+      error: error.cause?.code || error.message,
+    };
+  }
+}
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  const supabaseHealth = await checkSupabaseHealth();
+  const overall = supabaseHealth.status === 'healthy' ? 'ok' : 'degraded';
+
+  const result = {
+    status: overall,
+    timestamp: new Date().toISOString(),
+    services: {
+      server: 'ok',
+      supabase: supabaseHealth,
+      brevo: brevoEmailApi ? 'configured' : 'unconfigured',
+    },
+  };
+
+  res.status(overall === 'ok' ? 200 : 503).json(result);
+});
+
+// Supabase keepalive: ping every 4 hours to prevent free-tier auto-pause
+let lastKeepAliveStatus = 'unknown';
+let keepAliveFailCount = 0;
+
+async function supabaseKeepAlive() {
+  const health = await checkSupabaseHealth();
+  const now = new Date().toISOString();
+
+  if (health.status === 'down') {
+    keepAliveFailCount++;
+    console.error(`[KEEPALIVE] Supabase DOWN (${keepAliveFailCount} consecutive failures) at ${now}: ${health.error}`);
+
+    // Send admin alert on first failure or every 6th failure (once per day at 4h intervals)
+    if (keepAliveFailCount === 1 || keepAliveFailCount % 6 === 0) {
+      try {
+        const adminEmails = (process.env.ADMIN_EMAIL || 'info@caphegroup.org')
+          .split(',')
+          .map(e => e.trim())
+          .filter(e => e);
+        await sendEmail({
+          to: adminEmails,
+          subject: '[CAPHE ALERT] Supabase is unreachable — login is broken',
+          html: `
+            <h3 style="color: #c62828;">Supabase Health Check Failed</h3>
+            <p><strong>Time:</strong> ${now}</p>
+            <p><strong>Error:</strong> ${health.error}</p>
+            <p><strong>Consecutive failures:</strong> ${keepAliveFailCount}</p>
+            <p><strong>Impact:</strong> All login methods (Google, LinkedIn, email/password) are broken.</p>
+            <h4>Action Required</h4>
+            <ol>
+              <li>Go to <a href="https://supabase.com/dashboard">supabase.com/dashboard</a></li>
+              <li>Find the CAPHE project</li>
+              <li>Click <strong>"Restore project"</strong> if paused</li>
+              <li>Wait 2-3 minutes, then verify at <a href="https://www.caphegroup.org/api/health">caphegroup.org/api/health</a></li>
+            </ol>
+          `,
+        });
+        console.log(`[KEEPALIVE] Alert email sent to admin(s)`);
+      } catch (emailErr) {
+        console.error(`[KEEPALIVE] Failed to send alert email:`, emailErr.message);
+      }
+    }
+  } else {
+    if (lastKeepAliveStatus === 'down' && health.status === 'healthy') {
+      console.log(`[KEEPALIVE] Supabase recovered at ${now} after ${keepAliveFailCount} failures`);
+      // Send recovery notification
+      try {
+        const adminEmails = (process.env.ADMIN_EMAIL || 'info@caphegroup.org')
+          .split(',')
+          .map(e => e.trim())
+          .filter(e => e);
+        await sendEmail({
+          to: adminEmails,
+          subject: '[CAPHE] Supabase recovered — login is working again',
+          html: `
+            <h3 style="color: #2e7d32;">Supabase Health Check Recovered</h3>
+            <p><strong>Time:</strong> ${now}</p>
+            <p><strong>Was down for:</strong> ~${keepAliveFailCount * 4} hours (${keepAliveFailCount} check cycles)</p>
+            <p>Login is working again. No action needed.</p>
+          `,
+        });
+      } catch (emailErr) {
+        console.error(`[KEEPALIVE] Failed to send recovery email:`, emailErr.message);
+      }
+      keepAliveFailCount = 0;
+    }
+    if (health.status === 'healthy') {
+      console.log(`[KEEPALIVE] Supabase healthy at ${now}`);
+    }
+  }
+
+  lastKeepAliveStatus = health.status;
+}
+
+// =============================================
 // SERVE HTML PAGES
 // =============================================
 
@@ -1819,4 +1941,12 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`CAPHE website running on port ${PORT}`);
+
+  // Run initial health check 10 seconds after startup
+  setTimeout(() => {
+    supabaseKeepAlive();
+  }, 10000);
+
+  // Then check every 4 hours (prevents Supabase free-tier auto-pause after 7 days)
+  setInterval(supabaseKeepAlive, 4 * 60 * 60 * 1000);
 });

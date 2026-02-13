@@ -253,7 +253,11 @@
       // Check for error from OAuth
       if (params.has('error')) {
         const error = params.get('error');
-        oauthMessage.textContent = `Login failed: ${error}`;
+        let displayMsg = `Login failed: ${error}`;
+        if (error === 'fetch failed' || error.includes('fetch') || error.includes('NetworkError')) {
+          displayMsg = 'Login service is temporarily unavailable. Please try again in a few minutes or contact info@caphegroup.org if the issue persists.';
+        }
+        oauthMessage.textContent = displayMsg;
         oauthMessage.classList.remove('hidden', 'success');
         oauthMessage.classList.add('error');
         // Clear URL params

@@ -109,7 +109,11 @@ async function handleLogin(e) {
     }
   } catch (error) {
     console.error('Login error:', error);
-    statusDiv.innerHTML = `<p style="color: var(--color-error);">${error.message}</p>`;
+    let msg = error.message;
+    if (msg === 'Failed to fetch' || msg.includes('fetch failed') || msg.includes('NetworkError')) {
+      msg = 'Login service is temporarily unavailable. Please try again in a few minutes or contact info@caphegroup.org if the issue persists.';
+    }
+    statusDiv.innerHTML = `<p style="color: var(--color-error);">${msg}</p>`;
     statusDiv.classList.remove('hidden');
   } finally {
     submitBtn.disabled = false;

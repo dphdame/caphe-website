@@ -1954,7 +1954,7 @@ app.get('/api/events', (req, res) => {
     return res.status(500).json({ error: 'Events data not loaded' });
   }
 
-  const { filter = 'upcoming', type, limit } = req.query;
+  const { filter = 'upcoming', type, exclude_type, limit } = req.query;
 
   // Use Pacific Time for comparison since all events are PT
   const now = new Date();
@@ -2001,6 +2001,11 @@ app.get('/api/events', (req, res) => {
   // Filter by event type
   if (type) {
     events = events.filter(e => e.type.toLowerCase() === type.toLowerCase());
+  }
+
+  // Exclude event type
+  if (exclude_type) {
+    events = events.filter(e => e.type.toLowerCase() !== exclude_type.toLowerCase());
   }
 
   // Limit results

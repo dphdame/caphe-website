@@ -105,11 +105,12 @@
     return renderEventCard(event, 'full');
   }
 
-  async function fetchEvents(filter, type, limit) {
+  async function fetchEvents(filter, type, limit, excludeType) {
     const params = new URLSearchParams();
     if (filter) params.set('filter', filter);
     if (type) params.set('type', type);
     if (limit) params.set('limit', limit);
+    if (excludeType) params.set('exclude_type', excludeType);
 
     const response = await fetch('/api/events?' + params.toString());
     if (!response.ok) throw new Error('Failed to fetch events');
@@ -117,12 +118,12 @@
     return data.events;
   }
 
-  async function renderEventList(containerId, filter, type, variant, limit, emptyMessage) {
+  async function renderEventList(containerId, filter, type, variant, limit, emptyMessage, excludeType) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     try {
-      const events = await fetchEvents(filter, type, limit);
+      const events = await fetchEvents(filter, type, limit, excludeType);
 
       if (events.length === 0) {
         container.innerHTML = `

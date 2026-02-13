@@ -80,9 +80,9 @@
     <div class="container">
       <!-- Filter Tabs -->
       <div class="filter-tabs mb-xl">
-        <button class="filter-tab active" data-filter="all">All Events</button>
+        <button class="filter-tab active" data-filter="all">All</button>
         <button class="filter-tab" data-filter="Webinar">Webinars</button>
-        <button class="filter-tab" data-filter="Peer Review">Peer Review</button>
+        <button class="filter-tab" data-filter="Workshop">Workshops</button>
       </div>
 
       <!-- Events Grid -->
@@ -141,8 +141,10 @@
   <script src="/src/frontend/js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Load all past events initially
-      CAPHEEvents.renderEventList('past-events-grid', 'past', null, 'archive', null, 'No past events yet. Check back after upcoming events have taken place.');
+      var excludeType = 'Peer Review';
+
+      // Load past webinars and workshops (exclude peer review)
+      CAPHEEvents.renderEventList('past-events-grid', 'past', null, 'archive', null, 'No past events yet. Check back after upcoming events have taken place.', excludeType);
 
       // Filter tab handling
       document.querySelectorAll('.filter-tab').forEach(function(tab) {
@@ -152,7 +154,7 @@
 
           var filterType = this.getAttribute('data-filter');
           var type = filterType === 'all' ? null : filterType;
-          CAPHEEvents.renderEventList('past-events-grid', 'past', type, 'archive', null, 'No past events in this category.');
+          CAPHEEvents.renderEventList('past-events-grid', 'past', type, 'archive', null, 'No past events in this category.', excludeType);
         });
       });
     });

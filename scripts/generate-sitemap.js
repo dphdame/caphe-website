@@ -31,8 +31,10 @@ const PRIORITY_MAP = {
   'about.html': '0.9',
   'programs.html': '0.9',
   'methods-lab/index.html': '0.9',
+  'tools/lha-calculator/index.html': '0.9',
   'resources.html': '0.8',
   'membership.html': '0.8',
+  'recordings.html': '0.8',
   'default': '0.7',
   'privacy.html': '0.3',
   'terms.html': '0.3'

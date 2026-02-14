@@ -1,5 +1,66 @@
 # CAPHE Website Work Log
 
+## 2026-02-14: GEO Optimization — Schema Markup, OG Tags, AI Crawler Directives
+
+### Completed
+- Ran full GEO audit (score: 28/100) identifying zero schema, zero OG tags, no AI directives
+- Implemented Tier 1+2 GEO recommendations across 62 files
+- Added Organization JSON-LD to homepage and about page
+- Added WebApplication + FAQPage JSON-LD to ROI Calculator
+- Added VideoObject JSON-LD to recordings page
+- Added OG + Twitter Card + og:image meta tags to 12 public pages
+- Created `llms.txt` at site root for AI crawler discoverability
+- Updated `robots.txt` with GPTBot, ClaudeBot, PerplexityBot, Google-Extended directives
+- Added static FAQ section with methodology summary to ROI Calculator page
+- Updated sitemap: ROI Calculator priority 0.7 → 0.9, recordings 0.7 → 0.8
+- Fixed copyright year 2025 → 2026 across 57 files
+- Updated meta descriptions (homepage, about, recordings)
+- Fixed canonical URL on recordings page (removed .html extension)
+- Deployed as v170-v171 to Heroku
+- Validated: Rich Results Test detected schemas, Facebook Debugger confirmed OG tags
+- Investigated tooearlytosay.com DNS error in Rich Results Test — confirmed site is indexed fine via GSC API (tool bug, not real issue)
+
+### Files Modified
+- `public/robots.txt` — AI crawler Allow directives
+- `public/llms.txt` — NEW: AI discoverability file
+- `public/sitemap.xml` — Regenerated with current dates and updated priorities
+- `scripts/generate-sitemap.js` — Added ROI Calculator (0.9) and recordings (0.8) to PRIORITY_MAP
+- `public/index.html` — Organization JSON-LD, OG tags, og:image, updated meta description, "Last updated" date
+- `public/about.html` — Organization JSON-LD, OG tags, og:image, updated meta description
+- `public/tools/lha-calculator/index.html` — WebApplication + FAQPage JSON-LD, OG tags, og:image, static FAQ section, copyright fix
+- `public/recordings.html` — VideoObject JSON-LD, OG tags, og:image, updated meta description, canonical fix, "Last updated" date
+- `public/methods-lab/index.html` — OG tags, og:image, "Last updated" date
+- `public/programs.html` — OG tags, og:image
+- `public/resources.html` — OG tags, og:image
+- `public/membership.html` — OG tags, og:image
+- `public/membership/community.html` — OG tags, og:image
+- `public/membership/professional.html` — OG tags, og:image
+- `public/contact.html` — OG tags, og:image
+- `public/past-events.html` — OG tags, og:image
+- `public/terms.html` — Citation year fix, copyright fix
+- 57 files total — Copyright year 2025 → 2026
+
+### Decisions Made
+- Use `logo.png` (1024x1024) as og:image — not ideal aspect ratio for social preview but better than nothing
+- Skip `fb:app_id` — non-critical, only needed for Facebook Insights analytics
+- Skip Article schema on 37 Methods Lab pages — deferred to next month (separate effort)
+- Skip author attribution — deferred to next quarter
+- Heroku remote is `origin` (not `heroku`) — must use `git push origin master`
+
+### Next Steps
+- Add Article JSON-LD to 37 Methods Lab pages (template-based batch)
+- Add author/expert attribution to Methods Lab articles
+- Add text summaries + speaker credentials to recordings page
+- Add FAQ sections to top 5-10 Methods Lab pages
+- Build external entity signals (Wikipedia, Wikidata) to resolve CAPH/CAPHE name collision
+- Create proper 1200x630 OG social image
+- Monthly monitoring: test 10 AI prompts across ChatGPT, Claude, Perplexity (see audit)
+
+### Extracted Artifacts
+- None this session (geo-optimization-expert agent already exists)
+
+---
+
 ## 2026-01-20: County ROI Report PDF - Style Spec Alignment & Header Redesign
 
 ### Completed

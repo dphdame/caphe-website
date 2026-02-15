@@ -636,14 +636,15 @@ function initMap() {
   });
 }
 
+// Colorblind-safe orange-to-blue scale (safe for protanopia, deuteranopia, tritanopia)
 function getMapColor(rate) {
   if (rate === 0 || rate == null) return '#e0e0e0';
-  if (rate < 25) return '#C62828';
-  if (rate < 30) return '#E53935';
-  if (rate < 35) return '#F57C00';
-  if (rate < 40) return '#FFC107';
-  if (rate < 45) return '#66BB6A';
-  return '#2E7D32';
+  if (rate < 25) return '#7F2704';     // dark brown — critical
+  if (rate < 30) return '#D94701';     // deep orange
+  if (rate < 35) return '#F16913';     // orange
+  if (rate < 40) return '#FEC44F';     // amber/gold
+  if (rate < 45) return '#6BAED6';     // medium blue
+  return '#08519C';                    // dark blue — good
 }
 
 function handleMapClick(event) {

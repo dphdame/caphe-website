@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+
+  <title>Medi-Cal Provider Access Explorer - CAPHE</title>
+  <meta name="description" content="Explore Medi-Cal provider participation rates by county and specialty. Reveals phantom network gaps between registered and actively billing providers across California's 58 counties.">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/access-explorer">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Medi-Cal Provider Access Explorer - CAPHE">
+  <meta property="og:description" content="Explore Medi-Cal provider participation rates by county and specialty. Reveals phantom network gaps between registered and actively billing providers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.caphegroup.org/tools/access-explorer">
+  <meta property="og:site_name" content="CAPHE - California Association of Public Health Economists">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1024">
+  <meta property="og:image:alt" content="CAPHE - California Association of Public Health Economists">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Medi-Cal Provider Access Explorer - CAPHE">
+  <meta name="twitter:description" content="Explore Medi-Cal provider participation rates by county and specialty. Reveals phantom network gaps.">
+  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Override the default calculator-container grid from style.css */
+    .calculator-container {
+      display: block;
+      grid-template-columns: none;
+    }
+
+    /* Two-column layout: controls left, results right */
+    .calculator-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: var(--space-2xl);
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .results-column {
+      position: sticky;
+      top: var(--space-xl);
+    }
+
+    @media (max-width: 1024px) {
+      .calculator-layout {
+        grid-template-columns: 1fr;
+      }
+      .results-column {
+        position: static;
+      }
+    }
+
+    /* Specialty filter tabs */
+    .specialty-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-lg);
+    }
+
+    .specialty-tab {
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      font-family: var(--font-body);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .specialty-tab:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .specialty-tab.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .specialty-tab:focus {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    /* Participation rate cards */
+    .rate-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 768px) {
+      .rate-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .rate-card {
+      background: white;
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-light);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rate-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .rate-card.active {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(0, 65, 165, 0.2);
+    }
+
+    .rate-card .rate-label {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .rate-card .rate-value {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .rate-card .rate-change {
+      font-size: 0.75rem;
+      margin-top: var(--space-xs);
+    }
+
+    .rate-card .rate-sub {
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Color coding for rates */
+    .rate-good { color: var(--color-success); }
+    .rate-warning { color: var(--color-warning); }
+    .rate-critical { color: var(--color-error); }
+
+    .change-negative { color: var(--color-error); }
+    .change-positive { color: var(--color-success); }
+
+    /* Chart containers */
+    .chart-section {
+      background: white;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .chart-section h3 {
+      font-size: var(--font-size-base);
+      margin-bottom: var(--space-md);
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 280px;
+    }
+
+    /* Alerts panel */
+    .alerts-panel {
+      margin-top: var(--space-lg);
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: #fff5f5;
+      border-left: 3px solid var(--color-error);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-sm);
+      font-size: var(--font-size-sm);
+    }
+
+    .alert-item.warning {
+      background: #fff8e1;
+      border-left-color: var(--color-warning);
+    }
+
+    /* Summary stats row */
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .summary-stat {
+      text-align: center;
+    }
+
+    .summary-stat .stat-number {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .summary-stat .stat-desc {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Download button */
+    .download-row {
+      display: flex;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    /* Initial state placeholder */
+    .results-placeholder {
+      padding: var(--space-2xl);
+      text-align: center;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+
+    .results-placeholder h3 {
+      color: var(--color-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .results-placeholder p {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Phantom gap bar */
+    .phantom-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--color-bg-alt);
+      margin-top: var(--space-xs);
+    }
+
+    .phantom-bar-active {
+      background: var(--color-success);
+      transition: width 0.4s ease;
+    }
+
+    .phantom-bar-phantom {
+      background: var(--color-error);
+      opacity: 0.3;
+      transition: width 0.4s ease;
+    }
+
+    /* Trend chart annotation styling */
+    .trend-annotations {
+      display: flex;
+      gap: var(--space-lg);
+      justify-content: center;
+      margin-top: var(--space-sm);
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    .trend-annotations span::before {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 2px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* Hidden utility */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Mobile touch targets */
+    @media (max-width: 768px) {
+      .form-input,
+      .form-select,
+      .btn {
+        min-height: 48px;
+      }
+      .specialty-tab {
+        padding: var(--space-md);
+      }
+    }
+
+    /* Affordability Context section */
+    .cost-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .cost-card {
+      background: white;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+    }
+
+    .cost-card .cost-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      line-height: 1.2;
+    }
+
+    .cost-card .cost-label {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    .cost-card .cost-weight {
+      font-size: 0.7rem;
+      color: var(--color-text-light);
+      margin-top: 2px;
+    }
+
+    /* Cost color coding (inverted: high cost = red for providers) */
+    .cost-high { color: #C62828; }
+    .cost-medium { color: #F57C00; }
+    .cost-low { color: #2E7D32; }
+
+    .insight-callout {
+      background: #FFF3E0;
+      border-left: 4px solid #F57C00;
+      padding: var(--space-md) var(--space-lg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: var(--space-lg);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+
+    .insight-callout strong {
+      color: #E65100;
+    }
+
+    .medicare-box {
+      background: #f0f4f8;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      margin-bottom: var(--space-lg);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+
+    .medicare-box strong {
+      color: var(--color-primary);
+    }
+
+    .section-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-lg);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .cost-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+
+  <!-- WebApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CAPHE Medi-Cal Provider Access Explorer",
+    "url": "https://www.caphegroup.org/tools/access-explorer",
+    "description": "Free interactive tool revealing phantom network gaps in Medi-Cal provider access across California's 58 counties. Compares registered providers against those actively billing Medicaid by specialty, with monthly trends from 2018-2024.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Web browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "CAPHE - California Association of Public Health Economists",
+      "url": "https://www.caphegroup.org"
+    },
+    "datePublished": "2026-02-15",
+    "dateModified": "2026-02-15",
+    "featureList": [
+      "County-level Medi-Cal provider participation rates",
+      "Phantom network gap analysis by specialty",
+      "Monthly trend data from 2018-2024",
+      "Six specialty categories including behavioral health",
+      "County-level practice operating cost comparison using GPCI-aligned weights (BLS wages, HUD rents)",
+      "Effective reimbursement index showing purchasing power of flat Medi-Cal payments",
+      "CSV data download",
+      "Based on NPPES and HHS Medicaid spending data"
+    ]
+  }
+  </script>
+  <!-- FAQPage Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a phantom network in Medi-Cal?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). Research by Zhu et al. (2023, Health Affairs) found that 58% of listed providers in Oregon Medicaid were phantom providers who did not actually serve Medicaid patients."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What data sources does the Access Explorer use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The tool cross-references two federal datasets: the National Plan and Provider Enumeration System (NPPES) for registered providers, and HHS Medicaid Provider Spending data for providers actively billing Medicaid. This methodology follows Zhu et al. (2023) and is consistent with the CMS network adequacy rules finalized for July 2025."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which specialties are covered in the Access Explorer?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy & DME. Each category maps to specific HCPCS and taxonomy codes. Behavioral health typically shows the highest phantom rates statewide."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How often is the data updated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The Access Explorer data is updated quarterly as new HHS Medicaid spending data becomes available. The current dataset covers January 2018 through December 2024. NPPES data is refreshed monthly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does cost of living affect Medi-Cal provider participation?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Medi-Cal reimbursement rates are set statewide with no geographic adjustment, unlike Medicare which adjusts payments through the Geographic Practice Cost Index (GPCI). In high-cost counties, the same Medi-Cal payment buys less labor, rent, and services. The composite cost index uses GPCI-aligned weights — 56% healthcare employee wages, 30% facility rent, 14% purchased services — to show how practice operating costs vary across California's 58 counties. The Effective Reimbursement Index translates this into purchasing power: how much a flat dollar payment is worth in each county."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact.html">Contact</a>
+      <a href="/login.html">Log In</a>
+      <a href="/membership.html" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about.html" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs.html" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs.html#webinars">Webinars</a>
+            <a href="/programs.html#workshops">Workshops</a>
+            <a href="/programs.html#working-groups">Working Groups</a>
+            <a href="/programs.html#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources.html" class="nav-link">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/methods-lab/">Methods Lab</a>
+            <a href="/resources.html#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator/">ROI Calculator</a>
+            <a href="/tools/access-explorer/">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">Medi-Cal Provider Access Explorer</h1>
+      <p class="page-subtitle">Revealing the gap between listed and active Medi-Cal providers across California counties.</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main>
+  <section class="section">
+    <div class="container">
+      <div class="calculator-layout" id="calculator-layout">
+
+      <!-- Left Column: Controls -->
+      <div class="calculator-container">
+        <div class="form-group">
+          <label class="form-label" for="county-input">Select a California County</label>
+          <input type="text" id="county-input" class="form-input" placeholder="Start typing county name..." autocomplete="off">
+          <div id="county-suggestions" class="county-suggestions"></div>
+        </div>
+
+        <!-- Specialty filter tabs -->
+        <div id="specialty-section" class="hidden">
+          <label class="form-label">Filter by Specialty</label>
+          <div class="specialty-tabs" id="specialty-tabs" role="tablist" aria-label="Specialty filter">
+            <button class="specialty-tab active" role="tab" aria-selected="true" data-specialty="all">All</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="primary_care">Primary Care</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="behavioral_health">Behavioral Health</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="dental">Dental</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="obgyn">OB/GYN</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="other_surgical">Other Surgical</button>
+            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="pharmacy_dme">Pharmacy &amp; DME</button>
+          </div>
+
+          <!-- Alerts -->
+          <div id="alerts-panel" class="alerts-panel"></div>
+
+          <!-- Download -->
+          <div class="download-row" id="download-row" style="margin-top: var(--space-lg);">
+            <button class="btn btn-outline-dark btn-sm" id="download-csv" aria-label="Download county data as CSV">
+              Download CSV
+            </button>
+            <a href="/tools/access-explorer/methodology.html" class="btn btn-link btn-sm">Methodology</a>
+          </div>
+        </div>
+      </div><!-- end calculator-container -->
+
+      <!-- Right Column: Results -->
+      <div class="results-column">
+        <!-- Placeholder (shown before county selection) -->
+        <div id="results-placeholder" class="results-placeholder">
+          <h3>Explore Provider Access</h3>
+          <p>Select a county to see Medi-Cal provider participation rates, phantom network gaps, and monthly trends by specialty.</p>
+          <p style="margin-top: var(--space-md); font-size: 0.8rem; color: var(--color-text-light);">Data covers all 58 California counties, January 2018 through December 2024.</p>
+        </div>
+
+        <!-- Results (hidden until county selected) -->
+        <div id="results-panel" class="hidden" role="region" aria-label="County provider access data" aria-live="polite">
+          <!-- Summary stats -->
+          <div id="summary-stats" class="summary-stats">
+            <div class="summary-stat">
+              <div class="stat-number" id="stat-registered">--</div>
+              <div class="stat-desc">Registered Providers</div>
+            </div>
+            <div class="summary-stat">
+              <div class="stat-number" id="stat-active">--</div>
+              <div class="stat-desc">Active (Billing)</div>
+            </div>
+            <div class="summary-stat">
+              <div class="stat-number" id="stat-rate">--</div>
+              <div class="stat-desc">Participation Rate</div>
+            </div>
+          </div>
+
+          <!-- Participation rate cards -->
+          <div id="rate-cards" class="rate-cards"></div>
+
+          <!-- Bar chart: registered vs active -->
+          <div class="chart-section">
+            <h3>Registered vs. Active Providers by Specialty</h3>
+            <div class="chart-wrapper">
+              <canvas id="bar-chart" aria-label="Horizontal bar chart comparing registered and active providers by specialty"></canvas>
+            </div>
+          </div>
+
+          <!-- Trend chart -->
+          <div class="chart-section">
+            <h3 id="trend-title">Monthly Participation Index (Jan 2019 = 100)</h3>
+            <div class="chart-wrapper">
+              <canvas id="trend-chart" aria-label="Line chart showing monthly participation trends from 2018 to 2024"></canvas>
+            </div>
+            <div class="trend-annotations">
+              <span style="color: var(--color-error);">COVID-19 onset (Mar 2020)</span>
+              <span style="color: var(--color-warning);">PHE unwinding (Apr 2023)</span>
+            </div>
+          </div>
+
+          <!-- Affordability Context (shown only when affordability data exists) -->
+          <div id="affordability-section" class="hidden">
+            <div class="chart-section">
+              <h3>Affordability Context</h3>
+              <p class="section-description">
+                How local healthcare operating costs compare to the state average, and what that
+                means for Medi-Cal provider participation. Composite cost index weights follow
+                the Medicare Practice Expense GPCI structure: 56% employee wages, 30% facility
+                rent, 14% purchased services.
+              </p>
+
+              <!-- Cost Index Cards -->
+              <div id="cost-cards" class="cost-cards"></div>
+
+              <!-- Key Insight Callout -->
+              <div id="cost-insight" class="insight-callout hidden"></div>
+
+              <!-- Medicare Comparison -->
+              <div id="medicare-comparison" class="medicare-box hidden"></div>
+            </div>
+
+            <!-- Scatter Plot -->
+            <div class="chart-section">
+              <h3 id="scatter-title">Participation Rate vs. Practice Operating Costs (All CA Counties)</h3>
+              <div class="chart-wrapper">
+                <canvas id="scatter-chart" aria-label="Scatter plot showing the relationship between practice operating costs and Medicaid participation rates across California counties"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end results-column -->
+
+      </div><!-- end calculator-layout -->
+    </div>
+  </section>
+
+  <!-- Static FAQ + methodology (visible to AI crawlers) -->
+  <section style="max-width: 800px; margin: var(--space-2xl) auto; padding: 0 var(--space-lg);">
+    <h2 style="font-size: 1.5rem; margin-bottom: var(--space-md);">About the Access Explorer</h2>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">The CAPHE Medi-Cal Provider Access Explorer is a free interactive tool that reveals phantom network gaps in Medi-Cal provider access across California's 58 counties. By cross-referencing the National Plan and Provider Enumeration System (NPPES) with HHS Medicaid Provider Spending data, the tool identifies the difference between providers listed in directories and those actually billing Medicaid.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Phantom networks are a documented barrier to healthcare access for Medicaid enrollees. Zhu et al. (2023, Health Affairs) found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients. The HHS Office of Inspector General (OIG-OEI-02-23-00540, 2025) found that more than one-third of Medicaid-listed physicians did not provide care to Medicaid patients in 2023. CMS finalized network adequacy rules effective July 2025 (CMS-2439-F) requiring states to verify provider directories against actual utilization.</p>
+
+    <h3 style="font-size: 1.25rem; margin-bottom: var(--space-sm);">Frequently Asked Questions</h3>
+
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What is a phantom network in Medi-Cal?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). These phantom providers appear in directories but are not accessible to enrollees seeking care.</p>
+
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What data sources does the Access Explorer use?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool cross-references two federal datasets: the National Plan and Provider Enumeration System (NPPES) for registered providers, and HHS Medicaid Provider Spending data for providers actively billing Medicaid. This approach follows the methodology established by Zhu et al. (2023) and is consistent with CMS network adequacy verification requirements.</p>
+
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Which specialties are covered?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy &amp; DME. Behavioral health typically shows the highest phantom rates statewide, consistent with the findings of Zhu et al. (2023).</p>
+
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">How often is the data updated?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Data is updated quarterly as new HHS Medicaid spending data becomes available. The current dataset covers January 2018 through December 2024.</p>
+
+    <p style="color: var(--color-text-muted); font-size: 0.875rem; margin-top: var(--space-lg);">Last updated: February 2026</p>
+  </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="background: var(--color-bg-alt); padding: var(--space-xl) 0; margin-top: var(--space-2xl);">
+    <div class="container" style="text-align: center; color: var(--color-text-muted);">
+      <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+      <p style="margin-top: var(--space-sm);">
+        <a href="/privacy" style="color: var(--color-text-muted);">Privacy Policy</a> &middot;
+        <a href="/terms" style="color: var(--color-text-muted);">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="/src/frontend/js/main.js"></script>
+  <script src="/src/frontend/js/access-explorer.js"></script>
+</body>
+</html>

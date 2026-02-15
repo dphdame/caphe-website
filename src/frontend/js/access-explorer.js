@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountyAutocomplete();
   initSpecialtyTabs();
   initDownload();
+  initMapInteraction();
   loadSummaryData();
 });
 
@@ -131,23 +132,27 @@ async function loadCountyData(countyName) {
     document.querySelector('.specialty-tab[data-specialty="all"]').classList.add('active');
     document.querySelector('.specialty-tab[data-specialty="all"]').setAttribute('aria-selected', 'true');
 
-    // Show results
-    document.getElementById('results-placeholder').classList.add('hidden');
+    // Show results, hide map
+    document.getElementById('map-placeholder').classList.add('hidden');
     document.getElementById('results-panel').classList.remove('hidden');
     document.getElementById('specialty-section').classList.remove('hidden');
 
     renderResults();
 
   } catch (error) {
-    document.getElementById('results-placeholder').classList.remove('hidden');
+    document.getElementById('map-placeholder').classList.remove('hidden');
     document.getElementById('results-panel').classList.add('hidden');
 
-    const placeholder = document.getElementById('results-placeholder');
-    placeholder.innerHTML = `
-      <h3 style="color: var(--color-warning);">Data Not Yet Available</h3>
-      <p>${countyName} County data is not yet loaded. The full dataset covering all 58 counties will be available after the data processing pipeline runs.</p>
-      <p style="margin-top: var(--space-sm); font-size: 0.8rem;">Currently available: Los Angeles, Fresno, Imperial counties (demo data).</p>
-    `;
+    // Show error message above the map
+    const instructions = document.querySelector('.map-instructions');
+    if (instructions) {
+      instructions.textContent = countyName + ' County data is not yet available. Select another county.';
+      instructions.style.color = 'var(--color-warning)';
+      setTimeout(() => {
+        instructions.textContent = 'Click a county on the map or type a name above to explore provider access data.';
+        instructions.style.color = '';
+      }, 4000);
+    }
   }
 }
 
@@ -595,16 +600,112 @@ function getRateClass(rate) {
   return 'rate-critical';
 }
 
-// ============ Summary Data (for scatter plot) ============
+// ============ County Heatmap ============
+
+function initMapInteraction() {
+  const mapWrapper = document.getElementById('map-wrapper');
+  if (!mapWrapper) return;
+
+  // Click handler (delegated)
+  mapWrapper.addEventListener('click', handleMapClick);
+
+  // Hover handlers for tooltip
+  mapWrapper.addEventListener('mousemove', handleMapHover);
+  mapWrapper.addEventListener('mouseleave', () => {
+    const tooltip = document.getElementById('map-tooltip');
+    if (tooltip) tooltip.classList.add('hidden');
+  });
+
+  // "Back to map" button
+  const showMapBtn = document.getElementById('show-map-btn');
+  if (showMapBtn) {
+    showMapBtn.addEventListener('click', showMap);
+  }
+}
+
+function initMap() {
+  if (!summaryData || !summaryData.counties) return;
+
+  const counties = summaryData.counties;
+  Object.entries(counties).forEach(([name, data]) => {
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+    const path = document.getElementById('county-' + slug);
+    if (path) {
+      path.style.fill = getMapColor(data.participationRate);
+    }
+  });
+}
+
+function getMapColor(rate) {
+  if (rate === 0 || rate == null) return '#e0e0e0';
+  if (rate < 25) return '#C62828';
+  if (rate < 30) return '#E53935';
+  if (rate < 35) return '#F57C00';
+  if (rate < 40) return '#FFC107';
+  if (rate < 45) return '#66BB6A';
+  return '#2E7D32';
+}
+
+function handleMapClick(event) {
+  const path = event.target.closest('path');
+  if (!path) return;
+
+  const countyName = path.dataset.county;
+  if (!countyName) return;
+
+  // Set input and load data
+  document.getElementById('county-input').value = countyName + ' County';
+  loadCountyData(countyName);
+
+  // Highlight selected county
+  document.querySelectorAll('#map-wrapper path.selected').forEach(p => p.classList.remove('selected'));
+  path.classList.add('selected');
+}
+
+function handleMapHover(event) {
+  const tooltip = document.getElementById('map-tooltip');
+  if (!tooltip) return;
+
+  const path = event.target.closest('path');
+  if (!path || !path.dataset.county) {
+    tooltip.classList.add('hidden');
+    return;
+  }
+
+  const name = path.dataset.county;
+  const rate = summaryData?.counties[name]?.participationRate;
+  tooltip.textContent = name + ': ' + (rate != null ? rate + '%' : 'No data');
+
+  // Position relative to the map container
+  const container = document.querySelector('.map-container');
+  const rect = container.getBoundingClientRect();
+  tooltip.style.left = (event.clientX - rect.left + 12) + 'px';
+  tooltip.style.top = (event.clientY - rect.top - 30) + 'px';
+  tooltip.classList.remove('hidden');
+}
+
+function showMap() {
+  document.getElementById('map-placeholder').classList.remove('hidden');
+  document.getElementById('results-panel').classList.add('hidden');
+  document.getElementById('specialty-section').classList.add('hidden');
+
+  // Clear input and selection
+  document.getElementById('county-input').value = '';
+  document.querySelectorAll('#map-wrapper path.selected').forEach(p => p.classList.remove('selected'));
+  currentCountyData = null;
+}
+
+// ============ Summary Data (for scatter plot + map) ============
 
 async function loadSummaryData() {
   try {
     const response = await fetch('/data/access-explorer/_summary.json');
     if (response.ok) {
       summaryData = await response.json();
+      initMap();
     }
   } catch (e) {
-    // Summary data is optional; scatter plot won't render without it
+    // Summary data is optional; scatter plot and map won't render without it
   }
 }
 

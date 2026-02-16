@@ -14,11 +14,11 @@
   </script>
 
   <title>Medi-Cal Provider Access Explorer - CAPHE</title>
-  <meta name="description" content="Medi-Cal provider participation rates by county and specialty. Measures phantom network gaps between directory-listed and actively billing providers across California's 58 counties.">
+  <meta name="description" content="Medi-Cal provider participation rates by county and specialty. Compares the total licensed provider pool against those actively billing Medicaid across California's 58 counties, with practice cost overlays showing how flat-rate reimbursement affects provider participation.">
   <link rel="canonical" href="https://www.caphegroup.org/tools/access-explorer">
   <!-- Open Graph -->
   <meta property="og:title" content="Medi-Cal Provider Access Explorer - CAPHE">
-  <meta property="og:description" content="Medi-Cal provider participation rates by county and specialty. Measures phantom network gaps between directory-listed and actively billing providers.">
+  <meta property="og:description" content="Medi-Cal provider participation rates by county and specialty. How flat statewide reimbursement and local operating costs shape the provider pool across California.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.caphegroup.org/tools/access-explorer">
   <meta property="og:site_name" content="CAPHE - California Association of Public Health Economists">
@@ -30,7 +30,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Medi-Cal Provider Access Explorer - CAPHE">
-  <meta name="twitter:description" content="Medi-Cal provider participation rates by county and specialty. Measures phantom network gaps across California's 58 counties.">
+  <meta name="twitter:description" content="Medi-Cal provider participation rates by county and specialty. How flat statewide reimbursement shapes the provider pool across California.">
   <link rel="stylesheet" href="/src/frontend/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -592,7 +592,7 @@
     "@type": "WebApplication",
     "name": "CAPHE Medi-Cal Provider Access Explorer",
     "url": "https://www.caphegroup.org/tools/access-explorer",
-    "description": "Interactive tool measuring phantom network gaps in Medi-Cal provider access across California's 58 counties. Compares directory-listed providers against those actively billing Medicaid by specialty, with monthly trends from 2018 to 2024.",
+    "description": "Interactive tool measuring Medi-Cal provider participation rates across California's 58 counties. Compares the total licensed provider pool (NPPES) against those actively billing Medicaid (HHS claims data) by specialty, with practice cost overlays and monthly trends from 2018 to 2024.",
     "applicationCategory": "HealthApplication",
     "operatingSystem": "Web browser",
     "offers": {
@@ -609,7 +609,7 @@
     "dateModified": "2026-02-15",
     "featureList": [
       "County-level Medi-Cal provider participation rates",
-      "Phantom network gap analysis by specialty",
+      "Participation rate analysis by specialty",
       "Monthly trend data from 2018-2024",
       "Six specialty categories including behavioral health",
       "County-level practice operating cost comparison using GPCI-aligned weights (BLS wages, HUD rents)",
@@ -635,10 +635,10 @@
       },
       {
         "@type": "Question",
-        "name": "What is a phantom network in Medi-Cal?",
+        "name": "What is the difference between participation rates and phantom networks?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). Research by Zhu et al. (2023, Health Affairs) found that 58% of listed providers in Oregon Medicaid were phantom providers who did not actually serve Medicaid patients."
+          "text": "This tool measures Medicaid participation rates: the share of all licensed providers in a county (from NPPES) who actively bill Medicaid. This is distinct from phantom networks, where providers are specifically listed in a Medicaid managed care plan directory but do not actually see patients. Zhu et al. (2023, Health Affairs) measured phantom networks using actual plan directories and found 58% of listed providers were phantom. Our measure is broader — a provider in NPPES who does not bill Medicaid may never have opted into the program — but participation rates still reveal how economically attractive Medicaid reimbursement is in each local market."
         }
       },
       {
@@ -646,7 +646,7 @@
         "name": "What data sources does the Access Explorer use?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The tool cross-references two federal datasets: the National Plan and Provider Enumeration System (NPPES) for registered providers, and HHS Medicaid Provider Spending data for providers actively billing Medicaid. This methodology follows Zhu et al. (2023) and is consistent with the CMS network adequacy rules finalized for July 2025."
+          "text": "The tool cross-references two federal datasets: the National Plan and Provider Enumeration System (NPPES) for all licensed providers, and HHS Medicaid Provider Spending data (released February 2026 at opendata.hhs.gov) for providers actively billing Medicaid. NPPES captures the full licensed provider pool, not Medicaid-specific directories, so the resulting participation rate shows what share of available providers choose to participate in the program."
         }
       },
       {
@@ -654,7 +654,7 @@
         "name": "Which specialties are covered in the Access Explorer?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy & DME. Each category maps to specific HCPCS and taxonomy codes. Behavioral health typically shows the highest phantom rates statewide."
+          "text": "The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy & DME. Each category maps to specific HCPCS and taxonomy codes. Behavioral health typically shows the lowest Medicaid participation rates statewide."
         }
       },
       {
@@ -924,25 +924,25 @@
 
     <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">The economic problem</h3>
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medicare adjusts physician payments by geography through the Geographic Practice Cost Index (GPCI), recognizing that it costs more to run a practice in San Francisco than in Modoc County. Medi-Cal does not. It pays flat statewide rates regardless of local wages, rents, or supply costs. The result is a predictable geographic pattern: the same Medi-Cal payment buys less provider time in high-cost counties, and providers in those counties are more likely to opt out of the program entirely.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">This tool quantifies that pattern. For each county, it shows the gap between providers listed in Medi-Cal directories and those actually billing Medicaid, and it overlays a composite practice cost index (using GPCI-aligned weights: 56% healthcare employee wages, 30% facility rent, 14% purchased services) to show how flat-rate reimbursement translates into different effective payment levels across the state.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">This tool quantifies that pattern. For each county, it compares the total pool of licensed providers (from <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES</a>) against those actively billing Medicaid (from the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener">HHS Medicaid Provider Spending dataset</a> released February 2026), and overlays a composite practice cost index (GPCI-aligned weights: 56% healthcare employee wages, 30% facility rent, 14% purchased services) to show how flat-rate reimbursement translates into different effective payment levels across the state.</p>
 
-    <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">Phantom networks in the literature</h3>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;"><a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients, with 67.4% of mental health prescribers classified as phantom. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians nationally did not provide care to enrollees in 2023.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify provider directories against actual utilization. This tool applies that verification methodology to California using two federal datasets: <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES</a> for directory listings and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid spending data</a> for active billing.</p>
+    <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">What this measures (and what it doesn't)</h3>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The participation rate here shows what share of all licensed providers in a county choose to bill Medicaid. This is distinct from phantom network measurement, where the denominator is providers specifically listed in a managed care plan's directory. <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> measured phantom networks using actual plan directories and found 58.2% of listed providers in Oregon Medicaid were phantom. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians nationally did not provide care to enrollees.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Our measure is broader: a provider in NPPES who does not bill Medicaid may never have opted into the program. But participation rates still reveal how economically attractive Medicaid reimbursement is in each local market, and the geographic pattern, driven by the mismatch between flat rates and variable costs, is the same one that produces phantom networks downstream. CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify directories against actual utilization.</p>
 
     <h3 style="font-size: 1.25rem; margin-bottom: var(--space-sm);">Frequently Asked Questions</h3>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Why is this an economics problem?</h4>
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medi-Cal reimbursement is set statewide with no geographic adjustment for local operating costs. Medicare recognized this problem decades ago and adjusts payments through the GPCI. Without a similar adjustment, Medi-Cal's flat rates create an implicit penalty for practicing in high-cost areas: a provider in San Francisco faces operating costs roughly 30% above the state average but receives the same payment as a provider in a low-cost rural county. Provider participation rates reflect this mismatch.</p>
 
-    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What is a phantom network in Medi-Cal?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). These phantom providers appear in directories but are not accessible to enrollees seeking care.</p>
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Is this the same as a phantom network?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Not exactly. A phantom network refers to providers listed in a managed care plan's directory who do not actually see patients. This tool measures something broader: the share of all licensed providers (from NPPES) who actively bill Medicaid. A provider who does not bill Medicaid may never have claimed to accept it. But low participation rates and phantom networks share the same economic root cause: reimbursement that does not cover local practice costs. The geographic pattern this tool reveals is a leading indicator of where phantom networks are likely to form.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What data sources does the Access Explorer use?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool cross-references two federal datasets: the <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">National Plan and Provider Enumeration System (NPPES)</a> for registered providers, and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid Provider Spending data</a> for providers actively billing Medicaid. This approach follows the methodology established by <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023)</a> and is consistent with CMS network adequacy verification requirements.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool cross-references two federal datasets: the <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">National Plan and Provider Enumeration System (NPPES)</a> for all licensed providers, and the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener">HHS Medicaid Provider Spending dataset</a> (released February 2026) for providers actively billing Medicaid. NPPES captures the full licensed provider pool, not Medicaid-specific directories, so the participation rate shows what share of available providers choose to participate.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Which specialties are covered?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy &amp; DME. Behavioral health typically shows the highest phantom rates statewide, consistent with the findings of <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023)</a>.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy &amp; DME. Behavioral health typically shows the lowest Medicaid participation rates statewide, consistent with the findings of <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023)</a>.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">How often is the data updated?</h4>
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">Data is updated quarterly as new <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid spending data</a> becomes available. The current dataset covers January 2018 through December 2024. <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES data</a> is refreshed monthly.</p>

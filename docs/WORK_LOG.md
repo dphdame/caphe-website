@@ -1,5 +1,36 @@
 # CAPHE Website Work Log
 
+## 2026-02-15: Access Explorer — Participation Rate Reframe + LinkedIn Post
+
+### Completed
+- Reframed entire Access Explorer from "phantom network detection" to "Medicaid participation rate measurement"
+- Key methodological distinction: NPPES = all licensed providers (full pool), not Medicaid directory listings. A provider absent from Medicaid billing may never have opted in. Phantom networks (Zhu et al. 2023) use plan directory listings as the denominator.
+- Updated meta descriptions (3 tags), WebApplication schema, FAQPage schema (3 entries), About section (2 subsections rewritten), 2 FAQ entries
+- Fixed specialty FAQ: "highest phantom rates" → "lowest Medicaid participation rates"
+- Fixed duplicate footer (two copyright lines → one clean line)
+- Drafted and style-passed LinkedIn post (117 words) tied to Feb 14 HHS/DOGE Medicaid data release (10.3 GB, opendata.hhs.gov)
+- Deployed v178 (reframe) and v179 (footer fix) to Heroku
+
+### Files Modified
+- `public/tools/access-explorer/index.html` — Meta descriptions, schema, About section, FAQ entries, specialty FAQ, footer dedup
+
+### Decisions Made
+- Tool measures participation rates, not phantom networks — NPPES captures all licensed providers, not Medicaid-specific directories
+- Kept phantom network discussion in About section as context ("What this measures and what it doesn't") rather than removing entirely
+- Removed #PhantomNetworks from LinkedIn hashtags
+- HHS data release (Feb 14, 2026) used as LinkedIn post hook
+
+### Next Steps
+- Post LinkedIn draft (at /tmp/linkedin-access-explorer-v2.md)
+- Continue HRR Market Area view implementation (plan at ~/.claude/plans/rustling-napping-lemon.md)
+- Build county-to-HRR crosswalk (Phase 1 of plan)
+- Add QI checks script (Phase 4 of plan)
+
+### Extracted Artifacts
+- None this session
+
+---
+
 ## 2026-02-14: GEO Optimization — Schema Markup, OG Tags, AI Crawler Directives
 
 ### Completed

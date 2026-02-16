@@ -627,6 +627,14 @@
     "mainEntity": [
       {
         "@type": "Question",
+        "name": "Why is Medi-Cal provider access an economics problem?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Medi-Cal reimbursement is set statewide with no geographic adjustment for local operating costs. Medicare adjusts payments through the Geographic Practice Cost Index (GPCI), but Medi-Cal does not. This means a provider in San Francisco faces operating costs roughly 30% above the state average but receives the same payment as a provider in a low-cost rural county. The Access Explorer overlays a composite practice cost index (56% healthcare wages, 30% facility rent, 14% purchased services) to show how flat-rate reimbursement translates into different effective payment levels, and how that maps to provider participation rates."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "What is a phantom network in Medi-Cal?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -718,7 +726,7 @@
   <section class="page-header">
     <div class="container">
       <h1 class="page-title">Medi-Cal Provider Access Explorer</h1>
-      <p class="page-subtitle">Research shows over half of directory-listed Medicaid providers do not see patients. This tool measures the gap, county by county.</p>
+      <p class="page-subtitle">Medi-Cal pays flat statewide rates with no geographic cost adjustment. This tool measures how that pricing structure shapes provider participation across California's 58 counties.</p>
     </div>
   </section>
 
@@ -913,11 +921,19 @@
   <!-- Static FAQ + methodology (visible to AI crawlers) -->
   <section style="max-width: 800px; margin: var(--space-2xl) auto; padding: 0 var(--space-lg);">
     <h2 style="font-size: 1.5rem; margin-bottom: var(--space-md);">About the Access Explorer</h2>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">The CAPHE Medi-Cal Provider Access Explorer measures phantom network gaps across California's 58 counties by cross-referencing two federal datasets: the <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">National Plan and Provider Enumeration System (NPPES)</a> for directory-listed providers, and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid Provider Spending data</a> for providers actively billing Medicaid.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Phantom networks are a documented barrier to healthcare access. <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians did not provide care to enrollees in 2023.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify provider directories against actual utilization, making tools like this directly relevant to compliance monitoring.</p>
+
+    <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">The economic problem</h3>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medicare adjusts physician payments by geography through the Geographic Practice Cost Index (GPCI), recognizing that it costs more to run a practice in San Francisco than in Modoc County. Medi-Cal does not. It pays flat statewide rates regardless of local wages, rents, or supply costs. The result is a predictable geographic pattern: the same Medi-Cal payment buys less provider time in high-cost counties, and providers in those counties are more likely to opt out of the program entirely.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">This tool quantifies that pattern. For each county, it shows the gap between providers listed in Medi-Cal directories and those actually billing Medicaid, and it overlays a composite practice cost index (using GPCI-aligned weights: 56% healthcare employee wages, 30% facility rent, 14% purchased services) to show how flat-rate reimbursement translates into different effective payment levels across the state.</p>
+
+    <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">Phantom networks in the literature</h3>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;"><a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients, with 67.4% of mental health prescribers classified as phantom. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians nationally did not provide care to enrollees in 2023.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify provider directories against actual utilization. This tool applies that verification methodology to California using two federal datasets: <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES</a> for directory listings and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid spending data</a> for active billing.</p>
 
     <h3 style="font-size: 1.25rem; margin-bottom: var(--space-sm);">Frequently Asked Questions</h3>
+
+    <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Why is this an economics problem?</h4>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medi-Cal reimbursement is set statewide with no geographic adjustment for local operating costs. Medicare recognized this problem decades ago and adjusts payments through the GPCI. Without a similar adjustment, Medi-Cal's flat rates create an implicit penalty for practicing in high-cost areas: a provider in San Francisco faces operating costs roughly 30% above the state average but receives the same payment as a provider in a low-cost rural county. Provider participation rates reflect this mismatch.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What is a phantom network in Medi-Cal?</h4>
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). These phantom providers appear in directories but are not accessible to enrollees seeking care.</p>

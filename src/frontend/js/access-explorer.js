@@ -34,13 +34,17 @@ let barChart = null;
 let trendChart = null;
 let scatterChart = null;
 let summaryData = null;
+let currentView = 'county';   // 'county' or 'hrr'
+let hrrCrosswalk = null;       // loaded from county_hrr_crosswalk.json
 
 document.addEventListener('DOMContentLoaded', () => {
   initCountyAutocomplete();
   initSpecialtyTabs();
   initDownload();
   initMapInteraction();
+  initViewToggle();
   loadSummaryData();
+  loadHrrCrosswalk();
 });
 
 // ============ County Autocomplete ============
@@ -160,6 +164,10 @@ async function loadCountyData(countyName) {
 
 function renderResults() {
   if (!currentCountyData) return;
+
+  // Unhide chart sections (may be hidden by HRR view)
+  document.querySelectorAll('#results-panel .chart-section').forEach(s => s.classList.remove('hidden'));
+  document.getElementById('specialty-section').classList.remove('hidden');
 
   renderSummaryStats();
   renderRateCards();
@@ -636,15 +644,15 @@ function initMap() {
   });
 }
 
-// Colorblind-safe orange-to-blue scale (safe for protanopia, deuteranopia, tritanopia)
+// Sequential single-hue blue scale (colorblind-safe, D3 Blues)
 function getMapColor(rate) {
   if (rate === 0 || rate == null) return '#e0e0e0';
-  if (rate < 25) return '#7F2704';     // dark brown — critical
-  if (rate < 30) return '#D94701';     // deep orange
-  if (rate < 35) return '#F16913';     // orange
-  if (rate < 40) return '#FEC44F';     // amber/gold
-  if (rate < 45) return '#6BAED6';     // medium blue
-  return '#08519C';                    // dark blue — good
+  if (rate < 25) return '#c6dbef';     // lightest blue — critical
+  if (rate < 30) return '#9ecae1';     // light blue
+  if (rate < 35) return '#6baed6';     // medium-light blue
+  if (rate < 40) return '#3182bd';     // medium blue
+  if (rate < 45) return '#08519c';     // dark blue
+  return '#08306b';                    // darkest blue — good
 }
 
 function handleMapClick(event) {
@@ -654,7 +662,12 @@ function handleMapClick(event) {
   const countyName = path.dataset.county;
   if (!countyName) return;
 
-  // Set input and load data
+  if (currentView === 'hrr') {
+    handleMapClickHrr(countyName);
+    return;
+  }
+
+  // County view: set input and load data
   document.getElementById('county-input').value = countyName + ' County';
   loadCountyData(countyName);
 
@@ -674,8 +687,19 @@ function handleMapHover(event) {
   }
 
   const name = path.dataset.county;
-  const rate = summaryData?.counties[name]?.participationRate;
-  tooltip.textContent = name + ': ' + (rate != null ? rate + '%' : 'No data');
+
+  if (currentView === 'hrr' && hrrCrosswalk) {
+    const hrrName = hrrCrosswalk.county_to_hrr[name];
+    const hrrData = summaryData?.hrrs?.[hrrName];
+    if (hrrData) {
+      tooltip.textContent = hrrName + ' HRR: ' + hrrData.participationRate + '% (' + hrrData.counties.length + ' counties)';
+    } else {
+      tooltip.textContent = name + ' (HRR data unavailable)';
+    }
+  } else {
+    const rate = summaryData?.counties[name]?.participationRate;
+    tooltip.textContent = name + ': ' + (rate != null ? rate + '%' : 'No data');
+  }
 
   // Position relative to the map container
   const container = document.querySelector('.map-container');
@@ -693,7 +717,205 @@ function showMap() {
   // Clear input and selection
   document.getElementById('county-input').value = '';
   document.querySelectorAll('#map-wrapper path.selected').forEach(p => p.classList.remove('selected'));
+  document.querySelectorAll('#map-wrapper path.hrr-highlight').forEach(p => p.classList.remove('hrr-highlight'));
+  document.querySelectorAll('#map-wrapper path.hrr-dimmed').forEach(p => p.classList.remove('hrr-dimmed'));
   currentCountyData = null;
+
+  // Restore map colors for current view
+  if (currentView === 'hrr') {
+    initMapHrr();
+  } else {
+    initMap();
+  }
+}
+
+// ============ HRR (Market Area) View ============
+
+async function loadHrrCrosswalk() {
+  try {
+    const response = await fetch('/data/access-explorer/county_hrr_crosswalk.json');
+    if (response.ok) {
+      hrrCrosswalk = await response.json();
+    }
+  } catch (e) {
+    // Crosswalk is optional; HRR view won't be available without it
+  }
+}
+
+function initViewToggle() {
+  const buttons = document.querySelectorAll('.view-btn[data-view]');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      if (view === currentView) return;
+      switchView(view);
+    });
+  });
+}
+
+function switchView(view) {
+  currentView = view;
+
+  // Update toggle button states
+  document.querySelectorAll('.view-btn[data-view]').forEach(btn => {
+    const isActive = btn.dataset.view === view;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+  });
+
+  // Clear any HRR highlighting
+  document.querySelectorAll('#map-wrapper path.hrr-highlight').forEach(p => p.classList.remove('hrr-highlight'));
+  document.querySelectorAll('#map-wrapper path.hrr-dimmed').forEach(p => p.classList.remove('hrr-dimmed'));
+  document.querySelectorAll('#map-wrapper path.selected').forEach(p => p.classList.remove('selected'));
+
+  // Hide results panel and show map
+  document.getElementById('map-placeholder').classList.remove('hidden');
+  document.getElementById('results-panel').classList.add('hidden');
+  document.getElementById('specialty-section').classList.add('hidden');
+  document.getElementById('county-input').value = '';
+  currentCountyData = null;
+
+  // Update map instructions
+  const instructions = document.querySelector('.map-instructions');
+  if (instructions) {
+    if (view === 'hrr') {
+      instructions.textContent = 'Counties are colored by their Healthcare Referral Region. Click any county to see market-level data.';
+    } else {
+      instructions.textContent = 'Click a county on the map or type a name above to explore provider access data.';
+    }
+  }
+
+  // Recolor map
+  if (view === 'hrr') {
+    initMapHrr();
+  } else {
+    initMap();
+  }
+}
+
+function initMapHrr() {
+  if (!summaryData || !summaryData.hrrs || !hrrCrosswalk) return;
+
+  const hrrs = summaryData.hrrs;
+  const countyToHrr = hrrCrosswalk.county_to_hrr;
+
+  // Color each county by its HRR's aggregate rate
+  Object.entries(countyToHrr).forEach(([countyName, hrrName]) => {
+    const slug = countyName.toLowerCase().replace(/\s+/g, '-');
+    const path = document.getElementById('county-' + slug);
+    if (path && hrrs[hrrName]) {
+      path.style.fill = getMapColor(hrrs[hrrName].participationRate);
+    }
+  });
+}
+
+function handleMapClickHrr(countyName) {
+  if (!hrrCrosswalk || !summaryData?.hrrs) return;
+
+  const hrrName = hrrCrosswalk.county_to_hrr[countyName];
+  if (!hrrName) return;
+
+  const hrrData = summaryData.hrrs[hrrName];
+  if (!hrrData) return;
+
+  // Highlight all counties in this HRR, dim others
+  const hrrCounties = new Set(hrrData.counties);
+  document.querySelectorAll('#map-wrapper path[data-county]').forEach(path => {
+    const name = path.dataset.county;
+    path.classList.remove('selected', 'hrr-highlight', 'hrr-dimmed');
+    if (hrrCounties.has(name)) {
+      path.classList.add('hrr-highlight');
+    } else {
+      path.classList.add('hrr-dimmed');
+    }
+  });
+
+  // Show HRR results
+  renderHrrResults(hrrName);
+}
+
+function renderHrrResults(hrrName) {
+  const hrrData = summaryData.hrrs[hrrName];
+  if (!hrrData) return;
+
+  // Show results panel, hide map placeholder
+  document.getElementById('map-placeholder').classList.add('hidden');
+  document.getElementById('results-panel').classList.remove('hidden');
+  document.getElementById('specialty-section').classList.add('hidden');
+
+  // Update summary stats
+  document.getElementById('stat-registered').textContent = hrrData.registered.toLocaleString();
+  document.getElementById('stat-active').textContent = hrrData.active.toLocaleString();
+  const rateEl = document.getElementById('stat-rate');
+  rateEl.textContent = hrrData.participationRate + '%';
+  rateEl.className = 'stat-number ' + getRateClass(hrrData.participationRate);
+
+  // Build per-county breakdown table
+  const counties = hrrData.counties;
+  const countyRows = counties.map(name => {
+    const cd = summaryData.counties[name] || {};
+    return {
+      name: name,
+      registered: cd.registered || 0,
+      active: cd.active || 0,
+      rate: cd.participationRate || 0,
+    };
+  }).sort((a, b) => b.rate - a.rate);
+
+  let html = `
+    <div style="margin-bottom: var(--space-md);">
+      <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs);">${hrrName} Healthcare Market</h3>
+      <p style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+        ${counties.length} counties &middot; Population: ${hrrData.population.toLocaleString()}
+      </p>
+    </div>
+    <table class="hrr-county-table">
+      <thead>
+        <tr>
+          <th>County</th>
+          <th>Rate</th>
+          <th>Active</th>
+          <th>Registered</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  countyRows.forEach(row => {
+    const rateClass = getRateClass(row.rate);
+    html += `
+        <tr style="cursor: pointer;" data-hrr-county="${row.name}">
+          <td>${row.name}</td>
+          <td class="${rateClass}" style="font-weight: 600;">${row.rate}%</td>
+          <td>${row.active.toLocaleString()}</td>
+          <td>${row.registered.toLocaleString()}</td>
+        </tr>`;
+  });
+
+  html += `
+      </tbody>
+    </table>
+    <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: var(--space-md);">
+      Hospital Referral Regions defined by the Dartmouth Atlas based on Medicare patient referral patterns.
+      Click a county row to view its detailed data.
+    </p>`;
+
+  // Render into rate-cards area (reuse the container)
+  document.getElementById('rate-cards').innerHTML = html;
+
+  // Hide charts that don't apply to HRR view
+  const chartSections = document.querySelectorAll('#results-panel .chart-section');
+  chartSections.forEach(s => s.classList.add('hidden'));
+
+  // Add click handlers on county rows to drill into individual county
+  document.querySelectorAll('[data-hrr-county]').forEach(row => {
+    row.addEventListener('click', () => {
+      const name = row.dataset.hrrCounty;
+      // Switch to county view and load that county
+      switchView('county');
+      document.getElementById('county-input').value = name + ' County';
+      loadCountyData(name);
+    });
+  });
 }
 
 // ============ Summary Data (for scatter plot + map) ============

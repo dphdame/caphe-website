@@ -44,27 +44,24 @@
       grid-template-columns: none;
     }
 
-    /* Two-column layout: controls left, results right */
+    /* Full-width map on top, controls + results below */
     .calculator-layout {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: var(--space-2xl);
+      display: flex;
+      flex-direction: column;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    .data-section {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: var(--space-xl);
       align-items: start;
     }
 
-    .results-column {
-      position: sticky;
-      top: var(--space-xl);
-    }
-
     @media (max-width: 1024px) {
-      .calculator-layout {
+      .data-section {
         grid-template-columns: 1fr;
-      }
-      .results-column {
-        position: static;
       }
     }
 
@@ -270,7 +267,7 @@
     /* County heatmap */
     .map-container {
       position: relative;
-      max-width: 500px;
+      max-width: 420px;
       margin: 0 auto;
     }
 
@@ -323,7 +320,7 @@
       width: 200px;
       height: 12px;
       border-radius: 6px;
-      background: linear-gradient(to right, #7F2704, #D94701, #FEC44F, #6BAED6, #08519C);
+      background: linear-gradient(to right, #c6dbef, #9ecae1, #6baed6, #3182bd, #08519c, #08306b);
       margin: var(--space-xs) 0;
     }
 
@@ -354,6 +351,97 @@
     .show-map-btn:hover {
       border-color: var(--color-primary);
       color: var(--color-primary);
+    }
+
+    /* Map view toggle (County / Market Area) — overlaid on map */
+    .map-view-toggle {
+      position: absolute;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      z-index: 5;
+      display: flex;
+      gap: 0;
+    }
+
+    .view-btn {
+      padding: var(--space-sm) var(--space-lg);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      font-family: var(--font-body);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .view-btn:first-child {
+      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      border-right: none;
+    }
+
+    .view-btn:last-child {
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .view-btn:hover {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .view-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .view-btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      z-index: 1;
+    }
+
+    /* HRR highlight: counties in same HRR glow together */
+    .map-wrapper path.hrr-highlight {
+      stroke: var(--color-primary);
+      stroke-width: 2;
+      opacity: 0.95;
+    }
+
+    .map-wrapper path.hrr-dimmed {
+      opacity: 0.4;
+    }
+
+    /* HRR results panel */
+    .hrr-county-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-sm);
+      margin-top: var(--space-md);
+    }
+
+    .hrr-county-table th,
+    .hrr-county-table td {
+      padding: var(--space-xs) var(--space-sm);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .hrr-county-table th {
+      font-weight: 600;
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .hrr-county-table td:nth-child(2),
+    .hrr-county-table td:nth-child(3),
+    .hrr-county-table td:nth-child(4),
+    .hrr-county-table th:nth-child(2),
+    .hrr-county-table th:nth-child(3),
+    .hrr-county-table th:nth-child(4) {
+      text-align: right;
     }
 
     @media (max-width: 768px) {
@@ -640,47 +728,15 @@
     <div class="container">
       <div class="calculator-layout" id="calculator-layout">
 
-      <!-- Left Column: Controls -->
-      <div class="calculator-container">
-        <div class="form-group">
-          <label class="form-label" for="county-input">Select a California County</label>
-          <input type="text" id="county-input" class="form-input" placeholder="Start typing county name..." autocomplete="off">
-          <div id="county-suggestions" class="county-suggestions"></div>
-        </div>
-
-        <!-- Specialty filter tabs -->
-        <div id="specialty-section" class="hidden">
-          <label class="form-label">Filter by Specialty</label>
-          <div class="specialty-tabs" id="specialty-tabs" role="tablist" aria-label="Specialty filter">
-            <button class="specialty-tab active" role="tab" aria-selected="true" data-specialty="all">All</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="primary_care">Primary Care</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="behavioral_health">Behavioral Health</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="dental">Dental</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="obgyn">OB/GYN</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="other_surgical">Other Surgical</button>
-            <button class="specialty-tab" role="tab" aria-selected="false" data-specialty="pharmacy_dme">Pharmacy &amp; DME</button>
-          </div>
-
-          <!-- Alerts -->
-          <div id="alerts-panel" class="alerts-panel"></div>
-
-          <!-- Download -->
-          <div class="download-row" id="download-row" style="margin-top: var(--space-lg);">
-            <button class="btn btn-outline-dark btn-sm" id="download-csv" aria-label="Download county data as CSV">
-              Download CSV
-            </button>
-            <a href="/tools/access-explorer/methodology.html" class="btn btn-link btn-sm">Methodology</a>
-          </div>
-        </div>
-      </div><!-- end calculator-container -->
-
-      <!-- Right Column: Results -->
-      <div class="results-column">
-        <!-- Map placeholder (shown before county selection) -->
-        <div id="map-placeholder">
-          <h3 style="color: var(--color-primary); text-align: center; margin-bottom: var(--space-sm);">Select a County</h3>
-          <p class="map-instructions">Click a county on the map or type a name above to explore provider access data.</p>
+      <!-- Top: Map (full width) -->
+      <div id="map-placeholder">
+        <h3 style="text-align: center; margin-bottom: var(--space-xs); font-size: 1.1rem;">Medi-Cal Provider Participation by County</h3>
+        <p class="map-instructions">Click a county or search below to explore access data.</p>
           <div class="map-container">
+            <div class="map-view-toggle" role="radiogroup" aria-label="Map view">
+              <button class="view-btn active" data-view="county" role="radio" aria-checked="true">County</button>
+              <button class="view-btn" data-view="hrr" role="radio" aria-checked="false">Market Area (HRR)</button>
+            </div>
             <div class="map-wrapper" id="map-wrapper">
               <svg role="img" aria-label="California county map colored by Medi-Cal participation rate" xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny" width="800" height="947" viewBox="0 0 800 947" stroke-linecap="round" stroke-linejoin="round">
 <g id="ca-counties">
@@ -756,10 +812,26 @@
               </div>
             </div>
           </div>
+          <div class="form-group" style="max-width: 320px; margin: var(--space-md) auto 0;">
+            <input type="text" id="county-input" class="form-input" placeholder="Search county name..." autocomplete="off" aria-label="Select a California County">
+            <div id="county-suggestions" class="county-suggestions"></div>
+          </div>
           <div id="map-tooltip" class="map-tooltip hidden"></div>
+        </div><!-- end map-placeholder -->
+
+      <!-- Bottom: Controls + Results (shown after county selection) -->
+      <div class="data-section">
+        <!-- Left: Specialty controls -->
+        <div id="specialty-section" class="hidden">
+          <h3>Filter by Specialty</h3>
+          <div id="specialty-tabs" class="specialty-tabs" role="tablist" aria-label="Specialty categories"></div>
+          <div id="alerts-panel" class="alerts-panel"></div>
+          <div class="download-row">
+            <button class="btn btn-secondary" id="download-csv" type="button">&#10515; Download CSV</button>
+          </div>
         </div>
 
-        <!-- Results (hidden until county selected) -->
+        <!-- Right: Results panel -->
         <div id="results-panel" class="hidden" role="region" aria-label="County provider access data" aria-live="polite">
           <button class="show-map-btn" id="show-map-btn" type="button">&#9664; Back to map</button>
           <!-- Summary stats -->
@@ -831,8 +903,8 @@
             </div>
           </div>
 
-        </div>
-      </div><!-- end results-column -->
+        </div><!-- end results-panel -->
+      </div><!-- end data-section -->
 
       </div><!-- end calculator-layout -->
     </div>
@@ -841,9 +913,9 @@
   <!-- Static FAQ + methodology (visible to AI crawlers) -->
   <section style="max-width: 800px; margin: var(--space-2xl) auto; padding: 0 var(--space-lg);">
     <h2 style="font-size: 1.5rem; margin-bottom: var(--space-md);">About the Access Explorer</h2>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">The CAPHE Medi-Cal Provider Access Explorer measures phantom network gaps across California's 58 counties by cross-referencing two federal datasets: the National Plan and Provider Enumeration System (NPPES) for directory-listed providers, and HHS Medicaid Provider Spending data for providers actively billing Medicaid.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Phantom networks are a documented barrier to healthcare access. Zhu et al. (2023, Health Affairs) found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients. The HHS Office of Inspector General (OEI-02-23-00540, 2025) found more than one-third of Medicaid-listed physicians did not provide care to enrollees in 2023.</p>
-    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">CMS finalized network adequacy rules effective July 2025 (CMS-2439-F) requiring states to verify provider directories against actual utilization, making tools like this directly relevant to compliance monitoring.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">The CAPHE Medi-Cal Provider Access Explorer measures phantom network gaps across California's 58 counties by cross-referencing two federal datasets: the <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">National Plan and Provider Enumeration System (NPPES)</a> for directory-listed providers, and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid Provider Spending data</a> for providers actively billing Medicaid.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Phantom networks are a documented barrier to healthcare access. <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> found that 58.2% of primary care and mental health providers listed in Oregon Medicaid directories did not see Medicaid patients. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians did not provide care to enrollees in 2023.</p>
+    <p style="margin-bottom: var(--space-lg); line-height: 1.7;">CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify provider directories against actual utilization, making tools like this directly relevant to compliance monitoring.</p>
 
     <h3 style="font-size: 1.25rem; margin-bottom: var(--space-sm);">Frequently Asked Questions</h3>
 
@@ -851,13 +923,13 @@
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">A phantom network refers to the gap between providers listed in Medi-Cal directories (registered in NPPES) and those actually seeing Medi-Cal patients (billing Medicaid). These phantom providers appear in directories but are not accessible to enrollees seeking care.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">What data sources does the Access Explorer use?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool cross-references two federal datasets: the National Plan and Provider Enumeration System (NPPES) for registered providers, and HHS Medicaid Provider Spending data for providers actively billing Medicaid. This approach follows the methodology established by Zhu et al. (2023) and is consistent with CMS network adequacy verification requirements.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool cross-references two federal datasets: the <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">National Plan and Provider Enumeration System (NPPES)</a> for registered providers, and <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid Provider Spending data</a> for providers actively billing Medicaid. This approach follows the methodology established by <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023)</a> and is consistent with CMS network adequacy verification requirements.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">Which specialties are covered?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy &amp; DME. Behavioral health typically shows the highest phantom rates statewide, consistent with the findings of Zhu et al. (2023).</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The tool covers six specialty categories: Primary Care, Behavioral Health, Dental, OB/GYN, Other Surgical, and Pharmacy &amp; DME. Behavioral health typically shows the highest phantom rates statewide, consistent with the findings of <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023)</a>.</p>
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">How often is the data updated?</h4>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Data is updated quarterly as new HHS Medicaid spending data becomes available. The current dataset covers January 2018 through December 2024.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Data is updated quarterly as new <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid spending data</a> becomes available. The current dataset covers January 2018 through December 2024. <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES data</a> is refreshed monthly.</p>
 
     <p style="color: var(--color-text-muted); font-size: 0.875rem; margin-top: var(--space-lg);">Last updated: February 2026</p>
   </section>
@@ -866,6 +938,7 @@
   <!-- Footer -->
   <footer class="footer" style="background: var(--color-bg-alt); padding: var(--space-xl) 0; margin-top: var(--space-2xl);">
     <div class="container" style="text-align: center; color: var(--color-text-muted);">
+      <p style="font-size: 0.85rem; margin-bottom: var(--space-sm);">Medi-Cal Provider Access Explorer by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.</p>
       <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
       <p style="margin-top: var(--space-sm);">
         <a href="/privacy" style="color: var(--color-text-muted);">Privacy Policy</a> &middot;

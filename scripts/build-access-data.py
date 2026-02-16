@@ -412,6 +412,36 @@ def build_county_data(
     print(f"\nOutput: {len(summary_counties)} county files + _summary.json")
     print(f"Alerts: {len(alerts)} critical access gaps identified")
 
+    return summary_counties
+
+
+def build_hrr_summary(summary_counties, crosswalk_path):
+    """Aggregate county data into HRR-level summaries."""
+    with open(crosswalk_path) as f:
+        crosswalk = json.load(f)
+
+    hrr_summary = {}
+    for hrr_name, hrr_data in crosswalk["hrrs"].items():
+        total_reg = sum(
+            summary_counties.get(c, {}).get("registered", 0)
+            for c in hrr_data["counties"]
+        )
+        total_active = sum(
+            summary_counties.get(c, {}).get("active", 0)
+            for c in hrr_data["counties"]
+        )
+        rate = round(total_active / total_reg * 100, 1) if total_reg > 0 else 0
+        hrr_summary[hrr_name] = {
+            "participationRate": rate,
+            "registered": total_reg,
+            "active": total_active,
+            "population": hrr_data["population"],
+            "counties": hrr_data["counties"],
+        }
+
+    print(f"\nHRR aggregation: {len(hrr_summary)} HRRs from {len(summary_counties)} counties")
+    return hrr_summary
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -423,6 +453,8 @@ def main():
     parser.add_argument("--output", default="data/access-explorer/", help="Output directory")
     parser.add_argument("--affordability", default=None,
                         help="Path to affordability.json from build-coli-data.py")
+    parser.add_argument("--hrr-crosswalk", default=None,
+                        help="Path to county_hrr_crosswalk.json for HRR aggregation")
 
     args = parser.parse_args()
 
@@ -438,7 +470,21 @@ def main():
             affordability = json.load(f)
         print(f"  {len(affordability.get('counties', {}))} counties with affordability data")
 
-    build_county_data(nppes, spending, crosswalk, args.output, affordability=affordability)
+    summary_counties = build_county_data(
+        nppes, spending, crosswalk, args.output, affordability=affordability
+    )
+
+    # Add HRR aggregation to _summary.json if crosswalk provided
+    if args.hrr_crosswalk and os.path.exists(args.hrr_crosswalk):
+        hrr_summary = build_hrr_summary(summary_counties, args.hrr_crosswalk)
+
+        summary_path = os.path.join(args.output, "_summary.json")
+        with open(summary_path) as f:
+            summary = json.load(f)
+        summary["hrrs"] = hrr_summary
+        with open(summary_path, "w") as f:
+            json.dump(summary, f, indent=2)
+        print(f"  Added {len(hrr_summary)} HRRs to _summary.json")
 
     print("\nDone! Run the local server to verify: node src/backend/server.js")
 

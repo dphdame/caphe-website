@@ -29,7 +29,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="CAPHE - California Association of Public Health Economists">
   <meta name="twitter:description" content="CAPHE (California Association of Public Health Economists) provides free health economics training, a peer-reviewed Public Health ROI Calculator, and 30+ interactive Methods Lab tutorials for economists across California's 57 county public health departments.">
-  <link rel="stylesheet" href="/src/frontend/css/style.css">
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
@@ -61,6 +61,50 @@
     ],
     "sameAs": [
       "https://bsky.app/profile/caphegroup.org"
+    ]
+  }
+  </script>
+  <!-- Tools ItemList Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "CAPHE Analytics Tools",
+    "description": "Free data tools for California public health economists",
+    "numberOfItems": 2,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "WebApplication",
+          "name": "CAPHE Public Health ROI Calculator",
+          "url": "https://www.caphegroup.org/tools/lha-calculator/",
+          "description": "Estimates mortality reduction and return on investment from county public health spending in California, based on Lewbel IV estimation of 2003-2023 county longitudinal data.",
+          "applicationCategory": "HealthApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "WebApplication",
+          "name": "CAPHE Medi-Cal Provider Access Explorer",
+          "url": "https://www.caphegroup.org/tools/access-explorer/",
+          "description": "Measures Medi-Cal provider participation rates by county and specialty across California, cross-referencing NPPES and HHS Medicaid claims data with practice cost overlays.",
+          "applicationCategory": "HealthApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }
+      }
     ]
   }
   </script>
@@ -118,8 +162,9 @@
         <div class="hero-eyebrow">California Association of Public Health Economists</div>
         <h1 class="hero-title">Health Economics Methods for Public Health</h1>
         <p class="hero-subtitle">
-          A learning collaborative applying health economics—cost-effectiveness analysis,
-          causal inference, and economic evaluation—to improve health outcomes across California.
+          A learning collaborative bringing together economists from public health departments,
+          academia, and research organizations to apply health economics methods and build
+          analytical capacity across California.
         </p>
         <div class="hero-cta">
           <a href="/programs.html" class="btn btn-primary btn-large">Explore Programs</a>
@@ -129,65 +174,89 @@
     </div>
   </section>
 
-  <!-- What We Do -->
-  <section class="section">
+  <!-- What's New -->
+  <section class="section" id="whats-new">
     <div class="container">
       <div class="section-header">
-        <div class="section-eyebrow">What We Do</div>
-        <h2 class="section-title">Advancing Health Economics in California</h2>
-        <p class="section-subtitle">
-          We bring together economists from public health departments, academia, and research
-          organizations to share knowledge and build analytical capacity.
-        </p>
+        <div class="section-eyebrow">What's New</div>
+        <h2 class="section-title">Latest Tools, Events &amp; Resources</h2>
       </div>
 
-      <div class="cards-grid cards-grid-3">
-        <div class="card">
-          <img src="/assets/images/icons/icon-workshops.png" alt="" class="card-icon-img">
-          <h3 class="card-title">Workshops</h3>
-          <p class="card-text">
-            Training sessions covering cost-effectiveness analysis, causal inference methods,
-            and economic evaluation techniques for public health professionals.
-          </p>
-          <a href="/programs.html#workshops" class="card-link">View Workshops →</a>
-        </div>
-        <div class="card">
-          <img src="/assets/images/icons/icon-webinars.png" alt="" class="card-icon-img">
-          <h3 class="card-title">Webinars</h3>
-          <p class="card-text">
-            Free presentations on health economics fundamentals and practical applications
-            for public health professionals. Held every other month.
-          </p>
-          <a href="/programs.html#webinars" class="card-link">Browse Webinars →</a>
-        </div>
-        <div class="card">
-          <img src="/assets/images/icons/icon-working-groups.png" alt="" class="card-icon-img">
-          <h3 class="card-title">Working Groups</h3>
-          <p class="card-text">
-            Collaborative teams creating shared resources—white papers, code repositories,
-            and analytical frameworks—to deepen expertise across the field.
-          </p>
-          <a href="/programs.html#working-groups" class="card-link">Join a Group →</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Upcoming Events -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-eyebrow">Programs</div>
-        <h2 class="section-title">Upcoming Events</h2>
-        <p class="section-subtitle">
-          Join our workshops and webinars to build your skills and connect with fellow economists.
-        </p>
+      <!-- Tag Filters -->
+      <div class="whats-new-filters" role="tablist" aria-label="Filter updates by category">
+        <button class="filter-tag active" role="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="filter-tag" role="tab" aria-selected="false" data-filter="tool">Tools</button>
+        <button class="filter-tag" role="tab" aria-selected="false" data-filter="event">Events</button>
+        <button class="filter-tag" role="tab" aria-selected="false" data-filter="learning">Learning</button>
       </div>
 
-      <div id="homepage-events" class="cards-grid cards-grid-3"></div>
+      <!-- Cards Grid -->
+      <div class="cards-grid cards-grid-3" id="whats-new-grid">
+        <!-- Tool: Access Explorer -->
+        <div class="card whats-new-card" data-category="tool">
+          <div class="card-badge card-badge-tool">Tool</div>
+          <h3 class="card-title">Medi-Cal Access Explorer</h3>
+          <p class="card-text">
+            Explore provider participation rates by county and specialty across California.
+            Cross-references NPPES licensed provider data with Medicaid claims to reveal how
+            flat statewide reimbursement affects access in high-cost counties.
+          </p>
+          <div class="card-meta-date">February 2026</div>
+          <a href="/tools/access-explorer/" class="card-link">Explore Data →</a>
+        </div>
+
+        <!-- Event: CEA Basics Webinar -->
+        <div class="card whats-new-card" data-category="event">
+          <div class="card-badge card-badge-event">Event</div>
+          <h3 class="card-title">Webinar: Understanding Cost-Effectiveness</h3>
+          <p class="card-text">
+            The basics of cost-effectiveness analysis for public health decision-making.
+            Free and open to all California public health professionals.
+          </p>
+          <div class="card-meta-date">April 9, 2026 &middot; Virtual</div>
+          <a href="/programs.html#webinars" class="card-link">View Details →</a>
+        </div>
+
+        <!-- Learning: Methods Lab -->
+        <div class="card whats-new-card" data-category="learning">
+          <div class="card-badge card-badge-learning">Learning</div>
+          <h3 class="card-title">30+ Methods Lab Tutorials</h3>
+          <p class="card-text">
+            Interactive lessons on causal inference, cost-effectiveness analysis, and program
+            evaluation. Four tracks: Impact, Credibility, Value for Money, and Pitfalls.
+          </p>
+          <div class="card-meta-date">Updated February 2026</div>
+          <a href="/methods-lab/" class="card-link">Browse Tutorials →</a>
+        </div>
+
+        <!-- Tool: ROI Calculator -->
+        <div class="card whats-new-card" data-category="tool">
+          <div class="card-badge card-badge-tool">Tool</div>
+          <h3 class="card-title">Public Health ROI Calculator</h3>
+          <p class="card-text">
+            Calculate return on investment for county public health spending. Based on
+            peer-reviewed research using Lewbel IV estimation of California county data
+            (2003&ndash;2023).
+          </p>
+          <div class="card-meta-date">January 2026</div>
+          <a href="/tools/lha-calculator/" class="card-link">Calculate ROI →</a>
+        </div>
+
+        <!-- Recording: Health Economics Intro -->
+        <div class="card whats-new-card" data-category="event">
+          <div class="card-badge card-badge-event">Recording</div>
+          <h3 class="card-title">Introduction to Health Economics</h3>
+          <p class="card-text">
+            Core health economics concepts for public health professionals, covering
+            cost-effectiveness, ROI measurement, and economic evaluation frameworks.
+          </p>
+          <div class="card-meta-date">February 2026</div>
+          <a href="/recordings" class="card-link">Watch Recording →</a>
+        </div>
+      </div>
 
       <div class="text-center mt-xl">
-        <a href="/programs.html" class="btn btn-outline-dark btn-large">View All Events →</a>
+        <a href="/membership/community.html" class="btn btn-outline-dark">Stay Up to Date — Sign Up Free →</a>
       </div>
     </div>
   </section>
@@ -260,11 +329,32 @@
     </div>
   </footer>
 
-  <script src="/src/frontend/js/events.js"></script>
   <script src="/src/frontend/js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      CAPHEEvents.renderEventList('homepage-events', 'upcoming', 'Webinar', 'compact', 3);
+      const filters = document.querySelectorAll('.filter-tag');
+      const cards = document.querySelectorAll('.whats-new-card');
+
+      filters.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var filter = this.getAttribute('data-filter');
+
+          filters.forEach(function(b) {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          this.classList.add('active');
+          this.setAttribute('aria-selected', 'true');
+
+          cards.forEach(function(card) {
+            if (filter === 'all' || card.getAttribute('data-category') === filter) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
     });
   </script>
 </body>

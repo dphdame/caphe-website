@@ -31,7 +31,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Medi-Cal Provider Access Explorer - CAPHE">
   <meta name="twitter:description" content="Medi-Cal provider participation rates by county and specialty. How flat statewide reimbursement shapes the provider pool across California.">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=1">
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
@@ -328,6 +328,14 @@
       display: flex;
       justify-content: space-between;
       width: 200px;
+    }
+
+    .map-specialty-filter {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
     }
 
     .map-instructions {
@@ -739,6 +747,15 @@
       <!-- Top: Map (full width) -->
       <div id="map-placeholder">
         <h3 style="text-align: center; margin-bottom: var(--space-xs); font-size: 1.1rem;">Medi-Cal Provider Participation by County</h3>
+        <div class="map-specialty-filter" id="map-specialty-filter" role="toolbar" aria-label="Filter map by specialty">
+          <button class="specialty-tab active" data-map-specialty="all" aria-selected="true">All Specialties</button>
+          <button class="specialty-tab" data-map-specialty="primary_care" aria-selected="false">Primary Care</button>
+          <button class="specialty-tab" data-map-specialty="behavioral_health" aria-selected="false">Behavioral Health</button>
+          <button class="specialty-tab" data-map-specialty="dental" aria-selected="false">Dental</button>
+          <button class="specialty-tab" data-map-specialty="obgyn" aria-selected="false">OB/GYN</button>
+          <button class="specialty-tab" data-map-specialty="other_surgical" aria-selected="false">Other Surgical</button>
+          <button class="specialty-tab" data-map-specialty="pharmacy_dme" aria-selected="false">Pharmacy &amp; DME</button>
+        </div>
         <p class="map-instructions">Click a county or search below to explore access data.</p>
           <div class="map-container">
             <div class="map-view-toggle" role="radiogroup" aria-label="Map view">

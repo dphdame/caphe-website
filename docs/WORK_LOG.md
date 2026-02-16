@@ -1,5 +1,47 @@
 # CAPHE Website Work Log
 
+## 2026-02-16: Homepage Redesign — What's New Section with Tag Filters
+
+### Completed
+- Redesigned homepage from 5 sections to 3: Hero → What's New → Mission
+- Removed "What We Do" (Workshops/Webinars/Working Groups cards) — redundant with nav
+- Removed "Upcoming Events" section — folded into What's New cards
+- Built "What's New" section with filterable tag pills (All / Tools / Events / Learning)
+- 5 cards: Access Explorer, CEA Basics webinar, Methods Lab, ROI Calculator, Health Econ recording
+- Synthesized hero subtitle merging old hero + "What We Do" copy into single statement
+- Removed hero CTA buttons (redundant with nav bar)
+- Added ItemList schema for tools (GEO/AI discoverability)
+- Added Access Explorer to sitemap.xml (was missing entirely) and llms.txt
+- Iteratively tightened spacing: hero padding, card sizes, tag pills, section gaps
+- CSS cache-bust across all pages (style.css?v=N)
+- Deployed v181 (initial redesign); spacing refinements pending deploy
+
+### Files Modified
+- `public/index.html` — Full homepage restructure, ItemList schema, tag filter JS
+- `src/frontend/css/style.css` — .filter-tag, .card-badge, .whats-new-card, #whats-new/#mission spacing
+- `public/sitemap.xml` — Added Access Explorer URL, updated homepage lastmod
+- `public/llms.txt` — Added Access Explorer entry under Key Resources
+- 60+ files — CSS cache-bust (style.css?v=N)
+
+### Decisions Made
+- Two agents (UX + GEO) both recommended Option C (Tools section + Latest section), but user preferred single compact "What's New" section with tag filters to reduce scrolling
+- Removed hero CTA buttons — nav already has "Join CAPHE" and program links
+- Card descriptions trimmed to one line each for compact layout
+- "Stay Up to Date — Sign Up Free" CTA links to community membership signup (future newsletter channel)
+- Filter tags use pill-button UI with color-coded card badges (green=Tool, blue=Event, orange=Learning)
+
+### Next Steps
+- Deploy spacing refinements (v182)
+- Continue HRR Market Area view implementation (plan at ~/.claude/plans/rustling-napping-lemon.md)
+- Build county-to-HRR crosswalk (Phase 1 of plan)
+- Post LinkedIn draft for Access Explorer (at /tmp/linkedin-access-explorer-v2.md)
+- Article schema on 37 Methods Lab pages (deferred from Feb 14)
+
+### Extracted Artifacts
+- None this session
+
+---
+
 ## 2026-02-15: Access Explorer — Participation Rate Reframe + LinkedIn Post
 
 ### Completed

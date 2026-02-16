@@ -28,8 +28,18 @@ const SPECIALTY_ORDER = [
   'primary_care', 'behavioral_health', 'dental', 'obgyn', 'other_surgical', 'pharmacy_dme'
 ];
 
+const SPECIALTY_LABEL_MAP = {
+  primary_care: 'Primary Care',
+  behavioral_health: 'Behavioral Health',
+  dental: 'Dental',
+  obgyn: 'OB/GYN',
+  other_surgical: 'Other Surgical',
+  pharmacy_dme: 'Pharmacy & DME'
+};
+
 let currentCountyData = null;
 let currentSpecialty = 'all';
+let currentMapSpecialty = 'all';
 let barChart = null;
 let trendChart = null;
 let scatterChart = null;
@@ -43,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDownload();
   initMapInteraction();
   initViewToggle();
+  initMapSpecialtyFilter();
   loadSummaryData();
   loadHrrCrosswalk();
 });
@@ -126,15 +137,20 @@ async function loadCountyData(countyName) {
     }
 
     currentCountyData = await response.json();
-    currentSpecialty = 'all';
 
-    // Reset specialty tabs
-    document.querySelectorAll('.specialty-tab').forEach(tab => {
-      tab.classList.remove('active');
-      tab.setAttribute('aria-selected', 'false');
+    // Sync county detail specialty with map specialty filter
+    if (currentMapSpecialty !== 'all' && currentCountyData.specialties[currentMapSpecialty]) {
+      currentSpecialty = currentMapSpecialty;
+    } else {
+      currentSpecialty = 'all';
+    }
+
+    // Reset specialty tabs to match current selection
+    document.querySelectorAll('.specialty-tab[data-specialty]').forEach(tab => {
+      const isActive = tab.dataset.specialty === currentSpecialty;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
-    document.querySelector('.specialty-tab[data-specialty="all"]').classList.add('active');
-    document.querySelector('.specialty-tab[data-specialty="all"]').setAttribute('aria-selected', 'true');
 
     // Show results, hide map
     document.getElementById('map-placeholder').classList.add('hidden');
@@ -144,20 +160,83 @@ async function loadCountyData(countyName) {
     renderResults();
 
   } catch (error) {
-    document.getElementById('map-placeholder').classList.remove('hidden');
-    document.getElementById('results-panel').classList.add('hidden');
+    // Fall back to specialty table from summary data
+    const countyInfo = summaryData?.counties?.[countyName];
+    if (countyInfo && countyInfo.specialties) {
+      renderCountySummaryTable(countyName, countyInfo);
+    } else {
+      document.getElementById('map-placeholder').classList.remove('hidden');
+      document.getElementById('results-panel').classList.add('hidden');
 
-    // Show error message above the map
-    const instructions = document.querySelector('.map-instructions');
-    if (instructions) {
-      instructions.textContent = countyName + ' County data is not yet available. Select another county.';
-      instructions.style.color = 'var(--color-warning)';
-      setTimeout(() => {
-        instructions.textContent = 'Click a county on the map or type a name above to explore provider access data.';
-        instructions.style.color = '';
-      }, 4000);
+      const instructions = document.querySelector('.map-instructions');
+      if (instructions) {
+        instructions.textContent = countyName + ' County data is not yet available. Select another county.';
+        instructions.style.color = 'var(--color-warning)';
+        setTimeout(() => {
+          instructions.textContent = 'Click a county on the map or type a name above to explore provider access data.';
+          instructions.style.color = '';
+        }, 4000);
+      }
     }
   }
+}
+
+function renderCountySummaryTable(countyName, countyInfo) {
+  // Show results panel, hide map
+  document.getElementById('map-placeholder').classList.add('hidden');
+  document.getElementById('results-panel').classList.remove('hidden');
+  document.getElementById('specialty-section').classList.add('hidden');
+
+  // Summary stats
+  document.getElementById('stat-registered').textContent = countyInfo.registered.toLocaleString();
+  document.getElementById('stat-active').textContent = countyInfo.active.toLocaleString();
+  const rateEl = document.getElementById('stat-rate');
+  rateEl.textContent = countyInfo.participationRate + '%';
+  rateEl.className = 'stat-number ' + getRateClass(countyInfo.participationRate);
+
+  // Build specialty table
+  const specs = countyInfo.specialties;
+  const rows = SPECIALTY_ORDER
+    .filter(key => specs[key])
+    .map(key => {
+      const s = specs[key];
+      return { key, label: SPECIALTY_LABEL_MAP[key], rate: s.participationRate, active: s.active, registered: s.registered };
+    });
+
+  let html = `
+    <div style="margin-bottom: var(--space-md);">
+      <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs);">${countyName} County</h3>
+    </div>
+    <table class="hrr-county-table">
+      <thead>
+        <tr>
+          <th>Specialty</th>
+          <th>Rate</th>
+          <th>Active</th>
+          <th>Registered</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  rows.forEach(row => {
+    const rateClass = getRateClass(row.rate);
+    html += `
+        <tr>
+          <td>${row.label}</td>
+          <td class="${rateClass}" style="font-weight: 600;">${row.rate}%</td>
+          <td>${row.active.toLocaleString()}</td>
+          <td>${row.registered.toLocaleString()}</td>
+        </tr>`;
+  });
+
+  html += `
+      </tbody>
+    </table>`;
+
+  document.getElementById('rate-cards').innerHTML = html;
+
+  // Hide chart sections
+  document.querySelectorAll('#results-panel .chart-section').forEach(s => s.classList.add('hidden'));
 }
 
 // ============ Rendering ============
@@ -505,8 +584,8 @@ function initSpecialtyTabs() {
 function selectSpecialty(specialty) {
   currentSpecialty = specialty;
 
-  // Update tab states
-  document.querySelectorAll('.specialty-tab').forEach(tab => {
+  // Update tab states (scoped to county detail tabs, not map filter)
+  document.querySelectorAll('#specialty-tabs .specialty-tab').forEach(tab => {
     const isActive = tab.dataset.specialty === specialty;
     tab.classList.toggle('active', isActive);
     tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
@@ -639,9 +718,20 @@ function initMap() {
     const slug = name.toLowerCase().replace(/\s+/g, '-');
     const path = document.getElementById('county-' + slug);
     if (path) {
-      path.style.fill = getMapColor(data.participationRate);
+      const rate = getCountyRate(data, currentMapSpecialty);
+      path.style.fill = getMapColor(rate);
     }
   });
+}
+
+function getCountyRate(countyData, specialty) {
+  if (specialty === 'all') return countyData.participationRate;
+  return countyData.specialties?.[specialty]?.participationRate ?? null;
+}
+
+function getHrrRate(hrrData, specialty) {
+  if (specialty === 'all') return hrrData.participationRate;
+  return hrrData.specialties?.[specialty]?.participationRate ?? null;
 }
 
 // Sequential single-hue blue scale (colorblind-safe, D3 Blues)
@@ -688,17 +778,21 @@ function handleMapHover(event) {
 
   const name = path.dataset.county;
 
+  const specLabel = currentMapSpecialty !== 'all' ? SPECIALTY_LABEL_MAP[currentMapSpecialty] + ': ' : '';
+
   if (currentView === 'hrr' && hrrCrosswalk) {
     const hrrName = hrrCrosswalk.county_to_hrr[name];
     const hrrData = summaryData?.hrrs?.[hrrName];
     if (hrrData) {
-      tooltip.textContent = hrrName + ' HRR: ' + hrrData.participationRate + '% (' + hrrData.counties.length + ' counties)';
+      const rate = getHrrRate(hrrData, currentMapSpecialty);
+      tooltip.textContent = hrrName + ' HRR: ' + specLabel + (rate != null ? rate + '%' : 'No data') + ' (' + hrrData.counties.length + ' counties)';
     } else {
       tooltip.textContent = name + ' (HRR data unavailable)';
     }
   } else {
-    const rate = summaryData?.counties[name]?.participationRate;
-    tooltip.textContent = name + ': ' + (rate != null ? rate + '%' : 'No data');
+    const countyData = summaryData?.counties[name];
+    const rate = countyData ? getCountyRate(countyData, currentMapSpecialty) : null;
+    tooltip.textContent = name + ': ' + specLabel + (rate != null ? rate + '%' : 'No data');
   }
 
   // Position relative to the map container
@@ -726,6 +820,39 @@ function showMap() {
     initMapHrr();
   } else {
     initMap();
+  }
+}
+
+// ============ Map Specialty Filter ============
+
+function initMapSpecialtyFilter() {
+  document.querySelectorAll('[data-map-specialty]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentMapSpecialty = btn.dataset.mapSpecialty;
+      // Update active states
+      document.querySelectorAll('[data-map-specialty]').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+      // Re-color map
+      if (currentView === 'hrr') {
+        initMapHrr();
+      } else {
+        initMap();
+      }
+      // Update legend title
+      updateLegendTitle();
+    });
+  });
+}
+
+function updateLegendTitle() {
+  const titleEl = document.querySelector('.legend-title');
+  if (!titleEl) return;
+  if (currentMapSpecialty === 'all') {
+    titleEl.textContent = 'Medi-Cal Participation Rate';
+  } else {
+    titleEl.textContent = SPECIALTY_LABEL_MAP[currentMapSpecialty] + ' Participation Rate';
   }
 }
 
@@ -799,12 +926,13 @@ function initMapHrr() {
   const hrrs = summaryData.hrrs;
   const countyToHrr = hrrCrosswalk.county_to_hrr;
 
-  // Color each county by its HRR's aggregate rate
+  // Color each county by its HRR's aggregate rate (specialty-aware)
   Object.entries(countyToHrr).forEach(([countyName, hrrName]) => {
     const slug = countyName.toLowerCase().replace(/\s+/g, '-');
     const path = document.getElementById('county-' + slug);
     if (path && hrrs[hrrName]) {
-      path.style.fill = getMapColor(hrrs[hrrName].participationRate);
+      const rate = getHrrRate(hrrs[hrrName], currentMapSpecialty);
+      path.style.fill = getMapColor(rate);
     }
   });
 }
@@ -843,28 +971,37 @@ function renderHrrResults(hrrName) {
   document.getElementById('results-panel').classList.remove('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
 
-  // Update summary stats
-  document.getElementById('stat-registered').textContent = hrrData.registered.toLocaleString();
-  document.getElementById('stat-active').textContent = hrrData.active.toLocaleString();
+  // Update summary stats (specialty-aware)
+  const hrrRate = getHrrRate(hrrData, currentMapSpecialty);
+  if (currentMapSpecialty !== 'all' && hrrData.specialties?.[currentMapSpecialty]) {
+    const specData = hrrData.specialties[currentMapSpecialty];
+    document.getElementById('stat-registered').textContent = specData.registered.toLocaleString();
+    document.getElementById('stat-active').textContent = specData.active.toLocaleString();
+  } else {
+    document.getElementById('stat-registered').textContent = hrrData.registered.toLocaleString();
+    document.getElementById('stat-active').textContent = hrrData.active.toLocaleString();
+  }
   const rateEl = document.getElementById('stat-rate');
-  rateEl.textContent = hrrData.participationRate + '%';
-  rateEl.className = 'stat-number ' + getRateClass(hrrData.participationRate);
+  rateEl.textContent = (hrrRate != null ? hrrRate : 0) + '%';
+  rateEl.className = 'stat-number ' + getRateClass(hrrRate || 0);
 
-  // Build per-county breakdown table
+  // Build per-county breakdown table (specialty-aware)
   const counties = hrrData.counties;
   const countyRows = counties.map(name => {
     const cd = summaryData.counties[name] || {};
+    const rate = getCountyRate(cd, currentMapSpecialty);
     return {
       name: name,
-      registered: cd.registered || 0,
-      active: cd.active || 0,
-      rate: cd.participationRate || 0,
+      registered: (currentMapSpecialty !== 'all' ? cd.specialties?.[currentMapSpecialty]?.registered : cd.registered) || 0,
+      active: (currentMapSpecialty !== 'all' ? cd.specialties?.[currentMapSpecialty]?.active : cd.active) || 0,
+      rate: rate || 0,
     };
   }).sort((a, b) => b.rate - a.rate);
 
+  const specSubtitle = currentMapSpecialty !== 'all' ? ' &mdash; ' + SPECIALTY_LABEL_MAP[currentMapSpecialty] : '';
   let html = `
     <div style="margin-bottom: var(--space-md);">
-      <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs);">${hrrName} Healthcare Market</h3>
+      <h3 style="font-size: 1.1rem; margin-bottom: var(--space-xs);">${hrrName} Healthcare Market${specSubtitle}</h3>
       <p style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
         ${counties.length} counties &middot; Population: ${hrrData.population.toLocaleString()}
       </p>

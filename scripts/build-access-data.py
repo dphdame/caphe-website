@@ -383,6 +383,14 @@ def build_county_data(
             "participationRate": overall_rate,
             "registered": total_registered,
             "active": total_active,
+            "specialties": {
+                key: {
+                    "participationRate": spec["participationRate"],
+                    "registered": spec["registered"],
+                    "active": spec["active"],
+                }
+                for key, spec in specialties.items()
+            },
         }
 
         # Add affordability to summary
@@ -431,12 +439,32 @@ def build_hrr_summary(summary_counties, crosswalk_path):
             for c in hrr_data["counties"]
         )
         rate = round(total_active / total_reg * 100, 1) if total_reg > 0 else 0
+
+        # Aggregate per-specialty data across counties in this HRR
+        hrr_specialties = {}
+        for spec_key in TAXONOMY_MAP.keys():
+            spec_reg = sum(
+                summary_counties.get(c, {}).get("specialties", {}).get(spec_key, {}).get("registered", 0)
+                for c in hrr_data["counties"]
+            )
+            spec_active = sum(
+                summary_counties.get(c, {}).get("specialties", {}).get(spec_key, {}).get("active", 0)
+                for c in hrr_data["counties"]
+            )
+            if spec_reg > 0:
+                hrr_specialties[spec_key] = {
+                    "participationRate": round(spec_active / spec_reg * 100, 1),
+                    "registered": spec_reg,
+                    "active": spec_active,
+                }
+
         hrr_summary[hrr_name] = {
             "participationRate": rate,
             "registered": total_reg,
             "active": total_active,
             "population": hrr_data["population"],
             "counties": hrr_data["counties"],
+            "specialties": hrr_specialties,
         }
 
     print(f"\nHRR aggregation: {len(hrr_summary)} HRRs from {len(summary_counties)} counties")

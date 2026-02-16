@@ -139,6 +139,7 @@
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Feb 16, 2026 | v183 | Access Explorer: specialty filter on statewide map, per-specialty data for 58 counties/24 HRRs, county detail fallback table |
 | Feb 3, 2026 | v156+ | Fixed HTTP→HTTPS canonical redirect, sitemap trailing slashes, membership application database bug, recovered 3 lost applications via Brevo sync |
 | Jan 30, 2026 | v155 | 404 page: added issue reporting form with /api/contact integration |
 | Jan 30, 2026 | - | Created 2026 webinar series slides (Feb, April, June) |

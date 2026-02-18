@@ -863,11 +863,11 @@ function renderAlerts() {
       </div>`;
     } else if (diff != null && diff < 0) {
       html += `<div class="alert-item warning">
-        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%, ${absDiff}pp below state median of ${median}%
+        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%, below state median
       </div>`;
     } else {
       html += `<div class="alert-item ok">
-        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%${diff != null ? `, ${absDiff}pp above state median of ${median}%` : ''}
+        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%, above state median
       </div>`;
     }
   });

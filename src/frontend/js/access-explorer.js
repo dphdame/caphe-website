@@ -60,18 +60,40 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHrrCrosswalk();
 });
 
+// ============ Accessibility Helpers ============
+
+function announceToScreenReader(message) {
+  const announcer = document.getElementById('sr-announcer');
+  if (announcer) {
+    announcer.textContent = '';
+    setTimeout(() => { announcer.textContent = message; }, 50);
+  }
+}
+
+function getRateSeverity(rate) {
+  if (rate == null) return { label: 'No data', cls: '' };
+  if (rate < 20) return { label: 'Critical', cls: 'severity-critical' };
+  if (rate < 30) return { label: 'Low', cls: 'severity-low' };
+  if (rate < 40) return { label: 'Fair', cls: 'severity-fair' };
+  return { label: 'Good', cls: 'severity-good' };
+}
+
 // ============ County Autocomplete ============
 
 function initCountyAutocomplete() {
   const input = document.getElementById('county-input');
   const suggestionsDiv = document.getElementById('county-suggestions');
+  let selectedIndex = -1;
 
   input.addEventListener('input', () => {
     const query = input.value.toLowerCase().replace(' county', '');
+    selectedIndex = -1;
+    input.setAttribute('aria-activedescendant', '');
 
     if (query.length < 2) {
       suggestionsDiv.innerHTML = '';
       suggestionsDiv.style.display = 'none';
+      input.setAttribute('aria-expanded', 'false');
       return;
     }
 
@@ -80,44 +102,77 @@ function initCountyAutocomplete() {
     ).slice(0, 5);
 
     if (matches.length > 0) {
-      suggestionsDiv.innerHTML = matches.map(county =>
-        `<div class="suggestion-item" data-county="${county}">${county} County</div>`
+      suggestionsDiv.innerHTML = matches.map((county, i) =>
+        `<div class="suggestion-item" id="suggestion-${i}" role="option" data-county="${county}">${county} County</div>`
       ).join('');
       suggestionsDiv.style.display = 'block';
+      input.setAttribute('aria-expanded', 'true');
 
       suggestionsDiv.querySelectorAll('.suggestion-item').forEach(item => {
         item.addEventListener('click', () => {
           const county = item.dataset.county;
           input.value = `${county} County`;
           suggestionsDiv.style.display = 'none';
+          input.setAttribute('aria-expanded', 'false');
           loadCountyData(county);
         });
       });
     } else {
-      suggestionsDiv.innerHTML = '<div class="suggestion-item" style="color: var(--color-text-muted);">No matching counties</div>';
+      suggestionsDiv.innerHTML = '<div class="suggestion-item" role="option" style="color: var(--color-text-muted);">No matching counties</div>';
       suggestionsDiv.style.display = 'block';
+      input.setAttribute('aria-expanded', 'true');
     }
   });
 
-  // Allow Enter key to select first match
+  // Keyboard navigation for autocomplete
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    const suggestions = suggestionsDiv.querySelectorAll('.suggestion-item[data-county]');
+
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
-      const firstMatch = suggestionsDiv.querySelector('.suggestion-item[data-county]');
-      if (firstMatch) {
-        firstMatch.click();
+      selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+      updateSuggestionSelection(suggestions, input);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, -1);
+      updateSuggestionSelection(suggestions, input);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+        suggestions[selectedIndex].click();
       } else {
-        // Try exact match
-        const query = input.value.toLowerCase().replace(' county', '');
-        const match = CALIFORNIA_COUNTIES.find(c => c.toLowerCase() === query);
-        if (match) {
-          input.value = `${match} County`;
-          suggestionsDiv.style.display = 'none';
-          loadCountyData(match);
+        const firstMatch = suggestionsDiv.querySelector('.suggestion-item[data-county]');
+        if (firstMatch) {
+          firstMatch.click();
+        } else {
+          const query = input.value.toLowerCase().replace(' county', '');
+          const match = CALIFORNIA_COUNTIES.find(c => c.toLowerCase() === query);
+          if (match) {
+            input.value = `${match} County`;
+            suggestionsDiv.style.display = 'none';
+            input.setAttribute('aria-expanded', 'false');
+            loadCountyData(match);
+          }
         }
       }
+    } else if (e.key === 'Escape') {
+      suggestionsDiv.style.display = 'none';
+      input.setAttribute('aria-expanded', 'false');
+      selectedIndex = -1;
     }
   });
+
+  function updateSuggestionSelection(suggestions, inputEl) {
+    suggestions.forEach((item, i) => {
+      item.classList.toggle('selected', i === selectedIndex);
+    });
+    if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+      inputEl.setAttribute('aria-activedescendant', suggestions[selectedIndex].id);
+      suggestions[selectedIndex].scrollIntoView({ block: 'nearest' });
+    } else {
+      inputEl.setAttribute('aria-activedescendant', '');
+    }
+  }
 
   // Hide suggestions when clicking outside
   document.addEventListener('click', (e) => {
@@ -132,6 +187,16 @@ function initCountyAutocomplete() {
 async function loadCountyData(countyName) {
   const fileName = countyName.toLowerCase().replace(/\s+/g, '_');
 
+  // Show loading state
+  announceToScreenReader(`Loading data for ${countyName} County`);
+  const loadingEl = document.getElementById('loading-overlay');
+  if (loadingEl) {
+    loadingEl.querySelector('.loading-county-name').textContent = countyName;
+    loadingEl.classList.remove('hidden');
+  }
+  document.getElementById('map-placeholder').classList.add('hidden');
+  document.getElementById('results-panel').classList.remove('hidden');
+
   try {
     const response = await fetch(`/data/access-explorer/${fileName}.json`);
     if (!response.ok) {
@@ -139,6 +204,9 @@ async function loadCountyData(countyName) {
     }
 
     currentCountyData = await response.json();
+
+    // Hide loading
+    if (loadingEl) loadingEl.classList.add('hidden');
 
     // Sync county detail specialty with map specialty filter
     if (currentMapSpecialty !== 'all' && currentCountyData.specialties[currentMapSpecialty]) {
@@ -155,8 +223,6 @@ async function loadCountyData(countyName) {
     });
 
     // Show results, hide map and rankings panel
-    document.getElementById('map-placeholder').classList.add('hidden');
-    document.getElementById('results-panel').classList.remove('hidden');
     document.getElementById('specialty-section').classList.remove('hidden');
     document.getElementById('specialty-rankings').classList.add('hidden');
     // Collapse About section when viewing county detail
@@ -165,7 +231,28 @@ async function loadCountyData(countyName) {
 
     renderResults();
 
+    // Focus management: move focus to county title
+    const countyTitle = document.getElementById('county-title');
+    if (countyTitle) {
+      countyTitle.setAttribute('tabindex', '-1');
+      countyTitle.focus();
+    }
+
+    // Announce to screen readers
+    let totalReg = 0, totalAct = 0;
+    SPECIALTY_ORDER.forEach(key => {
+      if (currentCountyData.specialties[key]) {
+        totalReg += currentCountyData.specialties[key].registered;
+        totalAct += currentCountyData.specialties[key].active;
+      }
+    });
+    const overallRate = totalReg > 0 ? (totalAct / totalReg * 100).toFixed(1) : '0';
+    announceToScreenReader(`${countyName} County data loaded. ${overallRate}% participation rate.`);
+
   } catch (error) {
+    // Hide loading overlay
+    if (loadingEl) loadingEl.classList.add('hidden');
+
     // Fall back to specialty table from summary data
     const countyInfo = summaryData?.counties?.[countyName];
     if (countyInfo && countyInfo.specialties) {
@@ -413,12 +500,15 @@ function renderRateCards() {
     const pctActive = spec.registered > 0 ? (spec.active / spec.registered * 100) : 0;
     const pctPhantom = 100 - pctActive;
 
+    const severity = getRateSeverity(spec.participationRate);
+
     html += `
-      <div class="rate-card${isActive}" data-specialty="${key}" tabindex="0" role="button" aria-label="${spec.label}: ${spec.participationRate}% participation rate">
+      <div class="rate-card${isActive}" data-specialty="${key}" tabindex="0" role="button" aria-label="${spec.label}: ${spec.participationRate}% participation rate, ${severity.label}">
         <div class="rate-label">${spec.label}</div>
+        <div class="rate-severity ${severity.cls}">${severity.label}</div>
         <div class="rate-value ${rateClass}">${spec.participationRate}%</div>
         <div class="rate-change ${changeClass}">${changeSign}${spec.changeFrom2019}pp from 2019</div>
-        <div class="phantom-bar">
+        <div class="phantom-bar" aria-label="${Math.round(pctActive)}% active, ${Math.round(pctPhantom)}% phantom">
           <div class="phantom-bar-active" style="width: ${pctActive}%"></div>
           <div class="phantom-bar-phantom" style="width: ${pctPhantom}%"></div>
         </div>
@@ -807,9 +897,29 @@ function initMapInteraction() {
   // Click handler (delegated)
   mapWrapper.addEventListener('click', handleMapClick);
 
+  // Keyboard handler for SVG county paths
+  mapWrapper.addEventListener('keydown', (e) => {
+    const path = e.target.closest('path[data-county]');
+    if (!path) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleMapClick({ target: path });
+    }
+  });
+
   // Hover handlers for tooltip
   mapWrapper.addEventListener('mousemove', handleMapHover);
   mapWrapper.addEventListener('mouseleave', () => {
+    const tooltip = document.getElementById('map-tooltip');
+    if (tooltip) tooltip.classList.add('hidden');
+  });
+
+  // Focus handler for tooltip on keyboard nav
+  mapWrapper.addEventListener('focusin', (e) => {
+    const path = e.target.closest('path[data-county]');
+    if (path) handleMapHover({ target: path, clientX: 0, clientY: 0, isFocus: true });
+  });
+  mapWrapper.addEventListener('focusout', () => {
     const tooltip = document.getElementById('map-tooltip');
     if (tooltip) tooltip.classList.add('hidden');
   });
@@ -844,6 +954,10 @@ function initMap() {
     if (path) {
       const rate = getCountyRate(data, currentMapSpecialty);
       path.style.fill = getMapColor(rate);
+      // Keyboard accessibility
+      path.setAttribute('tabindex', '0');
+      path.setAttribute('role', 'button');
+      path.setAttribute('aria-label', `${name} County: ${rate != null ? rate + '% participation' : 'no data'}`);
     }
   });
 }
@@ -1067,6 +1181,7 @@ function initMapHrr() {
     if (path && hrrs[hrrName]) {
       const rate = getHrrRate(hrrs[hrrName], currentMapSpecialty);
       path.style.fill = getMapColor(rate);
+      path.setAttribute('aria-label', `${countyName} County (${hrrName} HRR): ${rate != null ? rate + '% participation' : 'no data'}`);
     }
   });
 }
@@ -1545,6 +1660,9 @@ function renderSpecialtyRankings(specialty) {
   initRankingsSort(stats.rankings);
 
   panel.classList.remove('hidden');
+
+  // Announce to screen readers
+  announceToScreenReader(`${label} rankings: ${stats.stateRate}% statewide rate. ${stats.deserts.length} access desert${stats.deserts.length !== 1 ? 's' : ''} identified.`);
 }
 
 function renderRankingsTable(rankings) {
@@ -1605,8 +1723,11 @@ function initRankingsSort(rankings) {
     // Remove old listeners by cloning
     const newTh = th.cloneNode(true);
     th.parentNode.replaceChild(newTh, th);
+    newTh.setAttribute('tabindex', '0');
+    newTh.setAttribute('role', 'columnheader');
+    newTh.setAttribute('aria-sort', newTh.dataset.sort === rankingsSortColumn ? (rankingsSortAsc ? 'ascending' : 'descending') : 'none');
 
-    newTh.addEventListener('click', () => {
+    function handleSort() {
       const col = newTh.dataset.sort;
       if (rankingsSortColumn === col) {
         rankingsSortAsc = !rankingsSortAsc;
@@ -1615,6 +1736,14 @@ function initRankingsSort(rankings) {
         rankingsSortAsc = col === 'name' ? true : true;
       }
       renderRankingsTable(rankings);
+    }
+
+    newTh.addEventListener('click', handleSort);
+    newTh.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleSort();
+      }
     });
   });
 }

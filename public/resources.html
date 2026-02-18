@@ -79,43 +79,204 @@
     </div>
   </nav>
 
+  <style>
+    .tool-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+    @media (max-width: 900px) {
+      .tool-cards-grid { grid-template-columns: 1fr; }
+    }
+    .tool-card {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .tool-card-header {
+      padding: var(--space-lg) var(--space-lg) var(--space-md);
+      color: white;
+      position: relative;
+    }
+    .tool-card-header h2 {
+      font-size: 1.35rem;
+      margin: 0 0 0.25rem;
+      color: white;
+    }
+    .tool-card-header .tool-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255,255,255,0.2);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+    }
+    .tool-card-stat {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-lg);
+      background: rgba(0,0,0,0.03);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .tool-card-stat .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+    .tool-card-stat .stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+    .tool-card-stat .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-secondary);
+    }
+    .tool-card-body {
+      padding: var(--space-md) var(--space-lg) var(--space-lg);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .tool-card-body p {
+      flex: 1;
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+      line-height: 1.55;
+    }
+    .tool-card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .tool-card-cta .arrow { transition: transform 0.2s; }
+    .tool-card:hover .tool-card-cta .arrow { transform: translateX(3px); }
+
+    /* Card color themes */
+    .tool-card--methods .tool-card-header { background: linear-gradient(135deg, #1565C0, #1976D2); }
+    .tool-card--methods .tool-card-cta { color: #1565C0; }
+    .tool-card--roi .tool-card-header { background: linear-gradient(135deg, #E65100, #F57C00); }
+    .tool-card--roi .tool-card-cta { color: #E65100; }
+    .tool-card--access .tool-card-header { background: linear-gradient(135deg, #00695C, #00897B); }
+    .tool-card--access .tool-card-cta { color: #00695C; }
+  </style>
+
   <!-- Page Header -->
   <section class="page-header">
     <div class="container">
       <div class="section-eyebrow">Resources</div>
       <h1 class="page-title">Learn & Research</h1>
       <p class="page-subtitle">
-        Interactive learning modules and curated reference materials for health economics.
+        Interactive tools and curated reference materials for health economics.
       </p>
     </div>
   </section>
 
-  <!-- Resource Options -->
+  <!-- Interactive Tools -->
   <section class="section-sm">
     <div class="container">
-      <div class="resource-cards-grid">
+      <div class="section-header">
+        <div class="section-eyebrow">Tools</div>
+        <h2 class="section-title">Interactive Tools</h2>
+        <p class="section-subtitle">
+          Free, open-access tools for California health economics research and policy analysis.
+        </p>
+      </div>
 
-        <!-- Methods Lab Card - Primary -->
-        <a href="/methods-lab/" class="card" style="text-decoration: none; display: flex; flex-direction: column;">
-          <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--space-sm); color: var(--color-text);">Methods Lab</h2>
-          <p style="flex: 1; margin-bottom: var(--space-lg);">
-            Interactive tutorials teaching health economics methods through California case studies.
-            Hands-on modules with sample data and policy applications built by CAPHE economists.
-          </p>
-          <div style="display: flex; align-items: center; gap: var(--space-md);">
-            <span class="btn btn-primary">Explore Methods Lab</span>
+      <div class="tool-cards-grid">
+
+        <!-- Methods Lab -->
+        <a href="/methods-lab/" class="tool-card tool-card--methods">
+          <div class="tool-card-header">
+            <span class="tool-tag">Learning</span>
+            <h2>Methods Lab</h2>
+          </div>
+          <div class="tool-card-stat">
+            <div class="stat-item">
+              <div class="stat-value">37</div>
+              <div class="stat-label">Modules</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">6</div>
+              <div class="stat-label">Methods</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">CA</div>
+              <div class="stat-label">Case Studies</div>
+            </div>
+          </div>
+          <div class="tool-card-body">
+            <p>Interactive tutorials teaching health economics methods through California case studies. Hands-on modules with sample data and policy applications.</p>
+            <span class="tool-card-cta">Explore Methods Lab <span class="arrow">&rarr;</span></span>
           </div>
         </a>
 
-        <!-- ROI Calculator Card -->
-        <a href="/tools/lha-calculator/" class="card" style="text-decoration: none; display: flex; flex-direction: column;">
-          <h2 style="font-size: var(--font-size-xl); margin-bottom: var(--space-sm); color: var(--color-text);">ROI Calculator</h2>
-          <p style="flex: 1; margin-bottom: var(--space-lg);">
-            Estimate the return on investment for your county's public health spending.
-            Based on peer-reviewed Lewbel IV estimation of mortality effects from California county data.
-          </p>
-          <div style="display: flex; align-items: center; gap: var(--space-md);">
-            <span class="btn btn-primary">Calculate ROI</span>
+        <!-- ROI Calculator -->
+        <a href="/tools/lha-calculator/" class="tool-card tool-card--roi">
+          <div class="tool-card-header">
+            <span class="tool-tag">Analysis</span>
+            <h2>ROI Calculator</h2>
+          </div>
+          <div class="tool-card-stat">
+            <div class="stat-item">
+              <div class="stat-value">58</div>
+              <div class="stat-label">Counties</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">IV</div>
+              <div class="stat-label">Estimation</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">$</div>
+              <div class="stat-label">Per Life</div>
+            </div>
+          </div>
+          <div class="tool-card-body">
+            <p>Estimate the return on investment for county public health spending. Based on peer-reviewed Lewbel IV estimation of mortality effects from California county data.</p>
+            <span class="tool-card-cta">Calculate ROI <span class="arrow">&rarr;</span></span>
+          </div>
+        </a>
+
+        <!-- Access Explorer -->
+        <a href="/tools/access-explorer/" class="tool-card tool-card--access">
+          <div class="tool-card-header">
+            <span class="tool-tag">Data</span>
+            <h2>Access Explorer</h2>
+          </div>
+          <div class="tool-card-stat">
+            <div class="stat-item">
+              <div class="stat-value">58</div>
+              <div class="stat-label">Counties</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">6</div>
+              <div class="stat-label">Specialties</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">7yr</div>
+              <div class="stat-label">Trends</div>
+            </div>
+          </div>
+          <div class="tool-card-body">
+            <p>Medi-Cal provider participation rates by county and specialty. See how flat statewide reimbursement and local operating costs shape the provider pool across California.</p>
+            <span class="tool-card-cta">Explore Access Data <span class="arrow">&rarr;</span></span>
           </div>
         </a>
 
@@ -190,7 +351,7 @@
           </div>
           <p>
             A learning collaborative dedicated to applying data-driven methods to public health
-            challenges across California's 57 counties.
+            challenges across California's 58 counties.
           </p>
         </div>
         <div>

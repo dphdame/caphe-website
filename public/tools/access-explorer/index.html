@@ -496,6 +496,67 @@
       vertical-align: middle;
     }
 
+    /* Specialty Rankings Panel (statewide view when map specialty selected) */
+    #specialty-rankings {
+      margin-top: var(--space-lg);
+      padding: var(--space-lg);
+      background: white;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+    }
+
+    #specialty-rankings h3 {
+      font-size: 1.1rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .desert-alert {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: #fff5f5;
+      border-left: 3px solid var(--color-error);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-sm);
+      font-size: var(--font-size-sm);
+    }
+
+    .desert-alert.warning {
+      background: #fff8e1;
+      border-left-color: var(--color-warning);
+    }
+
+    #rankings-table th[data-sort] {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #rankings-table th[data-sort]:hover {
+      color: var(--color-primary);
+    }
+
+    #rankings-table th.sort-active {
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    #rankings-table td.county-link {
+      cursor: pointer;
+      color: var(--color-primary);
+    }
+
+    #rankings-table td.county-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      #specialty-rankings {
+        padding: var(--space-md);
+        overflow-x: auto;
+      }
+    }
+
     /* Hidden utility */
     .hidden {
       display: none !important;
@@ -843,6 +904,27 @@
             <div id="county-suggestions" class="county-suggestions"></div>
           </div>
         </div><!-- end map-placeholder -->
+
+      <!-- Specialty Rankings (shown when a specific specialty is selected on map) -->
+      <div id="specialty-rankings" class="hidden">
+        <h3 id="rankings-title"></h3>
+        <div id="rankings-summary" class="summary-stats"></div>
+        <div id="desert-alerts"></div>
+        <div style="max-height: 500px; overflow-y: auto;">
+          <table class="hrr-county-table" id="rankings-table">
+            <thead>
+              <tr>
+                <th data-sort="name">County</th>
+                <th data-sort="rate">Rate &#9650;</th>
+                <th data-sort="active">Active</th>
+                <th data-sort="registered">Registered</th>
+                <th data-sort="gap">Phantom Gap</th>
+              </tr>
+            </thead>
+            <tbody id="rankings-body"></tbody>
+          </table>
+        </div>
+      </div>
 
       <!-- Bottom: Controls + Results (shown after county selection) -->
       <div class="data-section">

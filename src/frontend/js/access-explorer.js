@@ -44,6 +44,8 @@ let barChart = null;
 let trendChart = null;
 let scatterChart = null;
 let summaryData = null;
+let rankingsSortColumn = 'rate';
+let rankingsSortAsc = true;   // true = ascending (worst first)
 let currentView = 'county';   // 'county' or 'hrr'
 let hrrCrosswalk = null;       // loaded from county_hrr_crosswalk.json
 
@@ -152,10 +154,11 @@ async function loadCountyData(countyName) {
       tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
-    // Show results, hide map
+    // Show results, hide map and rankings panel
     document.getElementById('map-placeholder').classList.add('hidden');
     document.getElementById('results-panel').classList.remove('hidden');
     document.getElementById('specialty-section').classList.remove('hidden');
+    document.getElementById('specialty-rankings').classList.add('hidden');
 
     renderResults();
 
@@ -186,6 +189,7 @@ function renderCountySummaryTable(countyName, countyInfo) {
   document.getElementById('map-placeholder').classList.add('hidden');
   document.getElementById('results-panel').classList.remove('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
+  document.getElementById('specialty-rankings').classList.add('hidden');
 
   // Summary stats
   document.getElementById('stat-registered').textContent = countyInfo.registered.toLocaleString();
@@ -807,6 +811,10 @@ function showMap() {
   document.getElementById('map-placeholder').classList.remove('hidden');
   document.getElementById('results-panel').classList.add('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
+  // Show specialty rankings if a specialty is selected
+  if (currentMapSpecialty !== 'all' && summaryData) {
+    renderSpecialtyRankings(currentMapSpecialty);
+  }
 
   // Clear input and selection
   document.getElementById('county-input').value = '';
@@ -842,6 +850,8 @@ function initMapSpecialtyFilter() {
       }
       // Update legend title
       updateLegendTitle();
+      // Show/hide specialty rankings panel
+      renderSpecialtyRankings(currentMapSpecialty);
     });
   });
 }
@@ -899,6 +909,7 @@ function switchView(view) {
   document.getElementById('map-placeholder').classList.remove('hidden');
   document.getElementById('results-panel').classList.add('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
+  document.getElementById('specialty-rankings').classList.add('hidden');
   document.getElementById('county-input').value = '';
   currentCountyData = null;
 
@@ -970,6 +981,7 @@ function renderHrrResults(hrrName) {
   document.getElementById('map-placeholder').classList.add('hidden');
   document.getElementById('results-panel').classList.remove('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
+  document.getElementById('specialty-rankings').classList.add('hidden');
 
   // Update summary stats (specialty-aware)
   const hrrRate = getHrrRate(hrrData, currentMapSpecialty);
@@ -1295,6 +1307,188 @@ function renderScatterPlot(currentCounty) {
         ctx.restore();
       }
     }]
+  });
+}
+
+// ============ Specialty Rankings Panel ============
+
+function computeSpecialtyStats(specialty) {
+  if (!summaryData || !summaryData.counties) return null;
+
+  let totalRegistered = 0;
+  let totalActive = 0;
+  const rankings = [];
+  const deserts = [];
+
+  Object.entries(summaryData.counties).forEach(([name, countyData]) => {
+    const specData = countyData.specialties?.[specialty];
+    if (!specData) {
+      // County has no data for this specialty — treat as desert
+      deserts.push({ name, reason: 'no_data' });
+      rankings.push({ name, rate: null, active: 0, registered: 0, gap: 0 });
+      return;
+    }
+
+    const reg = specData.registered || 0;
+    const act = specData.active || 0;
+    const rate = specData.participationRate;
+    const gap = reg - act;
+
+    totalRegistered += reg;
+    totalActive += act;
+    rankings.push({ name, rate, active: act, registered: reg, gap });
+
+    if (act === 0 && reg > 0) {
+      deserts.push({ name, reason: 'zero_active', registered: reg });
+    } else if (rate != null && rate < 20 && reg > 0) {
+      deserts.push({ name, reason: 'low_rate', rate, active: act, registered: reg });
+    }
+  });
+
+  const stateRate = totalRegistered > 0
+    ? parseFloat((totalActive / totalRegistered * 100).toFixed(1))
+    : 0;
+
+  return { totalRegistered, totalActive, stateRate, deserts, rankings };
+}
+
+function renderSpecialtyRankings(specialty) {
+  const panel = document.getElementById('specialty-rankings');
+  if (!panel) return;
+
+  // Hide panel for "all" or when no summary data
+  if (specialty === 'all' || !summaryData) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const stats = computeSpecialtyStats(specialty);
+  if (!stats) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const label = SPECIALTY_LABEL_MAP[specialty] || specialty;
+
+  // Title
+  document.getElementById('rankings-title').textContent =
+    label + ' Participation by County';
+
+  // Summary stats
+  document.getElementById('rankings-summary').innerHTML = `
+    <div class="summary-stat">
+      <div class="stat-number">${stats.totalRegistered.toLocaleString()}</div>
+      <div class="stat-desc">Statewide Registered</div>
+    </div>
+    <div class="summary-stat">
+      <div class="stat-number">${stats.totalActive.toLocaleString()}</div>
+      <div class="stat-desc">Statewide Active</div>
+    </div>
+    <div class="summary-stat">
+      <div class="stat-number ${getRateClass(stats.stateRate)}">${stats.stateRate}%</div>
+      <div class="stat-desc">Statewide Rate</div>
+    </div>
+  `;
+
+  // Desert alerts
+  const alertsEl = document.getElementById('desert-alerts');
+  if (stats.deserts.length > 0) {
+    alertsEl.innerHTML = stats.deserts.map(d => {
+      if (d.reason === 'zero_active') {
+        return `<div class="desert-alert">
+          <strong>${d.name}:</strong>&nbsp;0 active ${label} providers out of ${d.registered} registered
+        </div>`;
+      } else if (d.reason === 'low_rate') {
+        return `<div class="desert-alert warning">
+          <strong>${d.name}:</strong>&nbsp;${d.rate}% participation (${d.active} of ${d.registered})
+        </div>`;
+      }
+      return '';
+    }).join('');
+  } else {
+    alertsEl.innerHTML = '';
+  }
+
+  // Sort and render table
+  rankingsSortColumn = 'rate';
+  rankingsSortAsc = true;
+  renderRankingsTable(stats.rankings);
+
+  // Init sort headers
+  initRankingsSort(stats.rankings);
+
+  panel.classList.remove('hidden');
+}
+
+function renderRankingsTable(rankings) {
+  const sorted = [...rankings].sort((a, b) => {
+    let aVal, bVal;
+    switch (rankingsSortColumn) {
+      case 'name': aVal = a.name; bVal = b.name; break;
+      case 'rate': aVal = a.rate ?? -1; bVal = b.rate ?? -1; break;
+      case 'active': aVal = a.active; bVal = b.active; break;
+      case 'registered': aVal = a.registered; bVal = b.registered; break;
+      case 'gap': aVal = a.gap; bVal = b.gap; break;
+      default: aVal = a.rate ?? -1; bVal = b.rate ?? -1;
+    }
+    if (rankingsSortColumn === 'name') {
+      return rankingsSortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    }
+    return rankingsSortAsc ? aVal - bVal : bVal - aVal;
+  });
+
+  const tbody = document.getElementById('rankings-body');
+  tbody.innerHTML = sorted.map(row => {
+    const rateDisplay = row.rate != null ? row.rate + '%' : 'N/A';
+    const rateClass = row.rate != null ? getRateClass(row.rate) : '';
+    return `<tr>
+      <td class="county-link" data-rankings-county="${row.name}">${row.name}</td>
+      <td class="${rateClass}" style="font-weight: 600; text-align: right;">${rateDisplay}</td>
+      <td style="text-align: right;">${row.active.toLocaleString()}</td>
+      <td style="text-align: right;">${row.registered.toLocaleString()}</td>
+      <td style="text-align: right;">${row.gap.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  // Click county name to load detail
+  tbody.querySelectorAll('[data-rankings-county]').forEach(td => {
+    td.addEventListener('click', () => {
+      const name = td.dataset.rankingsCounty;
+      document.getElementById('county-input').value = name + ' County';
+      document.getElementById('specialty-rankings').classList.add('hidden');
+      loadCountyData(name);
+    });
+  });
+
+  // Update header arrows
+  document.querySelectorAll('#rankings-table th[data-sort]').forEach(th => {
+    th.classList.toggle('sort-active', th.dataset.sort === rankingsSortColumn);
+    // Reset all header text
+    const col = th.dataset.sort;
+    const labels = { name: 'County', rate: 'Rate', active: 'Active', registered: 'Registered', gap: 'Phantom Gap' };
+    const arrow = th.dataset.sort === rankingsSortColumn
+      ? (rankingsSortAsc ? ' \u25B2' : ' \u25BC')
+      : '';
+    th.textContent = labels[col] + arrow;
+  });
+}
+
+function initRankingsSort(rankings) {
+  document.querySelectorAll('#rankings-table th[data-sort]').forEach(th => {
+    // Remove old listeners by cloning
+    const newTh = th.cloneNode(true);
+    th.parentNode.replaceChild(newTh, th);
+
+    newTh.addEventListener('click', () => {
+      const col = newTh.dataset.sort;
+      if (rankingsSortColumn === col) {
+        rankingsSortAsc = !rankingsSortAsc;
+      } else {
+        rankingsSortColumn = col;
+        rankingsSortAsc = col === 'name' ? true : true;
+      }
+      renderRankingsTable(rankings);
+    });
   });
 }
 

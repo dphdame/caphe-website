@@ -70,12 +70,15 @@ function announceToScreenReader(message) {
   }
 }
 
-function getRateSeverity(rate) {
-  if (rate == null) return { label: 'No data', cls: '' };
-  if (rate < 20) return { label: 'Critical', cls: 'severity-critical' };
-  if (rate < 30) return { label: 'Low', cls: 'severity-low' };
-  if (rate < 40) return { label: 'Fair', cls: 'severity-fair' };
-  return { label: 'Good', cls: 'severity-good' };
+// Severity based on active providers per 10,000 Medicaid beneficiaries
+// Thresholds derived from California county distribution (ACS 2022 C27007)
+function getRateSeverity(active, medicaidPop) {
+  if (active == null || !medicaidPop || medicaidPop === 0) return { label: 'No data', cls: '', ratio: null };
+  const ratio = (active / medicaidPop) * 10000;
+  if (ratio < 2.0) return { label: 'Critical', cls: 'severity-critical', ratio };
+  if (ratio < 3.5) return { label: 'Low', cls: 'severity-low', ratio };
+  if (ratio < 6.0) return { label: 'Fair', cls: 'severity-fair', ratio };
+  return { label: 'Good', cls: 'severity-good', ratio };
 }
 
 // ============ County Autocomplete ============
@@ -511,6 +514,10 @@ function renderRateCards() {
   const container = document.getElementById('rate-cards');
   const data = currentCountyData;
 
+  // Get Medicaid population from summary data for per-capita severity
+  const countyName = data.county;
+  const medicaidPop = summaryData?.counties?.[countyName]?.medicaid_population || 0;
+
   let html = '';
   SPECIALTY_ORDER.forEach(key => {
     const spec = data.specialties[key];
@@ -523,12 +530,13 @@ function renderRateCards() {
     const pctActive = spec.registered > 0 ? (spec.active / spec.registered * 100) : 0;
     const pctPhantom = 100 - pctActive;
 
-    const severity = getRateSeverity(spec.participationRate);
+    const severity = getRateSeverity(spec.active, medicaidPop);
+    const ratioText = severity.ratio != null ? `${severity.ratio.toFixed(1)} per 10K` : '';
 
     html += `
-      <div class="rate-card${isActive}" data-specialty="${key}" tabindex="0" role="button" aria-label="${spec.label}: ${spec.participationRate}% participation rate, ${severity.label}">
+      <div class="rate-card${isActive}" data-specialty="${key}" tabindex="0" role="button" aria-label="${spec.label}: ${spec.participationRate}% participation rate, ${ratioText} beneficiaries, ${severity.label}">
         <div class="rate-label">${spec.label}</div>
-        <div class="rate-severity ${severity.cls}">${severity.label}</div>
+        <div class="rate-severity ${severity.cls}" title="${ratioText} Medicaid beneficiaries">${severity.label}</div>
         <div class="rate-value ${rateClass}">${spec.participationRate}%</div>
         <div class="rate-change ${changeClass}">${changeSign}${spec.changeFrom2019}pp from 2019</div>
         <div class="phantom-bar" aria-label="${Math.round(pctActive)}% active, ${Math.round(pctPhantom)}% phantom">

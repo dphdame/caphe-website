@@ -1053,14 +1053,14 @@ function initMapInteraction() {
     showMapBtn.addEventListener('click', showMap);
   }
 
-  // "About this tool" link — show About section and scroll to it
+  // "About this tool" link — return to map view and scroll to About section
   const aboutLink = document.getElementById('about-link');
   if (aboutLink) {
     aboutLink.addEventListener('click', (e) => {
       e.preventDefault();
+      showMap();
       const aboutSection = document.getElementById('about-section');
       if (aboutSection) {
-        aboutSection.classList.remove('hidden');
         aboutSection.scrollIntoView({ behavior: 'smooth' });
       }
     });

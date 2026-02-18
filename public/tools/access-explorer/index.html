@@ -78,20 +78,22 @@
 
     .map-sidebar h3 {
       font-size: 0.95rem;
-      margin: 0 0 var(--space-sm);
+      margin: 0 0 var(--space-xs);
+      text-align: center;
     }
 
     .sidebar-overall {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--color-error);
-      margin-bottom: var(--space-xs);
+      color: #c62828;
+      text-align: center;
     }
 
     .sidebar-overall-label {
       font-size: 0.8rem;
       color: var(--color-text-muted);
       margin-bottom: var(--space-md);
+      text-align: center;
     }
 
     .sidebar-specialty {
@@ -113,10 +115,40 @@
       font-weight: 600;
     }
 
-    .sidebar-spec-rate.rate-red { color: var(--color-error); }
-    .sidebar-spec-rate.rate-orange { color: #e65100; }
-    .sidebar-spec-rate.rate-yellow { color: #f57f17; }
-    .sidebar-spec-rate.rate-green { color: #2e7d32; }
+    /* Colorblind-safe palette (blue-orange diverging) */
+    .sidebar-spec-rate.rate-critical { color: #c62828; }
+    .sidebar-spec-rate.rate-low { color: #d4652f; }
+    .sidebar-spec-rate.rate-moderate { color: #5c6bc0; }
+    .sidebar-spec-rate.rate-adequate { color: #1565c0; }
+
+    .sidebar-legend {
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--color-border-light);
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px var(--space-sm);
+    }
+
+    .sidebar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-critical { background: #c62828; }
+    .dot-low { background: #d4652f; }
+    .dot-moderate { background: #5c6bc0; }
+    .dot-adequate { background: #1565c0; }
 
     @media (max-width: 900px) {
       .map-with-sidebar {
@@ -1080,15 +1112,18 @@
             <h3>Across California</h3>
             <div class="sidebar-overall">37.4%</div>
             <div class="sidebar-overall-label">of licensed providers actively bill Medi-Cal</div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">Behavioral Health</span><span class="sidebar-spec-rate rate-red">27.3%</span></div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">Other Surgical</span><span class="sidebar-spec-rate rate-red">30.7%</span></div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">Dental</span><span class="sidebar-spec-rate rate-orange">35.8%</span></div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">OB/GYN</span><span class="sidebar-spec-rate rate-orange">38.5%</span></div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">Primary Care</span><span class="sidebar-spec-rate rate-yellow">41.5%</span></div>
-            <div class="sidebar-specialty"><span class="sidebar-spec-name">Pharmacy &amp; DME</span><span class="sidebar-spec-rate rate-green">72.1%</span></div>
-            <p style="margin-top: var(--space-md); font-size: 0.75rem; color: var(--color-text-muted); line-height: 1.4;">
-              Select a county on the map to see how it compares. Medi-Cal pays the same flat rate statewide with no geographic cost adjustment.
-            </p>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">Behavioral Health</span><span class="sidebar-spec-rate rate-critical">27.3%</span></div>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">Other Surgical</span><span class="sidebar-spec-rate rate-critical">30.7%</span></div>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">Dental</span><span class="sidebar-spec-rate rate-low">35.8%</span></div>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">OB/GYN</span><span class="sidebar-spec-rate rate-low">38.5%</span></div>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">Primary Care</span><span class="sidebar-spec-rate rate-moderate">41.5%</span></div>
+            <div class="sidebar-specialty"><span class="sidebar-spec-name">Pharmacy &amp; DME</span><span class="sidebar-spec-rate rate-adequate">72.1%</span></div>
+            <div class="sidebar-legend">
+              <div class="sidebar-legend-item"><span class="legend-dot dot-critical"></span> Critical (&lt;35%)</div>
+              <div class="sidebar-legend-item"><span class="legend-dot dot-low"></span> Low (35&ndash;40%)</div>
+              <div class="sidebar-legend-item"><span class="legend-dot dot-moderate"></span> Moderate (40&ndash;50%)</div>
+              <div class="sidebar-legend-item"><span class="legend-dot dot-adequate"></span> Adequate (&gt;50%)</div>
+            </div>
           </aside>
         </div><!-- end map-with-sidebar -->
         </div><!-- end map-placeholder -->

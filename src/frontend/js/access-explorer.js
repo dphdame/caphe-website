@@ -159,6 +159,9 @@ async function loadCountyData(countyName) {
     document.getElementById('results-panel').classList.remove('hidden');
     document.getElementById('specialty-section').classList.remove('hidden');
     document.getElementById('specialty-rankings').classList.add('hidden');
+    // Collapse About section when viewing county detail
+    const aboutSection = document.getElementById('about-section');
+    if (aboutSection) aboutSection.classList.add('hidden');
 
     renderResults();
 
@@ -190,6 +193,13 @@ function renderCountySummaryTable(countyName, countyInfo) {
   document.getElementById('results-panel').classList.remove('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
   document.getElementById('specialty-rankings').classList.add('hidden');
+
+  // Set county title
+  const titleEl = document.getElementById('county-title');
+  if (titleEl) titleEl.textContent = countyName + ' County';
+  // Collapse About section
+  const aboutSection = document.getElementById('about-section');
+  if (aboutSection) aboutSection.classList.add('hidden');
 
   // Summary stats
   document.getElementById('stat-registered').textContent = countyInfo.registered.toLocaleString();
@@ -248,10 +258,15 @@ function renderCountySummaryTable(countyName, countyInfo) {
 function renderResults() {
   if (!currentCountyData) return;
 
+  // Set county title
+  const titleEl = document.getElementById('county-title');
+  if (titleEl) titleEl.textContent = currentCountyData.county + ' County';
+
   // Unhide chart sections (may be hidden by HRR view)
   document.querySelectorAll('#results-panel .chart-section').forEach(s => s.classList.remove('hidden'));
   document.getElementById('specialty-section').classList.remove('hidden');
 
+  renderContextualContent();
   renderSummaryStats();
   renderRateCards();
   renderBarChart();
@@ -265,6 +280,98 @@ function renderResults() {
     renderAffordability(currentCountyData);
   } else {
     affSection.classList.add('hidden');
+  }
+}
+
+function renderContextualContent() {
+  const data = currentCountyData;
+  const county = data.county;
+
+  // Compute overall stats
+  let totalReg = 0, totalAct = 0;
+  SPECIALTY_ORDER.forEach(key => {
+    if (data.specialties[key]) {
+      totalReg += data.specialties[key].registered;
+      totalAct += data.specialties[key].active;
+    }
+  });
+  const overallRate = totalReg > 0 ? (totalAct / totalReg * 100).toFixed(1) : '0';
+  const phantomTotal = totalReg - totalAct;
+
+  // Find lowest and highest specialty
+  let lowestSpec = null, highestSpec = null;
+  SPECIALTY_ORDER.forEach(key => {
+    const s = data.specialties[key];
+    if (!s) return;
+    if (!lowestSpec || s.participationRate < lowestSpec.rate) {
+      lowestSpec = { key, label: s.label, rate: s.participationRate };
+    }
+    if (!highestSpec || s.participationRate > highestSpec.rate) {
+      highestSpec = { key, label: s.label, rate: s.participationRate };
+    }
+  });
+
+  // State average from summary data
+  const stateCounty = summaryData?.counties?.[county];
+  const stateAvgText = summaryData ? (() => {
+    let sReg = 0, sAct = 0;
+    Object.values(summaryData.counties).forEach(c => { sReg += c.registered || 0; sAct += c.active || 0; });
+    return sReg > 0 ? (sAct / sReg * 100).toFixed(1) : null;
+  })() : null;
+
+  // Cost context
+  const costAbove = data.affordability?.composite_cost_index
+    ? Math.round(data.affordability.composite_cost_index - 100)
+    : null;
+
+  // 1. County summary statement
+  const summaryEl = document.getElementById('county-summary-statement');
+  if (summaryEl) {
+    let stmt = `In ${county} County, ${overallRate}% of licensed providers actively bill Medi-Cal`;
+    if (stateAvgText) {
+      const comparison = parseFloat(overallRate) < parseFloat(stateAvgText) ? 'below' : 'above';
+      stmt += `, ${comparison} the ${stateAvgText}% statewide average`;
+    }
+    stmt += `. Out of ${totalReg.toLocaleString()} registered providers, ${phantomTotal.toLocaleString()} do not participate in the program.`;
+    if (costAbove !== null && Math.abs(costAbove) > 5) {
+      const dir = costAbove > 0 ? 'above' : 'below';
+      stmt += ` Practice operating costs here run ${Math.abs(costAbove)}% ${dir} the state average.`;
+    }
+    summaryEl.textContent = stmt;
+  }
+
+  // 2. Rate cards context
+  const rateCtx = document.getElementById('rate-cards-context');
+  if (rateCtx && lowestSpec && highestSpec) {
+    rateCtx.textContent = `Participation varies by specialty: ${highestSpec.label} is highest at ${highestSpec.rate}%, ` +
+      `while ${lowestSpec.label} is lowest at ${lowestSpec.rate}%. ` +
+      `The change from 2019 captures net shifts during COVID-19 and the Medicaid continuous enrollment unwinding.`;
+  }
+
+  // 3. Bar chart context and caption
+  const barCtx = document.getElementById('bar-chart-context');
+  if (barCtx) {
+    barCtx.textContent = `The gap between each bar pair is the phantom gap: providers licensed in ${county} County ` +
+      `who do not bill Medicaid. Where gaps are large, Medi-Cal reimbursement may not cover the opportunity cost ` +
+      `of serving private-pay or Medicare patients.`;
+  }
+  const barCap = document.getElementById('bar-chart-caption');
+  if (barCap) {
+    barCap.textContent = `Source: NPPES (registered) and HHS Medicaid Provider Spending, Feb 2026 (active). ` +
+      `Data covers trailing 12 months ending December 2024.`;
+  }
+
+  // 4. Trend chart context and caption
+  const trendCtx = document.getElementById('trend-chart-context');
+  if (trendCtx) {
+    trendCtx.textContent = `This index tracks whether provider participation is rising or falling relative to January 2019. ` +
+      `A value below 100 means fewer providers are billing Medicaid now than before the pandemic. ` +
+      `The COVID-19 onset and PHE unwinding markers help distinguish pandemic disruption from structural decline.`;
+  }
+  const trendCap = document.getElementById('trend-chart-caption');
+  if (trendCap) {
+    trendCap.textContent = `Source: Monthly participation rates from HHS Medicaid Provider Spending, ` +
+      `indexed to January 2019 = 100. ${county} County, January 2018 through December 2024.`;
   }
 }
 
@@ -712,6 +819,19 @@ function initMapInteraction() {
   if (showMapBtn) {
     showMapBtn.addEventListener('click', showMap);
   }
+
+  // "About this tool" link — show About section and scroll to it
+  const aboutLink = document.getElementById('about-link');
+  if (aboutLink) {
+    aboutLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const aboutSection = document.getElementById('about-section');
+      if (aboutSection) {
+        aboutSection.classList.remove('hidden');
+        aboutSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
 }
 
 function initMap() {
@@ -811,6 +931,9 @@ function showMap() {
   document.getElementById('map-placeholder').classList.remove('hidden');
   document.getElementById('results-panel').classList.add('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
+  // Restore About section
+  const aboutSection = document.getElementById('about-section');
+  if (aboutSection) aboutSection.classList.remove('hidden');
   // Show specialty rankings if a specialty is selected
   if (currentMapSpecialty !== 'all' && summaryData) {
     renderSpecialtyRankings(currentMapSpecialty);
@@ -982,6 +1105,10 @@ function renderHrrResults(hrrName) {
   document.getElementById('results-panel').classList.remove('hidden');
   document.getElementById('specialty-section').classList.add('hidden');
   document.getElementById('specialty-rankings').classList.add('hidden');
+
+  // Set HRR title
+  const titleEl = document.getElementById('county-title');
+  if (titleEl) titleEl.textContent = hrrName + ' Healthcare Market';
 
   // Update summary stats (specialty-aware)
   const hrrRate = getHrrRate(hrrData, currentMapSpecialty);

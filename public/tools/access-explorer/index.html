@@ -941,6 +941,8 @@
         <!-- Right: Results panel -->
         <div id="results-panel" class="hidden" role="region" aria-label="County provider access data" aria-live="polite">
           <button class="show-map-btn" id="show-map-btn" type="button">&#9664; Back to map</button>
+          <h2 id="county-title" style="font-size: 1.3rem; margin-bottom: var(--space-sm);"></h2>
+          <p id="county-summary-statement" class="section-description" style="margin-bottom: var(--space-md);"></p>
           <!-- Summary stats -->
           <div id="summary-stats" class="summary-stats">
             <div class="summary-stat">
@@ -958,22 +960,27 @@
           </div>
 
           <!-- Participation rate cards -->
+          <p id="rate-cards-context" class="section-description" style="margin-bottom: var(--space-sm);"></p>
           <div id="rate-cards" class="rate-cards"></div>
 
           <!-- Bar chart: registered vs active -->
           <div class="chart-section">
             <h3>Registered vs. Active Providers by Specialty</h3>
+            <p id="bar-chart-context" class="section-description"></p>
             <div class="chart-wrapper">
               <canvas id="bar-chart" aria-label="Horizontal bar chart comparing registered and active providers by specialty"></canvas>
             </div>
+            <p id="bar-chart-caption" style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;"></p>
           </div>
 
           <!-- Trend chart -->
           <div class="chart-section">
             <h3 id="trend-title">Monthly Participation Index (Jan 2019 = 100)</h3>
+            <p id="trend-chart-context" class="section-description"></p>
             <div class="chart-wrapper">
               <canvas id="trend-chart" aria-label="Line chart showing monthly participation trends from 2018 to 2024"></canvas>
             </div>
+            <p id="trend-chart-caption" style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;"></p>
             <div class="trend-annotations">
               <span style="color: var(--color-error);">COVID-19 onset (Mar 2020)</span>
               <span style="color: var(--color-warning);">PHE unwinding (Apr 2023)</span>
@@ -1010,6 +1017,9 @@
             </div>
           </div>
 
+          <p style="margin-top: var(--space-lg); font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            <a href="#about-section" id="about-link" style="color: var(--color-primary);">About this tool: data sources, methodology &amp; FAQ</a>
+          </p>
         </div><!-- end results-panel -->
       </div><!-- end data-section -->
 
@@ -1018,7 +1028,7 @@
   </section>
 
   <!-- Static FAQ + methodology (visible to AI crawlers) -->
-  <section style="max-width: 800px; margin: var(--space-2xl) auto; padding: 0 var(--space-lg);">
+  <section id="about-section" style="max-width: 800px; margin: var(--space-2xl) auto; padding: 0 var(--space-lg);">
     <h2 style="font-size: 1.5rem; margin-bottom: var(--space-md);">About the Access Explorer</h2>
 
     <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">The economic problem</h3>

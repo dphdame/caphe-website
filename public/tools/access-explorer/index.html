@@ -132,6 +132,54 @@
       gap: 3px var(--space-sm);
     }
 
+    .sidebar-legend-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .info-bubble {
+      position: relative;
+      cursor: help;
+      color: var(--color-primary);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .info-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: -8px;
+      width: 220px;
+      padding: var(--space-sm);
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 400;
+      line-height: 1.5;
+      border-radius: var(--radius-sm);
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .info-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 12px;
+      border: 5px solid transparent;
+      border-top-color: #1a1a2e;
+    }
+
+    .info-bubble:hover .info-tooltip,
+    .info-bubble:focus .info-tooltip {
+      display: block;
+    }
+
     .sidebar-legend-item {
       display: flex;
       align-items: center;
@@ -1119,6 +1167,12 @@
             <div class="sidebar-specialty"><span class="sidebar-spec-name">Primary Care</span><span class="sidebar-spec-rate rate-moderate">41.5%</span></div>
             <div class="sidebar-specialty"><span class="sidebar-spec-name">Pharmacy &amp; DME</span><span class="sidebar-spec-rate rate-adequate">72.1%</span></div>
             <div class="sidebar-legend">
+              <div class="sidebar-legend-header">
+                <span>Participation adequacy</span>
+                <span class="info-bubble" tabindex="0" role="button" aria-label="About these ratings">&#9432;
+                  <span class="info-tooltip">Ratings reflect how well the Medicaid-enrolled population can access each specialty. At critical levels (&lt;35%), fewer than 1 in 3 licensed providers accept Medi-Cal, leaving large gaps between directory listings and actual availability.</span>
+                </span>
+              </div>
               <div class="sidebar-legend-item"><span class="legend-dot dot-critical"></span> Critical (&lt;35%)</div>
               <div class="sidebar-legend-item"><span class="legend-dot dot-low"></span> Low (35&ndash;40%)</div>
               <div class="sidebar-legend-item"><span class="legend-dot dot-moderate"></span> Moderate (40&ndash;50%)</div>

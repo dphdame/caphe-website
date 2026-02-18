@@ -1454,7 +1454,6 @@ function renderAffordability(data) {
 
   renderCostCards(aff);
   renderInsightCallout(data.county, aff, data);
-  renderMedicareComparison(data.county, aff);
   renderScatterPlot(data.county);
 }
 
@@ -1502,69 +1501,74 @@ function renderInsightCallout(countyName, aff, data) {
   const el = document.getElementById('cost-insight');
   const composite = aff.composite_cost_index;
   const effReimb = aff.effective_reimbursement_index;
-  const wageIdx = aff.wage_index;
-  const rentIdx = aff.rent_index;
+  const purchasingPower = Math.round(effReimb);
 
-  const aboveBelow = composite > 100 ? 'above' : 'below';
+  const aboveBelow = composite > 100 ? 'more' : 'less';
   const pctDiff = Math.abs(composite - 100).toFixed(0);
-  const purchasingPower = (effReimb / 100 * 100).toFixed(0);
 
-  let text = `In <strong>${countyName} County</strong>, healthcare operating costs are ` +
-    `<strong>${pctDiff}% ${aboveBelow}</strong> the state average. ` +
-    `A flat $100 Medi-Cal payment has the purchasing power of <strong>$${purchasingPower}</strong> here. ` +
-    `Healthcare workers earn ${wageIdx}% of the state average wage`;
+  // Compute overall participation rate
+  let totalReg = 0, totalAct = 0;
+  SPECIALTY_ORDER.forEach(key => {
+    if (data.specialties[key]) {
+      totalReg += data.specialties[key].registered;
+      totalAct += data.specialties[key].active;
+    }
+  });
+  const overallRate = totalReg > 0 ? (totalAct / totalReg * 100).toFixed(1) : 'N/A';
 
-  if (rentIdx != null) {
-    text += `, and facility rent is ${rentIdx}% of the state average`;
+  let text;
+
+  if (composite > 100) {
+    // High-cost county
+    text = `Running a medical practice in <strong>${countyName} County</strong> costs ` +
+      `<strong>${pctDiff}% ${aboveBelow}</strong> than the state average, mostly because of ` +
+      `higher wages and rent. But Medi-Cal pays providers here the same flat rate it pays in ` +
+      `the cheapest parts of the state. That means every <strong>$100 in Medi-Cal payments ` +
+      `only covers about $${purchasingPower}</strong> of what it actually costs to run a ` +
+      `practice here.`;
+
+    if (aff.medicare_gap_pct != null && aff.medicare_gap_pct > 0) {
+      text += ` For comparison, Medicare recognizes this cost difference and pays ` +
+        `${aff.medicare_gap_pct.toFixed(1)}% more in ${countyName} than its national base rate.`;
+    }
+
+    text += `<br><br>This gap helps explain why only <strong>${overallRate}%</strong> of ` +
+      `licensed providers in ${countyName} County accept Medi-Cal patients.`;
+  } else if (composite < 95) {
+    // Low-cost county
+    text = `Running a medical practice in <strong>${countyName} County</strong> costs ` +
+      `<strong>${pctDiff}% ${aboveBelow}</strong> than the state average. ` +
+      `That means Medi-Cal's flat statewide rate goes further here: every <strong>$100 in ` +
+      `Medi-Cal payments is worth about $${purchasingPower}</strong> in local purchasing power.`;
+
+    if (aff.medicare_gap_pct != null && aff.medicare_gap_pct < 0) {
+      text += ` Medicare reflects this by paying ${Math.abs(aff.medicare_gap_pct).toFixed(1)}% ` +
+        `less than its national base rate in ${countyName}.`;
+    }
+
+    text += `<br><br>The favorable cost environment may contribute to the county's ` +
+      `<strong>${overallRate}%</strong> provider participation rate.`;
+  } else {
+    // Near-average county
+    text = `Practice operating costs in <strong>${countyName} County</strong> are close to ` +
+      `the state average, so Medi-Cal's flat statewide rate lines up reasonably well with ` +
+      `local costs. Every <strong>$100 in Medi-Cal payments is worth about ` +
+      `$${purchasingPower}</strong> in local purchasing power.`;
+
+    text += `<br><br><strong>${overallRate}%</strong> of licensed providers in ` +
+      `${countyName} County accept Medi-Cal patients.`;
   }
-  text += '.';
 
-  // Add penalty note for high-cost counties
-  if (effReimb < 90) {
-    // Compute overall participation rate
-    let totalReg = 0, totalAct = 0;
-    SPECIALTY_ORDER.forEach(key => {
-      if (data.specialties[key]) {
-        totalReg += data.specialties[key].registered;
-        totalAct += data.specialties[key].active;
-      }
-    });
-    const overallRate = totalReg > 0 ? (totalAct / totalReg * 100).toFixed(1) : 'N/A';
-    const penalty = (100 - effReimb).toFixed(0);
-
-    text += `<br><br>Providers in ${countyName} County face a <strong>${penalty}% effective ` +
-      `reimbursement penalty</strong> compared to the state average, which may contribute ` +
-      `to the county's ${overallRate}% provider participation rate.`;
-  }
-
-  text += '<br><br><em style="font-size: 0.75rem; color: #666;">Composite weights follow the Medicare ' +
-    'PE GPCI structure (CMS CY 2026 PFS, 90 FR 49266).</em>';
+  text += '<br><br><em style="font-size: 0.75rem; color: #666;">Cost index weights follow the ' +
+    'Medicare PE GPCI structure (56% wages, 30% rent, 14% purchased services). ' +
+    '<a href="#about-section" style="color: #666; text-decoration: underline;">Learn more about the methodology.</a></em>';
 
   el.innerHTML = text;
   el.classList.remove('hidden');
-}
 
-function renderMedicareComparison(countyName, aff) {
-  const el = document.getElementById('medicare-comparison');
-
-  if (aff.medicare_gap_pct == null) {
-    el.classList.add('hidden');
-    return;
-  }
-
-  const gap = aff.medicare_gap_pct;
-  const direction = gap >= 0 ? 'increases' : 'decreases';
-  const absGap = Math.abs(gap).toFixed(1);
-
-  el.innerHTML = `<strong>Medicare Geographic Comparison:</strong> Medicare adjusts physician ` +
-    `payments geographically through the Geographic Practice Cost Index (GPCI), mandated by ` +
-    `Congress in 1989 (OBRA 89). In ${countyName} County, Medicare's geographic adjustment ` +
-    `${direction} payments by <strong>${absGap}%</strong> ${gap >= 0 ? 'above' : 'below'} ` +
-    `the national standardized rate. <strong>Medi-Cal applies no such geographic adjustment</strong> ` +
-    `&mdash; a provider in ${countyName} receives the same fee schedule rate as one in any ` +
-    `other California county.`;
-
-  el.classList.remove('hidden');
+  // Hide the old medicare-comparison box (content now integrated above)
+  const mcEl = document.getElementById('medicare-comparison');
+  if (mcEl) mcEl.classList.add('hidden');
 }
 
 function renderScatterPlot(currentCounty) {

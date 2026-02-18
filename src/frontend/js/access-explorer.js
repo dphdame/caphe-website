@@ -419,7 +419,7 @@ function renderContextualContent() {
       const comparison = parseFloat(overallRate) < parseFloat(stateAvgText) ? 'below' : 'above';
       stmt += `, ${comparison} the ${stateAvgText}% statewide average`;
     }
-    stmt += `. Out of ${totalReg.toLocaleString()} registered providers, ${phantomTotal.toLocaleString()} do not participate in the program.`;
+    stmt += `. Of ${totalReg.toLocaleString()} registered providers, ${phantomTotal.toLocaleString()} opt out of the program.`;
     if (costAbove !== null && Math.abs(costAbove) > 5) {
       const dir = costAbove > 0 ? 'above' : 'below';
       stmt += ` Practice operating costs here run ${Math.abs(costAbove)}% ${dir} the state average.`;
@@ -430,7 +430,7 @@ function renderContextualContent() {
   // 2. Rate cards context
   const rateCtx = document.getElementById('rate-cards-context');
   if (rateCtx && lowestSpec && highestSpec) {
-    rateCtx.textContent = `Participation varies by specialty: ${highestSpec.label} is highest at ${highestSpec.rate}%, ` +
+    rateCtx.textContent = `${highestSpec.label} is highest at ${highestSpec.rate}%, ` +
       `while ${lowestSpec.label} is lowest at ${lowestSpec.rate}%. ` +
       `The change from 2019 captures net shifts during COVID-19 and the Medicaid continuous enrollment unwinding.`;
   }
@@ -451,14 +451,37 @@ function renderContextualContent() {
   // 4. Trend chart context and caption
   const trendCtx = document.getElementById('trend-chart-context');
   if (trendCtx) {
-    trendCtx.textContent = `This index tracks whether provider participation is rising or falling relative to January 2019. ` +
-      `A value below 100 means fewer providers are billing Medicaid now than before the pandemic. ` +
+    trendCtx.textContent = `The index shows whether provider participation is rising or falling relative to January 2019. ` +
+      `A value below 100 means fewer providers bill Medicaid now than before the pandemic. ` +
       `The COVID-19 onset and PHE unwinding markers help distinguish pandemic disruption from structural decline.`;
   }
   const trendCap = document.getElementById('trend-chart-caption');
   if (trendCap) {
     trendCap.textContent = `Source: Monthly participation rates from HHS Medicaid Provider Spending, ` +
       `indexed to January 2019 = 100. ${county} County, January 2018 through December 2024.`;
+  }
+
+  // 5. Scatter plot context and caption
+  const scatterCtx = document.getElementById('scatter-context');
+  if (scatterCtx && data.affordability) {
+    const costIdx = data.affordability.composite_cost_index;
+    const costDir = costIdx > 100 ? 'above' : 'below';
+    const costDiff = Math.abs(Math.round(costIdx - 100));
+    const rateNum = parseFloat(overallRate);
+    const stateAvg = stateAvgText ? parseFloat(stateAvgText) : null;
+    const rateDir = stateAvg && rateNum < stateAvg ? 'below' : 'above';
+
+    scatterCtx.textContent = `Each dot is a California county. The horizontal axis measures practice operating costs ` +
+      `relative to the state average (100). The vertical axis shows the overall Medi-Cal participation rate. ` +
+      `${county} County (highlighted) has costs ${costDiff}% ${costDir} average ` +
+      `and a participation rate ${rateDir} the statewide median. ` +
+      `Counties in the lower-right quadrant face both high costs and low participation, ` +
+      `the pattern predicted when flat-rate reimbursement meets variable operating costs.`;
+  }
+  const scatterCap = document.getElementById('scatter-caption');
+  if (scatterCap) {
+    scatterCap.textContent = `Source: Practice cost index computed from BLS OEWS (wages), HUD FMR (rent), ` +
+      `and BEA RPP (purchased services). Participation rates from HHS Medicaid Provider Spending, Feb 2026.`;
   }
 }
 

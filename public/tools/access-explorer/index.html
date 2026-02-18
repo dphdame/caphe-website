@@ -767,7 +767,7 @@
         "name": "What is the difference between participation rates and phantom networks?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "This tool measures Medicaid participation rates: the share of all licensed providers in a county (from NPPES) who actively bill Medicaid. This is distinct from phantom networks, where providers are specifically listed in a Medicaid managed care plan directory but do not actually see patients. Zhu et al. (2023, Health Affairs) measured phantom networks using actual plan directories and found 58% of listed providers were phantom. Our measure is broader — a provider in NPPES who does not bill Medicaid may never have opted into the program — but participation rates still reveal how economically attractive Medicaid reimbursement is in each local market."
+          "text": "This tool measures Medicaid participation rates: the share of all licensed providers in a county (from NPPES) who actively bill Medicaid. That measure differs from phantom networks, where providers are listed in a Medicaid managed care plan directory but do not actually see patients. Zhu et al. (2023, Health Affairs) measured phantom networks using actual plan directories and found 58% of listed providers were phantom. Our measure is broader: a provider in NPPES who does not bill Medicaid may never have opted into the program. But participation rates still reveal how economically attractive Medicaid reimbursement is in each local market."
         }
       },
       {
@@ -1029,7 +1029,15 @@
           </div>
 
           <!-- Participation rate cards -->
+          <h3 id="rate-cards-heading">Participation by Specialty</h3>
           <p id="rate-cards-context" class="section-description" style="margin-bottom: var(--space-sm);"></p>
+          <div id="severity-legend" class="severity-legend" style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: var(--space-sm); line-height: 1.6;">
+            Each card shows a severity rating: <strong style="color: #2E7D32;">Good</strong> (40%+),
+            <strong style="color: #F9A825;">Fair</strong> (30&ndash;39%),
+            <strong style="color: #E65100;">Low</strong> (20&ndash;29%),
+            <strong style="color: var(--color-error);">Critical</strong> (&lt;20%).
+            These thresholds reflect statewide participation patterns: the median county rate is approximately 35%.
+          </div>
           <div id="rate-cards" class="rate-cards"></div>
 
           <!-- Bar chart: registered vs active -->
@@ -1080,9 +1088,11 @@
             <!-- Scatter Plot -->
             <div class="chart-section">
               <h3 id="scatter-title">Participation Rate vs. Practice Operating Costs (All CA Counties)</h3>
+              <p id="scatter-context" class="section-description"></p>
               <div class="chart-wrapper">
                 <canvas id="scatter-chart" aria-label="Scatter plot showing the relationship between practice operating costs and Medicaid participation rates across California counties"></canvas>
               </div>
+              <p id="scatter-caption" style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm); line-height: 1.5;"></p>
             </div>
           </div>
 
@@ -1101,11 +1111,11 @@
     <h2 style="font-size: 1.5rem; margin-bottom: var(--space-md);">About the Access Explorer</h2>
 
     <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">The economic problem</h3>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medicare adjusts physician payments by geography through the Geographic Practice Cost Index (GPCI), recognizing that it costs more to run a practice in San Francisco than in Modoc County. Medi-Cal does not. It pays flat statewide rates regardless of local wages, rents, or supply costs. The result is a predictable geographic pattern: the same Medi-Cal payment buys less provider time in high-cost counties, and providers in those counties are more likely to opt out of the program entirely.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">Medicare adjusts physician payments by geography through the Geographic Practice Cost Index (GPCI), recognizing that it costs more to run a practice in San Francisco than in Modoc County. Medi-Cal does not. It pays flat statewide rates regardless of local wages, rents, or supply costs. The predictable result: the same Medi-Cal payment buys less provider time in high-cost counties, and providers in those counties are more likely to opt out entirely.</p>
     <p style="margin-bottom: var(--space-lg); line-height: 1.7;">This tool quantifies that pattern. For each county, it compares the total pool of licensed providers (from <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES</a>) against those actively billing Medicaid (from the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener">HHS Medicaid Provider Spending dataset</a> released February 2026), and overlays a composite practice cost index (GPCI-aligned weights: 56% healthcare employee wages, 30% facility rent, 14% purchased services) to show how flat-rate reimbursement translates into different effective payment levels across the state.</p>
 
     <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">What this measures (and what it doesn't)</h3>
-    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The participation rate here shows what share of all licensed providers in a county choose to bill Medicaid. This is distinct from phantom network measurement, where the denominator is providers specifically listed in a managed care plan's directory. <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> measured phantom networks using actual plan directories and found 58.2% of listed providers in Oregon Medicaid were phantom. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found more than one-third of Medicaid-listed physicians nationally did not provide care to enrollees.</p>
+    <p style="margin-bottom: var(--space-md); line-height: 1.7;">The participation rate here shows what share of all licensed providers in a county choose to bill Medicaid. That measure differs from phantom network measurement, where the denominator is providers listed in a managed care plan's directory. <a href="https://doi.org/10.1377/hlthaff.2022.01322" target="_blank" rel="noopener">Zhu et al. (2023, <em>Health Affairs</em>)</a> measured phantom networks using actual plan directories and found 58.2% of listed providers in Oregon Medicaid were phantom. The <a href="https://oig.hhs.gov/oei/reports/OEI-02-23-00540.asp" target="_blank" rel="noopener">HHS Office of Inspector General (OEI-02-23-00540, 2025)</a> found that more than one-third of Medicaid-listed physicians nationally were phantom listings.</p>
     <p style="margin-bottom: var(--space-lg); line-height: 1.7;">Our measure is broader: a provider in NPPES who does not bill Medicaid may never have opted into the program. But participation rates still reveal how economically attractive Medicaid reimbursement is in each local market, and the geographic pattern, driven by the mismatch between flat rates and variable costs, is the same one that produces phantom networks downstream. CMS finalized <a href="https://www.federalregister.gov/documents/2024/05/10/2024-09586/medicaid-program-managed-care-access-finance-and-quality" target="_blank" rel="noopener">network adequacy rules effective July 2025 (CMS-2439-F)</a> requiring states to verify directories against actual utilization.</p>
 
     <h3 style="font-size: 1.25rem; margin-bottom: var(--space-sm);">Frequently Asked Questions</h3>

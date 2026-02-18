@@ -256,10 +256,77 @@ async function loadCountyData(countyName) {
     // Hide loading overlay
     if (loadingEl) loadingEl.classList.add('hidden');
 
-    // Fall back to specialty table from summary data
+    // Build full county data object from summary so all charts render
     const countyInfo = summaryData?.counties?.[countyName];
     if (countyInfo && countyInfo.specialties) {
-      renderCountySummaryTable(countyName, countyInfo);
+      // Compute stateMedians from summary
+      const stateMedians = {};
+      SPECIALTY_ORDER.forEach(key => {
+        const vals = Object.values(summaryData.counties)
+          .map(c => c.specialties?.[key]?.participationRate)
+          .filter(v => v != null)
+          .sort((a, b) => a - b);
+        stateMedians[key] = vals.length > 0 ? vals[Math.floor(vals.length / 2)] : 0;
+      });
+
+      // Build specialties with labels and computed fields
+      const specialties = {};
+      SPECIALTY_ORDER.forEach(key => {
+        const s = countyInfo.specialties[key];
+        if (!s) return;
+        specialties[key] = {
+          label: SPECIALTY_LABEL_MAP[key],
+          registered: s.registered,
+          active: s.active,
+          participationRate: s.participationRate,
+          phantomGap: s.registered - s.active,
+          changeFrom2019: s.changeFrom2019 ?? null
+        };
+      });
+
+      // Build affordability from summary cost indices
+      const affordability = countyInfo.composite_cost_index ? {
+        composite_cost_index: countyInfo.composite_cost_index,
+        effective_reimbursement_index: countyInfo.effective_reimbursement_index,
+        composite_weights: { wages: 0.56, rent: 0.3, purchased_services: 0.14 }
+      } : null;
+
+      currentCountyData = {
+        county: countyName,
+        population: countyInfo.population || null,
+        medicaid_population: countyInfo.medicaid_population || null,
+        stateMedians,
+        specialties,
+        affordability,
+        trends: null  // no time-series available from summary
+      };
+
+      // Sync specialty
+      if (currentMapSpecialty !== 'all' && currentCountyData.specialties[currentMapSpecialty]) {
+        currentSpecialty = currentMapSpecialty;
+      } else {
+        currentSpecialty = 'all';
+      }
+
+      document.querySelectorAll('.specialty-tab[data-specialty]').forEach(tab => {
+        const isActive = tab.dataset.specialty === currentSpecialty;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      document.getElementById('map-placeholder').classList.add('hidden');
+      document.getElementById('results-panel').classList.remove('hidden');
+      document.getElementById('specialty-rankings').classList.add('hidden');
+      const aboutSection = document.getElementById('about-section');
+      if (aboutSection) aboutSection.classList.add('hidden');
+
+      renderResults();
+
+      const countyTitle = document.getElementById('county-title');
+      if (countyTitle) {
+        countyTitle.setAttribute('tabindex', '-1');
+        countyTitle.focus();
+      }
     } else {
       document.getElementById('map-placeholder').classList.remove('hidden');
       document.getElementById('results-panel').classList.add('hidden');
@@ -269,7 +336,7 @@ async function loadCountyData(countyName) {
         instructions.textContent = countyName + ' County data is not yet available. Select another county.';
         instructions.style.color = 'var(--color-warning)';
         setTimeout(() => {
-          instructions.textContent = 'Click a county on the map or type a name above to explore provider access data.';
+          instructions.textContent = 'Click a county or search below to explore access data.';
           instructions.style.color = '';
         }, 4000);
       }
@@ -363,13 +430,21 @@ function renderResults() {
   renderTrendChart();
   renderAlerts();
 
-  // Affordability section
+  // Affordability section: cost cards + insight need detailed data; scatter plot works from summary
   const affSection = document.getElementById('affordability-section');
-  if (currentCountyData.affordability) {
+  if (currentCountyData.affordability && currentCountyData.affordability.wage_index) {
     affSection.classList.remove('hidden');
     renderAffordability(currentCountyData);
   } else {
-    affSection.classList.add('hidden');
+    // Still show scatter plot even without detailed affordability
+    affSection.classList.remove('hidden');
+    const costCards = document.getElementById('cost-cards');
+    if (costCards) costCards.innerHTML = '';
+    const costInsight = document.getElementById('cost-insight');
+    if (costInsight) costInsight.innerHTML = '';
+    const medicareComp = document.getElementById('medicare-comparison');
+    if (medicareComp) medicareComp.innerHTML = '';
+    renderScatterPlot(currentCountyData.county);
   }
 }
 
@@ -451,17 +526,22 @@ function renderContextualContent() {
       `Data covers trailing 12 months ending December 2024.`;
   }
 
-  // 4. Trend chart context and caption
+  // 4. Trend chart context and caption (only if trend data available)
   const trendCtx = document.getElementById('trend-chart-context');
-  if (trendCtx) {
-    trendCtx.textContent = `The index shows whether provider participation is rising or falling relative to January 2019. ` +
-      `A value below 100 means fewer providers bill Medicaid now than before the pandemic. ` +
-      `The COVID-19 onset and PHE unwinding markers help distinguish pandemic disruption from structural decline.`;
-  }
   const trendCap = document.getElementById('trend-chart-caption');
-  if (trendCap) {
-    trendCap.textContent = `Source: Monthly participation rates from HHS Medicaid Provider Spending, ` +
-      `indexed to January 2019 = 100. ${county} County, January 2018 through December 2024.`;
+  if (data.trends) {
+    if (trendCtx) {
+      trendCtx.textContent = `The index shows whether provider participation is rising or falling relative to January 2019. ` +
+        `A value below 100 means fewer providers bill Medicaid now than before the pandemic. ` +
+        `The COVID-19 onset and PHE unwinding markers help distinguish pandemic disruption from structural decline.`;
+    }
+    if (trendCap) {
+      trendCap.textContent = `Source: Monthly participation rates from HHS Medicaid Provider Spending, ` +
+        `indexed to January 2019 = 100. ${county} County, January 2018 through December 2024.`;
+    }
+  } else {
+    if (trendCtx) trendCtx.textContent = '';
+    if (trendCap) trendCap.textContent = '';
   }
 
   // 5. Scatter plot context and caption
@@ -651,6 +731,18 @@ function renderBarChart() {
 
 function renderTrendChart() {
   const data = currentCountyData;
+  // Hide trend chart section if no time-series data
+  const trendSection = document.getElementById('trend-chart')?.closest('.chart-section');
+  if (!data.trends) {
+    if (trendSection) trendSection.classList.add('hidden');
+    // Also hide trend context/caption
+    const trendCtx = document.getElementById('trend-chart-context');
+    const trendCap = document.getElementById('trend-chart-caption');
+    if (trendCtx) trendCtx.textContent = '';
+    if (trendCap) trendCap.textContent = '';
+    return;
+  }
+  if (trendSection) trendSection.classList.remove('hidden');
   const ctx = document.getElementById('trend-chart').getContext('2d');
   const months = data.trends.months;
 

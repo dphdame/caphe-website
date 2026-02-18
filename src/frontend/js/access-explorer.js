@@ -852,13 +852,22 @@ function renderAlerts() {
     const spec = data.specialties[key];
     if (!spec) return;
 
+    const median = data.stateMedians?.[key];
+    const diff = median != null ? spec.participationRate - median : null;
+    const aboveBelow = diff != null ? (diff >= 0 ? 'above' : 'below') : null;
+    const absDiff = diff != null ? Math.abs(diff).toFixed(1) : null;
+
     if (spec.participationRate < 20) {
       html += `<div class="alert-item">
-        <strong>${spec.label}:</strong>&nbsp;Only ${spec.participationRate}% participation rate &mdash; ${spec.phantomGap} phantom providers
+        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}% participation &mdash; ${spec.phantomGap.toLocaleString()} phantom providers
       </div>`;
-    } else if (spec.participationRate < 30) {
+    } else if (diff != null && diff < 0) {
       html += `<div class="alert-item warning">
-        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}% participation, below state median of ${data.stateMedians[key]}%
+        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%, ${absDiff}pp below state median of ${median}%
+      </div>`;
+    } else {
+      html += `<div class="alert-item ok">
+        <strong>${spec.label}:</strong>&nbsp;${spec.participationRate}%${diff != null ? `, ${absDiff}pp above state median of ${median}%` : ''}
       </div>`;
     }
   });

@@ -616,7 +616,7 @@ function renderRateCards() {
     html += `
       <div class="rate-card${isActive}" data-specialty="${key}" tabindex="0" role="button" aria-label="${spec.label}: ${spec.participationRate}% participation rate, ${ratioText} beneficiaries, ${severity.label}">
         <div class="rate-label">${spec.label}</div>
-        <div class="rate-severity ${severity.cls}" title="${ratioText} Medicaid beneficiaries">${severity.label}</div>
+        <div class="rate-severity ${severity.cls}" title="${ratioText} Medicaid beneficiaries">${severity.label === 'Critical' ? '\u26A0 ' : severity.label === 'Low' ? '\u25D0 ' : severity.label === 'Fair' ? '\u25D1 ' : severity.label === 'Good' ? '\u2713 ' : ''}${severity.label}</div>
         <div class="rate-value ${rateClass}">${spec.participationRate}%</div>
         <div class="rate-change ${changeClass}">${changeSign}${spec.changeFrom2019}pp from 2019</div>
         <div class="phantom-bar" aria-label="${Math.round(pctActive)}% active, ${Math.round(pctPhantom)}% phantom">

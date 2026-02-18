@@ -13,14 +13,16 @@
     gtag('config', 'G-E1LG1N11QE');
   </script>
 
-  <title>Medi-Cal Provider Access Explorer - CAPHE</title>
-  <meta name="description" content="Medi-Cal provider participation rates by county and specialty. Compares the total licensed provider pool against those actively billing Medicaid across California's 58 counties, with practice cost overlays showing how flat-rate reimbursement affects provider participation.">
-  <link rel="canonical" href="https://www.caphegroup.org/tools/access-explorer">
+  <title>Medi-Cal Provider Participation by County - CAPHE</title>
+  <meta name="description" content="Explore Medi-Cal provider participation rates across California's 58 counties by specialty. Free interactive tool with practice cost overlays and trend data.">
+  <meta name="author" content="Victoria Cholette">
+  <meta property="article:modified_time" content="2026-02-18">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/access-explorer/">
   <!-- Open Graph -->
-  <meta property="og:title" content="Medi-Cal Provider Access Explorer - CAPHE">
+  <meta property="og:title" content="Medi-Cal Provider Participation by County - CAPHE">
   <meta property="og:description" content="Medi-Cal provider participation rates by county and specialty. How flat statewide reimbursement and local operating costs shape the provider pool across California.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.caphegroup.org/tools/access-explorer">
+  <meta property="og:url" content="https://www.caphegroup.org/tools/access-explorer/">
   <meta property="og:site_name" content="CAPHE - California Association of Public Health Economists">
   <meta property="og:locale" content="en_US">
   <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
@@ -35,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
   <style>
     /* Override the default calculator-container grid from style.css */
@@ -81,7 +83,7 @@
       font-family: var(--font-body);
       font-size: var(--font-size-sm);
       font-weight: 500;
-      color: var(--color-text-secondary);
+      color: #333333;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -720,7 +722,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "CAPHE Medi-Cal Provider Access Explorer",
-    "url": "https://www.caphegroup.org/tools/access-explorer",
+    "url": "https://www.caphegroup.org/tools/access-explorer/",
     "description": "Interactive tool measuring Medi-Cal provider participation rates across California's 58 counties. Compares the total licensed provider pool (NPPES) against those actively billing Medicaid (HHS claims data) by specialty, with practice cost overlays and monthly trends from 2018 to 2024.",
     "applicationCategory": "HealthApplication",
     "operatingSystem": "Web browser",
@@ -735,7 +737,7 @@
       "url": "https://www.caphegroup.org"
     },
     "datePublished": "2026-02-15",
-    "dateModified": "2026-02-15",
+    "dateModified": "2026-02-18",
     "featureList": [
       "County-level Medi-Cal provider participation rates",
       "Participation rate analysis by specialty",
@@ -805,6 +807,32 @@
     ]
   }
   </script>
+  <!-- BreadcrumbList Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.caphegroup.org/" },
+      { "@type": "ListItem", "position": 2, "name": "Resources", "item": "https://www.caphegroup.org/resources.html" },
+      { "@type": "ListItem", "position": 3, "name": "Access Explorer", "item": "https://www.caphegroup.org/tools/access-explorer/" }
+    ]
+  }
+  </script>
+  <!-- Person Schema (Author) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Victoria Cholette",
+    "jobTitle": "Health Economist",
+    "affiliation": {
+      "@type": "Organization",
+      "name": "CAPHE - California Association of Public Health Economists",
+      "url": "https://www.caphegroup.org"
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- Top Bar -->
@@ -859,6 +887,13 @@
     </div>
   </section>
 
+  <!-- Key Findings (static, visible to crawlers without JS) -->
+  <section style="max-width: 800px; margin: 0 auto var(--space-lg); padding: 0 var(--space-lg);">
+    <div style="background: var(--color-bg-alt); border-left: 3px solid var(--color-primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: var(--space-md) var(--space-lg); font-size: var(--font-size-sm); line-height: 1.7;">
+      <strong>Key finding:</strong> Across California's 58 counties, only 40.1% of licensed providers actively bill Medi-Cal. Behavioral health has the lowest participation of any specialty at 27.3%. In the 28 counties where practice operating costs exceed the state average, providers receive the same flat Medi-Cal rate as low-cost counties, creating an implicit reimbursement penalty that depresses participation. Unlike <a href="https://www.cms.gov/medicare/payment/prospective-payment-systems/hospital-inpatient-pps/wage-index-files" style="color: var(--color-primary);">Medicare's GPCI</a>, Medi-Cal applies no geographic cost adjustment.
+    </div>
+  </section>
+
   <!-- Main Content -->
   <main>
   <section class="section">
@@ -867,7 +902,7 @@
 
       <!-- Top: Map (full width) -->
       <div id="map-placeholder">
-        <h3 style="text-align: center; margin-bottom: var(--space-xs); font-size: 1.1rem;">Medi-Cal Provider Participation by County</h3>
+        <h2 style="text-align: center; margin-bottom: var(--space-xs); font-size: 1.1rem;">Medi-Cal Provider Participation by County</h2>
         <div class="map-specialty-filter" id="map-specialty-filter" role="tablist" aria-label="Filter map by specialty">
           <button class="specialty-tab active" data-map-specialty="all" role="tab" aria-selected="true">All Specialties</button>
           <button class="specialty-tab" data-map-specialty="primary_care" role="tab" aria-selected="false">Primary Care</button>
@@ -1135,6 +1170,13 @@
 
     <h4 style="font-size: 1rem; margin-top: var(--space-md); margin-bottom: var(--space-xs);">How often is the data updated?</h4>
     <p style="margin-bottom: var(--space-md); line-height: 1.7;">Data is updated quarterly as new <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener">HHS Medicaid spending data</a> becomes available. The current dataset covers January 2018 through December 2024. <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank" rel="noopener">NPPES data</a> is refreshed monthly.</p>
+
+    <h3 style="font-size: 1.15rem; margin-bottom: var(--space-sm); margin-top: var(--space-lg);">Related resources</h3>
+    <ul style="line-height: 1.7; margin-bottom: var(--space-md);">
+      <li><a href="/tools/access-explorer/methodology" style="color: var(--color-primary);">Full methodology documentation</a> (data processing, taxonomy crosswalks, cost index construction)</li>
+      <li><a href="/tools/lha-calculator/" style="color: var(--color-primary);">Public Health ROI Calculator</a> (estimates mortality reduction from county public health spending)</li>
+      <li><a href="/methods-lab/" style="color: var(--color-primary);">Methods Lab</a> (interactive tutorials on causal inference, cost-effectiveness, and program evaluation)</li>
+    </ul>
 
     <p style="color: var(--color-text-muted); font-size: 0.875rem; margin-top: var(--space-lg);">Last updated: February 2026</p>
   </section>

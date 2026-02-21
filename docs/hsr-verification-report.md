@@ -1,0 +1,177 @@
+# HSR Research Brief: Data Verification Report
+
+**Date:** 2026-02-18
+**Data source:** `data/access-explorer/_summary.json`
+**Manuscript:** `docs/hsr-research-brief.md`
+
+## Summary
+
+- Total checks: 162
+- PASS: 162
+- FAIL: 0
+- SKIP: 0
+
+## Full Results
+
+- [PASS] Statewide registered providers: expected=79223, actual=79223
+- [PASS] Statewide active providers: expected=31798, actual=31798
+- [PASS] Statewide participation rate: expected=40.1, actual=40.1
+- [PASS] Marin participation rate: expected=48.3, actual=48.3
+- [PASS] Marin registered: expected=620, actual=620
+- [PASS] Marin active: expected=299, actual=299
+- [PASS] Marin cost index: expected=172.8, actual=172.8
+- [PASS] Marin effective reimbursement: expected=57.9, actual=57.9
+- [PASS] San Francisco participation rate: expected=46.8, actual=46.8
+- [PASS] San Francisco registered: expected=4210, actual=4210
+- [PASS] San Francisco active: expected=1970, actual=1970
+- [PASS] San Francisco cost index: expected=186.0, actual=186.0
+- [PASS] San Francisco effective reimbursement: expected=53.8, actual=53.8
+- [PASS] San Mateo participation rate: expected=45.1, actual=45.1
+- [PASS] San Mateo registered: expected=1820, actual=1820
+- [PASS] San Mateo active: expected=821, actual=821
+- [PASS] San Mateo cost index: expected=181.1, actual=181.1
+- [PASS] San Mateo effective reimbursement: expected=55.2, actual=55.2
+- [PASS] Santa Clara participation rate: expected=44.9, actual=44.9
+- [PASS] Santa Clara registered: expected=5640, actual=5640
+- [PASS] Santa Clara active: expected=2532, actual=2532
+- [PASS] Santa Clara cost index: expected=176.7, actual=176.7
+- [PASS] Santa Clara effective reimbursement: expected=56.6, actual=56.6
+- [PASS] Alameda participation rate: expected=44.2, actual=44.2
+- [PASS] Alameda registered: expected=5830, actual=5830
+- [PASS] Alameda active: expected=2577, actual=2577
+- [PASS] Alameda cost index: expected=162.1, actual=162.1
+- [PASS] Alameda effective reimbursement: expected=61.7, actual=61.7
+- [PASS] Contra Costa participation rate: expected=43.8, actual=43.8
+- [PASS] Contra Costa registered: expected=3210, actual=3210
+- [PASS] Contra Costa active: expected=1406, actual=1406
+- [PASS] Contra Costa cost index: expected=157.6, actual=157.6
+- [PASS] Contra Costa effective reimbursement: expected=63.5, actual=63.5
+- [PASS] Orange participation rate: expected=42.7, actual=42.7
+- [PASS] Orange registered: expected=8420, actual=8420
+- [PASS] Orange active: expected=3595, actual=3595
+- [PASS] Orange cost index: expected=154.8, actual=154.8
+- [PASS] Orange effective reimbursement: expected=64.6, actual=64.6
+- [PASS] Napa participation rate: expected=41.2, actual=41.2
+- [PASS] Napa registered: expected=245, actual=245
+- [PASS] Napa active: expected=101, actual=101
+- [PASS] Napa cost index: expected=145.1, actual=145.1
+- [PASS] Napa effective reimbursement: expected=68.9, actual=68.9
+- [PASS] San Diego participation rate: expected=41.2, actual=41.2
+- [PASS] San Diego registered: expected=8903, actual=8903
+- [PASS] San Diego active: expected=3668, actual=3668
+- [PASS] San Diego cost index: expected=149.6, actual=149.6
+- [PASS] San Diego effective reimbursement: expected=66.8, actual=66.8
+- [PASS] Sonoma participation rate: expected=40.5, actual=40.5
+- [PASS] Sonoma registered: expected=685, actual=685
+- [PASS] Sonoma active: expected=277, actual=277
+- [PASS] Sonoma cost index: expected=152.8, actual=152.8
+- [PASS] Sonoma effective reimbursement: expected=65.4, actual=65.4
+- [PASS] Tehama participation rate: expected=25.9, actual=25.9
+- [PASS] Tehama registered: expected=58, actual=58
+- [PASS] Tehama active: expected=15, actual=15
+- [PASS] Tehama cost index: expected=85.0, actual=85.0
+- [PASS] Tehama effective reimbursement: expected=117.6, actual=117.6
+- [PASS] Mariposa participation rate: expected=25.0, actual=25.0
+- [PASS] Mariposa registered: expected=12, actual=12
+- [PASS] Mariposa active: expected=3, actual=3
+- [PASS] Mariposa cost index: expected=90.8, actual=90.8
+- [PASS] Mariposa effective reimbursement: expected=110.1, actual=110.1
+- [PASS] Colusa participation rate: expected=25.0, actual=25.0
+- [PASS] Colusa registered: expected=16, actual=16
+- [PASS] Colusa active: expected=4, actual=4
+- [PASS] Colusa cost index: expected=85.6, actual=85.6
+- [PASS] Colusa effective reimbursement: expected=116.8, actual=116.8
+- [PASS] Lake participation rate: expected=24.1, actual=24.1
+- [PASS] Lake registered: expected=58, actual=58
+- [PASS] Lake active: expected=14, actual=14
+- [PASS] Lake cost index: expected=89.8, actual=89.8
+- [PASS] Lake effective reimbursement: expected=111.4, actual=111.4
+- [PASS] Plumas participation rate: expected=23.1, actual=23.1
+- [PASS] Plumas registered: expected=13, actual=13
+- [PASS] Plumas active: expected=3, actual=3
+- [PASS] Plumas cost index: expected=87.9, actual=87.9
+- [PASS] Plumas effective reimbursement: expected=113.8, actual=113.8
+- [PASS] Imperial participation rate: expected=22.4, actual=22.4
+- [PASS] Imperial registered: expected=268, actual=268
+- [PASS] Imperial active: expected=60, actual=60
+- [PASS] Imperial cost index: expected=83.7, actual=83.7
+- [PASS] Imperial effective reimbursement: expected=119.5, actual=119.5
+- [PASS] Lassen participation rate: expected=22.2, actual=22.2
+- [PASS] Lassen registered: expected=27, actual=27
+- [PASS] Lassen active: expected=6, actual=6
+- [PASS] Lassen cost index: expected=82.1, actual=82.1
+- [PASS] Lassen effective reimbursement: expected=121.8, actual=121.8
+- [PASS] Trinity participation rate: expected=20.0, actual=20.0
+- [PASS] Trinity registered: expected=15, actual=15
+- [PASS] Trinity active: expected=3, actual=3
+- [PASS] Trinity cost index: expected=79.6, actual=79.6
+- [PASS] Trinity effective reimbursement: expected=125.6, actual=125.6
+- [PASS] Modoc participation rate: expected=16.7, actual=16.7
+- [PASS] Modoc registered: expected=12, actual=12
+- [PASS] Modoc active: expected=2, actual=2
+- [PASS] Modoc cost index: expected=75.9, actual=75.9
+- [PASS] Modoc effective reimbursement: expected=131.8, actual=131.8
+- [PASS] Sierra participation rate: expected=0.0, actual=0
+- [PASS] Sierra registered: expected=2, actual=2
+- [PASS] Sierra active: expected=0, actual=0
+- [PASS] Sierra cost index: expected=79.9, actual=79.9
+- [PASS] Sierra effective reimbursement: expected=125.2, actual=125.2
+- [PASS] Top 10 county order: expected=['Marin', 'San Francisco', 'San Mateo', 'Santa Clara', 'Alameda', 'Contra Costa', 'Orange', 'Napa', 'San Diego', 'Sonoma'], actual=['Marin', 'San Francisco', 'San Mateo', 'Santa Clara', 'Alameda', 'Contra Costa', 'Orange', 'Napa', 'San Diego', 'Sonoma']
+- [PASS] Bottom 10 county names (as set): expected={'Trinity', 'Imperial', 'Sierra', 'Modoc', 'Colusa', 'Lassen', 'Mariposa', 'Tehama', 'Lake', 'Plumas'}, actual={'Trinity', 'Imperial', 'Sierra', 'Modoc', 'Colusa', 'Lassen', 'Mariposa', 'Tehama', 'Lake', 'Plumas'}
+- [PASS] Pharmacy/DME median participation: expected=72.2, actual=72.2
+- [PASS] Pharmacy/DME total registered: expected=6678, actual=6678
+- [PASS] Pharmacy/DME total active: expected=4819, actual=4819
+- [PASS] Pharmacy/DME counties reporting: expected=57, actual=57
+- [PASS] Primary Care median participation: expected=41.4, actual=41.4
+- [PASS] Primary Care total registered: expected=20372, actual=20372
+- [PASS] Primary Care total active: expected=8449, actual=8449
+- [PASS] Primary Care counties reporting: expected=58, actual=58
+- [PASS] OB/GYN median participation: expected=38.4, actual=38.4
+- [PASS] OB/GYN total registered: expected=9308, actual=9308
+- [PASS] OB/GYN total active: expected=3572, actual=3572
+- [PASS] OB/GYN counties reporting: expected=56, actual=56
+- [PASS] Dental median participation: expected=35.9, actual=35.9
+- [PASS] Dental total registered: expected=14009, actual=14009
+- [PASS] Dental total active: expected=5017, actual=5017
+- [PASS] Dental counties reporting: expected=57, actual=57
+- [PASS] Other Surgical median participation: expected=30.8, actual=30.8
+- [PASS] Other Surgical total registered: expected=12136, actual=12136
+- [PASS] Other Surgical total active: expected=3731, actual=3731
+- [PASS] Other Surgical counties reporting: expected=56, actual=56
+- [PASS] Behavioral Health median participation: expected=27.3, actual=27.3
+- [PASS] Behavioral Health total registered: expected=16720, actual=16720
+- [PASS] Behavioral Health total active: expected=4563, actual=4563
+- [PASS] Behavioral Health counties reporting: expected=57, actual=57
+- [PASS] BH desert counties <20% (set): expected={'Imperial', 'Alpine'}, actual={'Imperial', 'Alpine'}
+- [PASS] BH desert count <20%: expected=2, actual=2
+- [PASS] Alpine BH participation rate: expected=0.0, actual=0.0
+- [PASS] Imperial BH participation rate: expected=12.3, actual=12.3
+- [PASS] BH counties 25-30% cluster: expected=44, actual=44
+- [PASS] BH reporting counties: expected=57, actual=57
+- [PASS] Cost-participation Pearson r (N>=20 providers): expected=0.935, actual=0.935
+- [PASS] N counties in correlation (>=20 providers): expected=50, actual=50
+- [PASS] Number of HRRs: expected=24, actual=24
+- [PASS] Lowest HRR (Redding) rate: expected=30.0, actual=30.0
+- [PASS] Highest HRR (San Francisco) rate: expected=47.0, actual=47.0
+- [PASS] High tier HRRs (>40%): expected=8, actual=8
+- [PASS] Moderate tier HRRs (34-40%): expected=11, actual=11
+- [PASS] Low tier HRRs (<34%): expected=5, actual=5
+- [PASS] SF HRR provider density (per 1K): expected=4.51, actual=4.51
+- [PASS] Bakersfield HRR provider density (per 1K): expected=1.15, actual=1.15
+- [PASS] AMC county mean participation: expected=42.2, actual=42.2
+- [PASS] Non-AMC county mean participation: expected=31.8, actual=31.8
+- [PASS] AMC effect (difference): expected=10.4, actual=10.4
+- [PASS] Sierra rate: expected=0.0, actual=0.0
+- [PASS] Sierra registered: expected=2, actual=2
+- [PASS] Marin rate: expected=48.3, actual=48.3
+- [PASS] All top 10 counties have cost index > 145: expected=True, actual=True
+- [PASS] All bottom 10 counties have cost index < 91: expected=True, actual=True
+- [PASS] Imperial registered: expected=268, actual=268
+- [PASS] Imperial overall rate: expected=22.4, actual=22.4
+- [PASS] Imperial BH rate: expected=12.3, actual=12.3
+- [PASS] Counties with any specialty <20%: expected=5, actual=5
+- [PASS] Total counties in data: expected=58, actual=58
+- [PASS] Registered >= Active for all counties: expected=True, actual=True
+- [PASS] Registered >= Active for all county-specialty pairs: expected=True, actual=True
+- [PASS] All rates in [0, 100] range: expected=True, actual=True
+- [PASS] Counties with cost index data: expected=58, actual=58

@@ -1,5 +1,47 @@
 # CAPHE Website Work Log
 
+## 2026-02-21: HSR Manuscript — Final Corrections, Submission, SSRN Prep
+
+### Completed
+- Applied hallucination corrections #6 (FQHC "cost-based" → "prospective...cost-related payment system"), #7 (FQHCs "disproportionately urban" → "serve both urban and rural communities"), #8 (1115 waiver "2% increases" → "2 percentage points in the rate ratio")
+- Verified MACPAC Ref 10 against actual PDF — found 2 fabricated statistics (1.25pp elasticity, 87.4% vs 52.0% acceptance rates), removed both and replaced with what the report actually says
+- Corrected author credential: MPP → PhD across all manuscript files
+- Created title-page.docx for ScholarOne double-blind submission
+- Submitted manuscript to HSR via ScholarOne (Research Brief, submitted Feb 20)
+- Created SSRN version: LaTeX source → 17-page PDF (Times, double-spaced, all 4 exhibits inline)
+- SSRN PDF uses CAPHE-only affiliation (no Berkeley/email)
+- Set up publication tracker: 3 manuscripts tracked (HSR submitted, SNAP submitted to JPAM, Income Dynamics under review at JRS)
+- Copied all submission files to Desktop for easy Chrome upload
+
+### Files Modified
+- `docs/hsr-research-brief.md` — Corrections #6, #7, #8; MACPAC stats removal; MPP→PhD
+- `docs/hsr-submission/manuscript.docx` — Regenerated 3x (after corrections, MACPAC fix, PhD fix)
+- `docs/hsr-submission/manuscript-blinded.docx` — Regenerated in parallel
+- `docs/hsr-submission/cover-letter.docx` — Regenerated in parallel
+- `docs/hsr-submission/title-page.docx` — NEW: separate title page for double-blind
+- `docs/hsr-submission/main_text_ssrn.tex` — NEW: LaTeX source for SSRN
+- `docs/hsr-submission/main_text_ssrn.pdf` — NEW: 17-page SSRN PDF
+- `docs/hsr-submission/SUBMISSION_CHECKLIST.md` — Added hallucination review section
+- `~/.claude/projects/-Users-victoriaperez/memory/publications.json` — HSR submitted, SNAP + Income Dynamics added
+- `~/.claude/projects/-Users-victoriaperez/memory/journals.json` — HSR, JPAM, JRS entries
+
+### Decisions Made
+- SSRN affiliation: CAPHE only (no Berkeley, no email) — brand-focused
+- JEL codes: I11, I13, I18
+- SSRN classifications: Health Economics (primary), Public Economics (secondary)
+- Post as working paper, not published/accepted
+
+### Next Steps
+- Upload SSRN PDF via Chrome Claude (file on Desktop, prompt provided)
+- Update publications.json with SSRN abstract_id once posted
+- Monitor HSR ScholarOne for status changes (expect 8-12 weeks)
+- Access Explorer: implement specialty rankings panel (plan exists)
+
+### Extracted Artifacts
+- None this session
+
+---
+
 ## 2026-02-16: Homepage Redesign — What's New Section with Tag Filters
 
 ### Completed

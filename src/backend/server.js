@@ -70,6 +70,18 @@ app.use((req, res, next) => {
     return res.redirect(301, `/methods-lab/${slug}`);
   }
 
+  // Redirect /programs/subpage to /programs#subpage (sections, not separate pages)
+  const programsSections = {
+    '/programs/webinars': '/programs#webinars',
+    '/programs/workshops': '/programs#workshops',
+    '/programs/working-groups': '/programs#working-groups',
+    '/programs/peer-review': '/programs#peer-review'
+  };
+  if (programsSections[urlPath] || programsSections[urlPath.replace(/\/$/, '')]) {
+    const target = programsSections[urlPath] || programsSections[urlPath.replace(/\/$/, '')];
+    return res.redirect(301, target);
+  }
+
   // Handle paths where both file.html and file/ directory exist (e.g., /membership)
   // Explicitly serve the .html file to prevent express.static directory confusion
   if (urlPath.length > 1 && !urlPath.includes('.')) {

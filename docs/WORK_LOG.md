@@ -1,5 +1,44 @@
 # CAPHE Website Work Log
 
+## 2026-03-09: SEO Performance Audit + 4-Stream Improvement Sprint
+
+### Completed
+- Full performance audit: GA4 (178 sessions/28d, 81% direct, 6% organic) + GSC (7 clicks total, ~150 impressions)
+- Stream A: Removed .html from all internal links across 76 files (62 HTML + 9 JS/server + scripts)
+- Stream B: Optimized meta titles/descriptions on 10 Methods Lab pages with GSC impressions but 0 clicks
+- Stream C: Added Article + LearningResource JSON-LD schema to all 37 Methods Lab pages via batch script
+- Stream D Phase 1: Built county-to-HRR crosswalk (58 counties → 24 HRRs) from Dartmouth Atlas + Census data
+- Added OG tags to 10 Methods Lab pages
+- Committed HSR revision files (exhibit tables, revised manuscript)
+- Deployed v209
+
+### Files Modified
+- 76 files across `public/`, `src/`, `scripts/` — .html link cleanup
+- 10 `public/methods-lab/*/index.html` — meta title/description rewrites + OG tags
+- 37 `public/methods-lab/*/index.html` — Article + LearningResource JSON-LD injection
+- `scripts/add-article-schema.py` — NEW: batch schema injection (idempotent)
+- `scripts/build-hrr-crosswalk.py` — NEW: Dartmouth/Census crosswalk builder
+- `data/access-explorer/county_hrr_crosswalk.json` — NEW: 58 counties → 24 HRRs
+- `src/backend/server.js` — cleaned .html from redirect URLs
+
+### Decisions Made
+- Article schema uses dual type `["Article", "LearningResource"]` for richer SERP treatment + educational semantics
+- Author attribution: CAPHE (organization), not personal — these are institutional tools
+- Dates omitted from schema (no reliable publish/modify tracking)
+- Riverside manually assigned to Palm Springs/Rancho Mira HRR (preserves distinct Dartmouth HRR #69)
+
+### Next Steps
+- Monitor GSC over next 2-4 weeks for indexing of clean URLs and schema pickup
+- Stream D Phases 2-4: HRR aggregation in build script, frontend toggle, QI checks
+- Add OG tags to remaining 27 Methods Lab pages (only 10 done this session)
+- Add Article schema to other site pages (tools, recordings, etc.)
+- Request GSC re-indexing of .html variant pages to speed deindexing
+
+### Extracted Artifacts
+- `scripts/add-article-schema.py` — reusable for new lab pages
+
+---
+
 ## 2026-02-21: HSR Manuscript — Final Corrections, Submission, SSRN Prep
 
 ### Completed

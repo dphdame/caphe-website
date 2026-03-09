@@ -139,6 +139,7 @@
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Mar 8, 2026 | v208 | GSC indexing fixes: sitemap trailing slashes (37 URLs), canonical tag cleanup (45 pages), noindex on 10 protected pages |
 | Feb 16, 2026 | v183 | Access Explorer: specialty filter on statewide map, per-specialty data for 58 counties/24 HRRs, county detail fallback table |
 | Feb 3, 2026 | v156+ | Fixed HTTP→HTTPS canonical redirect, sitemap trailing slashes, membership application database bug, recovered 3 lost applications via Brevo sync |
 | Jan 30, 2026 | v155 | 404 page: added issue reporting form with /api/contact integration |

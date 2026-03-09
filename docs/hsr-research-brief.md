@@ -9,19 +9,23 @@ School of Public Health, University of California, Berkeley; California Associat
 
 **Key words:** Medicaid, Medi-Cal, provider participation, geographic variation, reimbursement, network adequacy, behavioral health
 
+**Funding:** None.
+
 ---
 
 ## Structured Abstract
 
-**Objective:** To quantify geographic and specialty-level variation in Medi-Cal provider participation rates across California's 58 counties and examine the relationship between local practice costs and provider engagement with the program.
+**Objective:** To quantify geographic and specialty variation in Medi-Cal provider participation across California's 58 counties and examine the relationship between local practice costs and participation.
 
-**Data Sources:** NPPES provider registry (2024); HHS Medicaid Provider Spending dataset (January 2018–December 2024); composite practice cost index from BLS wage data, HUD Fair Market Rents, and healthcare purchased services indices.
+**Study Setting and Design:** Descriptive analysis of provider participation rates across 58 California counties, pooled over 2018–2024, defined as the share of NPPES-registered providers who actively billed Medi-Cal. Rates stratified by county, Hospital Referral Region, and specialty.
 
-**Study Design:** Descriptive analysis of provider participation rates, pooled over a seven-year period (2018–2024), defined as the share of NPPES-registered providers in each county who actively billed Medi-Cal during the study period. Rates were stratified by county, Hospital Referral Region (HRR), and six specialty categories.
+**Data Sources and Analytic Sample:** NPPES provider registry (December 2024) and HHS Medicaid Provider Spending dataset (January 2018–December 2024). Sample: 79,223 providers across 58 counties.
 
-**Principal Findings:** Among 79,223 NPPES-registered providers across California's 58 counties, 31,798 (40.1%) actively billed Medi-Cal. County-level participation ranged from 0% (Sierra County, N=2 providers) to 48.3% (Marin County). Bay Area counties with the highest practice costs (composite cost index 162–186) paradoxically exhibited higher participation (44–48%) than low-cost rural counties (17–30%), suggesting that provider density and institutional infrastructure may matter more than reimbursement adequacy alone. Behavioral health had the lowest median participation (27.3%) across all specialties, with the vast majority of counties clustered between 25% and 29%. Low overall participation (<34%) clusters along the Central Valley and far-north I-5 corridor, with four HRRs (Bakersfield, Modesto, Stockton, and Redding) covering approximately 3.6 million residents.
+**Principal Findings:** Of 79,223 providers, 31,798 (40.1%) actively billed Medi-Cal. County participation ranged from 0% to 48.3%. High-cost Bay Area counties (composite cost index 162–186) paradoxically exhibited higher participation (44–48%) than low-cost rural counties (17–30%), suggesting institutional infrastructure matters more than reimbursement adequacy. Behavioral health had the lowest median participation (27.3%), with 44 of 57 counties between 25% and 30%. Low participation concentrated along the Central Valley and far-north corridor, covering 3.6 million residents.
 
-**Conclusions:** Medi-Cal's flat-rate reimbursement, which unlike Medicare's GPCI makes no geographic adjustment, produces predictable gaps in provider participation. The positive association between practice costs and participation suggests urban institutional infrastructure buffers against low reimbursement in ways unavailable to rural communities. Geographic payment adjustment and targeted behavioral health investments warrant consideration as states implement new CMS network adequacy requirements. Data are available at caphegroup.org/tools/access-explorer.
+**Conclusions:** Medi-Cal's flat-rate reimbursement, unlike Medicare's geographically adjusted GPCI, generates geographic disparities in provider participation. Urban institutional infrastructure buffers against low reimbursement in ways unavailable to rural communities. Behavioral health participation is a statewide crisis requiring targeted intervention beyond payment reform.
+
+**Keywords:** Medicaid, provider participation, geographic variation, reimbursement, network adequacy, behavioral health, Medi-Cal
 
 ---
 

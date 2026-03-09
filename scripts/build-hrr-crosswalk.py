@@ -200,7 +200,7 @@ def build_output(county_to_hrr: dict, hrr_lookup: dict) -> dict:
     county_to_hrr_sorted = dict(sorted(county_to_hrr.items()))
 
     output = {
-        "lastUpdated": "2026-02",
+        "lastUpdated": "2026-03",
         "source": "Dartmouth Atlas ZipHsaHrr19 + Census 2020 ZCTA-County",
         "hrrs": hrrs,
         "county_to_hrr": county_to_hrr_sorted,

@@ -26,7 +26,7 @@
     const tierLabel = (tier === 'professional' || tier === 'member') ? 'Professional' : 'Community';
     topBar.innerHTML = `
       <span style="color: rgba(255,255,255,0.8);">${tierLabel} Member</span>
-      <a href="/settings.html">Settings</a>
+      <a href="/settings">Settings</a>
       <a href="#" id="logout-link">Log Out</a>
     `;
 
@@ -38,7 +38,7 @@
         if (supabaseClient) {
           await supabaseClient.auth.signOut();
         }
-        window.location.href = '/login.html';
+        window.location.href = '/login';
       });
     }
   }
@@ -63,7 +63,7 @@
         Advanced methodology labs &bull; Peer review sessions &bull; Working groups
       </p>
       <div class="cta-buttons">
-        <a href="/membership/professional.html" class="btn-create">
+        <a href="/membership/professional" class="btn-create">
           Apply for Professional Membership
         </a>
       </div>
@@ -79,10 +79,10 @@
         Advanced methodology labs &bull; Peer review sessions &bull; Working groups
       </p>
       <div class="cta-buttons">
-        <a href="/login.html?redirect=${encodeURIComponent(currentPath)}" class="btn-create">
+        <a href="/login?redirect=${encodeURIComponent(currentPath)}" class="btn-create">
           Sign In
         </a>
-        <a href="/membership/professional.html" class="btn-signin">Apply for Membership</a>
+        <a href="/membership/professional" class="btn-signin">Apply for Membership</a>
       </div>
       <a href="/methods-lab/" class="back-link">&larr; Browse public labs</a>
     `;

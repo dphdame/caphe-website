@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!currentSession) {
       console.log('No session, redirecting to login...');
-      window.location.href = '/login.html?redirect=/admin.html';
+      window.location.href = '/login?redirect=/admin';
       return;
     }
 
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="error-state">
         <strong>Authentication Error</strong><br>
         ${error.message}<br><br>
-        <a href="/login.html?redirect=/admin.html">Go to Login</a>
+        <a href="/login?redirect=/admin">Go to Login</a>
       </div>
     `;
   }

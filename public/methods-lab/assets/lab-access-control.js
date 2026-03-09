@@ -191,10 +191,10 @@
           Interactive methodology labs &bull; California case studies &bull; Webinar recordings
         </p>
         <div class="cta-buttons">
-          <a href="/membership.html?redirect=${encodeURIComponent(currentPath)}" class="btn-create">
+          <a href="/membership?redirect=${encodeURIComponent(currentPath)}" class="btn-create">
             Create Account
           </a>
-          <a href="/login.html?redirect=${encodeURIComponent(currentPath)}" class="btn-signin">Sign In</a>
+          <a href="/login?redirect=${encodeURIComponent(currentPath)}" class="btn-signin">Sign In</a>
         </div>
         <a href="/methods-lab/" class="back-link">← Browse public labs instead</a>
       </div>

@@ -49,14 +49,14 @@ async function checkAuth() {
 
   if (session) {
     // User is logged in - redirect to intended destination or dashboard
-    if (window.location.pathname === '/login.html') {
+    if (window.location.pathname === '/login') {
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get('redirect');
       // Only allow redirects to same-origin paths starting with /
       if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
         window.location.href = redirect;
       } else {
-        window.location.href = '/dashboard.html';
+        window.location.href = '/dashboard';
       }
     }
   }
@@ -105,7 +105,7 @@ async function handleLogin(e) {
     if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
       window.location.href = redirect;
     } else {
-      window.location.href = '/dashboard.html';
+      window.location.href = '/dashboard';
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -142,7 +142,7 @@ async function handleForgotPassword(e) {
 
   try {
     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-password.html'
+      redirectTo: window.location.origin + '/reset-password'
     });
 
     if (error) throw error;
@@ -169,7 +169,7 @@ async function logout() {
     console.error('Logout error:', error);
   }
   // Always redirect to login
-  window.location.href = '/login.html';
+  window.location.href = '/login';
 }
 
 // Check session for protected pages (used by admin.js, dashboard.js)

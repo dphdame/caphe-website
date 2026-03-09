@@ -62,7 +62,7 @@ function showProfessionalOnlyMessage() {
         <p class="text-muted" style="max-width: 400px; margin: 0 auto var(--space-lg);">
           Peer Review Sessions are available to Professional Members. Upgrade your membership to present your research and receive feedback from fellow health economists.
         </p>
-        <a href="/membership/professional.html" class="btn btn-primary">Apply for Professional Membership</a>
+        <a href="/membership/professional" class="btn btn-primary">Apply for Professional Membership</a>
       </div>
     `;
   }
@@ -87,14 +87,14 @@ function showProfessionalOnlyMessage() {
 // Check if user is authenticated
 async function checkDashboardAuth() {
   if (!initSupabase()) {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
     return false;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
     return false;
   }
 

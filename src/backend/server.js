@@ -492,7 +492,7 @@ app.post('/api/membership/apply', async (req, res) => {
           <p><strong>Degree Attestation:</strong> ${degreeAttestation ? 'Confirmed master\'s/doctoral in economics' : 'Not confirmed'}</p>
           <hr>
           <p><strong>Account Status:</strong> ${userCreated ? 'Community account created' : userAlreadyExists ? 'Account already exists' : 'Account not created'}</p>
-          <p><a href="https://www.caphegroup.org/admin.html">Review application in Admin Panel</a></p>
+          <p><a href="https://www.caphegroup.org/admin">Review application in Admin Panel</a></p>
         `
       });
     } catch (emailErr) {
@@ -528,7 +528,7 @@ app.post('/api/membership/apply', async (req, res) => {
             <li>Full webinar archive</li>
           </ul>
 
-          <p>If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact.html">contact us</a>.</p>
+          <p>If you haven't heard from us after 5 business days, please <a href="https://www.caphegroup.org/contact">contact us</a>.</p>
 
           <p>Best regards,<br>The CAPHE Team</p>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
@@ -1355,11 +1355,11 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
 
   if (error) {
     console.error('LinkedIn OAuth error:', error, error_description);
-    return res.redirect('/membership.html?error=' + encodeURIComponent(error_description || error));
+    return res.redirect('/membership?error=' + encodeURIComponent(error_description || error));
   }
 
   if (!code) {
-    return res.redirect('/membership.html?error=No authorization code received');
+    return res.redirect('/membership?error=No authorization code received');
   }
 
   try {
@@ -1420,11 +1420,11 @@ app.get('/api/auth/linkedin/callback', async (req, res) => {
     params.set('linkedinId', profileData.linkedinId);
     if (profileData.picture) params.set('picture', profileData.picture);
 
-    res.redirect('/membership/professional.html?' + params.toString());
+    res.redirect('/membership/professional?' + params.toString());
 
   } catch (error) {
     console.error('LinkedIn OAuth callback error:', error);
-    res.redirect('/membership.html?error=' + encodeURIComponent(error.message));
+    res.redirect('/membership?error=' + encodeURIComponent(error.message));
   }
 });
 
@@ -1464,11 +1464,11 @@ app.get('/api/auth/google/callback', async (req, res) => {
 
   if (error) {
     console.error('Google OAuth error:', error);
-    return res.redirect('/login.html?error=' + encodeURIComponent(error));
+    return res.redirect('/login?error=' + encodeURIComponent(error));
   }
 
   if (!code) {
-    return res.redirect('/login.html?error=No authorization code received');
+    return res.redirect('/login?error=No authorization code received');
   }
 
   try {
@@ -1557,7 +1557,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
       type: 'magiclink',
       email: profile.email,
       options: {
-        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+        redirectTo: 'https://www.caphegroup.org/dashboard'
       }
     });
 
@@ -1576,15 +1576,15 @@ app.get('/api/auth/google/callback', async (req, res) => {
       const type = url.searchParams.get('type');
 
       // Redirect to our frontend auth handler with the token
-      res.redirect(`/auth-callback.html?token=${token}&type=${type}&next=/dashboard.html`);
+      res.redirect(`/auth-callback?token=${token}&type=${type}&next=/dashboard`);
     } else {
       // Fallback: redirect to login with email prefilled
-      res.redirect('/login.html?oauth=google&email=' + encodeURIComponent(profile.email));
+      res.redirect('/login?oauth=google&email=' + encodeURIComponent(profile.email));
     }
 
   } catch (error) {
     console.error('Google OAuth callback error:', error);
-    res.redirect('/login.html?error=' + encodeURIComponent(error.message));
+    res.redirect('/login?error=' + encodeURIComponent(error.message));
   }
 });
 
@@ -1620,11 +1620,11 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
 
   if (error) {
     console.error('LinkedIn login OAuth error:', error, error_description);
-    return res.redirect('/login.html?error=' + encodeURIComponent(error_description || error));
+    return res.redirect('/login?error=' + encodeURIComponent(error_description || error));
   }
 
   if (!code) {
-    return res.redirect('/login.html?error=No authorization code received');
+    return res.redirect('/login?error=No authorization code received');
   }
 
   try {
@@ -1713,7 +1713,7 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
       type: 'magiclink',
       email: profile.email,
       options: {
-        redirectTo: 'https://www.caphegroup.org/dashboard.html'
+        redirectTo: 'https://www.caphegroup.org/dashboard'
       }
     });
 
@@ -1730,15 +1730,15 @@ app.get('/api/auth/linkedin/login/callback', async (req, res) => {
       const type = url.searchParams.get('type');
 
       // Redirect to our frontend auth handler with the token
-      res.redirect(`/auth-callback.html?token=${token}&type=${type}&next=/dashboard.html`);
+      res.redirect(`/auth-callback?token=${token}&type=${type}&next=/dashboard`);
     } else {
       // Fallback: redirect to login with email prefilled
-      res.redirect('/login.html?oauth=linkedin&email=' + encodeURIComponent(profile.email));
+      res.redirect('/login?oauth=linkedin&email=' + encodeURIComponent(profile.email));
     }
 
   } catch (error) {
     console.error('LinkedIn login callback error:', error);
-    res.redirect('/login.html?error=' + encodeURIComponent(error.message));
+    res.redirect('/login?error=' + encodeURIComponent(error.message));
   }
 });
 

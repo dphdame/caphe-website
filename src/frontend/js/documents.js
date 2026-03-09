@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Check if user is authenticated
 async function checkDashboardAuth() {
   if (!initSupabase()) {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
     return false;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
     return false;
   }
 

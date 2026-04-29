@@ -31,7 +31,7 @@ SUCCESS = RGBColor(0x2E, 0x7D, 0x32)       # Green for "cost-effective"
 WARNING = RGBColor(0xF5, 0x7C, 0x00)       # Orange for caution
 
 # Image paths
-IMAGES_DIR = Path("/Users/victoriaperez/Projects/CAPHE/07_website/outputs/presentations/images")
+IMAGES_DIR = Path("/Users/victoriaperez/Projects/CAPHE/outputs/presentations/images")
 
 
 def create_presentation():
@@ -867,8 +867,8 @@ def main():
             "Understand what cost-effectiveness analysis (CEA) is and when to use it",
             "Learn to interpret the Incremental Cost-Effectiveness Ratio (ICER)",
             "Explore how we measure health outcomes (QALYs and alternatives)",
-            "Know what decision thresholds mean. Understand their limitations",
-            "See a worked example from California public health"
+            "See a worked example from California public health",
+            "Know what decision thresholds mean. Understand their limitations"
         ]
     )
     print("  3. Today's objectives")
@@ -952,45 +952,13 @@ def main():
     print("  9. Worked example 1")
 
     # ==========================================================================
-    # SLIDE 10: Worked Example 2 - CA Tobacco
-    # ==========================================================================
-    add_worked_example_slide(
-        prs,
-        title="California Example: Tobacco Control Program",
-        scenario="California's Tobacco Control Program (est. 1989) funded by Prop 99 cigarette tax.",
-        data_rows=[
-            "Program cost: ~$1.8 billion (1989-2004)",
-            "Healthcare savings: ~$86 billion",
-            "Lives saved: Estimated 1+ million life-years",
-            "─────────────────────────────────",
-            "ICER: ~$2,000–$4,000 per life-year saved"
-        ],
-        result="$2,000–$4,000 per life-year saved",
-        interpretation="Extremely cost-effective by any standard. Prevention at scale works. This analysis helped justify continued funding and inspired other states.",
-        image="cea-example-tobacco.png"
-    )
-    print("  10. CA Tobacco example")
-
-    # ==========================================================================
-    # SLIDE 11: Decision Thresholds
-    # ==========================================================================
-    add_threshold_slide(prs)
-    print("  11. Decision thresholds")
-
-    # ==========================================================================
-    # SLIDE 12: Beyond Cost-Effectiveness
-    # ==========================================================================
-    add_beyond_cea_slide(prs)
-    print("  12. Beyond cost-effectiveness")
-
-    # ==========================================================================
-    # SLIDE 13: Section - Measuring Outcomes
+    # SLIDE 10: Section - Measuring Outcomes
     # ==========================================================================
     add_section_slide(prs, "Part 3", "Measuring Health Outcomes")
-    print("  13. Section: Measuring outcomes")
+    print("  10. Section: Measuring outcomes")
 
     # ==========================================================================
-    # SLIDE 14: The Measurement Problem
+    # SLIDE 11: The Measurement Problem
     # ==========================================================================
     add_content_slide(
         prs,
@@ -1003,10 +971,10 @@ def main():
             "  We need a common unit that captures both mortality and morbidity"
         ]
     )
-    print("  14. The measurement problem")
+    print("  11. The measurement problem")
 
     # ==========================================================================
-    # SLIDE 15: Outcome Measures Comparison
+    # SLIDE 12: Outcome Measures Comparison
     # ==========================================================================
     add_comparison_table_slide(
         prs,
@@ -1022,10 +990,10 @@ def main():
         ],
         note="No measure is perfect. Choose based on your audience and what data you have."
     )
-    print("  15. Outcome measures table")
+    print("  12. Outcome measures table")
 
     # ==========================================================================
-    # SLIDE 16: QALYs Explained
+    # SLIDE 13: QALYs Explained
     # ==========================================================================
     add_key_concept_slide(
         prs,
@@ -1034,10 +1002,10 @@ def main():
         example="A treatment that extends life by 5 years but at 0.6 quality = 5 × 0.6 = 3 QALYs gained. QALYs capture both quantity and quality of life.",
         image="cea-concept-measures.png"
     )
-    print("  16. QALYs explained")
+    print("  13. QALYs explained")
 
     # ==========================================================================
-    # SLIDE 17: QALYs - The Controversy
+    # SLIDE 14: QALYs - The Controversy
     # ==========================================================================
     add_content_slide(
         prs,
@@ -1052,10 +1020,10 @@ def main():
         ],
         note="This is an active area of ethical and methodological discussion in health economics."
     )
-    print("  17. QALY controversy")
+    print("  14. QALY controversy")
 
     # ==========================================================================
-    # SLIDE 18: Practical Guidance
+    # SLIDE 15: Practical Guidance
     # ==========================================================================
     add_content_slide(
         prs,
@@ -1070,13 +1038,46 @@ def main():
             "When in doubt: Report multiple measures for transparency"
         ]
     )
-    print("  18. Which measure to use")
+    print("  15. Which measure to use")
+
+    # ==========================================================================
+    # SLIDE 16: Worked Example 2 - CA Diabetes Case Management
+    # ==========================================================================
+    add_worked_example_slide(
+        prs,
+        title="California Example: Diabetes Case Management with Promotoras",
+        scenario="A diabetes case management program using nurse case managers and promotora peer educators at community health centers serving low-income, predominantly Latino patients.",
+        data_rows=[
+            "Program cost: $1,537/patient in year 1 (2003 dollars)",
+            "Medi-Cal cohort (n=1,213):",
+            "  HbA1c reduction: −0.5 percentage points",
+            "  Systolic BP: −1.9 mmHg",
+            "─────────────────────────────────",
+            "ICER (Medi-Cal): $44,941 per QALY gained"
+        ],
+        result="$44,941 per QALY gained",
+        interpretation="Just below the $50,000/QALY threshold. Is that good value? It depends on context: the uninsured cohort showed a much lower ICER ($10,141/QALY) because clinical improvements were larger. Same program, different populations, different cost-effectiveness."
+    )
+    print("  16. CA Diabetes Case Management example")
+
+    # ==========================================================================
+    # SLIDE 17: Decision Thresholds
+    # ==========================================================================
+    add_threshold_slide(prs)
+    print("  17. Decision thresholds")
+
+    # ==========================================================================
+    # SLIDE 18: Beyond Cost-Effectiveness
+    # ==========================================================================
+    add_beyond_cea_slide(prs)
+    print("  18. Beyond cost-effectiveness")
 
     # ==========================================================================
     # SLIDE 19: Section - Limitations
     # ==========================================================================
     add_section_slide(prs, "Part 4", "Limitations and Practical Considerations")
     print("  19. Section: Limitations")
+
 
     # ==========================================================================
     # SLIDE 20: What CEA Doesn't Tell You
@@ -1122,7 +1123,7 @@ def main():
         title="Getting Started with CEA in Your Work",
         bullets=[
             "Start by reading existing CEAs on similar interventions",
-            "  CEA Registry (Tufts): cear.org is a searchable database",
+            "  CEA Registry (Tufts): cear.tuftsmedicalcenter.org",
             "Identify your comparator: What's the current practice?",
             "Document costs carefully: Include all relevant cost categories",
             "Choose outcomes your audience understands",
@@ -1145,7 +1146,7 @@ def main():
     print("  24. Closing slide")
 
     # Save presentation
-    output_dir = Path("/Users/victoriaperez/Projects/CAPHE/07_website/outputs/presentations")
+    output_dir = Path("/Users/victoriaperez/Projects/CAPHE/outputs/presentations")
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "CAPHE_Webinar_CEABasics_2026-04-09.pptx"
 

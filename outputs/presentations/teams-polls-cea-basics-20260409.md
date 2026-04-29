@@ -49,7 +49,7 @@
 ---
 
 ## Poll 3: Interpreting the ICER
-**Timing:** After the ICER formula slide (Slide 8)
+**Timing:** After the ICER formula and simple example (Slide 9)
 
 ### Poll Question:
 **A diabetes screening expansion costs $10,000 per case prevented. Without knowing anything else, your first instinct is:**
@@ -60,45 +60,12 @@
 - I have no idea how to evaluate that number
 
 ### Discussion Prompt:
-"Great range of responses. 'I'd need more context' is actually the right answer. $10,000 per case prevented means nothing without knowing: What's the cost of untreated diabetes? What else could we do with that money? What threshold are we using? Let's talk about thresholds next."
+"Great range of responses. 'I'd need more context' is actually the right answer. $10,000 per case prevented means nothing without knowing: What's the cost of untreated diabetes? What else could we do with that money? What threshold are we using? Before we can answer those questions, we need to talk about how we measure health outcomes."
 
 ---
 
-## Poll 4: Decision Thresholds
-**Timing:** After the threshold slide (Slide 11)
-
-### Poll Question:
-**If a program costs $75,000 per QALY gained (in the 'potentially cost-effective' zone), would your organization likely fund it?**
-
-- Yes, probably
-- Maybe, depends on other factors
-- Probably not
-- We don't use these thresholds in our decisions
-
-### Discussion Prompt:
-"For those who said 'depends on other factors,' what factors? This is where real decision-making happens. Thresholds are guidelines, not rules. Equity, community priorities, available alternatives all matter. Let's talk about when cost-effectiveness ISN'T the whole story."
-
----
-
-## Poll 5: Beyond Cost-Effectiveness
-**Timing:** After "Beyond CEA" slide (Slide 12)
-
-### Poll Question:
-**Have you ever supported (or seen support for) a program that wasn't the most cost-effective option?**
-
-- Yes, for equity reasons
-- Yes, for political or community reasons
-- Yes, because there were no alternatives
-- No, cost-effectiveness usually drives our decisions
-- Unsure
-
-### Discussion Prompt:
-"Many of you have! This is normal and appropriate. Cost-effectiveness is one input, not the only input. If you're serving underserved populations, building strategic capacity, or fulfilling legal obligations, a higher cost per outcome may be justified. The key is being transparent about WHY."
-
----
-
-## Poll 6: Measuring Outcomes
-**Timing:** After the measurement problem slide (Slide 14)
+## Poll 4: Measuring Outcomes
+**Timing:** After the measurement problem slide (Slide 11)
 
 ### Poll Question:
 **When you report program outcomes, what measure do you most commonly use?**
@@ -115,8 +82,8 @@
 
 ---
 
-## Poll 7: QALY Controversy
-**Timing:** After QALY controversy slide (Slide 17)
+## Poll 5: QALY Controversy
+**Timing:** After QALY controversy slide (Slide 14)
 
 ### Poll Question:
 **How comfortable are you using QALYs in your work?**
@@ -129,6 +96,39 @@
 
 ### Discussion Prompt:
 "This is genuinely contested in the field. Some economists strongly defend QALYs, others argue they embed bias against disability and aging. For county work, you can often avoid this debate by using natural units. When you do see QALY-based analyses, knowing this controversy helps you interpret them critically."
+
+---
+
+## Poll 6: Decision Thresholds
+**Timing:** After the threshold slide (Slide 17)
+
+### Poll Question:
+**If a program costs $75,000 per QALY gained (in the 'potentially cost-effective' zone), would your organization likely fund it?**
+
+- Yes, probably
+- Maybe, depends on other factors
+- Probably not
+- We don't use these thresholds in our decisions
+
+### Discussion Prompt:
+"For those who said 'depends on other factors,' what factors? This is where real decision-making happens. Thresholds are guidelines, not rules. Equity, community priorities, available alternatives all matter. Let's talk about when cost-effectiveness ISN'T the whole story."
+
+---
+
+## Poll 7: Beyond Cost-Effectiveness
+**Timing:** After "Beyond CEA" slide (Slide 18)
+
+### Poll Question:
+**Have you ever supported (or seen support for) a program that wasn't the most cost-effective option?**
+
+- Yes, for equity reasons
+- Yes, for political or community reasons
+- Yes, because there were no alternatives
+- No, cost-effectiveness usually drives our decisions
+- Unsure
+
+### Discussion Prompt:
+"Many of you have! This is normal and appropriate. Cost-effectiveness is one input, not the only input. If you're serving underserved populations, building strategic capacity, or fulfilling legal obligations, a higher cost per outcome may be justified. The key is being transparent about WHY."
 
 ---
 
@@ -157,10 +157,10 @@ Use these for quick chat-based engagement (no formal poll needed):
 ### Chat Prompt 1 (after Slide 3):
 "Drop in the chat: What's one program in your county that you think delivers great value? Just the program name is fine."
 
-### Chat Prompt 2 (after Slide 10 - CA Tobacco):
-"Type 'WOW' if you knew about California's tobacco program ROI. Type 'NEW' if this was new to you."
+### Chat Prompt 2 (after Slide 16 - Diabetes Case Management):
+"Type in the chat: Does your county fund promotora or CHW programs? What conditions do they focus on?"
 
-### Chat Prompt 3 (after Slide 18 - Which measure):
+### Chat Prompt 3 (after Slide 15 - Which measure):
 "Quick chat: What's the biggest barrier to measuring outcomes in your work? (Time? Data? Skills? Buy-in?)"
 
 ### Chat Prompt 4 (after Slide 21 - Common pitfalls):
@@ -199,7 +199,7 @@ Send via email or Teams after the session:
 2. **What was most valuable to you?**
    - Understanding the ICER formula
    - Learning about decision thresholds
-   - The California Tobacco example
+   - The California diabetes case management example
    - Discussion of when CEA isn't enough
    - Learning about QALYs and alternatives
    - Interactive polls and discussion

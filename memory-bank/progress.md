@@ -41,6 +41,32 @@
 
 ## What's Left to Build
 
+### Immediate Follow-Up: April 9 Webinar (CEA Basics)
+- [ ] Upload webinar recording to programs page
+- [ ] Send post-webinar survey to attendees
+- [ ] Draft LinkedIn posts (thank Tim Brown, CEA teaching moment, June promo)
+- [x] Thank-you email to Tim Brown (sent 2026-04-20)
+
+### 2026-04-09 / 2026-04-20: CEA Basics Slide Deck Review + Follow-Up
+**Completed:**
+- Replaced CA Tobacco example (contradictory dominant/ICER numbers) with Project Dulce (Gilmer et al. 2007, $44,941/QALY Medi-Cal)
+- Reordered slides: Measuring Outcomes now before Decision Thresholds (QALYs defined before used)
+- Fixed CEA Registry URL (cear.org → cear.tuftsmedicalcenter.org)
+- Fixed script output paths (07_website/ → actual directory)
+- Created presenter script with timing + poll integration
+- Updated polls doc to match new slide order
+- Drafted and sent thank-you email to Tim Brown (UC Berkeley, guest speaker)
+**Files modified:**
+- `scripts/generate_cea_basics_slides.py` (slide content, ordering, paths)
+- `outputs/presentations/CAPHE_Webinar_CEABasics_2026-04-09.pptx` (regenerated)
+- `outputs/presentations/teams-polls-cea-basics-20260409.md` (reordered, updated refs)
+- `outputs/presentations/cea-basics-presenter-script.md` (new)
+- `outputs/presentations/thank-you-tim-brown.md` (new, sent)
+**Next steps:**
+- Draft LinkedIn posts (3 planned: thank Tim, CEA concept post, June webinar promo)
+- Upload recording to programs page
+- Send post-webinar survey
+
 ### OAuth Integration (Planned)
 - [ ] Google OAuth on login page
 - [ ] LinkedIn OAuth on login page

@@ -47,6 +47,24 @@
 - [ ] Draft LinkedIn posts (thank Tim Brown, CEA teaching moment, June promo)
 - [x] Thank-you email to Tim Brown (sent 2026-04-20)
 
+### 2026-04-29: April 29 Member Meeting Deck
+**Completed:**
+- Built `CAPHE_Meeting_2026-04-29.pptx` (10 slides, discussion-style, one question per slide)
+- Reframed CDPH agenda item around the substantive shift (health economics function moving away from CDPH); two-column slide with left = what the Erika Pan letter asked for, right = "does this still hold?"
+- "What's on your mind?" round-robin (Item 3) treats members as expert peers, surfaces topics for future webinars
+- Honest pivot for April 9 zero attendance: curious-tone reframe ("we'd like to figure out why, together"), discussion prompts on topic fit, format, audience, partners
+- Removed all em dashes and time chips (per global feedback rules)
+- Saved curious-tone memory: `feedback_member_meeting_tone.md`
+**Files modified:**
+- `scripts/generate_apr29_meeting_slides.py` (new)
+- `outputs/presentations/CAPHE_Meeting_2026-04-29.pptx` (new)
+- `outputs/presentations/CAPHE_Meeting_2026-04-29-qa.json` (PASS, 5/5 checks)
+**Pending:**
+- GDrive consolidation agent paused at checkpoint (no GitHub remote; only Heroku as `origin`); deferred to next session
+- Letter from Gilda to Erika Pan: status update needed; CAPHE may need to revise framing as health economics function leaves CDPH
+
+---
+
 ### 2026-04-09 / 2026-04-20: CEA Basics Slide Deck Review + Follow-Up
 **Completed:**
 - Replaced CA Tobacco example (contradictory dominant/ICER numbers) with Project Dulce (Gilmer et al. 2007, $44,941/QALY Medi-Cal)

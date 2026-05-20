@@ -819,12 +819,13 @@
   </footer>
 
   <script src="/src/frontend/js/main.js"></script>
+  <script src="/api/config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     // Auth state
     let userAuth = { authenticated: false, tier: null };
-    const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
+    const SUPABASE_URL = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseUrl) || '';
+    const SUPABASE_ANON_KEY = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseAnonKey) || '';
 
     // Initialize Supabase client
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

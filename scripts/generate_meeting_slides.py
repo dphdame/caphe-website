@@ -58,9 +58,9 @@ DATA_DIR = PROJECT_DIR / "data"
 EVENTS_FILE = DATA_DIR / "events.json"
 OUTPUT_DIR = PROJECT_DIR / "outputs" / "presentations"
 
-# Supabase config (public keys - safe to include)
-SUPABASE_URL = "https://yyetprjdxwunhtighnrq.supabase.co"
-SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ"
+# Supabase config loaded from environment (set SUPABASE_URL and SUPABASE_ANON_KEY in .env)
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
 
 
 # =============================================================================

@@ -3,14 +3,33 @@
  * Uses Supabase for member authentication
  */
 
-// Supabase configuration
-const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
+// Supabase configuration loaded from /api/config.js (Origin-gated)
+let SUPABASE_URL = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseUrl) || '';
+let SUPABASE_ANON_KEY = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseAnonKey) || '';
 
 let supabaseClient = null;
 
+// Lazy-load /api/config.js if not yet present, then populate the keys
+async function ensureConfigLoaded() {
+  if (window.CAPHE_CONFIG) {
+    SUPABASE_URL = window.CAPHE_CONFIG.supabaseUrl || '';
+    SUPABASE_ANON_KEY = window.CAPHE_CONFIG.supabaseAnonKey || '';
+    return;
+  }
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = '/api/config.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Failed to load /api/config.js'));
+    document.head.appendChild(s);
+  }).catch((e) => console.error('CAPHE config load failed:', e));
+  SUPABASE_URL = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseUrl) || '';
+  SUPABASE_ANON_KEY = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseAnonKey) || '';
+}
+
 // Initialize Supabase client
-function initSupabase() {
+async function initSupabase() {
+  await ensureConfigLoaded();
   if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return true;

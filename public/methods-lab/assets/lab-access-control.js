@@ -4,10 +4,20 @@
  * Uses preview-with-gate pattern for better UX
  */
 
-(function() {
-  // Supabase configuration
-  const SUPABASE_URL = 'https://yyetprjdxwunhtighnrq.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5ZXRwcmpkeHd1bmh0aWdobnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMzk2MDAsImV4cCI6MjA4MjYxNTYwMH0.xWguR4nFUGAflIy3iolYHUZFAY2ec0CGcFG2f8a-TWQ';
+(async function() {
+  // Lazy-load /api/config.js if the host page didn't include it before this script
+  if (!window.CAPHE_CONFIG) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = '/api/config.js';
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('Failed to load /api/config.js'));
+      document.head.appendChild(s);
+    }).catch((e) => console.error('CAPHE config load failed:', e));
+  }
+  // Supabase configuration (Origin-gated, served by server)
+  const SUPABASE_URL = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseUrl) || '';
+  const SUPABASE_ANON_KEY = (window.CAPHE_CONFIG && window.CAPHE_CONFIG.supabaseAnonKey) || '';
 
   // Get the lab title from the page
   function getLabTitle() {

@@ -109,6 +109,41 @@ app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/data', express.static(path.join(__dirname, '../../data')));
 
 // =============================================
+// CLIENT CONFIG ENDPOINT (Origin-gated)
+// =============================================
+// Returns a tiny JS file that sets window.CAPHE_CONFIG with the public
+// Supabase URL and anon key. Gated by Origin/Referer host allowlist so
+// the keys are not handed out to arbitrary cross-origin callers.
+// Security model: anon key + RLS on every table; service_role never reaches the client.
+app.get('/api/config.js', (req, res) => {
+  const allowedHosts = new Set([
+    'caphegroup.org',
+    'www.caphegroup.org',
+    'localhost:3000',
+    'localhost:5173',
+    '127.0.0.1:3000',
+  ]);
+  const origin = req.get('Origin') || req.get('Referer') || '';
+  let originHost = '';
+  try { originHost = new URL(origin).host; } catch (_) { /* no header */ }
+
+  res.set('Cache-Control', 'no-store');
+  res.type('application/javascript');
+
+  if (!allowedHosts.has(originHost)) {
+    return res.status(403).send(
+      'console.error("CAPHE config: origin not allowed");'
+    );
+  }
+
+  const payload = {
+    supabaseUrl: process.env.SUPABASE_URL || '',
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+  };
+  res.send(`window.CAPHE_CONFIG = ${JSON.stringify(payload)};`);
+});
+
+// =============================================
 // BREVO EMAIL INTEGRATION
 // =============================================
 

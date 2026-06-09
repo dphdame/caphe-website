@@ -771,6 +771,40 @@
   }
 }
 </script>
+<!-- geo:faq:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does difference-in-differences isolate a program effect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DiD removes any change that affected both groups equally by subtracting the comparison group's change from the treated group's change. In the tutorial, (-15.2) minus (-12.8) yields a DiD effect of -2.4 emergency department visits per 10,000."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is adding more controls not enough for history threats?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tutorial notes that adding controls misses the point because a common shock affects everyone regardless of measured covariates. DiD addresses this by differencing out whatever changed for both the treated and comparison groups."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What assumption must hold for difference-in-differences to be valid?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DiD relies on parallel trends, meaning the two groups would have moved together absent the program. The tutorial includes an assumptions audit and sensitivity analysis to test how the estimate changes when that assumption is relaxed."
+      }
+    }
+  ]
+}
+</script>
+<!-- geo:faq:end -->
 </head>
 <body>
   <!-- Top Bar -->
@@ -822,6 +856,12 @@
     <div class="container">
       <div class="eyebrow">CAPHE Methods Lab - Validity & Solutions</div>
       <h1>Controlling for History Threats (DiD)</h1>
+        <!-- geo:answer:start -->
+        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
+          <p style="margin:0;font-weight:600;color:#1c1c1c;">Difference-in-differences (DiD) controls history threats by using parallel trends to separate a program effect from common shocks that affect everyone. Rather than adding more covariates, DiD subtracts the change observed in a comparison group from the change in the treated group. In the tutorial, County A's emergency department visits fell 15.2 points and County B's fell 12.8 points, so the DiD estimate is the difference of differences, 2.4 visits per 10,000. That remaining gap is the portion of improvement unique to the program after removing the shared trend.</p>
+          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
+        </div>
+        <!-- geo:answer:end -->
       <p class="subtitle">"Add more controls" misses the point. Difference-in-differences uses parallel trends to isolate treatment effects from common shocks that affect everyone.</p>
     </div>
   </header>
@@ -1112,7 +1152,18 @@
     </div>
   </main>
 
-  <footer class="footer" role="contentinfo">
+  <!-- geo:citations:start -->
+        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
+          <h2>References</h2>
+          <ul style="line-height:1.6;">
+            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
+            <li>Card D, Krueger AB. Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania. NBER Working Paper 4509; 1994. <a href="https://www.nber.org/papers/w4509" target="_blank" rel="noopener">nber.org</a></li>
+            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
+            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
+          </ul>
+        </section>
+        <!-- geo:citations:end -->
+        <footer class="footer" role="contentinfo">
     <div class="container">
       <p><strong>CAPHE</strong> - California Public Health Economists</p>
       <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>

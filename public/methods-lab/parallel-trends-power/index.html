@@ -784,6 +784,48 @@
   }
 }
 </script>
+<!-- geo:faq:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does passing a parallel trends test prove my difference-in-differences estimate is unbiased?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The test only checks whether pre-treatment coefficients are jointly different from zero. With wide standard errors or few pre-periods, large violations can go undetected, so a high p-value may signal low power rather than valid identification."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Rambachan-Roth sensitivity analysis?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Rather than assuming parallel trends hold exactly, Rambachan and Roth (2023) parameterize possible violations with a parameter M that measures how large a violation can be relative to observed pre-treatment movement. The identified bounds on the treatment effect widen as M increases, revealing how fragile a result is."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do county-specific linear trends test a causal claim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Adding unit-specific linear time trends absorbs pre-existing trajectories. If the treatment effect survives, it is identified off deviations from each unit's own trend; if it disappears, pre-existing trajectories explain the result, indicating selection into treatment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What pre-trend warning signs should I watch for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Three or fewer pre-periods often mean low power, confidence intervals wider than the treatment effect mean violations cannot be detected, and a Rambachan-Roth M below 0.5 indicates the result is sensitive to violations smaller than observed pre-treatment movement."
+      }
+    }
+  ]
+}
+</script>
+<!-- geo:faq:end -->
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -793,6 +835,12 @@
     <div class="container">
       <div class="eyebrow">CAPHE Methods Lab &middot; Causal Inference</div>
       <h1>Understanding the Limits of Parallel Trends Tests</h1>
+        <!-- geo:answer:start -->
+        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
+          <p style="margin:0;font-weight:600;color:#1c1c1c;">A high p-value on a parallel trends test does not confirm that a difference-in-differences design is valid. When pre-treatment periods are few and standard errors are wide, the test often lacks the statistical power to detect even meaningful pre-trends, so a 'passing' result may reflect low power rather than satisfied assumptions. This CAPHE lab uses a SNAP-and-bank-closure analysis where a p-value of 0.9997 masked selection into treatment. Rambachan-Roth sensitivity analysis and county-specific linear trends offer stronger checks on whether a causal claim is robust.</p>
+          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
+        </div>
+        <!-- geo:answer:end -->
       <p class="subtitle">A high p-value on your parallel trends test does not mean your causal identification is valid. Statistical power, sensitivity analysis, and alternative specifications tell a more complete story.</p>
     </div>
   </header>
@@ -1345,7 +1393,18 @@
   </main>
 
   <!-- Footer -->
-  <footer class="footer" role="contentinfo">
+  <!-- geo:citations:start -->
+        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
+          <h2>References</h2>
+          <ul style="line-height:1.6;">
+            <li>Card D, Krueger AB. Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania. NBER Working Paper 4509; 1994. <a href="https://www.nber.org/papers/w4509" target="_blank" rel="noopener">nber.org</a></li>
+            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
+            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
+            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
+          </ul>
+        </section>
+        <!-- geo:citations:end -->
+        <footer class="footer" role="contentinfo">
     <div class="container">
       <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
       <p><a href="https://www.caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>

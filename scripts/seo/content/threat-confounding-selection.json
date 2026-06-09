@@ -1,0 +1,10 @@
+{
+  "answer": "Confounding and selection bias both threaten causal inference, but they differ in structure and in whether statistical adjustment can fix them. Confounding arises when a third variable causes both treatment and outcome; selection arises when units self-select into treatment based on factors related to the outcome. Adjustment works only when treatment is independent of potential outcomes conditional on measured variables, which holds for selection on observables but fails under unmeasured confounding. This CAPHE lab also shows adjustment backfiring: conditioning on a collider opens a spurious path, and controlling a mediator blocks the very mechanism of interest. The durable fix is identification through variation independent of unmeasured factors.",
+  "faqs": [
+    {"q": "When does statistical adjustment remove confounding?", "a": "Adjustment removes confounding when all common causes of treatment and outcome are measured and controlled, blocking the backdoor path. The adjusted estimate is unbiased only when treatment is independent of potential outcomes given those controls."},
+    {"q": "Why can controlling for a collider make bias worse?", "a": "A collider is caused by both treatment and outcome. Conditioning on it opens a spurious path between them, creating bias where none existed. Effects of treatment or outcome should never be controlled."},
+    {"q": "Should I adjust for a mediator?", "a": "Usually not. A mediator lies on the causal pathway, so controlling for it blocks the mechanism through which treatment works and understates the total effect. Adjusting for a mediator is appropriate only when the goal is the direct effect."},
+    {"q": "What does selection on observables mean?", "a": "It means all factors affecting treatment selection are measured in the data. Under this assumption, matching, inverse probability weighting, and regression adjustment can recover the treatment effect. It fails when selection depends on unmeasured factors."}
+  ],
+  "citations": ["book_of_why", "whatif", "mixtape", "imbens_rubin"]
+}

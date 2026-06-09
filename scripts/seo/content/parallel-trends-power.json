@@ -1,0 +1,10 @@
+{
+  "answer": "A high p-value on a parallel trends test does not confirm that a difference-in-differences design is valid. When pre-treatment periods are few and standard errors are wide, the test often lacks the statistical power to detect even meaningful pre-trends, so a 'passing' result may reflect low power rather than satisfied assumptions. This CAPHE lab uses a SNAP-and-bank-closure analysis where a p-value of 0.9997 masked selection into treatment. Rambachan-Roth sensitivity analysis and county-specific linear trends offer stronger checks on whether a causal claim is robust.",
+  "faqs": [
+    {"q": "Does passing a parallel trends test prove my difference-in-differences estimate is unbiased?", "a": "No. The test only checks whether pre-treatment coefficients are jointly different from zero. With wide standard errors or few pre-periods, large violations can go undetected, so a high p-value may signal low power rather than valid identification."},
+    {"q": "What is Rambachan-Roth sensitivity analysis?", "a": "Rather than assuming parallel trends hold exactly, Rambachan and Roth (2023) parameterize possible violations with a parameter M that measures how large a violation can be relative to observed pre-treatment movement. The identified bounds on the treatment effect widen as M increases, revealing how fragile a result is."},
+    {"q": "How do county-specific linear trends test a causal claim?", "a": "Adding unit-specific linear time trends absorbs pre-existing trajectories. If the treatment effect survives, it is identified off deviations from each unit's own trend; if it disappears, pre-existing trajectories explain the result, indicating selection into treatment."},
+    {"q": "What pre-trend warning signs should I watch for?", "a": "Three or fewer pre-periods often mean low power, confidence intervals wider than the treatment effect mean violations cannot be detected, and a Rambachan-Roth M below 0.5 indicates the result is sensitive to violations smaller than observed pre-treatment movement."}
+  ],
+  "citations": ["card_krueger", "mixtape", "whatif", "imbens_rubin"]
+}

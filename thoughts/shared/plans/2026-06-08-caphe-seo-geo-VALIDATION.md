@@ -48,7 +48,7 @@ All tutorial citations and hub outbound links drawn from a **pre-verified menu**
 3. **Run IndexNow** — `node scripts/indexnow-submit.js --all` after deploy (needs key file live).
 4. **GSC** — submit segmented sitemaps; URL-inspect/Request-Indexing the 2 not-indexed URLs + flagship (interactive).
 5. **Membership OPTIMIZE copy** (Cluster C tier table / hard-CTA rewrite) and **.edu outreach** — content/relationship work beyond schema; not attempted this session, lower automation value.
-6. **UX review of hub** — `ux-design-qa-analyst` run; findings to fold in before deploy.
+6. **UX review of hub** — DONE. `ux-design-qa-analyst` flagged 3 BLOCKER + 5 HIGH WCAG issues; all fixed (main landmark, skip link, th scope=row, new-tab disclosure, keyboard-scrollable table + min-width, FAQ as dl, keyboard nav dropdowns, breadcrumb, contrast). 9 new a11y tests; full suite now 34/34.
 
 ## Recommended next action
 Review the branch; if approved, merge to `master` and deploy to Heroku, then run IndexNow + submit sitemaps in GSC/Bing.

@@ -8,10 +8,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.querySelector('.nav-links');
 
   if (mobileToggle && navLinks) {
+    mobileToggle.setAttribute('aria-expanded', 'false');
     mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
+      const open = navLinks.classList.toggle('active');
+      mobileToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   }
+
+  // Keyboard accessibility for nav dropdowns: reflect open state via aria-expanded
+  // (the menu is revealed by CSS :focus-within; Escape closes and restores focus).
+  document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
+    const trigger = dropdown.querySelector('.nav-link');
+    const menu = dropdown.querySelector('.nav-dropdown-menu');
+    if (!trigger || !menu) return;
+    trigger.setAttribute('aria-haspopup', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+    dropdown.addEventListener('focusin', () => trigger.setAttribute('aria-expanded', 'true'));
+    dropdown.addEventListener('focusout', (e) => {
+      if (!dropdown.contains(e.relatedTarget)) trigger.setAttribute('aria-expanded', 'false');
+    });
+    dropdown.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.focus();
+      }
+    });
+  });
 
   // Contact form handling
   const contactForm = document.getElementById('contact-form');

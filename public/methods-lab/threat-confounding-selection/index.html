@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=11">
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
   <!-- Access Control for Community Labs -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Distinguishing Confounding from Selection Bias | CAPHE Methods Lab</title>
+  <title>Distinguishing Confounding from Selection Bias | CAPHE</title>
   <meta name="description" content="Learn when statistical adjustment works and when it fails. Explore the difference between confounding and selection bias through an economist's lens.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-confounding-selection">
   <style>
@@ -505,6 +505,48 @@
   }
 }
 </script>
+<!-- geo:faq:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When does statistical adjustment remove confounding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Adjustment removes confounding when all common causes of treatment and outcome are measured and controlled, blocking the backdoor path. The adjusted estimate is unbiased only when treatment is independent of potential outcomes given those controls."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why can controlling for a collider make bias worse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A collider is caused by both treatment and outcome. Conditioning on it opens a spurious path between them, creating bias where none existed. Effects of treatment or outcome should never be controlled."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I adjust for a mediator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Usually not. A mediator lies on the causal pathway, so controlling for it blocks the mechanism through which treatment works and understates the total effect. Adjusting for a mediator is appropriate only when the goal is the direct effect."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does selection on observables mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It means all factors affecting treatment selection are measured in the data. Under this assumption, matching, inverse probability weighting, and regression adjustment can recover the treatment effect. It fails when selection depends on unmeasured factors."
+      }
+    }
+  ]
+}
+</script>
+<!-- geo:faq:end -->
 </head>
 <body>
   <!-- Top Bar -->
@@ -556,6 +598,12 @@
     <div class="container">
       <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
       <h1>Distinguishing Confounding from Selection Bias</h1>
+        <!-- geo:answer:start -->
+        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
+          <p style="margin:0;font-weight:600;color:#1c1c1c;">Confounding and selection bias both threaten causal inference, but they differ in structure and in whether statistical adjustment can fix them. Confounding arises when a third variable causes both treatment and outcome; selection arises when units self-select into treatment based on factors related to the outcome. Adjustment works only when treatment is independent of potential outcomes conditional on measured variables, which holds for selection on observables but fails under unmeasured confounding. This CAPHE lab also shows adjustment backfiring: conditioning on a collider opens a spurious path, and controlling a mediator blocks the very mechanism of interest. The durable fix is identification through variation independent of unmeasured factors.</p>
+          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
+        </div>
+        <!-- geo:answer:end -->
       <p class="subtitle">When does "adjust for C" work? Understanding when statistical adjustment fixes the problem and when it makes things worse.</p>
     </div>
   </header>
@@ -633,7 +681,7 @@
           <h3>The Causal Structure</h3>
           <div class="dag-image-wrapper">
             <img
-              src="assets/confounding-selection-dag.png"
+              src="/methods-lab/threat-confounding-selection/assets/confounding-selection-dag.png"
               alt="DAG showing Income as a confounder affecting both Program adoption and Hospitalization outcomes, with a dashed arrow from Program to Hospitalization representing the causal effect we want to estimate"
               class="dag-image"
             >
@@ -888,7 +936,18 @@
     </div>
   </main>
 
-  <footer class="footer" role="contentinfo">
+  <!-- geo:citations:start -->
+        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
+          <h2>References</h2>
+          <ul style="line-height:1.6;">
+            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
+            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
+            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
+            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
+          </ul>
+        </section>
+        <!-- geo:citations:end -->
+        <footer class="footer" role="contentinfo">
     <div class="container">
       <p><strong>CAPHE</strong> · California Public Health Economists</p>
       <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=11">
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
   <!-- Access Control for Community Labs -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Case Study: Food Security and Diabetes | CAPHE Methods Lab</title>
+  <title>Case Study: Food Security and Diabetes | CAPHE</title>
   <meta name="description" content="Does hunger cause diabetes complications, or does illness cause poverty? Explore bidirectional causation and unmeasured confounding through interactive data visualization.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/food-insecurity-diabetes">
   <style>
@@ -847,6 +847,40 @@
   }
 }
 </script>
+<!-- geo:faq:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does food insecurity cause diabetes hospitalizations or the reverse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cross-sectional data cannot distinguish the directions. Food insecurity can impair diet and medication timing and raise hospitalizations, but chronic illness can also reduce income and increase food insecurity, so both arrows are plausible simultaneously."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the confounder in the food insecurity and diabetes case?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "County-level poverty is a shared cause: poorer counties have both worse food access and fewer healthcare resources, less preventive care, and lower medication adherence, all of which independently raise hospitalizations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can statistical adjustment fix unmeasured confounding here?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Adjustment can only control for variables that are measured. Resolving the problem requires finding variation in food access that is independent of the confounder, typically through study design rather than regression controls."
+      }
+    }
+  ]
+}
+</script>
+<!-- geo:faq:end -->
 </head>
 <body>
   <!-- Top Bar -->
@@ -899,6 +933,12 @@
     <div class="container">
       <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
       <h1>Case Study: Food Security and Diabetes</h1>
+        <!-- geo:answer:start -->
+        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
+          <p style="margin:0;font-weight:600;color:#1c1c1c;">The observed link between county food insecurity rates and diabetes hospitalizations illustrates two distinct identification problems. Bidirectional causation means hunger can worsen glucose control while illness can deepen poverty, and cross-sectional snapshots cannot tell the directions apart. Unmeasured confounding adds a second problem: poor counties have both less food access and fewer healthcare resources, so the correlation reflects shared causes rather than a clean effect. Statistical adjustment cannot resolve either issue; credible answers require study designs that supply variation in food access independent of these confounders.</p>
+          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
+        </div>
+        <!-- geo:answer:end -->
       <p class="subtitle">Counties with higher food insecurity rates show higher diabetes hospitalization rates. But does hunger cause diabetes complications, or does illness cause poverty? This case reveals both bidirectional causation and unmeasured confounding.</p>
     </div>
   </header>
@@ -996,7 +1036,7 @@
         <div class="problem-container">
           <div class="dag-wrapper">
             <img
-              src="assets/food-diabetes-dag-confounding.png"
+              src="/methods-lab/food-insecurity-diabetes/assets/food-diabetes-dag-confounding.png"
               alt="Causal diagram showing Poverty affecting both Food Insecurity and Diabetes Hospitalization, with a dashed arrow from Food Insecurity to Diabetes Hospitalization indicating uncertain causal effect"
               class="dag-image"
             >
@@ -1124,7 +1164,7 @@
         <div class="unmeasured-section">
           <div class="unmeasured-grid">
             <img
-              src="assets/food-diabetes-unmeasured-dag.png"
+              src="/methods-lab/food-insecurity-diabetes/assets/food-diabetes-unmeasured-dag.png"
               alt="Causal diagram showing both measured (Poverty) and unmeasured (Health Literacy, Transportation Access) confounders affecting food insecurity and diabetes hospitalization"
               class="unmeasured-image"
             >
@@ -1231,7 +1271,18 @@
   </main>
 
   <!-- Footer -->
-  <footer class="footer" role="contentinfo">
+  <!-- geo:citations:start -->
+        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
+          <h2>References</h2>
+          <ul style="line-height:1.6;">
+            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
+            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
+            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
+            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
+          </ul>
+        </section>
+        <!-- geo:citations:end -->
+        <footer class="footer" role="contentinfo">
     <div class="container">
       <p><strong>CAPHE</strong> · California Public Health Economists</p>
       <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>

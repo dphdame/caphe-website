@@ -20,6 +20,7 @@ const NOINDEX_PAGES = [
   'documents.html',
   'auth-callback.html',
   'reset-password.html',
+  'login.html',
   'join/apr.html',
   'join/feb.html',
   'join/jun.html'
@@ -92,28 +93,38 @@ function checkFile({ fullPath, relativePath }) {
 }
 
 function checkSitemap() {
-  const sitemapPath = path.join(PUBLIC_DIR, 'sitemap.xml');
-  if (!fs.existsSync(sitemapPath)) {
-    errors.push('sitemap.xml: File not found');
+  // Segmented sitemaps (PRD §6.7): validate the index + both child segments.
+  // The page-URL count lives in the segments, not the index.
+  const indexPath = path.join(PUBLIC_DIR, 'sitemap-index.xml');
+  const segmentFiles = ['sitemap-tutorials.xml', 'sitemap-static.xml'];
+
+  if (!fs.existsSync(indexPath)) {
+    errors.push('sitemap-index.xml: File not found');
     return;
   }
 
-  const content = fs.readFileSync(sitemapPath, 'utf8');
-  const urls = content.match(/<loc>[^<]+<\/loc>/g) || [];
-
-  // Check sitemap URLs use www
-  urls.forEach(url => {
-    if (url.includes('caphegroup.org') && !url.includes('www.')) {
-      errors.push(`sitemap.xml: URL missing www prefix: ${url}`);
+  let totalUrls = 0;
+  for (const seg of segmentFiles) {
+    const segPath = path.join(PUBLIC_DIR, seg);
+    if (!fs.existsSync(segPath)) {
+      errors.push(`${seg}: File not found (referenced by sitemap-index.xml)`);
+      continue;
     }
-  });
-
-  // Check sitemap has reasonable number of URLs
-  if (urls.length < 10) {
-    warnings.push(`sitemap.xml: Only ${urls.length} URLs - may be incomplete`);
+    const content = fs.readFileSync(segPath, 'utf8');
+    const urls = content.match(/<loc>[^<]+<\/loc>/g) || [];
+    totalUrls += urls.length;
+    urls.forEach(url => {
+      if (url.includes('caphegroup.org') && !url.includes('www.')) {
+        errors.push(`${seg}: URL missing www prefix: ${url}`);
+      }
+    });
   }
 
-  console.log(`Sitemap contains ${urls.length} URLs`);
+  if (totalUrls < 10) {
+    warnings.push(`Segmented sitemaps: only ${totalUrls} URLs total - may be incomplete`);
+  }
+
+  console.log(`Segmented sitemaps contain ${totalUrls} page URLs`);
 }
 
 function checkRobots() {

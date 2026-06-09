@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=11">
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Geographic Variables: Proxy or Mechanism? | CAPHE Methods Lab</title>
+  <title>Geographic Variables: Proxy or Mechanism? | CAPHE</title>
   <meta name="description" content="Explore when geographic variation helps identify causal effects versus when it introduces bias. Learn to distinguish place-based treatment from place-based confounding.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/geographic-variables">
   <style>
@@ -846,6 +846,40 @@
   }
 }
 </script>
+<!-- geo:faq:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When should I use county fixed effects?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use fixed effects when geography is a confounder, for example when studying what happens after a county adopts a policy. Comparing the same county before and after blocks back-door paths from stable local characteristics. Avoid them when location is the treatment itself."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is geography a treatment versus a confounder?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Geography is the treatment when the question is the effect of living somewhere with feature X, such as cleaner air. It is a confounder when location proxies for wealth or demographics that drive both policy adoption and outcomes through a back-door path."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why can fixed effects absorb a real treatment effect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If the causal variation you want to study is the place-based difference itself, fixed effects remove all between-place variation, eliminating exactly the contrast that identifies the effect."
+      }
+    }
+  ]
+}
+</script>
+<!-- geo:faq:end -->
 </head>
 <body>
   <!-- Top Bar -->
@@ -898,6 +932,12 @@
     <div class="container">
       <div class="eyebrow">CAPHE Methods Lab - Advanced Methods</div>
       <h1>Geographic Variables: Proxy or Mechanism?</h1>
+        <!-- geo:answer:start -->
+        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
+          <p style="margin:0;font-weight:600;color:#1c1c1c;">Geographic variables can serve as either the treatment of interest or a confounder, and the distinction governs whether fixed effects help or harm an analysis. When location itself is the treatment, such as living in an area with cleaner air or better hospital access, county fixed effects absorb the very effect being measured. When location instead proxies for wealth, demographics, or built environment along a back-door path, fixed effects block that path by comparing changes within units over time. There is no universally correct specification; the right choice depends on the causal question and model.</p>
+          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
+        </div>
+        <!-- geo:answer:end -->
       <p class="subtitle">County fixed effects can absorb confounding. But they can also absorb the treatment effect you want to measure. The question: Is geography the treatment or the confounder?</p>
     </div>
   </header>
@@ -995,7 +1035,7 @@
         <div class="problem-container">
           <div class="dag-wrapper">
             <img
-              src="assets/geographic-variables-treatment-dag.png"
+              src="/methods-lab/geographic-variables/assets/geographic-variables-treatment-dag.png"
               alt="Causal diagram showing Geographic Location directly affecting Health Outcome through place-based treatment, with an arrow from Location to Health Outcome"
               class="dag-image"
             >
@@ -1059,7 +1099,7 @@
         <div class="problem-container">
           <div class="dag-wrapper">
             <img
-              src="assets/geographic-variables-confounder-dag.png"
+              src="/methods-lab/geographic-variables/assets/geographic-variables-confounder-dag.png"
               alt="Causal diagram showing Geographic Location as a confounder affecting both Treatment and Health Outcome through separate paths"
               class="dag-image"
             >
@@ -1240,7 +1280,18 @@
   </main>
 
   <!-- Footer -->
-  <footer class="footer" role="contentinfo">
+  <!-- geo:citations:start -->
+        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
+          <h2>References</h2>
+          <ul style="line-height:1.6;">
+            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
+            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
+            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
+            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
+          </ul>
+        </section>
+        <!-- geo:citations:end -->
+        <footer class="footer" role="contentinfo">
     <div class="container">
       <p><strong>CAPHE</strong> - California Public Health Economists</p>
       <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>

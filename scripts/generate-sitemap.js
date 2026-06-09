@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator for CAPHE
+ * Segmented Sitemap Generator for CAPHE (PRD §6.7 defensive indexing)
  * Run: node scripts/generate-sitemap.js
  *
- * Automatically generates sitemap.xml from public HTML files
+ * Emits:
+ *   public/sitemap-tutorials.xml  — Methods Lab tutorials + the methods-lab hub
+ *   public/sitemap-static.xml     — homepage, membership, tools, org, legal, resources
+ *   public/sitemap-index.xml      — master index referencing the two segments
+ *   public/sitemap.xml            — kept as a copy of the index for backward compat
+ *
+ * Per-segment indexing in GSC is an early-warning signal: if "tutorials" indexing
+ * ever drops below "static," templated-similarity is biting.
  */
 
 const fs = require('fs');
@@ -11,9 +18,8 @@ const path = require('path');
 
 const BASE_URL = 'https://www.caphegroup.org';
 const PUBLIC_DIR = path.join(__dirname, '../public');
-const OUTPUT_FILE = path.join(PUBLIC_DIR, 'sitemap.xml');
 
-// Pages to exclude (noindex pages)
+// Pages to exclude from sitemaps (noindex / utility pages)
 const EXCLUDE_PATTERNS = [
   /^admin\.html$/,
   /^dashboard\.html$/,
@@ -21,11 +27,11 @@ const EXCLUDE_PATTERNS = [
   /^documents\.html$/,
   /^auth-callback\.html$/,
   /^reset-password\.html$/,
+  /^login\.html$/,            // noindex (PRD Cluster F)
   /^join\//,
   /^404\.html$/
 ];
 
-// Priority mappings
 const PRIORITY_MAP = {
   'index.html': '1.0',
   'about.html': '0.9',
@@ -64,57 +70,79 @@ function getChangefreq(relativePath) {
 function findHtmlFiles(dir, baseDir = dir) {
   const files = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
-
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     const relativePath = path.relative(baseDir, fullPath);
-
     if (entry.isDirectory()) {
       files.push(...findHtmlFiles(fullPath, baseDir));
     } else if (entry.name.endsWith('.html') && !shouldExclude(relativePath)) {
       files.push(relativePath);
     }
   }
-
   return files;
 }
 
-function generateSitemap() {
-  const htmlFiles = findHtmlFiles(PUBLIC_DIR);
-  const today = new Date().toISOString().split('T')[0];
-
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-
-  for (const file of htmlFiles.sort()) {
-    // Convert file path to clean URL (no .html extension)
-    let urlPath = file.replace(/\\/g, '/');
-
-    // Handle index files and .html extensions
-    if (urlPath === 'index.html') {
-      urlPath = '';
-    } else if (urlPath.endsWith('/index.html')) {
-      urlPath = urlPath.replace('/index.html', '/');
-    } else if (urlPath.endsWith('.html')) {
-      urlPath = urlPath.slice(0, -5); // Remove .html extension
-    }
-
-    const url = `${BASE_URL}/${urlPath}`;
-    const priority = getPriority(file);
-    const changefreq = getChangefreq(file);
-
-    xml += '  <url>\n';
-    xml += `    <loc>${url}</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
-    xml += `    <priority>${priority}</priority>\n`;
-    xml += `    <changefreq>${changefreq}</changefreq>\n`;
-    xml += '  </url>\n';
-  }
-
-  xml += '</urlset>\n';
-
-  fs.writeFileSync(OUTPUT_FILE, xml);
-  console.log(`Generated sitemap with ${htmlFiles.length} URLs: ${OUTPUT_FILE}`);
+function toUrl(file) {
+  let urlPath = file.replace(/\\/g, '/');
+  if (urlPath === 'index.html') urlPath = '';
+  else if (urlPath.endsWith('/index.html')) urlPath = urlPath.replace('/index.html', '/');
+  else if (urlPath.endsWith('.html')) urlPath = urlPath.slice(0, -5);
+  return `${BASE_URL}/${urlPath}`;
 }
 
-generateSitemap();
+// A tutorial = any methods-lab/* file EXCEPT the hub index.
+function isTutorial(file) {
+  const f = file.replace(/\\/g, '/');
+  return f.startsWith('methods-lab/') && f !== 'methods-lab/index.html';
+}
+
+function urlsetXml(files, today) {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  for (const file of files.slice().sort()) {
+    xml += '  <url>\n';
+    xml += `    <loc>${toUrl(file)}</loc>\n`;
+    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += `    <priority>${getPriority(file)}</priority>\n`;
+    xml += `    <changefreq>${getChangefreq(file)}</changefreq>\n`;
+    xml += '  </url>\n';
+  }
+  xml += '</urlset>\n';
+  return xml;
+}
+
+function sitemapIndexXml(segments, today) {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  for (const name of segments) {
+    xml += '  <sitemap>\n';
+    xml += `    <loc>${BASE_URL}/${name}</loc>\n`;
+    xml += `    <lastmod>${today}</lastmod>\n`;
+    xml += '  </sitemap>\n';
+  }
+  xml += '</sitemapindex>\n';
+  return xml;
+}
+
+function generate() {
+  const all = findHtmlFiles(PUBLIC_DIR);
+  const today = new Date().toISOString().split('T')[0];
+
+  // The methods-lab hub (methods-lab/index.html) belongs in the tutorials segment
+  // as the cluster's parent, per PRD §6.7.
+  const tutorials = all.filter(f => isTutorial(f) || f.replace(/\\/g, '/') === 'methods-lab/index.html');
+  const statics = all.filter(f => !tutorials.includes(f));
+
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-tutorials.xml'), urlsetXml(tutorials, today));
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-static.xml'), urlsetXml(statics, today));
+
+  const indexXml = sitemapIndexXml(['sitemap-tutorials.xml', 'sitemap-static.xml'], today);
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-index.xml'), indexXml);
+  // Backward-compat: keep sitemap.xml resolving (now a sitemap index).
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), indexXml);
+
+  console.log(`Sitemaps generated: ${tutorials.length} tutorial URLs, ${statics.length} static URLs.`);
+  console.log('  sitemap-tutorials.xml, sitemap-static.xml, sitemap-index.xml, sitemap.xml (=index)');
+}
+
+generate();

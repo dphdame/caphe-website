@@ -98,6 +98,7 @@
 </script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -145,7 +146,7 @@
 
   <style>
     .ds-table-wrap { overflow-x: auto; margin: var(--space-lg) 0; }
-    table.ds-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    table.ds-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 0.95rem; }
     table.ds-table caption { text-align: left; font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem; }
     table.ds-table th, table.ds-table td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--color-border-light); vertical-align: top; }
     table.ds-table thead th { background: #1a4480; color: #fff; }
@@ -155,10 +156,19 @@
     .answer-block { background:#f5f7fa; border-left:4px solid #1a4480; padding:1rem 1.25rem; margin:0 0 1.5rem; border-radius:6px; }
   </style>
 
+  <main id="main-content">
+
   <!-- Page Header -->
   <section class="page-header">
     <div class="container">
-      <div class="section-eyebrow">Resources</div>
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+          <li><a href="/">Home</a></li>
+          <li><a href="/resources">Resources</a></li>
+          <li aria-current="page">Health Economics Data Sources</li>
+        </ol>
+      </nav>
+      <div class="section-eyebrow" style="color:#fff;">Resources</div>
       <h1 class="page-title">Health Economics Data Sources &amp; Databases</h1>
       <p class="page-subtitle">
         A curated directory of the datasets that power health economics research, with coverage, access, and use-case notes.
@@ -169,14 +179,14 @@
   <section class="section-sm">
     <div class="container ds-content" style="max-width: 900px;">
 
-      <div class="answer-block">
+      <div class="answer-block" role="note">
         <p style="margin:0; font-weight:600; color:#1c1c1c;">Most health economics research draws on a small set of public datasets: federal administrative records (CMS claims, AHRQ's HCUP), national health surveys (BRFSS, NHIS, NHANES, MEPS), and economic and demographic series (Census American Community Survey, the Bureau of Labor Statistics, the Bureau of Economic Analysis). California-specific work adds the CHHS Open Data Portal, and cross-country comparison adds the WHO Global Health Observatory. The directory below groups these sources, notes what each covers, and points to the official portal for each.</p>
-        <p style="margin:.5rem 0 0; font-size:.85rem; color:#595959;">Last reviewed: June 2026</p>
+        <p style="margin:.5rem 0 0; font-size:.875rem; color:#4a4a4a;">Last reviewed: June 2026</p>
       </div>
 
       <p>Choosing a dataset is the first methodological decision in any applied health economics study, and it usually constrains everything that follows: the population that can be studied, the outcomes that can be measured, the granularity of geography and time, and the identification strategies that are feasible. A claims database supports detailed cost and utilization analysis but says little about behavior or biomarkers; a household survey captures self-reported behavior and coverage but rarely the full cost of an episode of care. The sources below are organized by what they were built to measure so that the right match is easier to find.</p>
 
-      <div class="ds-table-wrap">
+      <div class="ds-table-wrap" role="region" aria-label="Health economics datasets" tabindex="0">
         <table class="ds-table">
           <caption>Health economics datasets at a glance</caption>
           <thead>
@@ -190,77 +200,77 @@
           </thead>
           <tbody>
             <tr>
-              <td><a href="https://data.cms.gov/" target="_blank" rel="noopener">CMS Data Portal</a></td>
+              <th scope="row"><a href="https://data.cms.gov/" target="_blank" rel="noopener">CMS Data Portal<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>Centers for Medicare &amp; Medicaid Services</td>
               <td>National; Medicare and Medicaid</td>
               <td>Free (public files); restricted (identifiable claims via ResDAC)</td>
               <td>Spending, utilization, provider participation</td>
             </tr>
             <tr>
-              <td><a href="https://hcup-us.ahrq.gov/" target="_blank" rel="noopener">HCUP</a></td>
+              <th scope="row"><a href="https://hcup-us.ahrq.gov/" target="_blank" rel="noopener" aria-label="AHRQ HCUP, Healthcare Cost and Utilization Project (opens in a new tab)">HCUP<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>Agency for Healthcare Research and Quality</td>
               <td>National and state; hospital encounters</td>
               <td>Purchase / restricted; free summary tools (HCUPnet)</td>
               <td>Inpatient, ED, and ambulatory-surgery costs</td>
             </tr>
             <tr>
-              <td><a href="https://www.cdc.gov/brfss/" target="_blank" rel="noopener">BRFSS</a></td>
+              <th scope="row"><a href="https://www.cdc.gov/brfss/" target="_blank" rel="noopener" aria-label="CDC BRFSS, Behavioral Risk Factor Surveillance System (opens in a new tab)">BRFSS<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>Centers for Disease Control and Prevention</td>
               <td>National, state, many counties</td>
               <td>Free</td>
               <td>Health behaviors, chronic conditions, prevention</td>
             </tr>
             <tr>
-              <td><a href="https://www.cdc.gov/nchs/nhis/" target="_blank" rel="noopener">NHIS</a></td>
+              <th scope="row"><a href="https://www.cdc.gov/nchs/nhis/" target="_blank" rel="noopener" aria-label="CDC NHIS, National Health Interview Survey (opens in a new tab)">NHIS<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>CDC, National Center for Health Statistics</td>
               <td>National; households</td>
               <td>Free</td>
               <td>Coverage, access, self-reported health</td>
             </tr>
             <tr>
-              <td><a href="https://www.cdc.gov/nchs/nhanes/" target="_blank" rel="noopener">NHANES</a></td>
+              <th scope="row"><a href="https://www.cdc.gov/nchs/nhanes/" target="_blank" rel="noopener" aria-label="CDC NHANES, National Health and Nutrition Examination Survey (opens in a new tab)">NHANES<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>CDC, National Center for Health Statistics</td>
               <td>National; interview + exam + labs</td>
               <td>Free</td>
               <td>Clinical and biomarker measures of health</td>
             </tr>
             <tr>
-              <td><a href="https://meps.ahrq.gov/mepsweb/" target="_blank" rel="noopener">MEPS</a></td>
+              <th scope="row"><a href="https://meps.ahrq.gov/mepsweb/" target="_blank" rel="noopener" aria-label="AHRQ MEPS, Medical Expenditure Panel Survey (opens in a new tab)">MEPS<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>Agency for Healthcare Research and Quality</td>
               <td>National; household panel</td>
               <td>Free (public); restricted (linked files)</td>
               <td>Health care cost, use, and insurance</td>
             </tr>
             <tr>
-              <td><a href="https://www.census.gov/programs-surveys/acs" target="_blank" rel="noopener">American Community Survey</a></td>
+              <th scope="row"><a href="https://www.census.gov/programs-surveys/acs" target="_blank" rel="noopener">American Community Survey<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>U.S. Census Bureau</td>
               <td>National to tract level</td>
               <td>Free</td>
               <td>Income, insurance, demographics, denominators</td>
             </tr>
             <tr>
-              <td><a href="https://www.bls.gov/" target="_blank" rel="noopener">Bureau of Labor Statistics</a></td>
+              <th scope="row"><a href="https://www.bls.gov/" target="_blank" rel="noopener">Bureau of Labor Statistics<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>U.S. Department of Labor</td>
               <td>National, metro, some state</td>
               <td>Free</td>
               <td>Price indices, wages, employment adjustments</td>
             </tr>
             <tr>
-              <td><a href="https://www.bea.gov/" target="_blank" rel="noopener">Bureau of Economic Analysis</a></td>
+              <th scope="row"><a href="https://www.bea.gov/" target="_blank" rel="noopener">Bureau of Economic Analysis<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>U.S. Department of Commerce</td>
               <td>National, state, county</td>
               <td>Free</td>
               <td>Income, health spending accounts, deflators</td>
             </tr>
             <tr>
-              <td><a href="https://data.chhs.ca.gov/" target="_blank" rel="noopener">CHHS Open Data</a></td>
+              <th scope="row"><a href="https://data.chhs.ca.gov/" target="_blank" rel="noopener">CHHS Open Data<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>California Health and Human Services</td>
               <td>California; state and program level</td>
               <td>Free</td>
               <td>State administrative and program data</td>
             </tr>
             <tr>
-              <td><a href="https://www.who.int/data/gho" target="_blank" rel="noopener">WHO Global Health Observatory</a></td>
+              <th scope="row"><a href="https://www.who.int/data/gho" target="_blank" rel="noopener">WHO Global Health Observatory<span class="visually-hidden"> (opens in a new tab)</span></a></th>
               <td>World Health Organization</td>
               <td>Cross-country</td>
               <td>Free</td>
@@ -304,19 +314,23 @@
       </ul>
 
       <h2 id="faq">Frequently asked questions</h2>
-      <h3>What are the best free datasets for health economics research?</h3>
-      <p>Widely used free sources include CMS claims and provider data, AHRQ's HCUP and MEPS, the CDC surveys (BRFSS, NHIS, NHANES), and Census ACS for demographic and income detail. Each is public, documented, and maintained by a federal agency.</p>
-      <h3>What is the difference between MEPS and NHANES?</h3>
-      <p>MEPS measures health care use, spending, and insurance coverage for a panel of households, making it the standard source for cost and expenditure analysis. NHANES combines interviews with physical examinations and laboratory tests, making it the standard source for clinical and biomarker measures of population health.</p>
-      <h3>Where can I find California-specific health data?</h3>
-      <p>The CHHS Open Data Portal publishes state administrative and program datasets. National sources such as BRFSS and the Census ACS also release state and, for some products, county-level estimates for California.</p>
-      <h3>Which datasets support cost-effectiveness analysis?</h3>
-      <p>Cost and utilization come from MEPS, HCUP, and CMS claims; population denominators and risk factors come from BRFSS, NHIS, and the ACS; and price and wage adjustments come from BLS and BEA series. The <a href="/methods-lab/cost-effectiveness-ratio">Methods Lab cost-effectiveness tutorials</a> walk through how these pieces combine.</p>
+      <dl>
+        <dt>What are the best free datasets for health economics research?</dt>
+        <dd>Widely used free sources include CMS claims and provider data, AHRQ's HCUP and MEPS, the CDC surveys (BRFSS, NHIS, NHANES), and Census ACS for demographic and income detail. Each is public, documented, and maintained by a federal agency.</dd>
+        <dt>What is the difference between MEPS and NHANES?</dt>
+        <dd>MEPS measures health care use, spending, and insurance coverage for a panel of households, making it the standard source for cost and expenditure analysis. NHANES combines interviews with physical examinations and laboratory tests, making it the standard source for clinical and biomarker measures of population health.</dd>
+        <dt>Where can I find California-specific health data?</dt>
+        <dd>The CHHS Open Data Portal publishes state administrative and program datasets. National sources such as BRFSS and the Census ACS also release state and, for some products, county-level estimates for California.</dd>
+        <dt>Which datasets support cost-effectiveness analysis?</dt>
+        <dd>Cost and utilization come from MEPS, HCUP, and CMS claims; population denominators and risk factors come from BRFSS, NHIS, and the ACS; and price and wage adjustments come from BLS and BEA series. The <a href="/methods-lab/cost-effectiveness-ratio">Methods Lab cost-effectiveness tutorials</a> walk through how these pieces combine.</dd>
+      </dl>
 
       <p style="margin-top: var(--space-xl);">Pair these datasets with the <a href="/methods-lab/">CAPHE Methods Lab</a> tutorials to move from raw data to a defensible causal estimate, or apply them in the <a href="/tools/lha-calculator/">ROI Calculator</a> and <a href="/tools/access-explorer/">Access Explorer</a>.</p>
 
     </div>
   </section>
+
+  </main>
 
   <!-- Stay Connected -->
   <section class="section-sm section-warm">

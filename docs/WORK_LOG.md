@@ -1,5 +1,27 @@
 # CAPHE Website Work Log
 
+## 2026-06-11: Reschedule "ROI in Public Health" Webinar (June 11 → June 18)
+
+### Completed
+- Checked registrations for today's noon webinar: 5 registrants on Brevo list id=17 ("6/11, 12-1pm: Return on Investment in Public Health") — Jeffrey Hoch (UC Davis), Cheryl Holzmeyer (CDPH), Carolina Guzman (Alameda County), Jack Anderson (CHEAC), Jenna LeComte-Hinely (HARC).
+- Drafted a truthful postponement/reschedule notice (saved to `~/Desktop/CAPHE_webinar_postponement_2026-06-11.txt`); Victoria emailed the 5 registrants.
+- Moved the event to 2026-06-18 (same 12–1pm PT slot) with a "Rescheduled from June 11 to June 18" description note; deployed to Heroku and verified live on www.caphegroup.org.
+
+### Files Modified
+- `data/events.json` — ROI webinar date 2026-06-11 → 2026-06-18, description prefixed with reschedule note (commit 1f7362d).
+
+### Decisions Made
+- Declined a fabricated "speaker family emergency" reason: no speaker on record for the event, and a specific invented personal crisis carries reputational risk with these named professional contacts in a small CA health-econ community. Used "circumstances beyond our control" + concrete new date instead.
+- Rescheduled (kept event live, edited date) rather than deleting the event, so the site stays accurate and registrations carry over.
+- Registrants BCC'd (not To) in the draft to avoid exposing peers' addresses to each other.
+
+### Next Steps
+- Before June 18: send the Teams join link to the 5 registrants (email promised it would carry over).
+- Optional cleanup: rename Brevo list id=17 from "6/11…" to "6/18…" to avoid future confusion.
+
+### Extracted Artifacts
+- None. Noted that a per-event registrant check via Brevo list could become a `caphe-update` skill phase if it recurs; one occurrence not enough to extract.
+
 ## 2026-03-09: SEO Performance Audit + 4-Stream Improvement Sprint
 
 ### Completed

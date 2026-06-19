@@ -85,7 +85,7 @@ function findHtmlFiles(dir, baseDir = dir) {
 function toUrl(file) {
   let urlPath = file.replace(/\\/g, '/');
   if (urlPath === 'index.html') urlPath = '';
-  else if (urlPath.endsWith('/index.html')) urlPath = urlPath.replace('/index.html', '/');
+  else if (urlPath.endsWith('/index.html')) urlPath = urlPath.replace('/index.html', '');
   else if (urlPath.endsWith('.html')) urlPath = urlPath.slice(0, -5);
   return `${BASE_URL}/${urlPath}`;
 }

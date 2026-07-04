@@ -66,6 +66,17 @@ test('internalPathResolves handles extensionless, dir-index, root, and /api rout
   assert.equal(V.internalPathResolves('/nope-not-a-page'), false);
 });
 
+test('internalPathResolves models server redirect maps and trailing slash (adversary #3)', () => {
+  // labSlug bare form → server 301s to /methods-lab/<slug>, so it is NOT a 404.
+  assert.equal(V.internalPathResolves('/selection-into-treatment'), true);
+  // /programs/<section> → server 301s to /programs#<section>.
+  assert.equal(V.internalPathResolves('/programs/webinars'), true);
+  assert.equal(V.internalPathResolves('/programs/not-a-section'), false);
+  // trailing slash normalizes (redirect concern owned by redirectingRefs, not this).
+  assert.equal(V.internalPathResolves('/about/'), true);
+  assert.equal(V.internalPathResolves('/methods-lab/'), true);
+});
+
 test('internalLinkTargets skips external, mailto/tel, in-page anchors, protocol-relative', () => {
   const t = V.internalLinkTargets(`
     <a href="/about">in</a>

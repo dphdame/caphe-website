@@ -85,9 +85,17 @@ test('REG-2026-07-04-f: deploy-parity guard files are present and executable', (
   }
 });
 
-// UMBRELLA — the full validator must exit 0 on the current tree (no errors).
-test('validate-seo.js exits 0 on HEAD (no errors)', () => {
-  const out = execFileSync('node', ['scripts/validate-seo.js'], { cwd: ROOT, encoding: 'utf8' });
-  assert.match(out, /ERRORS \(0\)|All SEO checks passed/,
-    'validator reported errors — run `npm run seo:validate`');
+// UMBRELLA — the full validator must exit 0 on the current tree. errors -> exit 1
+// (execFileSync throws, failing the test); warnings are allowed (exit 0). Assert on
+// the exit code, NOT on output text — a "warn-don't-error" tier must not fail here.
+test('validate-seo.js exits 0 on HEAD (no ERRORS; warnings allowed)', () => {
+  let out, threw = false;
+  try {
+    out = execFileSync('node', ['scripts/validate-seo.js'], { cwd: ROOT, encoding: 'utf8' });
+  } catch (e) {
+    threw = true;
+    out = (e.stdout || '') + (e.stderr || '');
+  }
+  assert.ok(!threw, `validator exited non-zero (has ERRORS):\n${out}`);
+  assert.doesNotMatch(out, /❌ ERRORS \([1-9]/, 'validator reported errors');
 });

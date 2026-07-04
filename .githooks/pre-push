@@ -10,11 +10,12 @@ set -euo pipefail
 REMOTE_NAME="${1:-}"
 REMOTE_URL="${2:-}"
 
-# --- 1. SEO validation on every push -------------------------------------
+# --- 1. Full gate (SEO validation + regression ledger + self-tests) ------
+# Runs on every push so the ledger gates pushes too, not just CI.
 if [ -f "scripts/validate-seo.js" ]; then
-  echo "🔍 pre-push: SEO validation…"
-  if ! node scripts/validate-seo.js; then
-    echo "❌ SEO validation failed — push blocked." >&2
+  echo "🔍 pre-push: running gate (seo:validate + tests)…"
+  if ! npm run gate --silent; then
+    echo "❌ Gate failed — push blocked. Run: npm run gate" >&2
     exit 1
   fi
 fi

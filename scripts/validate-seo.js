@@ -97,19 +97,35 @@ const STATIC_MOUNTS = [
   { prefix: '/data/', dir: path.join(REPO_ROOT, 'data') },
 ];
 
-// Does an internal root-relative path resolve to something the server serves?
-// Returns true/false; `p` must already be stripped of ?query and #hash.
+// Bare methods-lab tutorial slugs that the server 301s to /methods-lab/<slug>
+// (server.js labSlugs). Derived from the tutorial dirs so it can't drift.
+function labSlugSet() {
+  const ml = path.join(PUBLIC_DIR, 'methods-lab');
+  if (!fs.existsSync(ml)) return new Set();
+  return new Set(fs.readdirSync(ml, { withFileTypes: true })
+    .filter(d => d.isDirectory() && fs.existsSync(path.join(ml, d.name, 'index.html')))
+    .map(d => d.name));
+}
+// /programs/<section> that the server 301s to /programs#<section> (server.js).
+const PROGRAMS_SECTIONS = new Set(['webinars', 'workshops', 'working-groups', 'peer-review']);
+
+// Does an internal root-relative path resolve to something the server serves
+// (200 OR a 301 to a real target — i.e. NOT a 404)? `p` must already be stripped
+// of ?query and #hash. The redirect concern (trailing slash / .html) is owned by
+// redirectingRefs; here we only care whether the link dead-ends.
 function internalPathResolves(p) {
-  if (p === '/' ) return fs.existsSync(path.join(PUBLIC_DIR, 'index.html'));
-  // Server routes handled in code, not files — trust them (can't stat a route).
-  if (p.startsWith('/api/')) return true;
-  // Non-public static mounts (/src, /assets, /data).
-  for (const { prefix, dir } of STATIC_MOUNTS) {
-    if (p.startsWith(prefix)) {
-      return fs.existsSync(path.join(dir, p.slice(prefix.length)));
-    }
+  if (p === '/') return fs.existsSync(path.join(PUBLIC_DIR, 'index.html'));
+  if (p.startsWith('/api/')) return true;             // server route, trusted
+  for (const { prefix, dir } of STATIC_MOUNTS) {       // /src /assets /data mounts
+    if (p.startsWith(prefix)) return fs.existsSync(path.join(dir, p.slice(prefix.length)));
   }
+  // Normalize a trailing slash away (server 301s /about/ -> /about, /methods-lab/ -> /methods-lab).
+  if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
   const rel = p.replace(/^\//, '');
+  // Server-side redirect maps that resolve to a real target (server.js labSlugs / programs).
+  if (labSlugSet().has(rel)) return true;
+  const progMatch = p.match(/^\/programs\/([a-z-]+)$/);
+  if (progMatch && PROGRAMS_SECTIONS.has(progMatch[1])) return true;
   // Has a file extension → must be that exact static file under public/.
   if (/\.[a-z0-9]+$/i.test(p)) return fs.existsSync(path.join(PUBLIC_DIR, rel));
   // Extensionless → <p>.html or <p>/index.html (server.js:85-98).
@@ -148,9 +164,28 @@ function checkBrokenLinks(relativePath, content) {
 // Canonical self-consistency — a page's own self-referential URLs must agree:
 // <link rel=canonical>, og:url, and any JSON-LD self-page url. Disagreement is the
 // exact class we shipped (canonical no-slash vs og:url trailing-slash).
+// Page-scoped JSON-LD types whose `url` IS the current page (must match canonical).
+// NOT WebSite/Organization (their url is the site root) and NOT BreadcrumbList
+// (its items point at other pages).
 const SELF_PAGE_TYPES = new Set([
-  'WebPage', 'Article', 'CollectionPage', 'AboutPage', 'ContactPage', 'WebSite', 'ItemPage'
+  'WebPage', 'Article', 'CollectionPage', 'AboutPage', 'ContactPage', 'ItemPage'
 ]);
+
+// Flatten JSON-LD into a list of nodes, descending through @graph and arrays so a
+// self-page node nested in {"@context":…, "@graph":[…]} is actually inspected.
+function jsonLdNodes(root) {
+  const out = [];
+  const visit = (n) => {
+    if (Array.isArray(n)) { n.forEach(visit); return; }
+    if (n && typeof n === 'object') {
+      out.push(n);
+      if (n['@graph']) visit(n['@graph']);
+    }
+  };
+  visit(root);
+  return out;
+}
+
 function checkCanonicalConsistency(relativePath, content) {
   const canonMatch = content.match(/<link[^>]*rel=["']canonical["'][^>]*>/i);
   if (!canonMatch) return; // absence handled elsewhere
@@ -165,13 +200,13 @@ function checkCanonicalConsistency(relativePath, content) {
     }
   }
 
-  // JSON-LD self-page url (skip BreadcrumbList items — those point at other pages).
+  // JSON-LD self-page url (recurse @graph; skip BreadcrumbList / WebSite / Org).
   for (const block of content.matchAll(
     /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
   )) {
     let json; try { json = JSON.parse(block[1].trim()); } catch { continue; }
-    for (const node of Array.isArray(json) ? json : [json]) {
-      const types = [].concat(node && node['@type'] || []);
+    for (const node of jsonLdNodes(json)) {
+      const types = [].concat(node['@type'] || []);
       if (types.some(t => SELF_PAGE_TYPES.has(t)) && node.url && node.url !== canon) {
         errors.push(`${relativePath}: JSON-LD ${types.join('/')} url (${node.url}) != canonical (${canon})`);
       }
@@ -195,8 +230,21 @@ function checkSitemapParity() {
   for (const { seg, loc, pathOnly } of locs) {
     if (!internalPathResolves(pathOnly)) {
       errors.push(`${seg}: <loc> ${loc} does not resolve to a real page`);
+      continue;
     }
-    if (noindexPaths.has(pathOnly)) {
+    // noindex from the hardcoded list OR the page's own inline robots meta.
+    let noindex = noindexPaths.has(pathOnly);
+    if (!noindex) {
+      const file = pathOnly === '/' ? 'index.html'
+        : fs.existsSync(path.join(PUBLIC_DIR, pathOnly.replace(/^\//, '') + '.html'))
+          ? pathOnly.replace(/^\//, '') + '.html'
+          : path.join(pathOnly.replace(/^\//, ''), 'index.html');
+      const fp = path.join(PUBLIC_DIR, file);
+      if (fs.existsSync(fp) && /<meta[^>]*name=["']robots["'][^>]*noindex/i.test(fs.readFileSync(fp, 'utf8'))) {
+        noindex = true;
+      }
+    }
+    if (noindex) {
       errors.push(`${seg}: <loc> ${loc} is a noindex page and must not be in the sitemap`);
     }
   }

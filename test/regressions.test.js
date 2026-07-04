@@ -74,6 +74,15 @@ test('REG-2026-07-04-c: every internal link resolves to a served target', () => 
   assert.deepStrictEqual(offenders, [], offenders.join('\n'));
 });
 
+// REG-2026-07-04-g — GSC crawl noise: /api/ endpoints (OAuth/POST handlers) were
+// crawlable and surfaced as indexing issues; /home 404'd. robots.txt now disallows
+// /api/ for the default agent (behavioral /home + api coverage in redirects.test.js).
+test('REG-2026-07-04-g: robots.txt disallows /api/ for the default user-agent', () => {
+  const robots = fs.readFileSync(path.join(H.PUBLIC, 'robots.txt'), 'utf8');
+  const starGroup = robots.split(/User-agent:/i)[1] || '';
+  assert.match(starGroup, /Disallow:\s*\/api\//i, 'robots.txt * group must Disallow /api/');
+});
+
 // REG-2026-07-04-f — deploying a commit that isn't the reviewed/merged HEAD.
 // Guarded by scripts/check-deploy-parity.sh + .githooks/pre-push; here we assert
 // those guard files exist and are executable so they can't be silently dropped.

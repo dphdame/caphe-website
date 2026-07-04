@@ -82,6 +82,16 @@ app.use((req, res, next) => {
     return res.redirect(301, target);
   }
 
+  // Legacy / mistaken paths that 404'd in Google's index -> 301 to the real page.
+  const legacyRedirects = {
+    '/home': '/',       // GSC "404": /home was never a page; the homepage is /
+  };
+  const legacyKey = urlPath.replace(/\/$/, '') || '/';
+  if (legacyRedirects[legacyKey]) {
+    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+    return res.redirect(301, legacyRedirects[legacyKey] + qs);
+  }
+
   // Handle paths where both file.html and file/ directory exist (e.g., /membership)
   // Explicitly serve the .html file to prevent express.static directory confusion
   if (urlPath.length > 1 && !urlPath.includes('.')) {

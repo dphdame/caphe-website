@@ -99,12 +99,17 @@ const STATIC_MOUNTS = [
 
 // Bare methods-lab tutorial slugs that the server 301s to /methods-lab/<slug>
 // (server.js labSlugs). Derived from the tutorial dirs so it can't drift.
+// Memoized — resolved once per process (called on every internal link).
+let _labSlugs = null;
 function labSlugSet() {
+  if (_labSlugs) return _labSlugs;
   const ml = path.join(PUBLIC_DIR, 'methods-lab');
-  if (!fs.existsSync(ml)) return new Set();
-  return new Set(fs.readdirSync(ml, { withFileTypes: true })
-    .filter(d => d.isDirectory() && fs.existsSync(path.join(ml, d.name, 'index.html')))
-    .map(d => d.name));
+  _labSlugs = fs.existsSync(ml)
+    ? new Set(fs.readdirSync(ml, { withFileTypes: true })
+        .filter(d => d.isDirectory() && fs.existsSync(path.join(ml, d.name, 'index.html')))
+        .map(d => d.name))
+    : new Set();
+  return _labSlugs;
 }
 // /programs/<section> that the server 301s to /programs#<section> (server.js).
 const PROGRAMS_SECTIONS = new Set(['webinars', 'workshops', 'working-groups', 'peer-review']);

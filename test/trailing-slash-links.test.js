@@ -9,22 +9,20 @@ const H = require('./_helpers');
 // A same-origin reference that 301-redirects — trailing slash OR .html — is reported
 // by Google as "Page with redirect". This guard keeps the whole class out of the site:
 // not just <a href>, but og:url, JSON-LD url/item, llms.txt, sitemaps, and server-side
-// email templates. See thoughts/shared/plans/fix-trailing-slash-hub-links.md.
+// email templates. Kept in lockstep with scripts/validate-seo.js redirectingRefs().
+// See thoughts/shared/plans/fix-trailing-slash-hub-links.md.
 
-const HREF_TRAILING = /href=["'](\/[^"'\/][^"']*\/)["']/gi;                              // href="/x/"
-const ABS_TRAILING = /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\/)(?=["')>\s]|$)/g; // ".../x/"
-const HREF_HTML = /(?:href|src)=["'](\/[A-Za-z0-9\/_-]+\.html)["']/gi;                   // href="/x.html"
-const ABS_HTML = /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/g;          // ".../x.html"
+const HREF_TRAILING = /href=["'](\/[^"'\/][^"'?#]*\/)(?:[?#][^"']*)?["']/gi;                 // href="/x/" (+?#)
+const ABS_TRAILING = /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\/)(?=["')>\s]|$)/g;  // ".../x/"
+const HREF_HTML = /(?:href|src)=["'](\/[A-Za-z0-9\/_-]+\.html)(?:[?#][^"']*)?["']/gi;         // href="/x.html" (+?#)
+const ABS_HTML = /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/gi;             // ".../x.html"
 
 function refsIn(content) {
   const refs = [];
-  for (const m of content.matchAll(HREF_TRAILING)) refs.push(m[1]);
-  for (const m of content.matchAll(ABS_TRAILING)) {
-    if (!m[1].startsWith('/assets/')) refs.push(m[1]);
+  for (const re of [HREF_TRAILING, ABS_TRAILING, HREF_HTML, ABS_HTML]) {
+    for (const m of content.matchAll(re)) refs.push(m[1]);
   }
-  for (const m of content.matchAll(HREF_HTML)) refs.push(m[1]);
-  for (const m of content.matchAll(ABS_HTML)) refs.push(m[1]);
-  return refs;
+  return refs.filter(r => !r.startsWith('/assets/'));
 }
 
 function walk(dir, exts) {
@@ -32,7 +30,7 @@ function walk(dir, exts) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...walk(full, exts));
-    else if (exts.some(e => entry.name.endsWith(e))) out.push(full);
+    else if (entry.isFile() && exts.some(e => entry.name.toLowerCase().endsWith(e))) out.push(full);
   }
   return out;
 }
@@ -67,8 +65,8 @@ test('no sitemap <loc> is a redirecting URL (trailing slash or .html; root exemp
     const xml = fs.readFileSync(file, 'utf8');
     for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
       const loc = m[1];
-      const isRoot = /caphegroup\.org\/?$/.test(loc);
-      if ((!isRoot && /\/$/.test(loc)) || /\.html($|\?)/.test(loc)) {
+      const isRoot = /^https?:\/\/www\.caphegroup\.org\/?$/.test(loc);
+      if ((!isRoot && /\/$/.test(loc)) || /\.html($|\?)/i.test(loc)) {
         offenders.push(`${path.relative(H.PUBLIC, file)}: ${loc}`);
       }
     }

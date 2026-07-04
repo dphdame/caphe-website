@@ -37,27 +37,28 @@ let warnings = [];
 // Skip bare root "/", protocol-relative "//host", and /assets/ path prefixes.
 function redirectingRefs(content) {
   const refs = [];
-  // trailing slash — root-relative href
-  for (const m of content.matchAll(/href=["'](\/[^"'\/][^"']*\/)["']/gi)) {
+  // trailing slash — root-relative href (tolerate a ?query / #hash after the slash)
+  for (const m of content.matchAll(/href=["'](\/[^"'\/][^"'?#]*\/)(?:[?#][^"']*)?["']/gi)) {
     refs.push(m[1]);
   }
   // trailing slash — absolute canonical-host URL
   for (const m of content.matchAll(
     /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\/)(?=["')>\s]|$)/g
   )) {
-    if (!m[1].startsWith('/assets/')) refs.push(m[1]);
+    refs.push(m[1]);
   }
-  // .html extension — root-relative href/src
-  for (const m of content.matchAll(/(?:href|src)=["'](\/[A-Za-z0-9\/_-]+\.html)["']/gi)) {
+  // .html extension — root-relative href/src (tolerate a trailing ?query / #hash)
+  for (const m of content.matchAll(/(?:href|src)=["'](\/[A-Za-z0-9\/_-]+\.html)(?:[?#][^"']*)?["']/gi)) {
     refs.push(m[1]);
   }
   // .html extension — absolute canonical-host URL
   for (const m of content.matchAll(
-    /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/g
+    /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/gi
   )) {
     refs.push(m[1]);
   }
-  return refs;
+  // /assets/* is served statically and never redirects — exclude uniformly.
+  return refs.filter(r => !r.startsWith('/assets/'));
 }
 
 function reportRedirectingRefs(label, content) {
@@ -137,30 +138,31 @@ function checkFile({ fullPath, relativePath }) {
   }
 }
 
-// Scan public/**/*.js for trailing-slash links injected into the DOM at runtime
-// (e.g. lab-access-control.js back-links) — these bypass the HTML scan but produce
-// the same 301 for users who click them.
-function checkInjectedLinks(dir = PUBLIC_DIR) {
+// Recursively scan a directory, running the redirecting-ref check on every file
+// whose extension is in `exts`. Labels are relative to `labelBase`.
+function scanDirForRedirects(dir, exts, labelBase) {
+  if (!fs.existsSync(dir)) return;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      checkInjectedLinks(full);
-    } else if (entry.name.endsWith('.js')) {
-      reportRedirectingRefs(path.relative(PUBLIC_DIR, full), fs.readFileSync(full, 'utf8'));
+      scanDirForRedirects(full, exts, labelBase);
+    } else if (entry.isFile() && exts.some(e => entry.name.toLowerCase().endsWith(e))) {
+      reportRedirectingRefs(path.relative(labelBase, full), fs.readFileSync(full, 'utf8'));
     }
   }
 }
 
-// Scan server-side email/HTML templates (src/backend/*.js) — they embed absolute
+// public/**: JS injectors (lab-access-control.js back-links) and text files
+// (llms.txt) can carry redirecting refs the HTML scan never sees.
+function checkPublicNonHtml() {
+  scanDirForRedirects(PUBLIC_DIR, ['.js', '.txt'], PUBLIC_DIR);
+}
+
+// Server-side email/HTML templates (src/backend/**/*.js) embed absolute
 // caphegroup.org links that must also use the no-slash canonical form.
 function checkServerTemplates() {
   const backendDir = path.join(__dirname, '../src/backend');
-  if (!fs.existsSync(backendDir)) return;
-  for (const name of fs.readdirSync(backendDir)) {
-    if (!name.endsWith('.js')) continue;
-    const full = path.join(backendDir, name);
-    reportRedirectingRefs(`src/backend/${name}`, fs.readFileSync(full, 'utf8'));
-  }
+  scanDirForRedirects(backendDir, ['.js'], path.join(__dirname, '..'));
 }
 
 function checkSitemap() {
@@ -192,7 +194,7 @@ function checkSitemap() {
       // Sitemap <loc> must be the canonical (extensionless, no trailing slash);
       // the root "/" is the sole allowed trailing slash. A redirecting <loc>
       // wastes crawl budget and can surface as "Page with redirect".
-      const isRoot = /caphegroup\.org\/?$/.test(loc);
+      const isRoot = /^https?:\/\/www\.caphegroup\.org\/?$/.test(loc);
       if (!isRoot && /\/$/.test(loc)) {
         errors.push(`${seg}: <loc> has a trailing slash (301-redirects): ${loc}`);
       }
@@ -235,7 +237,7 @@ const htmlFiles = findHtmlFiles(PUBLIC_DIR);
 console.log(`Found ${htmlFiles.length} HTML files\n`);
 
 htmlFiles.forEach(checkFile);
-checkInjectedLinks();
+checkPublicNonHtml();
 checkServerTemplates();
 checkSitemap();
 checkRobots();

@@ -29,6 +29,49 @@ const NOINDEX_PAGES = [
 let errors = [];
 let warnings = [];
 
+// Same-origin references that 301-redirect, which Google reports as "Page with
+// redirect". The canonical form is extensionless with NO trailing slash. Two classes
+// redirect, in both root-relative and absolute forms:
+//   - trailing slash:  href="/methods-lab/"  ·  "https://www.caphegroup.org/x/"  (og:url, JSON-LD, llms.txt)
+//   - .html extension: href="/about.html"    ·  "https://www.caphegroup.org/resources.html"
+// Skip bare root "/", protocol-relative "//host", and /assets/ path prefixes.
+function redirectingRefs(content) {
+  const refs = [];
+  // trailing slash — root-relative href (tolerate a ?query / #hash after the slash)
+  for (const m of content.matchAll(/href=["'](\/[^"'\/][^"'?#]*\/)(?:[?#][^"']*)?["']/gi)) {
+    refs.push(m[1]);
+  }
+  // trailing slash — absolute canonical-host URL
+  for (const m of content.matchAll(
+    /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\/)(?=["')>\s]|$)/g
+  )) {
+    refs.push(m[1]);
+  }
+  // .html extension — root-relative href/src (tolerate a trailing ?query / #hash)
+  for (const m of content.matchAll(/(?:href|src)=["'](\/[A-Za-z0-9\/_-]+\.html)(?:[?#][^"']*)?["']/gi)) {
+    refs.push(m[1]);
+  }
+  // .html extension — absolute canonical-host URL
+  for (const m of content.matchAll(
+    /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/gi
+  )) {
+    refs.push(m[1]);
+  }
+  // /assets/* is served statically and never redirects — exclude uniformly.
+  return refs.filter(r => !r.startsWith('/assets/'));
+}
+
+function reportRedirectingRefs(label, content) {
+  const refs = redirectingRefs(content);
+  if (refs.length > 0) {
+    errors.push(
+      `${label}: ${refs.length} same-origin reference(s) that 301-redirect ` +
+      `(trailing slash or .html; use the extensionless no-slash canonical): ` +
+      `${[...new Set(refs)].join(', ')}`
+    );
+  }
+}
+
 function findHtmlFiles(dir, baseDir = dir) {
   const files = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -71,6 +114,9 @@ function checkFile({ fullPath, relativePath }) {
     warnings.push(`${relativePath}: Contains ${nonWwwLinks.length} non-www internal link(s)`);
   }
 
+  // Trailing-slash same-origin references (href + og:url + JSON-LD + any absolute).
+  reportRedirectingRefs(relativePath, content);
+
   // Indexable pages should have canonical
   if (!isNoindexPage && !hasCanonical && !hasNoindex) {
     errors.push(`${relativePath}: Missing canonical tag (indexable page)`);
@@ -90,6 +136,33 @@ function checkFile({ fullPath, relativePath }) {
   if (!/<meta[^>]*name=["']description["'][^>]*content=["'][^"']+["']/i.test(content)) {
     warnings.push(`${relativePath}: Missing meta description`);
   }
+}
+
+// Recursively scan a directory, running the redirecting-ref check on every file
+// whose extension is in `exts`. Labels are relative to `labelBase`.
+function scanDirForRedirects(dir, exts, labelBase) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      scanDirForRedirects(full, exts, labelBase);
+    } else if (entry.isFile() && exts.some(e => entry.name.toLowerCase().endsWith(e))) {
+      reportRedirectingRefs(path.relative(labelBase, full), fs.readFileSync(full, 'utf8'));
+    }
+  }
+}
+
+// public/**: JS injectors (lab-access-control.js back-links) and text files
+// (llms.txt) can carry redirecting refs the HTML scan never sees.
+function checkPublicNonHtml() {
+  scanDirForRedirects(PUBLIC_DIR, ['.js', '.txt'], PUBLIC_DIR);
+}
+
+// Server-side email/HTML templates (src/backend/**/*.js) embed absolute
+// caphegroup.org links that must also use the no-slash canonical form.
+function checkServerTemplates() {
+  const backendDir = path.join(__dirname, '../src/backend');
+  scanDirForRedirects(backendDir, ['.js'], path.join(__dirname, '..'));
 }
 
 function checkSitemap() {
@@ -114,8 +187,19 @@ function checkSitemap() {
     const urls = content.match(/<loc>[^<]+<\/loc>/g) || [];
     totalUrls += urls.length;
     urls.forEach(url => {
-      if (url.includes('caphegroup.org') && !url.includes('www.')) {
-        errors.push(`${seg}: URL missing www prefix: ${url}`);
+      const loc = url.replace(/<\/?loc>/g, '');
+      if (loc.includes('caphegroup.org') && !loc.includes('www.')) {
+        errors.push(`${seg}: URL missing www prefix: ${loc}`);
+      }
+      // Sitemap <loc> must be the canonical (extensionless, no trailing slash);
+      // the root "/" is the sole allowed trailing slash. A redirecting <loc>
+      // wastes crawl budget and can surface as "Page with redirect".
+      const isRoot = /^https?:\/\/www\.caphegroup\.org\/?$/.test(loc);
+      if (!isRoot && /\/$/.test(loc)) {
+        errors.push(`${seg}: <loc> has a trailing slash (301-redirects): ${loc}`);
+      }
+      if (/\.html($|\?)/.test(loc)) {
+        errors.push(`${seg}: <loc> uses .html (301-redirects to clean URL): ${loc}`);
       }
     });
   }
@@ -153,6 +237,8 @@ const htmlFiles = findHtmlFiles(PUBLIC_DIR);
 console.log(`Found ${htmlFiles.length} HTML files\n`);
 
 htmlFiles.forEach(checkFile);
+checkPublicNonHtml();
+checkServerTemplates();
 checkSitemap();
 checkRobots();
 

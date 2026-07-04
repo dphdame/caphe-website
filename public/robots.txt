@@ -1,19 +1,29 @@
 User-agent: *
 Allow: /
+# API endpoints (OAuth redirects, POST-only handlers) are not content — keep
+# crawlers out so they don't waste crawl budget or surface as "indexing" noise.
+# Private pages (/login, /dashboard, /settings, /admin) stay crawlable so Google
+# can READ their noindex meta; do NOT Disallow them here.
+Disallow: /api/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /api/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /api/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /api/
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /api/
 
 Sitemap: https://www.caphegroup.org/sitemap-index.xml

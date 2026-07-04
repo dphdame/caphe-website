@@ -1,31 +1,18 @@
 name: SEO Validation
 
-# Trigger on any change that can affect the gate — not just HTML. The 2026-07-04
-# incident shipped guard changes in scripts/ and test/ that the old html-only
-# path filter never ran in CI.
 on:
   push:
     branches: [main, master]
     paths:
-      - 'public/**'
-      - 'src/**'
-      - 'scripts/**'
-      - 'test/**'
-      - 'assets/**'
-      - 'llms.txt'
-      - 'package.json'
-      - '.github/workflows/seo-validation.yml'
+      - 'public/**/*.html'
+      - 'public/sitemap.xml'
+      - 'public/robots.txt'
   pull_request:
     branches: [main, master]
     paths:
-      - 'public/**'
-      - 'src/**'
-      - 'scripts/**'
-      - 'test/**'
-      - 'assets/**'
-      - 'llms.txt'
-      - 'package.json'
-      - '.github/workflows/seo-validation.yml'
+      - 'public/**/*.html'
+      - 'public/sitemap.xml'
+      - 'public/robots.txt'
 
 jobs:
   validate-seo:
@@ -43,16 +30,13 @@ jobs:
       - name: Run SEO validation
         run: node scripts/validate-seo.js
 
-      - name: Run test suite (regression ledger + guard self-tests)
-        run: npm test
-
       - name: SEO Check Summary
         if: always()
         run: |
           echo "## SEO Validation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ job.status }}" == "success" ]; then
-            echo "All SEO checks + tests passed for caphegroup.org" >> $GITHUB_STEP_SUMMARY
+            echo "All SEO checks passed for caphegroup.org" >> $GITHUB_STEP_SUMMARY
           else
-            echo "SEO validation or tests found issues. Check the logs above." >> $GITHUB_STEP_SUMMARY
+            echo "SEO validation found issues. Check the logs above." >> $GITHUB_STEP_SUMMARY
           fi

@@ -1,0 +1,30 @@
+#!/bin/bash
+# Pre-push hook. Two jobs:
+#   1. On ANY push: run the SEO validation gate (fast, static).
+#   2. On a push to the HEROKU remote (deploy): enforce deploy-parity — HEAD must
+#      equal the reviewed github/master (REG-2026-07-04-f).
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+set -euo pipefail
+
+REMOTE_NAME="${1:-}"
+REMOTE_URL="${2:-}"
+
+# --- 1. SEO validation on every push -------------------------------------
+if [ -f "scripts/validate-seo.js" ]; then
+  echo "🔍 pre-push: SEO validation…"
+  if ! node scripts/validate-seo.js; then
+    echo "❌ SEO validation failed — push blocked." >&2
+    exit 1
+  fi
+fi
+
+# --- 2. Deploy-parity when pushing to Heroku -----------------------------
+if printf '%s %s' "$REMOTE_NAME" "$REMOTE_URL" | grep -q 'git.heroku.com'; then
+  echo "🚀 pre-push: Heroku deploy detected — checking deploy-parity…"
+  if ! scripts/check-deploy-parity.sh; then
+    exit 1
+  fi
+fi
+
+exit 0

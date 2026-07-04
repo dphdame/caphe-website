@@ -206,7 +206,7 @@
           </a>
           <a href="/login?redirect=${encodeURIComponent(currentPath)}" class="btn-signin">Sign In</a>
         </div>
-        <a href="/methods-lab/" class="back-link">← Browse public labs instead</a>
+        <a href="/methods-lab" class="back-link">← Browse public labs instead</a>
       </div>
     `;
     return overlay;

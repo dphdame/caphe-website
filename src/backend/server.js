@@ -716,7 +716,7 @@ app.post('/api/membership/community', async (req, res) => {
             <li>Monthly event updates</li>
           </ul>
           <p>Check your inbox for a separate email to set up your account password and log in.</p>
-          <p>Explore our <a href="https://www.caphegroup.org/methods-lab/">Methods Lab</a> to start learning health economics methods!</p>
+          <p>Explore our <a href="https://www.caphegroup.org/methods-lab">Methods Lab</a> to start learning health economics methods!</p>
           <p>Best regards,<br>The CAPHE Team</p>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
           <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>

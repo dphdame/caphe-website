@@ -77,7 +77,7 @@
           Apply for Professional Membership
         </a>
       </div>
-      <a href="/methods-lab/" class="back-link">&larr; Browse available labs</a>
+      <a href="/methods-lab" class="back-link">&larr; Browse available labs</a>
     ` : `
       <span class="tier-badge">Professional Content</span>
       <h2 id="gate-title">${labTitle}</h2>
@@ -94,7 +94,7 @@
         </a>
         <a href="/membership/professional" class="btn-signin">Apply for Membership</a>
       </div>
-      <a href="/methods-lab/" class="back-link">&larr; Browse public labs</a>
+      <a href="/methods-lab" class="back-link">&larr; Browse public labs</a>
     `;
 
     overlay.innerHTML = `

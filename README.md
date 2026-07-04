@@ -97,6 +97,23 @@ npm run dev
 # Site at http://localhost:3000
 ```
 
+### Quality gates (run these; CI runs them too)
+
+```bash
+npm run gate        # seo:validate + full test suite (the pre-deploy gate)
+npm run seo:validate # SEO/link checks only
+npm test            # regression ledger + guard self-tests
+
+# Activate the git hooks ONCE per clone (pre-commit = SEO validate;
+# pre-push = SEO validate + Heroku deploy-parity):
+git config core.hooksPath .githooks
+```
+
+The **regression ledger** is `test/regressions.test.js` — every shipped bug gets a
+dated `REG-YYYY-MM-DD-x` test there so it can't silently return. When a new bug is
+found: add a failing test, fix it, watch it go green. `test/validate-seo-selftest.test.js`
+tests the checker itself.
+
 ## Deploy to Heroku
 
 ```bash
@@ -107,10 +124,22 @@ heroku buildpacks:set heroku/nodejs
 # Set required env vars (or via dashboard)
 heroku config:set SUPABASE_URL=... SUPABASE_ANON_KEY=... \
   SUPABASE_SERVICE_ROLE_KEY=... BREVO_API_KEY=...
-
-# Deploy
-git push heroku master
 ```
+
+**Deploy is manual and is NOT triggered by a GitHub merge.** The Heroku remote is
+named `origin` (`git.heroku.com/caphegroup`); GitHub is `github`. Always deploy the
+reviewed tip:
+
+```bash
+git fetch github master
+git checkout master && git reset --hard github/master   # match the merged tip
+git push origin master                                   # deploy to Heroku
+heroku releases -a caphegroup -n 1                        # verify the SHA
+```
+
+The `pre-push` hook enforces **deploy-parity**: it refuses to push to Heroku unless
+local `HEAD` equals `github/master` (this prevents the 2026-07-04 stale-deploy
+incident). Intentional hotfix override: `ALLOW_DEPLOY_DIVERGENCE=1 git push origin master`.
 
 `Procfile` declares a single `web` dyno running `src/backend/server.js`.
 

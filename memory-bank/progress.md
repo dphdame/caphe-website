@@ -183,6 +183,7 @@
 
 | Date | Version | Changes |
 |------|---------|---------|
+| Jul 4, 2026 | v218-219 | GSC "Page with redirect" cleanup: normalized 264 trailing-slash hub links + 8 og:url/JSON-LD/llms.txt refs + 1 email link to the extensionless no-slash canonical (PR #1); /home 404 → 301 /; robots.txt Disallow /api/ (PR #3). Added a standing regression gate (PR #2): validate-seo.js now checks canonical==og:url==JSON-LD self-url, broken internal links (models /src /assets /data mounts + routing), sitemap↔site parity; test/regressions.test.js bug ledger + validate-seo-selftest.test.js; predeploy/gate = validate + tests; .githooks activated + pre-push deploy-parity (refuse Heroku push unless HEAD==github/master). Sitemap audited against 6 rules — 0 violations, generator authoritative. Two review passes caught 12 gate bugs, all fixed. FOLLOW-UP (manual): apply /tmp/seo-validation.PROPOSED.yml to .github/workflows (needs workflow-scope token) so CI runs npm test; click GSC "Validate Fix". |
 | Mar 8, 2026 | v208 | GSC indexing fixes: sitemap trailing slashes (37 URLs), canonical tag cleanup (45 pages), noindex on 10 protected pages |
 | Feb 16, 2026 | v183 | Access Explorer: specialty filter on statewide map, per-specialty data for 58 counties/24 HRRs, county detail fallback table |
 | Feb 3, 2026 | v156+ | Fixed HTTP→HTTPS canonical redirect, sitemap trailing slashes, membership application database bug, recovered 3 lost applications via Brevo sync |

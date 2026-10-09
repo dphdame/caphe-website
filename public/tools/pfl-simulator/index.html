@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+
+  <title>California Paid Family Leave Expansion Simulator - CAPHE</title>
+  <meta name="description" content="Simulate the multi-year fiscal solvency, worker equity, and county-level impacts of expanding California Paid Family Leave from 8 to 12 weeks under alternative behavioral assumptions.">
+  <meta name="author" content="Victoria Cholette">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/pfl-simulator">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="California Paid Family Leave Expansion Simulator - CAPHE">
+  <meta property="og:description" content="Model the fiscal solvency, worker equity distribution, and 58-county impacts of expanding California PFL from 8 to 12 weeks.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.caphegroup.org/tools/pfl-simulator">
+  <meta property="og:site_name" content="CAPHE - California Association of Public Health Economists">
+  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+
+  <!-- CSS & Fonts -->
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-accent-light: #FFF8E1;
+      --color-success: #2E7D32;
+      --color-error: #C62828;
+      --color-text: #1C1C1C;
+      --color-text-muted: #555555;
+      --color-bg-alt: #F8F9FA;
+      --color-border: #E0E0E0;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      color: var(--color-text);
+      background: #FFFFFF;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--color-primary-dark);
+      font-weight: 700;
+    }
+
+    .sim-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+    }
+    .breadcrumbs a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+    .breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+
+    /* Hero header */
+    .sim-hero {
+      background: linear-gradient(135deg, #003080 0%, #0041A5 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl) var(--space-2xl);
+      margin-bottom: var(--space-xl);
+      box-shadow: var(--shadow-md);
+    }
+    .sim-hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: #FFECB3;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-xs);
+    }
+    .sim-hero h1 {
+      color: #FFFFFF;
+      font-size: 2.1rem;
+      margin: 0.25rem 0 0.5rem;
+      line-height: 1.2;
+    }
+    .sim-hero p {
+      font-size: 1.05rem;
+      max-width: 860px;
+      color: #E3F2FD;
+      margin: 0;
+    }
+
+    /* Scenario selection cards */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    @media (max-width: 860px) {
+      .scenario-grid { grid-template-columns: 1fr; }
+    }
+    .scenario-card {
+      background: var(--color-bg-alt);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .scenario-card:hover {
+      border-color: var(--color-primary-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+    .scenario-card.active {
+      border-color: var(--color-primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-md);
+    }
+    .scenario-card .card-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .scenario-card.active .card-tag {
+      color: var(--color-primary);
+    }
+    .scenario-card h3 {
+      font-size: 1.2rem;
+      margin: 0 0 0.4rem;
+      color: var(--color-primary);
+    }
+    .scenario-card .card-metrics {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--color-border);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .scenario-card .card-metric-val {
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* KPI Summary Row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .kpi-row { grid-template-columns: 1fr; }
+    }
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius-sm);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-card.teal { border-left-color: var(--color-secondary); }
+    .kpi-card.gold { border-left-color: var(--color-accent); }
+    .kpi-card.green { border-left-color: var(--color-success); }
+    .kpi-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      line-height: 1.1;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Tabs Layout */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: var(--space-xl);
+    }
+    .tab-btn {
+      padding: var(--space-sm) var(--space-lg);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      color: var(--color-primary);
+    }
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Card Panels inside Tabs */
+    .panel-card {
+      background: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .panel-card h2 {
+      margin-top: 0;
+      font-size: 1.35rem;
+      margin-bottom: var(--space-xs);
+    }
+    .panel-subtitle {
+      font-size: 0.92rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-lg);
+    }
+
+    /* Worker cost widget */
+    .worker-cost-box {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .worker-cost-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      align-items: center;
+    }
+    @media (max-width: 700px) {
+      .worker-cost-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Tables */
+    .sim-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: var(--space-md);
+    }
+    .sim-table th, .sim-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+    .sim-table th {
+      background: var(--color-bg-alt);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+    .sim-table td.num, .sim-table th.num {
+      text-align: right;
+    }
+
+    /* Map Layout */
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+      align-items: flex-start;
+    }
+    @media (max-width: 960px) {
+      .map-layout { grid-template-columns: 1fr; }
+    }
+    .map-wrapper {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .map-wrapper svg {
+      width: 100%;
+      height: auto;
+    }
+    .map-wrapper path {
+      fill: #BBDEFB;
+      stroke: #FFFFFF;
+      stroke-width: 0.6;
+      cursor: pointer;
+      transition: fill 0.15s ease, stroke-width 0.15s ease;
+    }
+    .map-wrapper path:hover {
+      stroke: #003080;
+      stroke-width: 1.6;
+      opacity: 0.9;
+    }
+    .map-wrapper path.selected {
+      stroke: #F9A825;
+      stroke-width: 2.5;
+    }
+
+    .county-card {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 2rem;
+    }
+    .county-card h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.4rem;
+      color: var(--color-primary);
+    }
+    .county-stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 0.88rem;
+    }
+    .county-stat-row:last-child {
+      border-bottom: none;
+    }
+    .county-stat-val {
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* Methodological Notice Fencing */
+    .method-notice {
+      background: #FFF8E1;
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.85rem;
+      color: #5D4037;
+      margin-top: var(--space-lg);
+    }
+
+    /* Export Bar */
+    .export-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-md) var(--space-lg);
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-2xl);
+    }
+    .btn-export {
+      background: var(--color-primary);
+      color: #FFFFFF;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.2s ease;
+    }
+    .btn-export:hover {
+      background: var(--color-primary-light);
+    }
+
+    @media print {
+      .nav-top-bar, .nav, .tabs-nav, .export-bar, footer {
+        display: none !important;
+      }
+      .sim-container { max-width: 100%; padding: 0; }
+      .tab-content { display: block !important; page-break-after: always; }
+      .panel-card { border: none; box-shadow: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <a href="/programs" class="nav-link">Programs</a>
+        <a href="/membership" class="nav-link">Membership</a>
+        <a href="/resources" class="nav-link active">Resources</a>
+        <a href="/contact" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sim-container">
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+      <a href="/">Home</a> &gt; <a href="/resources">Resources</a> &gt; <span>PFL Expansion Simulator</span>
+    </div>
+
+    <!-- Hero Header -->
+    <header class="sim-hero">
+      <span class="badge">Policy &amp; Fiscal Simulator</span>
+      <h1>California Paid Family Leave Expansion Simulator</h1>
+      <p>Simulate the multi-year fiscal solvency, worker equity distributions, and 58-county impacts of extending California Paid Family Leave (PFL) from 8 to 12 weeks under alternative behavioral assumptions.</p>
+    </header>
+
+    <!-- Preset Scenario Selector -->
+    <section aria-labelledby="scenario-selector-title">
+      <h2 id="scenario-selector-title" style="font-size: 1.15rem; margin-bottom: 0.5rem;">Select Policy &amp; Behavioral Scenario</h2>
+      <div class="scenario-grid" role="radiogroup" aria-label="Behavioral scenarios">
+        
+        <!-- Floor -->
+        <div class="scenario-card" data-scenario="floor" role="radio" aria-checked="false" tabindex="0">
+          <div class="card-tag">Conservative Baseline</div>
+          <h3>Floor Scenario</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+            Minimal behavioral response: 25% take-up, 5% extensive margin, and 50% employer crowd-out.
+          </p>
+          <div class="card-metrics">
+            <span>Net Outlays: <strong>+$201.8M</strong></span>
+            <span>Tax Rate: <strong>+0.030%</strong></span>
+          </div>
+        </div>
+
+        <!-- Expected (Default) -->
+        <div class="scenario-card active" data-scenario="expected" role="radio" aria-checked="true" tabindex="0">
+          <div class="card-tag" style="color: var(--color-secondary);">Evidence-Based Central</div>
+          <h3>Expected Scenario</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+            Empirical benchmark: 35% take-up, 12% extensive margin, and 30% employer crowd-out.
+          </p>
+          <div class="card-metrics">
+            <span>Net Outlays: <strong>+$422.0M</strong></span>
+            <span>Tax Rate: <strong>+0.045%</strong></span>
+          </div>
+        </div>
+
+        <!-- Ceiling -->
+        <div class="scenario-card" data-scenario="ceiling" role="radio" aria-checked="false" tabindex="0">
+          <div class="card-tag" style="color: var(--color-error);">Maximum Fiscal Exposure</div>
+          <h3>Ceiling Stress Test</h3>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+            Full theoretical exposure: 100% take-up, 20% extensive margin, and 0% private crowd-out.
+          </p>
+          <div class="card-metrics">
+            <span>Net Outlays: <strong>+$1,845.4M</strong></span>
+            <span>Tax Rate: <strong>+0.139%</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Key Performance Indicator Bar -->
+    <div class="kpi-row" aria-live="polite">
+      <div class="kpi-card">
+        <div class="kpi-label">Annual Net Benefits (2026)</div>
+        <div class="kpi-value" id="kpi-net-outlays">$422.0M</div>
+        <div class="kpi-sub" id="kpi-claims-count">369,600 total expanded claims</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-label">Required SDI Tax Rate</div>
+        <div class="kpi-value" id="kpi-tax-rate">1.345%</div>
+        <div class="kpi-sub" id="kpi-rate-adj">+0.045% increase over baseline (1.30%)</div>
+      </div>
+      <div class="kpi-card gold">
+        <div class="kpi-label">Annual Worker Cost ($100k)</div>
+        <div class="kpi-value" id="kpi-worker-cost">$45.48</div>
+        <div class="kpi-sub" id="kpi-monthly-cost">~$3.79 per month</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">6-Year Cumulative Outlays</div>
+        <div class="kpi-value" id="kpi-cumulative">$4.01B</div>
+        <div class="kpi-sub">Total 2025–2030 public outlays</div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="tabs-nav" role="tablist">
+      <button class="tab-btn active" data-tab="solvency" role="tab" aria-selected="true">1. State Fiscal &amp; Solvency</button>
+      <button class="tab-btn" data-tab="equity" role="tab" aria-selected="false">2. Worker Equity &amp; Parity</button>
+      <button class="tab-btn" data-tab="sensitivity" role="tab" aria-selected="false">3. Parameter Sensitivity</button>
+      <button class="tab-btn" data-tab="counties" role="tab" aria-selected="false">4. County Impact Explorer</button>
+    </nav>
+
+    <!-- Tab 1: State Fiscal & Solvency -->
+    <div class="tab-content active" id="tab-solvency" role="tabpanel">
+      <div class="panel-card">
+        <h2>Multi-Year State Disability Insurance (SDI) Fund Solvency (2025–2030)</h2>
+        <p class="panel-subtitle">Projections compare projected SDI fund balances under expansion against the EDD 25% operational reserve benchmark under California Unemployment Insurance Code (UIC) §984 formula guidelines.</p>
+
+        <div style="height: 360px; position: relative;">
+          <canvas id="chart-solvency"></canvas>
+        </div>
+
+        <div class="worker-cost-box">
+          <div class="worker-cost-grid">
+            <div>
+              <h3 style="margin-top: 0; font-size: 1.1rem;">Individual Employee Impact Calculator</h3>
+              <p style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">
+                Calculate the net change in annual SDI payroll tax under the active scenario for any specific wage level.
+              </p>
+              <label for="input-custom-wage" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.35rem;">Annual Gross Wages ($):</label>
+              <input type="number" id="input-custom-wage" value="75000" step="1000" min="10000" max="500000" style="padding: 0.45rem 0.65rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); width: 200px; font-size: 0.95rem;">
+            </div>
+            <div style="background: #FFFFFF; padding: var(--space-md); border-radius: var(--radius-sm); border-left: 3px solid var(--color-primary);">
+              <div style="font-size: 0.85rem; color: var(--color-text-muted);">Estimated Additional Annual Contribution:</div>
+              <div style="font-size: 1.6rem; font-weight: 700; color: var(--color-primary); font-family: 'Montserrat', sans-serif;" id="calc-annual-cost">+$34.11 / year</div>
+              <div style="font-size: 0.85rem; color: var(--color-text-muted);" id="calc-monthly-cost">Equal to ~$2.84 per month</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-notice">
+          <strong>Reserve Ratio Clarification:</strong> The Employment Development Department (EDD) defines 25% to 50% of annual disbursements as an <em>operational adequate reserve rate target range</em> under UIC §984 financing formula guidelines, <strong>not a mandatory statutory minimum</strong>. In fact, under EDD's baseline May 2026 forecast without expansion, the SDI fund operates below 25% in 2025 (18.1%) and 2026 (18.2%). Under the Expected scenario, the fund preserves positive cash balances throughout the projection period, reaching $6.37B (30.4% reserve ratio) by 2030.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Worker Equity & Parity -->
+    <div class="tab-content" id="tab-equity" role="tabpanel">
+      <div class="panel-card">
+        <h2>Distributional Equity Across Income Quintiles</h2>
+        <p class="panel-subtitle">Analysis of benefit distribution versus contribution share under SB 951 tiered replacement rates (90% for lower-wage earners; 70% for higher-wage earners).</p>
+
+        <div style="height: 320px; position: relative; margin-bottom: var(--space-xl);">
+          <canvas id="chart-equity"></canvas>
+        </div>
+
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Income Quintile Profile Ledger</h3>
+        <table class="sim-table" aria-label="Income quintile equity table">
+          <thead>
+            <tr>
+              <th>Quintile</th>
+              <th>Wage Range</th>
+              <th class="num">Worker Share</th>
+              <th class="num">Tax Share</th>
+              <th class="num">Benefit Share</th>
+              <th class="num">Replacement Rate</th>
+              <th class="num">Net Expansion Benefit</th>
+            </tr>
+          </thead>
+          <tbody id="equity-table-body">
+            <!-- Dynamically populated from pfl_model_data.json -->
+          </tbody>
+        </table>
+
+        <div style="margin-top: var(--space-xl);">
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Peer State Policy Comparison</h3>
+          <p style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: var(--space-md);">California remains the only state among major peer social insurance programs offering fewer than 12 weeks of paid leave.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-md);" id="peer-states-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Parameter Sensitivity -->
+    <div class="tab-content" id="tab-sensitivity" role="tabpanel">
+      <div class="panel-card">
+        <h2>Econometric Parameter Sensitivity Analysis</h2>
+        <p class="panel-subtitle">Isolated impact of individual behavioral assumptions on 2026 expansion costs, derived directly from <code>ExpansionCostModel.run_sensitivity_analysis()</code>.</p>
+
+        <table class="sim-table" aria-label="Parameter sensitivity table">
+          <thead>
+            <tr>
+              <th>Behavioral Parameter</th>
+              <th>Base Value</th>
+              <th>Low Value</th>
+              <th>High Value</th>
+              <th class="num">Low Cost ($B)</th>
+              <th class="num">Base Cost ($B)</th>
+              <th class="num">High Cost ($B)</th>
+              <th class="num">Cost Range ($B)</th>
+            </tr>
+          </thead>
+          <tbody id="sensitivity-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+
+        <div class="method-notice">
+          <strong>Sensitivity Finding:</strong> Take-up rate accounts for the overwhelming majority of variance ($1.337B spread), ranging from $0.446B at 25% take-up to $1.783B at 100% take-up. Extensive margin variation (5% to 20%) generates an $84M range.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: County Impact Explorer -->
+    <div class="tab-content" id="tab-counties" role="tabpanel">
+      <div class="panel-card">
+        <h2>58-County Demographic Allocation &amp; Economic Impact</h2>
+        <p class="panel-subtitle">Explore projected infant bonding claim volumes and wage replacement dollars delivered to working families across California counties.</p>
+
+        <div style="margin-bottom: var(--space-md); display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap;">
+          <div>
+            <label for="county-select" style="font-weight: 600; font-size: 0.88rem;">Select County:</label>
+            <select id="county-select" style="padding: 0.45rem 0.65rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.9rem;">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+          <div>
+            <label for="map-metric" style="font-weight: 600; font-size: 0.88rem;">Map Shading:</label>
+            <select id="map-metric" style="padding: 0.45rem 0.65rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.9rem;">
+              <option value="dollars">Expanded Wage Replacement ($)</option>
+              <option value="claims">Additional Bonding Claims</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="map-layout">
+          <!-- Vector Map -->
+          <div class="map-wrapper" id="svg-map-container">
+            <svg role="img" aria-label="California county interactive map" xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 947" stroke-linecap="round" stroke-linejoin="round" id="ca-svg-map">
+              <g id="ca-counties">
+                <!-- SVG paths for 58 counties embedded below -->
+              </g>
+            </svg>
+          </div>
+
+          <!-- County Snapshot Card -->
+          <div class="county-card" id="county-card" aria-live="polite">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">County Allocation Summary</div>
+            <h3 id="c-name">Fresno County</h3>
+            <div class="county-stat-row">
+              <span>Population:</span>
+              <span class="county-stat-val" id="c-pop">1,028,120</span>
+            </div>
+            <div class="county-stat-row">
+              <span>Baseline Claims (Weeks 1-8):</span>
+              <span class="county-stat-val" id="c-baseline-claims">7,323</span>
+            </div>
+            <div class="county-stat-row">
+              <span>Additional Claims (Weeks 9-12):</span>
+              <span class="county-stat-val" style="color: var(--color-primary);" id="c-exp-claims">+8,201</span>
+            </div>
+            <div class="county-stat-row">
+              <span>New Replacement Benefits:</span>
+              <span class="county-stat-val" style="color: var(--color-secondary);" id="c-dollars">$11.02 Million</span>
+            </div>
+            <div style="margin-top: var(--space-md); font-size: 0.78rem; color: var(--color-text-muted);">
+              Families in this county receive roughly <strong id="c-summary-highlight">$11.02M</strong> in wage support during the extended bonding window under the active scenario.
+            </div>
+          </div>
+        </div>
+
+        <div class="method-notice">
+          <strong>Methodological Note on County Estimates:</strong> Public EDD monthly data reports aggregate statewide claims. County-level figures represent deterministic demographic apportionments based on official California Department of Finance population distributions scaled to verified statewide totals. These estimates are provided to illustrate local community impact and should be interpreted as allocated projections, not administrative case counts.
+        </div>
+      </div>
+    </div>
+
+    <!-- Export & Citation Bar -->
+    <div class="export-bar">
+      <div>
+        <div style="font-weight: 700; color: var(--color-primary-dark);">Need documentation for a policy brief or hearing?</div>
+        <div style="font-size: 0.85rem; color: var(--color-text-muted);">Download a standardized 1-page summary or view the full mathematical methodology.</div>
+      </div>
+      <div style="display: flex; gap: var(--space-sm);">
+        <button class="btn-export" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <a href="/tools/pfl-simulator/methodology" class="btn-export" style="background: #FFFFFF; color: var(--color-primary); border: 1px solid var(--color-primary);">Technical Methodology &rarr;</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" style="margin-top: var(--space-2xl); background: #F8F9FA; border-top: 1px solid var(--color-border); padding: var(--space-xl) 0; font-size: 0.85rem; color: var(--color-text-muted);">
+    <div class="container" style="max-width: 1240px; margin: 0 auto; padding: 0 var(--space-md); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-md);">
+      <div>
+        <div style="font-weight: 700; color: var(--color-primary);">CAPHE - California Association of Public Health Economists</div>
+        <div>Advancing rigorous, non-partisan economic evaluation in California public health policy.</div>
+      </div>
+      <div>
+        <div>Data Sources: California EDD Disability Insurance Fund Forecast (May 2026); Census ACS 2023.</div>
+        <div>Model Version: 2026.1 (Updated October 2026 per SB 951 implementation).</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Simulation Engine Script -->
+  <script>
+    let MODEL_DATA = null;
+    let ACTIVE_SCENARIO = 'expected';
+    let solvencyChart = null;
+    let equityChart = null;
+
+    // Load Model Data from static JSON
+    async function initSimulator() {
+      try {
+        const response = await fetch('/tools/pfl-simulator/data/pfl_model_data.json');
+        MODEL_DATA = await response.json();
+      } catch (e) {
+        console.error("Failed to load model data from API", e);
+      }
+      
+      // Load county SVG into container
+      try {
+        const svgResp = await fetch('/tools/pfl-simulator/ca-counties.svg');
+        const svgText = await svgResp.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, "image/svg+xml");
+        const svgEl = doc.querySelector('svg');
+        if (svgEl) {
+          const caCountiesGroup = svgEl.querySelector('#ca-counties');
+          const targetGroup = document.querySelector('#ca-svg-map #ca-counties');
+          if (caCountiesGroup && targetGroup) {
+            targetGroup.innerHTML = caCountiesGroup.innerHTML;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch SVG map", err);
+      }
+
+      setupEventListeners();
+      populateCountyDropdown();
+      populateEquityTable();
+      populatePeerStates();
+      populateSensitivityTable();
+      updateUI();
+      renderSolvencyChart();
+      setupMapInteractivity();
+    }
+
+    function setupEventListeners() {
+      // Scenario card selection
+      document.querySelectorAll('.scenario-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.scenario-card').forEach(c => {
+            c.classList.remove('active');
+            c.setAttribute('aria-checked', 'false');
+          });
+          card.classList.add('active');
+          card.setAttribute('aria-checked', 'true');
+          ACTIVE_SCENARIO = card.dataset.scenario;
+          updateUI();
+        });
+      });
+
+      // Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          const tabId = 'tab-' + btn.dataset.tab;
+          const targetTab = document.getElementById(tabId);
+          if (targetTab) targetTab.classList.add('active');
+
+          // Trigger chart render if needed
+          if (btn.dataset.tab === 'solvency') {
+            setTimeout(renderSolvencyChart, 50);
+          } else if (btn.dataset.tab === 'equity') {
+            setTimeout(renderEquityChart, 50);
+          } else if (btn.dataset.tab === 'counties') {
+            updateMapColors();
+          }
+        });
+      });
+
+      // Wage calculator
+      const wageInput = document.getElementById('input-custom-wage');
+      wageInput.addEventListener('input', updateWorkerCostCalculation);
+
+      // County selection
+      const countySelect = document.getElementById('county-select');
+      countySelect.addEventListener('change', () => {
+        displayCountyDetails(countySelect.value);
+        highlightMapCounty(countySelect.value);
+      });
+
+      const mapMetric = document.getElementById('map-metric');
+      mapMetric.addEventListener('change', updateMapColors);
+    }
+
+    function updateUI() {
+      if (!MODEL_DATA) return;
+      const sc = MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO];
+      if (!sc) return;
+
+      document.getElementById('kpi-net-outlays').innerText = '$' + sc.net_incremental_benefits_millions.toFixed(1) + 'M';
+      document.getElementById('kpi-claims-count').innerText = sc.expanded_claims.toLocaleString() + ' total expanded claims';
+      document.getElementById('kpi-tax-rate').innerText = (sc.required_sdi_rate * 100).toFixed(3) + '%';
+      document.getElementById('kpi-rate-adj').innerText = '+' + sc.rate_increase_percentage_points.toFixed(3) + '% over baseline (1.30%)';
+      document.getElementById('kpi-worker-cost').innerText = '$' + sc.cost_per_100k_wages.toFixed(2);
+      document.getElementById('kpi-monthly-cost').innerText = '~$' + (sc.cost_per_100k_wages / 12).toFixed(2) + ' per month';
+
+      const cum = MODEL_DATA.six_year_cumulative_outlays_billions[ACTIVE_SCENARIO];
+      document.getElementById('kpi-cumulative').innerText = '$' + cum.toFixed(2) + 'B';
+
+      updateWorkerCostCalculation();
+      renderSolvencyChart();
+      updateMapColors();
+
+      const currentCounty = document.getElementById('county-select').value || 'Fresno';
+      displayCountyDetails(currentCounty);
+    }
+
+    function updateWorkerCostCalculation() {
+      const wage = parseFloat(document.getElementById('input-custom-wage').value) || 0;
+      let rateHike = 0.00045; // default Expected
+
+      if (MODEL_DATA && MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO]) {
+        rateHike = MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO].rate_increase_percentage_points / 100;
+      }
+
+      const annualCost = wage * rateHike;
+      const monthlyCost = annualCost / 12;
+
+      document.getElementById('calc-annual-cost').innerText = (annualCost >= 0 ? '+' : '') + '$' + annualCost.toFixed(2) + ' / year';
+      document.getElementById('calc-monthly-cost').innerText = 'Equal to ~$' + monthlyCost.toFixed(2) + ' per month';
+    }
+
+    function renderSolvencyChart() {
+      const ctx = document.getElementById('chart-solvency');
+      if (!ctx || !MODEL_DATA) return;
+
+      const years = MODEL_DATA.fund_trajectories.years;
+      const reserveTarget = MODEL_DATA.fund_trajectories.edd_reserve_target_25pct;
+      const baseline = MODEL_DATA.fund_trajectories.baseline_fund_balance;
+      const activeTrajectory = MODEL_DATA.fund_trajectories[ACTIVE_SCENARIO + '_fund_balance'] || MODEL_DATA.fund_trajectories.expected_fund_balance;
+
+      if (solvencyChart) {
+        solvencyChart.destroy();
+      }
+
+      solvencyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'EDD 25% Operational Reserve Target (UIC §984 Benchmark)',
+              data: reserveTarget,
+              borderColor: '#F9A825',
+              borderWidth: 2,
+              borderDash: [6, 4],
+              pointRadius: 3,
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'Baseline Fund Balance (No Expansion)',
+              data: baseline,
+              borderColor: '#9E9E9E',
+              borderWidth: 2,
+              pointRadius: 4,
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'Active Scenario Balance (' + ACTIVE_SCENARIO.toUpperCase() + ')',
+              data: activeTrajectory,
+              borderColor: ACTIVE_SCENARIO === 'ceiling' ? '#C62828' : '#0041A5',
+              backgroundColor: ACTIVE_SCENARIO === 'ceiling' ? 'rgba(198,40,40,0.08)' : 'rgba(0,65,165,0.08)',
+              borderWidth: 3,
+              pointRadius: 5,
+              fill: true,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { family: 'Source Sans Pro', size: 12 } } },
+            tooltip: {
+              callbacks: {
+                label: function(c) {
+                  return c.dataset.label + ': $' + c.parsed.y.toFixed(2) + ' Billion';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Fund Balance ($ Billions)', font: { weight: 'bold' } },
+              grid: { color: '#EEEEEE' }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function renderEquityChart() {
+      const ctx = document.getElementById('chart-equity');
+      if (!ctx || !MODEL_DATA) return;
+
+      const labels = MODEL_DATA.equity_quintiles.map(q => q.quintile + ' (' + q.wage_range + ')');
+      const contribShares = MODEL_DATA.equity_quintiles.map(q => q.sdi_contribution_share_pct);
+      const benefitShares = MODEL_DATA.equity_quintiles.map(q => q.expansion_benefit_share_pct);
+
+      if (equityChart) {
+        equityChart.destroy();
+      }
+
+      equityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'SDI Tax Contribution Share (%)',
+              data: contribShares,
+              backgroundColor: '#B0BEC5',
+              borderRadius: 4
+            },
+            {
+              label: 'PFL Expansion Benefit Share (%)',
+              data: benefitShares,
+              backgroundColor: '#0D9488',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                afterBody: function(items) {
+                  const idx = items[0].dataIndex;
+                  const q = MODEL_DATA.equity_quintiles[idx];
+                  return 'Wage Replacement Tier: ' + q.wage_replacement_rate_pct + '%\nNet Benefit Increase: +$' + q.net_annual_position_millions.toFixed(1) + 'M';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Share of Statewide Total (%)' },
+              ticks: { callback: v => v + '%' }
+            }
+          }
+        }
+      });
+    }
+
+    function populateEquityTable() {
+      if (!MODEL_DATA) return;
+      const tbody = document.getElementById('equity-table-body');
+      tbody.innerHTML = '';
+
+      MODEL_DATA.equity_quintiles.forEach(q => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${q.quintile}</strong></td>
+          <td>${q.wage_range}</td>
+          <td class="num">${q.worker_share_pct.toFixed(1)}%</td>
+          <td class="num">${q.sdi_contribution_share_pct.toFixed(1)}%</td>
+          <td class="num" style="color: var(--color-secondary); font-weight: 700;">${q.expansion_benefit_share_pct.toFixed(1)}%</td>
+          <td class="num"><span style="background: ${q.wage_replacement_rate_pct === 90 ? '#E8F5E9' : '#EDE7F6'}; color: ${q.wage_replacement_rate_pct === 90 ? '#2E7D32' : '#512DA8'}; padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">${q.wage_replacement_rate_pct}%</span></td>
+          <td class="num" style="font-weight: 700; color: var(--color-success);">+$${q.net_annual_position_millions.toFixed(1)}M</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateSensitivityTable() {
+      if (!MODEL_DATA || !MODEL_DATA.sensitivity_results) return;
+      const tbody = document.getElementById('sensitivity-table-body');
+      tbody.innerHTML = '';
+
+      MODEL_DATA.sensitivity_results.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.parameter_name}</strong></td>
+          <td>${(s.base_value * 100).toFixed(0)}%</td>
+          <td>${(s.low_value * 100).toFixed(0)}%</td>
+          <td>${(s.high_value * 100).toFixed(0)}%</td>
+          <td class="num">$${s.low_cost_billions.toFixed(3)}B</td>
+          <td class="num">$${s.base_cost_billions.toFixed(3)}B</td>
+          <td class="num">$${s.high_cost_billions.toFixed(3)}B</td>
+          <td class="num" style="font-weight: 700; color: var(--color-primary);">$${s.cost_range_billions.toFixed(3)}B</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populatePeerStates() {
+      if (!MODEL_DATA) return;
+      const grid = document.getElementById('peer-states-grid');
+      grid.innerHTML = '';
+
+      MODEL_DATA.peer_states.forEach(s => {
+        const card = document.createElement('div');
+        card.style.background = 'var(--color-bg-alt)';
+        card.style.border = '1px solid var(--color-border)';
+        card.style.borderRadius = 'var(--radius-sm)';
+        card.style.padding = 'var(--space-md)';
+        card.innerHTML = `
+          <div style="font-weight: 700; color: var(--color-primary); font-size: 0.95rem; margin-bottom: 0.25rem;">${s.state}</div>
+          <div style="font-size: 0.82rem; margin-bottom: 0.25rem;">Duration: <strong>${s.duration_weeks} Weeks</strong></div>
+          <div style="font-size: 0.82rem; margin-bottom: 0.25rem;">Replacement: <strong>${s.wage_replacement}</strong></div>
+          <div style="font-size: 0.82rem; margin-bottom: 0.25rem;">Max Weekly: <strong>$${s.max_weekly_benefit}</strong></div>
+          <div style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.35rem; line-height: 1.35;">${s.notes}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function populateCountyDropdown() {
+      if (!MODEL_DATA || !MODEL_DATA.counties) return;
+      const select = document.getElementById('county-select');
+      select.innerHTML = '';
+
+      const countyNames = Object.keys(MODEL_DATA.counties).sort();
+      countyNames.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name + ' County';
+        if (name === 'Fresno') opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function displayCountyDetails(countyName) {
+      if (!MODEL_DATA || !MODEL_DATA.counties) return;
+      const c = MODEL_DATA.counties[countyName];
+      if (!c) return;
+
+      document.getElementById('c-name').innerText = c.name + ' County';
+      document.getElementById('c-pop').innerText = c.population.toLocaleString() + ' (' + (c.population_share * 100).toFixed(2) + '% of CA)';
+      document.getElementById('c-baseline-claims').innerText = c.baseline_bonding_claims.toLocaleString();
+
+      const expClaims = c.expansion_bonding_claims[ACTIVE_SCENARIO] || c.expansion_bonding_claims.expected;
+      const diffClaims = expClaims - c.baseline_bonding_claims;
+      document.getElementById('c-exp-claims').innerText = expClaims.toLocaleString() + ' (+' + diffClaims.toLocaleString() + ')';
+
+      const dollarsK = c.expanded_benefit_dollars_thousands[ACTIVE_SCENARIO] || c.expanded_benefit_dollars_thousands.expected;
+      const dollarsFormatted = dollarsK >= 1000 ? '$' + (dollarsK / 1000).toFixed(2) + ' Million' : '$' + Math.round(dollarsK).toLocaleString() + ' Thousand';
+      document.getElementById('c-dollars').innerText = dollarsFormatted;
+      document.getElementById('c-summary-highlight').innerText = dollarsFormatted;
+    }
+
+    function setupMapInteractivity() {
+      const container = document.querySelector('#ca-svg-map #ca-counties');
+      if (!container) return;
+
+      container.querySelectorAll('path').forEach(path => {
+        const countyName = path.getAttribute('data-county');
+        if (!countyName) return;
+
+        path.addEventListener('click', () => {
+          document.getElementById('county-select').value = countyName;
+          displayCountyDetails(countyName);
+          highlightMapCounty(countyName);
+        });
+
+        path.addEventListener('mouseenter', () => {
+          path.style.opacity = '0.85';
+        });
+        path.addEventListener('mouseleave', () => {
+          path.style.opacity = '1.0';
+        });
+      });
+    }
+
+    function highlightMapCounty(countyName) {
+      document.querySelectorAll('#ca-svg-map path').forEach(p => {
+        if (p.getAttribute('data-county') === countyName) {
+          p.classList.add('selected');
+        } else {
+          p.classList.remove('selected');
+        }
+      });
+    }
+
+    function updateMapColors() {
+      if (!MODEL_DATA || !MODEL_DATA.counties) return;
+      const metric = document.getElementById('map-metric').value;
+      const maxVal = metric === 'dollars' ? 105529 : 80000; // LA benchmark
+
+      document.querySelectorAll('#ca-svg-map path').forEach(path => {
+        const name = path.getAttribute('data-county');
+        const c = MODEL_DATA.counties[name];
+        if (!c) return;
+
+        const val = metric === 'dollars' ? 
+          (c.expanded_benefit_dollars_thousands[ACTIVE_SCENARIO] || c.expanded_benefit_dollars_thousands.expected) :
+          (c.expansion_bonding_claims[ACTIVE_SCENARIO] || c.expansion_bonding_claims.expected);
+
+        const ratio = Math.min(Math.max(val / maxVal, 0.05), 1.0);
+        const lightness = Math.round(92 - (ratio * 55));
+        path.style.fill = `hsl(216, 85%, ${lightness}%)`;
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', initSimulator);
+  </script>
+</body>
+</html>

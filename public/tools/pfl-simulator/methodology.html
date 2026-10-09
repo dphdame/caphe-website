@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
+
+  <title>Methodology: California Paid Family Leave Expansion Simulator - CAPHE</title>
+  <meta name="description" content="Econometric methodology, statutory background, data sources, and behavioral parameter justifications for the CAPHE California Paid Family Leave Expansion Simulator.">
+  <meta name="author" content="Victoria Cholette">
+  <link rel="canonical" href="https://www.caphegroup.org/tools/pfl-simulator/methodology">
+
+  <!-- CSS & Fonts -->
+  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    .methodology-content {
+      max-width: 860px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: #333333;
+      padding: var(--space-xl) var(--space-md);
+    }
+    .methodology-content h1 {
+      font-size: 2.2rem;
+      color: var(--color-primary-dark);
+      margin-bottom: var(--space-xs);
+    }
+    .methodology-content h2 {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      margin-top: var(--space-2xl);
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: 0.35rem;
+    }
+    .methodology-content h3 {
+      font-size: 1.2rem;
+      color: var(--color-text);
+      margin-top: var(--space-xl);
+    }
+    .key-box {
+      background: #F8F9FA;
+      border-left: 4px solid var(--color-primary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-sm);
+      margin: var(--space-lg) 0;
+    }
+    .formula-box {
+      background: #EBF3FA;
+      border: 1px solid #B0BEC5;
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 0.95rem;
+      margin: var(--space-md) 0;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: var(--space-md) 0 var(--space-lg);
+    }
+    .data-table th, .data-table td {
+      border: 1px solid var(--color-border);
+      padding: var(--space-sm) var(--space-md);
+      text-align: left;
+    }
+    .data-table th {
+      background: var(--color-bg-alt);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .breadcrumbs {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-md);
+    }
+    .breadcrumbs a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <a href="/programs" class="nav-link">Programs</a>
+        <a href="/membership" class="nav-link">Membership</a>
+        <a href="/resources" class="nav-link active">Resources</a>
+        <a href="/contact" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="methodology-content">
+    <div class="breadcrumbs">
+      <a href="/">Home</a> &gt; <a href="/resources">Resources</a> &gt; <a href="/tools/pfl-simulator">PFL Simulator</a> &gt; <span>Methodology</span>
+    </div>
+
+    <h1>Methodology &amp; Econometric Model Specifications</h1>
+    <p style="color: var(--color-text-muted); font-size: 1.05rem;">Technical documentation for the California Paid Family Leave (PFL) 8-to-12-week expansion simulation model.</p>
+
+    <div class="key-box">
+      <strong>Core Purpose:</strong> This document outlines the empirical parameters, statutory solvency benchmarks, behavioral mechanisms, and data sources underlying the interactive simulator hosted on `caphegroup.org`. The analysis was developed by health economists to provide non-partisan, evidence-based fiscal forecasting for state policymakers, health advocates, and county health authorities.
+    </div>
+
+    <h2>1. Statutory &amp; Policy Background</h2>
+    <p>California workers currently face an institutional coverage gap between job-protected leave and state wage replacement:</p>
+    <ul>
+      <li><strong>California Family Rights Act (CFRA, Gov. Code §12945.2):</strong> Grants eligible employees up to <strong>12 weeks</strong> of unpaid, job-protected family bonding or caregiving leave.</li>
+      <li><strong>California Paid Family Leave (PFL, UIC §3300 et seq.):</strong> Provides up to <strong>8 weeks</strong> of wage replacement (70%–90% of regular earnings).</li>
+    </ul>
+    <p>This creates a <strong>four-week gap</strong> where workers have statutory job protection but zero wage replacement. The policy proposal modeled in this simulator extends PFL benefits from 8 to 12 weeks, harmonizing state wage replacement with CFRA duration.</p>
+
+    <h2>2. Financing Mechanism &amp; Operational Reserve Standards</h2>
+    <p>CA PFL is funded entirely through the State Disability Insurance (SDI) employee payroll tax. Recent statutory reforms have altered the program's fiscal baseline:</p>
+    <ul>
+      <li><strong>Taxable Wage Ceiling Removal (SB 951):</strong> Effective January 1, 2024, the statutory cap on taxable wages subject to the SDI tax was removed, expanding the funding base to cover 100% of earned wages.</li>
+      <li><strong>Tiered Wage Replacement:</strong> Effective January 1, 2025, SB 951 established a progressive benefit tier: workers earning below ~70% of the state average weekly wage (~$63,000) receive <strong>90% wage replacement</strong>, while higher earners receive <strong>70%</strong>, up to a statutory weekly maximum ($1,681 in 2025; $1,765 in 2026).</li>
+      <li><strong>Reserve Adequacy Standard (UIC §984):</strong> The California Employment Development Department (EDD) defines <strong>25% to 50% of annual disbursements</strong> as an <em>adequate reserve rate target range</em> under the statutory financing formula guidelines, <strong>not a mandatory statutory minimum</strong>. Under EDD's baseline May 2026 forecast without expansion, the SDI fund operates below 25% in 2025 (18.1%) and 2026 (18.2%). Under the Expected expansion scenario, the fund preserves positive cash balances throughout the projection period, reaching $6.37B (30.4% reserve ratio) by 2030, though its reserve ratio dips to 10.8% in 2026 before rebuilding.</li>
+    </ul>
+
+    <h2>3. Cost Modeling Framework &amp; Behavioral Parameters</h2>
+    <p>Cost projections utilize a micro-simulation framework that accounts for both the intensive margin (existing claimants taking longer leave) and the extensive margin (new claimants attracted by longer paid duration), adjusted for private employer substitution.</p>
+
+    <div class="formula-box">
+      Net Expansion Cost = [Baseline Claims &times; (1 + Extensive Margin) &times; Take-Up Rate &times; 4 Weeks &times; AWBA] &times; (1 - Crowd-Out) &times; (1 + Admin Factor)
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Floor</th>
+          <th>Expected</th>
+          <th>Ceiling</th>
+          <th>Empirical Literature Basis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Take-Up Rate</strong></td>
+          <td>25%</td>
+          <td>35%</td>
+          <td>100%</td>
+          <td>Historical CA PFL bonding take-up rates (Basso &amp; Pihl, 2019). Ceiling represents full theoretical exposure.</td>
+        </tr>
+        <tr>
+          <td><strong>Extensive Margin</strong></td>
+          <td>5%</td>
+          <td>12%</td>
+          <td>20%</td>
+          <td>New claims resulting from liquidity constraint alleviation and duration matching (Bartel et al., 2023).</td>
+        </tr>
+        <tr>
+          <td><strong>Employer Crowd-Out</strong></td>
+          <td>50%</td>
+          <td>30%</td>
+          <td>0%</td>
+          <td>DOL FMLA Employee Survey data on private employer wage top-offs and short-term disability substitution.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Worker Equity &amp; Income Distribution Modeling</h2>
+    <p>Distributional impacts across income quintiles were modeled directly in <code>02_analysis/05_equity_analysis.py</code> using California wage profiles derived from the Census American Community Survey (ACS) 5-year series, parameterized across 18.5 million covered workers:</p>
+    <ul>
+      <li><strong>Quintile Wage Anchors:</strong> Q1 (&lt;$25k, mean $18k); Q2 ($25k–$45k, mean $35k); Q3 ($45k–$70k, mean $57k); Q4 ($70k–$110k, mean $88k); Q5 (&gt;$110k, mean $165k).</li>
+      <li><strong>Replacement Tiering:</strong> Workers in Q1, Q2, and Q3 fall below the ~$63k threshold, qualifying for the 90% replacement rate under SB 951, while Q4 and Q5 receive 70% (capped at $1,710/wk).</li>
+      <li><strong>Progressivity Finding:</strong> Workers in Q1 account for 7.0% of total taxable wages and SDI contributions, but capture 15.4% of expansion benefits, generating a net benefit increase of +$63.4M annually and an overall progressivity index of <strong>+0.095</strong>.</li>
+    </ul>
+
+    <h2>5. County Demographic Allocation Methodology</h2>
+    <p>Standard public EDD monthly feeds publish aggregate statewide claim statistics. To provide local health departments, advocates, and county boards of supervisors with regional planning metrics, the simulator implements a deterministic demographic allocation:</p>
+    <ul>
+      <li><strong>Population Benchmark:</strong> Official county population counts from the California Department of Finance (DOF) demographic series and Census Bureau annual estimates across all 58 counties.</li>
+      <li><strong>Deterministic Apportionment Formula:</strong> Each county's allocation share is calculated as $w_i = \text{pop}_i / \sum \text{pop}_j$. Statewide infant bonding claims (~85% of total PFL first claims paid) and net benefit dollars are allocated proportionally to each county by $w_i$.</li>
+      <li><strong>Methodological Fencing:</strong> County counts represent <em>allocated demographic projections</em>, not raw EDD administrative claims. They are provided for local health planning and policy exploration.</li>
+    </ul>
+
+    <h2>6. Peer State Benchmarks</h2>
+    <p>California enacted PFL in 2002 but has since fallen behind national peer programs on duration:</p>
+    <ul>
+      <li><strong>Washington (WA PFML):</strong> Provides 12–18 weeks at 90% wage replacement, funded via a shared 0.74% payroll contribution, with over 5 years of solvent operation.</li>
+      <li><strong>Colorado (CO FAMLI):</strong> Implemented in 2024, providing 12–16 weeks at 90% replacement with a 50/50 employer/employee split (0.90% total).</li>
+      <li><strong>New York (NY PFL):</strong> 12 weeks duration at 67% wage replacement (employee-funded).</li>
+      <li><strong>New Jersey (NJ FLI):</strong> 12 weeks duration at 85% wage replacement.</li>
+    </ul>
+
+    <h2>7. Primary Data Sources &amp; Provenance</h2>
+    <ol>
+      <li><strong>California Employment Development Department (EDD):</strong> <em>Disability Insurance (DI) Fund Forecast</em> (May 2026 Report, Tables 1, 2, and 3).</li>
+      <li><strong>California EDD Data Library:</strong> <em>Paid Family Leave Monthly Data Series</em> (July 2004 – February 2026, File <code>edd_pfl_monthly_2026-07.csv</code>).</li>
+      <li><strong>U.S. Census Bureau &amp; CA Department of Finance:</strong> <em>American Community Survey (ACS) 2019–2023 5-Year Microdata</em> and <em>California County Population Series</em>.</li>
+      <li><strong>Washington Employment Security Department:</strong> <em>Paid Family &amp; Medical Leave Annual Reports</em> (2020–2025).</li>
+    </ol>
+
+    <div style="margin-top: var(--space-2xl); border-top: 1px solid var(--color-border); padding-top: var(--space-md); font-size: 0.85rem; color: var(--color-text-muted);">
+      Citation: Cholette, V. (2026). <em>California Paid Family Leave Expansion: Fiscal Impact and Distributional Equity Analysis</em>. California Association of Public Health Economists (CAPHE).
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" style="background: #F8F9FA; border-top: 1px solid var(--color-border); padding: var(--space-xl) 0; font-size: 0.85rem; color: var(--color-text-muted);">
+    <div class="container" style="max-width: 860px; margin: 0 auto; padding: 0 var(--space-md); text-align: center;">
+      <a href="/tools/pfl-simulator" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">&larr; Return to PFL Simulator</a>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -598,10 +598,14 @@
     <div class="tab-content" id="tab-equity" role="tabpanel">
       <div class="panel-card">
         <h2>Distributional Equity Across Income Quintiles</h2>
-        <p class="panel-subtitle">Analysis of benefit distribution versus contribution share under SB 951 tiered replacement rates (90% for lower-wage earners; 70% for higher-wage earners).</p>
+        <p class="panel-subtitle">Micro-simulation model comparing benefit distribution versus tax contribution share across wage quintiles under SB 951 tiered replacement rates (90% for lower-wage earners; 70% above ~$63k).</p>
 
         <div style="height: 320px; position: relative; margin-bottom: var(--space-xl);">
           <canvas id="chart-equity"></canvas>
+        </div>
+
+        <div class="method-notice" style="margin-bottom: var(--space-lg);">
+          <strong>Distributional Model Disclosure:</strong> Individual-level EDD PFL claim records by worker income are confidential administrative data not published in public state databases. Quintile figures represent an assumption-based micro-simulation model derived from Census ACS wage profiles and SB 951 replacement rules under Expected scenario parameters ($623.7M gross outlays; +0.045% SDI tax rate; computed progressivity index: +0.095).
         </div>
 
         <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Income Quintile Profile Ledger</h3>
@@ -614,7 +618,9 @@
               <th class="num">Tax Share</th>
               <th class="num">Benefit Share</th>
               <th class="num">Replacement Rate</th>
-              <th class="num">Net Expansion Benefit</th>
+              <th class="num">Benefit Increase</th>
+              <th class="num">Added SDI Tax</th>
+              <th class="num">Net Position</th>
             </tr>
           </thead>
           <tbody id="equity-table-body">
@@ -1030,6 +1036,9 @@
 
       MODEL_DATA.equity_quintiles.forEach(q => {
         const tr = document.createElement('tr');
+        const netPos = q.net_position_change_millions;
+        const netColor = netPos >= 0 ? 'var(--color-success)' : 'var(--color-error)';
+        const netSign = netPos >= 0 ? '+' : '';
         tr.innerHTML = `
           <td><strong>${q.quintile}</strong></td>
           <td>${q.wage_range}</td>
@@ -1037,7 +1046,9 @@
           <td class="num">${q.sdi_contribution_share_pct.toFixed(1)}%</td>
           <td class="num" style="color: var(--color-secondary); font-weight: 700;">${q.expansion_benefit_share_pct.toFixed(1)}%</td>
           <td class="num"><span style="background: ${q.wage_replacement_rate_pct === 90 ? '#E8F5E9' : '#EDE7F6'}; color: ${q.wage_replacement_rate_pct === 90 ? '#2E7D32' : '#512DA8'}; padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">${q.wage_replacement_rate_pct}%</span></td>
-          <td class="num" style="font-weight: 700; color: var(--color-success);">+$${q.net_annual_position_millions.toFixed(1)}M</td>
+          <td class="num">+$${q.gross_benefit_increase_millions.toFixed(1)}M</td>
+          <td class="num">-$${q.added_sdi_contribution_millions.toFixed(1)}M</td>
+          <td class="num" style="font-weight: 700; color: ${netColor};">${netSign}$${netPos.toFixed(1)}M</td>
         `;
         tbody.appendChild(tr);
       });

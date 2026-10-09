@@ -195,18 +195,20 @@
     </table>
 
     <h2>4. Worker Equity &amp; Income Distribution Modeling</h2>
-    <p>Distributional impacts across income quintiles were modeled directly in <code>02_analysis/05_equity_analysis.py</code> using California wage profiles derived from the Census American Community Survey (ACS) 5-year series, parameterized across 18.5 million covered workers:</p>
+    <p>Individual-level PFL claims by worker income are confidential administrative records not published in public EDD databases. To evaluate distributional equity, an assumption-based micro-simulation model was implemented in <code>02_analysis/05_equity_analysis.py</code> using California wage profiles derived from the Census American Community Survey (ACS) 5-year series, parameterized across 18.5 million covered workers:</p>
     <ul>
       <li><strong>Quintile Wage Anchors:</strong> Q1 (&lt;$25k, mean $18k); Q2 ($25k–$45k, mean $35k); Q3 ($45k–$70k, mean $57k); Q4 ($70k–$110k, mean $88k); Q5 (&gt;$110k, mean $165k).</li>
       <li><strong>Replacement Tiering:</strong> Workers in Q1, Q2, and Q3 fall below the ~$63k threshold, qualifying for the 90% replacement rate under SB 951, while Q4 and Q5 receive 70% (capped at $1,710/wk).</li>
-      <li><strong>Progressivity Finding:</strong> Workers in Q1 account for 7.0% of total taxable wages and SDI contributions, but capture 15.4% of expansion benefits, generating a net benefit increase of +$63.4M annually and an overall progressivity index of <strong>+0.095</strong>.</li>
+      <li><strong>Net Position Calculation:</strong> The model evaluates both benefit increases and added employee contributions under the Expected scenario ($623.7M in gross outlays). Workers in Q1 receive +$63.4M in additional benefits against +$43.7M in added SDI payroll contributions, for a net position gain of <strong>+$19.7M</strong>. Workers in Q2 gain <strong>+$3.3M</strong>, while higher quintiles (Q3, Q4, Q5) are net contributors (-$19.5M, -$58.8M, -$157.5M).</li>
+      <li><strong>Computed Progressivity Index:</strong> Applying the rank-weighted progressivity formulation in <code>EquityAnalysisModel.calculate_progressivity_index()</code> produces a score of <strong>+0.095</strong>, demonstrating a mildly progressive net transfer to lower-wage households.</li>
     </ul>
 
     <h2>5. County Demographic Allocation Methodology</h2>
     <p>Standard public EDD monthly feeds publish aggregate statewide claim statistics. To provide local health departments, advocates, and county boards of supervisors with regional planning metrics, the simulator implements a deterministic demographic allocation:</p>
     <ul>
-      <li><strong>Population Benchmark:</strong> Official county population counts from the California Department of Finance (DOF) demographic series and Census Bureau annual estimates across all 58 counties.</li>
-      <li><strong>Deterministic Apportionment Formula:</strong> Each county's allocation share is calculated as $w_i = \text{pop}_i / \sum \text{pop}_j$. Statewide infant bonding claims (~85% of total PFL first claims paid) and net benefit dollars are allocated proportionally to each county by $w_i$.</li>
+      <li><strong>Population Benchmark:</strong> Official county population counts from the California Department of Finance (DOF) / U.S. Census Bureau 2023 common vintage series across all 58 California counties.</li>
+      <li><strong>Sourced Bonding Share (89%):</strong> Official EDD claim-type statistics document that infant bonding claims represent <strong>89.0% of total PFL first claims paid</strong> (with family caregiving at 10.0% and military assist at 1.0%), as parameterized in <code>CLAIM_TYPE_SHARES</code>. Statewide baseline bonding claims (293,700 in 2026) and expanded claims are computed using this 89% benchmark.</li>
+      <li><strong>Deterministic Apportionment Formula:</strong> Each county's allocation share is calculated as $w_i = \text{pop}_i / \sum \text{pop}_j$. Statewide bonding claims and net benefit dollars are allocated proportionally to each county by $w_i$.</li>
       <li><strong>Methodological Fencing:</strong> County counts represent <em>allocated demographic projections</em>, not raw EDD administrative claims. They are provided for local health planning and policy exploration.</li>
     </ul>
 

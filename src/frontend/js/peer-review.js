@@ -135,7 +135,7 @@ async function handleSubmitRequest(e) {
 
     if (error) throw error;
 
-    statusDiv.innerHTML = '<p style="color: var(--color-success);">Request submitted! You\'ll receive confirmation within 3 business days.</p>';
+    statusDiv.innerHTML = '<p style="color: var(--color-success);">Request submitted! You\'ll receive confirmation via email.</p>';
     statusDiv.classList.remove('hidden');
     form.reset();
 

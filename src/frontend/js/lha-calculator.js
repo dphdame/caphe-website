@@ -146,6 +146,7 @@ function initResearchToggle() {
       const isHidden = detailsDiv.style.display === 'none';
       detailsDiv.style.display = isHidden ? 'block' : 'none';
       toggleBtn.textContent = isHidden ? 'Hide details' : 'View research details';
+      toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
     });
   }
 }

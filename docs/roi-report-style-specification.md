@@ -169,7 +169,7 @@ Lead with the most important information (inverted pyramid):
 **DON'T**: "This report presents an analysis of public health spending..."
 
 ### How to Handle Evidence
-- Integrate citations naturally: "Based on Cholette, Patton & Zaragoza-Gonzalez (2026)..."
+- Integrate citations naturally: "Based on Cholette, Patton & Zarate-Gomez (2026)..."
 - Provide specific source: Working paper, journal, year
 - Explain methodology briefly: "using Lewbel IV estimation"
 - Include time period: "(2003-2023)"
@@ -204,7 +204,7 @@ End with practical application or next step:
 ### Sample 1: Methodology Explanation (from LHA Calculator)
 
 **PASSAGE:**
-> "Using California county data (2003-2023): each $10 per capita spending is estimated to reduce mortality by 9.16 deaths per 100,000. Source: Cholette, Patton & Zaragoza-Gonzalez (2026), SSRN Working Paper"
+> "Using California county data (2003-2023): each $10 per capita spending is estimated to reduce mortality by 9.16 deaths per 100,000. Source: Cholette, Patton & Zarate-Gomez (2026), SSRN Working Paper"
 
 **ANNOTATIONS:**
 - Opens with data source and time period (specificity)

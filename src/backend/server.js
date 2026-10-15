@@ -1243,7 +1243,10 @@ app.post('/api/lha/submit', async (req, res) => {
 
   // Generate PDF report and send confirmation email
   try {
-    const population = countyData[county]?.population || 500000;
+    const population = countyData[county]?.population;
+    if (!population) {
+      throw new Error(`Population data unavailable for ${county} County`);
+    }
     const perCapita = total_expenditure / population;
     // Coefficient: 9.16 deaths per 100,000 per $10 per capita (matching ROI calculator)
     const perCapitaUnits = perCapita / 10; // Convert to $10 units

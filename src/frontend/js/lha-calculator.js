@@ -40,6 +40,7 @@ const COUNTY_POPULATIONS = {
 // Lewbel IV estimate: -9.16 deaths per 100,000 per $10 per capita
 // Equivalent: -0.916 deaths per 100,000 per $1 per capita
 const MODEL = {
+  coefficientPer10: -9.16,   // Deaths per 100,000 per $10 per capita
   coefficient: -0.916,       // Deaths per 100,000 per $1 per capita
   vsl: 13600000,            // Value of Statistical Life ($13.6M, HHS 2025)
   costPerLife: 109000       // Approximate cost per life saved
@@ -515,12 +516,17 @@ function initQuickCalculator() {
 }
 
 function calculateQuickROI(county, spending) {
-  const population = COUNTY_POPULATIONS[county] || 500000;
+  const population = COUNTY_POPULATIONS[county];
+  if (!population) {
+    console.error(`County population data missing for: ${county}`);
+    return;
+  }
   const perCapita = spending / population;
+  const perCapitaUnits = perCapita / 10; // Convert to $10 units
 
   // Calculate mortality reduction
-  // Coefficient is deaths per 100,000 per $1 per capita (0.916)
-  const mortalityReduction = Math.abs(MODEL.coefficient) * perCapita;
+  // Lewbel IV estimate: -9.16 deaths per 100,000 per $10 per capita
+  const mortalityReduction = Math.abs(MODEL.coefficientPer10) * perCapitaUnits;
   const livesSaved = (mortalityReduction / 100000) * population;
 
   // Calculate value
@@ -651,9 +657,15 @@ function displayDetailedResults(formData, result) {
   setRightColumnState('detailed', true);
 
   const resultsDiv = document.getElementById('detailed-results');
-  const population = COUNTY_POPULATIONS[formData.county] || 500000;
+  const population = COUNTY_POPULATIONS[formData.county];
+  if (!population) {
+    resultsDiv.innerHTML = `<p style="color: var(--color-error);">Error: County population data not found for ${formData.county}.</p>`;
+    return;
+  }
   const perCapita = formData.total_expenditure / population;
-  const mortalityReduction = Math.abs(MODEL.coefficient) * perCapita;
+  const perCapitaUnits = perCapita / 10; // Convert to $10 units
+  // Lewbel IV estimate: -9.16 deaths per 100,000 per $10 per capita
+  const mortalityReduction = Math.abs(MODEL.coefficientPer10) * perCapitaUnits;
   const livesSaved = (mortalityReduction / 100000) * population;
   const socialValue = livesSaved * MODEL.vsl;
   const costPerLife = formData.total_expenditure / livesSaved;

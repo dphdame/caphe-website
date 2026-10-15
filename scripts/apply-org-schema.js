@@ -96,7 +96,7 @@ const PAGES = {
       mainEntity: {
         '@type': 'ItemList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Methods Lab', url: `${BASE}/methods-lab/` },
+          { '@type': 'ListItem', position: 1, name: 'Methods Lab', url: `${BASE}/methods-lab` },
           { '@type': 'ListItem', position: 2, name: 'ROI Calculator', url: `${BASE}/tools/lha-calculator` },
           { '@type': 'ListItem', position: 3, name: 'Access Explorer', url: `${BASE}/tools/access-explorer` },
           { '@type': 'ListItem', position: 4, name: 'Health Economics Data Sources', url: `${BASE}/resources/health-economics-data-sources` },

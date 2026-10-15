@@ -1196,6 +1196,11 @@ app.post('/api/lha/submit', async (req, res) => {
     return res.status(400).json({ error: 'Total expenditure must be greater than zero' });
   }
 
+  const countyInfo = countyData[county];
+  if (!countyInfo || !countyInfo.population || countyInfo.population <= 0) {
+    return res.status(400).json({ error: `Valid California county with positive population required (received: ${county})` });
+  }
+
   // Check for existing submission for this county-year
   const existingIndex = lhaSubmissions.findIndex(
     s => s.county === county && s.fiscal_year === fiscal_year
@@ -1243,10 +1248,7 @@ app.post('/api/lha/submit', async (req, res) => {
 
   // Generate PDF report and send confirmation email
   try {
-    const population = countyData[county]?.population;
-    if (!population) {
-      throw new Error(`Population data unavailable for ${county} County`);
-    }
+    const population = countyInfo.population;
     const perCapita = total_expenditure / population;
     // Coefficient: 9.16 deaths per 100,000 per $10 per capita (matching ROI calculator)
     const perCapitaUnits = perCapita / 10; // Convert to $10 units

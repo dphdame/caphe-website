@@ -145,7 +145,7 @@ function initResearchToggle() {
       e.preventDefault();
       const isHidden = detailsDiv.style.display === 'none';
       detailsDiv.style.display = isHidden ? 'block' : 'none';
-      toggleBtn.textContent = isHidden ? 'Hide details' : 'Learn more';
+      toggleBtn.textContent = isHidden ? 'Hide details' : 'View research details';
     });
   }
 }

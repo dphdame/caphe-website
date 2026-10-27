@@ -3,174 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Evaluating Pre-Post Changes vs. Baseline Trends | CAPHE</title>
+  <meta name="description" content="How a two-point 2019 vs 2023 comparison of Medicaid telehealth-eligible billing providers mixes a pre-existing growth trend with policy change.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/before-after-trap">
+  <meta property="og:title" content="Evaluating Pre-Post Changes vs. Baseline Trends | CAPHE">
+  <meta property="og:description" content="How a two-point 2019 vs 2023 comparison of Medicaid telehealth-eligible billing providers mixes a pre-existing growth trend with policy change.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/before-after-trap">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>The Before-After Trap | CAPHE</title>
-  <meta name="description" content="Learn why before-after comparisons can mislead policy makers. Understand how pre-existing trends create the illusion of program effects.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/before-after-trap">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-error: #D32F2F;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-    body { font-family: var(--font-sans); color: var(--color-text); line-height: 1.6; background: var(--color-bg-alt); }
-    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
-    h1 { font-size: 2rem; margin-bottom: var(--space-sm); }
-    h2 { font-size: 1.5rem; margin-bottom: var(--space-md); }
-    h3 { font-size: 1.25rem; margin-bottom: var(--space-sm); }
-    p { margin-bottom: var(--space-md); }
-    a { color: var(--color-primary); }
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-lg); }
-    .header {
-      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-      color: white; padding: var(--space-2xl) 0; text-align: center;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-    .header h1 { color: white; }
-    .header .eyebrow { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; margin-bottom: var(--space-sm); }
-    .header .subtitle { font-size: 1.1rem; opacity: 0.95; max-width: 600px; margin: 0 auto; }
-    .panel-nav { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
-    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
-    .panel-btn { background: none; border: none; padding: var(--space-sm) var(--space-lg); font-size: 0.95rem; color: var(--color-text-secondary); cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease; font-family: var(--font-sans); }
-    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
-    .panel-btn.active { background: var(--color-primary); color: white; }
-    .panel-btn:focus { outline: 2px solid var(--color-primary-light); outline-offset: 2px; }
-    .main { padding: var(--space-2xl) 0; }
-    .panel { display: none; animation: fadeIn 0.3s ease; }
-    .panel.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .panel-header { margin-bottom: var(--space-xl); }
-    .panel-intro { color: var(--color-text-secondary); font-size: 1.05rem; max-width: 700px; }
-    .content-card { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
-    .image-container { text-align: center; margin: var(--space-xl) 0; }
-    .image-container img { max-width: 100%; height: auto; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
-    .image-caption { font-size: 0.9rem; color: var(--color-text-muted); margin-top: var(--space-sm); font-style: italic; }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Chart Container */
-    .chart-container { background: white; border-radius: var(--radius-lg); padding: var(--space-xl); box-shadow: var(--shadow-md); margin-bottom: var(--space-xl); }
-    .chart-wrapper { position: relative; width: 100%; height: 400px; }
-    .chart-wrapper svg { width: 100%; height: 100%; }
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
 
-    /* Interactive Controls */
-    .controls { display: flex; gap: var(--space-lg); flex-wrap: wrap; margin-bottom: var(--space-xl); justify-content: center; }
-    .control-btn { padding: var(--space-sm) var(--space-lg); border: 2px solid var(--color-border); background: white; border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-sans); font-size: 0.95rem; transition: all 0.2s ease; }
-    .control-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-    .control-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
-    .control-btn.claimed { border-color: var(--color-error); }
-    .control-btn.claimed.active { background: var(--color-error); }
-    .control-btn.reality { border-color: var(--color-secondary); }
-    .control-btn.reality.active { background: var(--color-secondary); }
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
 
-    /* Stat Cards */
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin: var(--space-xl) 0; }
-    .stat-card { background: var(--color-bg-alt); padding: var(--space-lg); border-radius: var(--radius-md); text-align: center; border-left: 4px solid var(--color-border); }
-    .stat-card.claimed { border-left-color: var(--color-error); }
-    .stat-card.reality { border-left-color: var(--color-secondary); }
-    .stat-value { font-size: 2rem; font-weight: bold; margin-bottom: var(--space-xs); }
-    .stat-card.claimed .stat-value { color: var(--color-error); }
-    .stat-card.reality .stat-value { color: var(--color-secondary); }
-    .stat-label { font-size: 0.9rem; color: var(--color-text-muted); }
-
-    /* Key Insight */
-    .key-insight { background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%); color: white; padding: var(--space-xl); border-radius: var(--radius-lg); margin: var(--space-xl) 0; }
-    .key-insight h3 { color: white; margin-bottom: var(--space-md); }
-    .key-insight p { opacity: 0.95; margin-bottom: var(--space-md); }
-    .key-insight p:last-child { margin-bottom: 0; }
-    .key-insight strong { color: var(--color-accent-light); }
-
-    /* Bridging Question */
-    .bridging-question { background: var(--color-bg-alt); border-left: 4px solid var(--color-primary); padding: var(--space-lg); margin-top: var(--space-xl); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
-    .bridging-question p { margin: 0; color: var(--color-text-secondary); }
-    .bridging-question strong { color: var(--color-primary); }
-
-    /* Futures Grid */
-    .futures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); margin: var(--space-xl) 0; }
-    .future-card { background: white; border: 2px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-lg); text-align: center; }
-    .future-card h4 { color: var(--color-text-secondary); margin-bottom: var(--space-sm); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .future-card .value { font-size: 1.5rem; font-weight: bold; margin-bottom: var(--space-sm); }
-    .future-card.continued { border-color: var(--color-text-muted); }
-    .future-card.continued .value { color: var(--color-text-muted); }
-    .future-card.plateau { border-color: var(--color-secondary); }
-    .future-card.plateau .value { color: var(--color-secondary); }
-    .future-card.regress { border-color: var(--color-accent); }
-    .future-card.regress .value { color: var(--color-accent); }
-
-    /* Footer */
-    .footer { background: var(--color-primary-dark); color: white; padding: var(--space-xl) 0; text-align: center; margin-top: var(--space-2xl); }
-    .footer a { color: var(--color-accent-light); }
-    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; }
-
-    /* Accessibility */
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
     .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
+      background: #F8FAFC;
+    }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       white-space: nowrap;
-      border: 0;
+      overflow: hidden;
+      padding: 0 4px;
     }
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .skip-link:focus {
-      top: 0;
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "The Before-After Trap",
-  "description": "Learn why before-after comparisons can mislead policy makers. Understand how pre-existing trends create the illusion of program effects.",
+  "headline": "Pre-Existing Workforce Trends Account for a Large Share of Projected Medicaid Telehealth Growth",
+  "description": "How a two-point 2019 vs 2023 comparison of Medicaid telehealth-eligible billing providers mixes a pre-existing growth trend with policy change.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -178,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -189,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Why can before-and-after comparisons be misleading in program evaluation?",
+      "name": "What is a raw pre-post check in health program review?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "They implicitly assume the outcome would have stayed flat without the program. When a pre-existing trend, broader policy shifts, or other secular changes are already moving the outcome, the post-program value can be reached with no program effect at all."
+        "text": "A raw pre-post check subtracts one pre-policy year from one post-policy year. It credits the whole gap to the new rule and leaves out ongoing base trends and broad system shifts."
       }
     },
     {
       "@type": "Question",
-      "name": "What is a pre-existing trend and why does it matter?",
+      "name": "How does the Medicaid series show the limits of a two-point check?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A pre-existing trend is movement in the outcome that was underway before the intervention began. If screening rates were already rising 3.75 points per year, continuing that slope produces the same after value, so the apparent program effect may simply be the trend continuing."
+        "text": "Monthly billing providers for telehealth-eligible care rose 22,239 (+24.33%) from 2019 to 2023. Yet the count had already grown 6,977 (+8.26%) from 2018 to 2019. Other Medicaid care also rose 18.71% from 2019 to 2023."
       }
     },
     {
       "@type": "Question",
-      "name": "What question should replace 'did the outcome improve after the program?'",
+      "name": "What is the first data check to run before using a pre-post number?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The economist's question is 'compared to what alternative future?' Attributing change to a program requires estimating the counterfactual trajectory, what would have happened without the intervention, rather than assuming no change."
+        "text": "Plot at least 12 to 24 months of pre-policy data to see if the count was already rising or falling. Then compare that path against a service line that did not get the policy change."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -240,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -259,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -275,541 +529,486 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Foundational Concepts</div>
-      <h1>The Before-After Trap</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">A before-after comparison measures an outcome before a program starts and again afterward, then attributes any change to the program. The trap is that this approach assumes the counterfactual was no change, when outcomes often trend up or down for reasons unrelated to the intervention. In the worked example, county screening rates rose from 45% to 60% over four years, but rates were already climbing 3.75 points per year beforehand, so the pre-existing trend alone would have reached 60% with no program at all.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Why "it improved after we started" doesn't prove your program worked.</p>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Pre-Existing Workforce Trends Account for a Large Share of Projected Medicaid Telehealth Growth
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Comparing multi-year provider trends with modeled post-policy jumps across Medicaid claims.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When auditing a telehealth rollout by comparing billing providers in 2019 against 2023, a two-year check mixes new pay rules with workforce growth that was already underway. Across <strong>84 months of Medicaid claims (2018 to 2024),</strong> monthly billing providers for telehealth-eligible services grew from <strong>91,399 in 2019 to 113,638 in 2023 (+22,239 providers, or +24.33%).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> A modeled two-point check overstates the policy jump. That provider list was already adding <strong>6,977 billers per year (+8.26%)</strong> before 2020.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Checking multi-year base slopes next to other care <strong>(+18.71%)</strong> keeps budget teams from over-funding routine trend growth.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
     </div>
-  </header>
 
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <ul>
-      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Claim</button></li>
-      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Trap</button></li>
-      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Key Insight</button></li>
-    </ul>
-  </nav>
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Medicaid Billing Providers Across 4 Study Windows</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Yearly means of monthly billing providers from HHS Medicaid claims (2018 to 2024) with modeled base-trend paths.
+      </p>
+    </div>
 
-  <main class="main" role="main" id="main-content">
-    <div class="container">
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
 
-      <!-- Panel 1: The Claim -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Claim</h2>
-          <p class="panel-intro">A county launches a new screening program. Four years later, screening rates have increased dramatically. Success! <em style="opacity: 0.7;">(Data are simulated for illustration.)</em></p>
-        </div>
-
-        <div class="content-card">
-          <h3>The Press Release</h3>
-          <p style="font-style: italic; font-size: 1.1rem; padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md); border-left: 4px solid var(--color-accent);">
-            "Since launching our Community Screening Initiative in 2020, cancer screening rates have increased from 45% to 60%, a remarkable 15 percentage point improvement. This proves our program is saving lives."
-          </p>
-        </div>
-
-        <div class="chart-container">
-          <h3>The Evidence</h3>
-          <div class="chart-wrapper">
-            <svg id="claim-chart" viewBox="0 0 700 350"></svg>
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 compares monthly Medicaid billing providers across four study windows from 2018 to 2024.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Trend Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Base Window</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-2020 Base</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Peak Window</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">2023 Peak Window</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Late Window</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">2024 Late Window</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Other Care</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Other Medicaid Care</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Monthly Billing Providers
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">84,422 -> 91,399</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">91,399 -> 113,638</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">91,399 -> 101,978</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">101,905 -> 116,690</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Ruler 1: Raw Two-Point Change
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+6,977</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+8.26%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+22,239</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+24.33%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+10,579</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+11.57%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+14,785</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+14.51%</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Mean Gain per Year
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+6,977 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+5,560 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+2,116 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+2,464 / yr</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Straight-Line End Value*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Base slope</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">ref</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">119,307</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2023</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">126,284</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2024</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">144,997</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2024</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Ruler 2: Straight-Line Gap*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0 (base ref)</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 2%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-5,669</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-4.75%</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 24%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-24,306</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-19.25%</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 99%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-28,307</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-19.52%</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Compound-Rate Gap*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Base rate</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">ref</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">125,549 vs. 113,638</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-11,911</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">135,919 vs. 101,978</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-33,941</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">153,358 vs. 116,690</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-36,668</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Total Medicaid Paid
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$19.23B -> $23.56B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$23.56B -> $40.29B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$23.56B -> $34.93B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$85.47B -> $145.72B</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Billing Codes per Month
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">171.0 -> 191.0</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">191.0 -> 222.7</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">191.0 -> 220.7</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">4,424.2 -> 4,518.2</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
           </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Counts come from the HHS Medicaid Provider Spending file (84 months, Jan 2018 to Dec 2024). Mode A rows extend the 2018 to 2019 base pace (+6,977 per year or +8.26% per year) through 2023 and 2024.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Pre-2020 Base.</strong> Video Care, 2018 to 2019. <strong>2023 Peak Window.</strong> Video Care, 2019 to 2023. <strong>2024 Late Window.</strong> Video Care, 2019 to 2024. <strong>Other Medicaid Care.</strong> Non-Video Care, 2018 to 2024.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Base-Trend Paths on HHS Medicaid Provider Spending (84 Months, Jan 2018 to Dec 2024). Ruler 1: Raw Two-Point Change (2019 to 2023): <strong>+22,239 Providers (+24.33%)</strong>. Mean monthly billing providers rose from <strong>91,399</strong> in 2019 to <strong>113,638</strong> in 2023. A two-point check assigns all <strong>+22,239</strong> new billers to post-2019 rules. Yet the count was already rising from <strong>84,422</strong> in 2018. Measured through 2024, the raw gain shrinks to <strong>+10,579 (+11.57%)</strong> after a <strong>-11,660 (-10.26%)</strong> drop in 2024. Ruler 2: Mode A Base-Trend Gap: <strong>-5,669 vs. Base Path (2023)</strong>. The straight-line path extends the 2018 to 2019 pace: 91,399 + 4 &times; 6,977 = <strong>119,307</strong> in 2023. The actual count of 113,638 sits <strong>5,669</strong> below that line (-4.75%). By 2024 the gap reaches <strong>-24,306</strong> (126,284 projected vs. 101,978 actual). A compound +8.26% annual rate gives <strong>-11,911</strong> in 2023. Both paths show how much the result rests on the chosen base trend.</p>
         </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/methodology/medicaid-data-landscape/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Medicaid Provider Spending File Guide &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/medicaid-billing-patterns/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Medicaid Billing Feature Construction Guide &rarr;</a>
+        </p>
+      </div>
+    </div>
 
-        <div class="stat-grid">
-          <div class="stat-card claimed">
-            <div class="stat-value">+15%</div>
-            <div class="stat-label">Claimed improvement</div>
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Base Trends, Budget Tradeoffs &amp; Policy Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How checking pre-2020 slopes and other Medicaid care guides budget review.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares base trends, budget tradeoffs, and next steps across four study windows.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Pre-2020 Base
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                2023 Peak Window
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                2024 Late Window
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Other Medicaid Care
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Observed Path in Window
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Monthly billers rose from 84,422 in 2018 to 91,399 in 2019 before 2020.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Counts hit 113,638 in 2023, yet the yearly gain stayed below the 2019 pace.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The 2024 mean fell to 101,978 while late-2024 claims were still pending.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Other care rose from 101,905 in 2018 to 129,492 in 2023 and 116,690 in 2024.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What Base Trends Show
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Sets the base slope at +6,977 billers per year or +8.26% per year.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The +22,239 raw gain sits 5,669 below the straight-line path of 119,307.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The +10,579 gain sits 24,306 below the line as redetermination and claim lags mix.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Other care grew +18.71% through 2023, matching 77% of the +24.33% video care gain.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                One base year sets every later line, so shifting the start year moves the gap.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Crediting all +24.33% to new rules funds growth that tracks the pre-2020 slope.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Reading the -10.26% drop in 2024 as a real loss risks cutting funds before claims clear.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Budget teams can weigh the 6.29-point gap over other care instead of the raw gain.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Next Step to Check
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Add Earlier Base Years<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Include pre-2018 months and test more than one base window before scoring pay rules.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair With Other Care<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Compare the +24.33% gain against other care before crediting policy.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Wait for Full Claims<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Refresh Nov and Dec 2024 after claims clear to see.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Track as Base Benchmark<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Follow other care each month since it shares enrollment shifts without video pay rules.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Series Scope, Base-Trend Math &amp; Claim Lags</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">45% → 60%</div>
-            <div class="stat-label">Before vs. After</div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Data Source (Observed Series):</strong> Monthly counts (telehealth_month_summary.parquet, 168 rows = 84 months &times; 2 care groups, Jan 2018 to Dec 2024) come from the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> file. Each month tracks billing providers, code counts, claims, paid dollars, and members. Yearly provider and code figures are 12-month means. Paid dollars and claims are 12-month sums.</p>
+          <p>&bull; <strong>Mode A Base-Trend Paths:</strong> Straight-line path: path(year) = 91,399 + (year &minus; 2019) &times; 6,977. For 2023, 119,307 vs. 113,638 actual = &minus;5,669. For 2024, 126,284 vs. 101,978 = &minus;24,306. Compound path: path(year) = 91,399 &times; 1.0826^(year &minus; 2019). That yields 125,549 (&minus;11,911) in 2023 and 135,919 (&minus;33,941) in 2024. Other care uses its own 2018 to 2019 change (+7,182, +7.05%). Both paths are Mode A checks.</p>
+          <p>&bull; <strong>Late-2024 Claim Lags:</strong> In the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> series, billing providers drop to 88,364 in Nov 2024 and 47,562 in Dec 2024. Jan to Oct 2024 ranged from 101,691 to 119,937 (mean 108,781, +19.02% vs. 2019). Other care shows the same late-2024 dip (101,476 and 57,878). The 2024 full-year mean therefore mixes Medicaid redetermination with unpaid late-year claims.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Next Step to Check (2024 Late Window).</strong> Refresh Nov and Dec 2024 after claims clear to see if the 2024 dip lasts.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">4 years</div>
-            <div class="stat-label">Program duration</div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Pre-Post Study &amp; Base Trends (Mode A on HHS Medicaid Provider Spending)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Observed Medicaid Billing Series (2018-2024):</strong> <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending File</a> monthly counts (84 months, Jan 2018 to Dec 2024). Mean monthly billing providers for telehealth-eligible care rose from 84,422 in 2018 and 91,399 in 2019 to 113,638 in 2023 and 101,978 in 2024.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Base Pre-Trend Path:</strong> Billing providers grew +6,977 per year (+8.26%) from 2018 to 2019. Extending that straight line projects 119,307 providers in 2023 (-5,669 vs. actual) and 126,284 in 2024 (-24,306 vs. actual).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Other Care Series &amp; Policy Rules:</strong> Other Medicaid care (101,905 in 2018, 109,087 in 2019, 129,492 in 2023, +18.71% growth from 2019 to 2023) and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Medicaid.gov Open Data</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CMS T-MSIS Analytic Files Documentation</a></li>
+            </ol>
           </div>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What was happening to screening rates <em>before</em> the program launched?</p>
-        </div>
-      </section>
-
-      <!-- Panel 2: The Trap -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">The Trap</h2>
-          <p class="panel-intro">The full picture, including the years before the program, reveals what the before-after comparison concealed.</p>
-        </div>
-
-        <div class="chart-container">
-          <h3>Toggle the View</h3>
-          <div class="controls">
-            <button class="control-btn claimed active" id="btn-claimed">What They Claimed</button>
-            <button class="control-btn reality" id="btn-reality">The Full Picture</button>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">How Multi-Year Trends Improve on Two-Point Checks</h3>
+            <p class="text-slate-800">Yearly program reviews that compare one pre-policy year against the latest year mix prior workforce growth with the policy change. A simple two-point gap cannot tell whether a rule caused a jump. A multi-year trend may have kept climbing on its old slope, or a broad enrollment wave may have lifted every service line at once.</p>
+            <p class="text-slate-800">Checking the full 2018 to 2024 series sharpens budget review. Billing providers for video care were already growing +8.26% per year before 2020. Other Medicaid care grew +18.71% from 2019 to 2023 next to the +24.33% video care gain. A straight-line path from 2018 to 2019 leaves 2023 at 5,669 providers below trend, and the compound path leaves it 11,911 below. Multi-year base trends thus work best as a check on two-point claims.</p>
           </div>
-          <div class="chart-wrapper">
-            <svg id="trap-chart" viewBox="0 0 700 350"></svg>
-          </div>
-        </div>
-
-        <div class="image-container">
-          <img src="/methods-lab/before-after-trap/assets/before-after-illusion.png" alt="Chart showing the claimed effect (flat before, jump after) versus reality (steady upward trend that was already happening)" />
-          <p class="image-caption">The "program effect" disappears when we see the pre-existing trend.</p>
-        </div>
-
-        <div class="content-card">
-          <h3>What Went Wrong?</h3>
-          <p>Screening rates were <strong>already increasing at 3.75 percentage points per year</strong> before the program launched. The post-program improvement simply continued this pre-existing trend.</p>
-          <p>The county compared screening rates just before the program (45%) to rates four years later (60%). The pre-existing trend alone would have produced the same result: <strong>60%.</strong></p>
-
-          <div class="stat-grid">
-            <div class="stat-card claimed">
-              <div class="stat-value">+15%</div>
-              <div class="stat-label">Claimed effect</div>
-            </div>
-            <div class="stat-card reality">
-              <div class="stat-value">0%</div>
-              <div class="stat-label">Actual effect</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="image-container">
-          <img src="/methods-lab/before-after-trap/assets/alternative-futures.png" alt="Diagram showing multiple possible counterfactual trajectories: trend continues, improvement stops, or decline" />
-          <p class="image-caption">Without a control group, we can't know which counterfactual is correct.</p>
-        </div>
-
-        <div class="content-card">
-          <h3>The Problem of Unknown Counterfactuals</h3>
-          <p>The before-after comparison assumes that without the program, the screening rate would have stayed flat at 45%. But there are many possible counterfactual futures:</p>
-
-          <div class="futures-grid">
-            <div class="future-card continued">
-              <h4>If Trend Continued</h4>
-              <div class="value">60%</div>
-              <p>Program effect: <strong>0%</strong></p>
-            </div>
-            <div class="future-card plateau">
-              <h4>If Improvement Stopped</h4>
-              <div class="value">45%</div>
-              <p>Program effect: <strong>+15%</strong></p>
-            </div>
-            <div class="future-card regress">
-              <h4>If Rates Declined</h4>
-              <div class="value">40%</div>
-              <p>Program effect: <strong>+20%</strong></p>
-            </div>
-          </div>
-
-          <p style="margin-top: var(--space-lg);">Which scenario is correct? <strong>We can't know from before-after data alone.</strong> That's the trap.</p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What's the key lesson for evaluating programs and policies?</p>
-        </div>
-      </section>
-
-      <!-- Panel 3: Key Insight -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">The Key Insight</h2>
-          <p class="panel-intro">Understanding the before-after trap protects you from common evaluation mistakes.</p>
-        </div>
-
-        <div class="key-insight">
-          <h3>The Fundamental Problem</h3>
-          <p><strong>Before-after comparisons assume the counterfactual is "no change."</strong></p>
-          <p>Attributing change to a program requires knowing the counterfactual. Outcomes trend up, trend down, and fluctuate for reasons independent of any intervention, making "no change" a naive assumption.</p>
-        </div>
-
-        <div class="content-card">
-          <h3>Common Causes of Pre-Existing Trends</h3>
-          <ul style="margin-left: var(--space-xl); margin-bottom: var(--space-lg);">
-            <li><strong>Secular trends:</strong> Gradual improvements in technology, awareness, or social norms</li>
-            <li><strong>Policy spillovers:</strong> Other programs or regulations affecting the same outcome</li>
-            <li><strong>Economic cycles:</strong> Recessions and recoveries that affect health behaviors</li>
-            <li><strong>Demographic shifts:</strong> Aging populations, migration patterns</li>
-            <li><strong>Regression to the mean:</strong> Extreme values naturally moving toward average</li>
-          </ul>
-          <p>Any of these could explain the observed improvement—without any program effect at all.</p>
-        </div>
-
-        <div class="content-card">
-          <h3>The Economist's Question</h3>
-          <p>The before-after comparison gives you a number; its meaning depends entirely on the counterfactual—what would have happened without the intervention.</p>
-          <p>The traditional question: <em>"Did screening rates improve after the program launched?"</em></p>
-          <p>The economist's question: <em>"Compared to what alternative future?"</em></p>
-
-          <div style="margin-top: var(--space-xl); padding: var(--space-lg); background: var(--color-bg-alt); border-radius: var(--radius-md);">
-            <h4 style="color: var(--color-secondary); margin-bottom: var(--space-md);">Better Approaches</h4>
-            <ul style="margin-left: var(--space-xl); margin-bottom: 0;">
-              <li><strong>Control groups:</strong> Compare to similar areas that didn't get the program</li>
-              <li><strong>Difference-in-differences:</strong> Compare the <em>change</em> in treated vs. untreated groups</li>
-              <li><strong>Interrupted time series:</strong> Test whether the slope changed at the intervention point</li>
-              <li><strong>Randomized trials:</strong> The gold standard—random assignment creates a valid counterfactual</li>
+          <p><strong>Mode Classification (Mode A on Observed Series):</strong> Billing provider counts, code counts, claims, paid dollars, and member-months come from the HHS Medicaid Provider Spending file (telehealth_month_summary.parquet, Jan 2018 to Dec 2024). The unit of analysis is care-group-month (2 groups &times; 84 months = 168 rows). The straight-line and compound paths are Mode A trend checks on these observed series.</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending File</a>, <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Medicaid.gov Open Data</a>, <a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS T-MSIS Analytic Files Documentation</a>, and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/medicaid-data-landscape/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">What 238 Million Medicaid Billing Rows Can Support</a>.
+                <span>Row grain, seven fields, and suppression rules of the HHS Medicaid provider-spending file (238,015,729 aggregated billing rows), and the clinical context a screening decision still requires.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/medicaid-billing-patterns/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">What Billing Patterns Actually Look Like</a>.
+                <span>Provider-level billing features built from 84 months of aggregated billing rows; the excluded-provider billing comparisons are under reconciliation.</span>
+              </li>
             </ul>
           </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What is a raw pre-post check in health program review?</dt>
+                <dd class="text-slate-700 mt-0.5">A raw pre-post check subtracts one pre-policy year from one post-policy year. It credits the whole gap to the new rule and leaves out ongoing base trends and broad system shifts.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does the Medicaid series show the limits of a two-point check?</dt>
+                <dd class="text-slate-700 mt-0.5">Monthly billing providers for telehealth-eligible care rose 22,239 (+24.33%) from 2019 to 2023. Yet the count had already grown 6,977 (+8.26%) from 2018 to 2019. Other Medicaid care also rose 18.71% from 2019 to 2023.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What is the first data check to run before using a pre-post number?</dt>
+                <dd class="text-slate-700 mt-0.5">Plot at least 12 to 24 months of pre-policy data to see if the count was already rising or falling. Then compare that path against a service line that did not get the policy change.</dd>
+              </div>
+            </dl>
+          </div>
         </div>
-
-        <div class="key-insight" style="background: linear-gradient(135deg, var(--color-secondary) 0%, #0F766E 100%);">
-          <h3>Key Takeaway</h3>
-          <p><strong>Without knowing the counterfactual trajectory, we can't attribute post-program changes to the program.</strong></p>
-          <p>Before-after comparisons seduce with simplicity, and simplicity misleads when it obscures the counterfactual. Always ask: "What was the trend before, and what would have happened if we'd done nothing?"</p>
-        </div>
-      </section>
-
+      </details>
     </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/control-groups-not-enough" style="color:#0041A5;font-weight:600;">Why Control Groups Aren't Enough</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/selection-into-treatment" style="color:#0041A5;font-weight:600;">Who Gets Treated?</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-regression-to-mean" style="color:#0041A5;font-weight:600;">Regression to the Mean</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/threat-history-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Isolating Shared Shocks with Comparison Groups</a></li>
+          <li class="my-2"><a href="/methods-lab/identical-data-opposite-policies" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Nominal vs. Cost-Adjusted Medi-Cal Pay</a></li>
+          <li class="my-2"><a href="/methods-lab/threat-maturation-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Year Trend Splits for Policy Shifts</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Card D, Krueger AB. Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania. NBER Working Paper 4509; 1994. <a href="https://www.nber.org/papers/w4509" target="_blank" rel="noopener">nber.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <script>
-    // Panel Navigation
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-    let claimChartRendered = false;
-    let trapChartRendered = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        if (panelNum === '1' && !claimChartRendered) {
-          setTimeout(() => { renderClaimChart(); claimChartRendered = true; }, 50);
-        }
-        if (panelNum === '2' && !trapChartRendered) {
-          setTimeout(() => { renderTrapChart('claimed'); trapChartRendered = true; }, 50);
-        }
-      });
-    });
-
-    // Data
-    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
-    const rates = [30, 33.75, 37.5, 41.25, 45, 48.75, 52.5, 56.25, 60];
-    const programStart = 4; // Index of 2020
-
-    function renderClaimChart() {
-      const svg = document.getElementById('claim-chart');
-      const width = 700, height = 350;
-      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      // Scales
-      const xScale = (i) => margin.left + (i / (years.length - 1)) * plotWidth;
-      const yScale = (v) => margin.top + plotHeight - ((v - 20) / 50) * plotHeight;
-
-      // Grid lines
-      for (let y = 20; y <= 70; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', '#E0E0E0');
-        line.setAttribute('stroke-width', '1');
-        svg.appendChild(line);
-
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', margin.left - 10);
-        text.setAttribute('y', yScale(y) + 4);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '12');
-        text.setAttribute('fill', '#595959');
-        text.textContent = y + '%';
-        svg.appendChild(text);
-      }
-
-      // Program launch line
-      const launchLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      launchLine.setAttribute('x1', xScale(programStart));
-      launchLine.setAttribute('y1', margin.top);
-      launchLine.setAttribute('x2', xScale(programStart));
-      launchLine.setAttribute('y2', height - margin.bottom);
-      launchLine.setAttribute('stroke', '#F9A825');
-      launchLine.setAttribute('stroke-width', '2');
-      launchLine.setAttribute('stroke-dasharray', '5,5');
-      svg.appendChild(launchLine);
-
-      const launchLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      launchLabel.setAttribute('x', xScale(programStart));
-      launchLabel.setAttribute('y', margin.top - 10);
-      launchLabel.setAttribute('text-anchor', 'middle');
-      launchLabel.setAttribute('font-size', '12');
-      launchLabel.setAttribute('fill', '#F9A825');
-      launchLabel.setAttribute('font-weight', 'bold');
-      launchLabel.textContent = 'Program Launches';
-      svg.appendChild(launchLabel);
-
-      // Before point
-      const beforeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      beforeCircle.setAttribute('cx', xScale(programStart));
-      beforeCircle.setAttribute('cy', yScale(rates[programStart]));
-      beforeCircle.setAttribute('r', '8');
-      beforeCircle.setAttribute('fill', '#D32F2F');
-      svg.appendChild(beforeCircle);
-
-      // After point
-      const afterCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      afterCircle.setAttribute('cx', xScale(years.length - 1));
-      afterCircle.setAttribute('cy', yScale(rates[years.length - 1]));
-      afterCircle.setAttribute('r', '8');
-      afterCircle.setAttribute('fill', '#2E7D32');
-      svg.appendChild(afterCircle);
-
-      // Arrow between
-      const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      const midX = (xScale(programStart) + xScale(years.length - 1)) / 2;
-      arrow.setAttribute('d', `M ${xScale(programStart) + 15} ${yScale(rates[programStart])} L ${xScale(years.length - 1) - 15} ${yScale(rates[years.length - 1])}`);
-      arrow.setAttribute('stroke', '#424242');
-      arrow.setAttribute('stroke-width', '2');
-      arrow.setAttribute('marker-end', 'url(#arrowhead)');
-      svg.appendChild(arrow);
-
-      // Labels
-      const beforeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      beforeLabel.setAttribute('x', xScale(programStart));
-      beforeLabel.setAttribute('y', yScale(rates[programStart]) + 25);
-      beforeLabel.setAttribute('text-anchor', 'middle');
-      beforeLabel.setAttribute('font-size', '14');
-      beforeLabel.setAttribute('fill', '#D32F2F');
-      beforeLabel.setAttribute('font-weight', 'bold');
-      beforeLabel.textContent = '45%';
-      svg.appendChild(beforeLabel);
-
-      const afterLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      afterLabel.setAttribute('x', xScale(years.length - 1));
-      afterLabel.setAttribute('y', yScale(rates[years.length - 1]) - 15);
-      afterLabel.setAttribute('text-anchor', 'middle');
-      afterLabel.setAttribute('font-size', '14');
-      afterLabel.setAttribute('fill', '#2E7D32');
-      afterLabel.setAttribute('font-weight', 'bold');
-      afterLabel.textContent = '60%';
-      svg.appendChild(afterLabel);
-
-      // Effect label
-      const effectLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      effectLabel.setAttribute('x', midX);
-      effectLabel.setAttribute('y', (yScale(rates[programStart]) + yScale(rates[years.length - 1])) / 2 - 10);
-      effectLabel.setAttribute('text-anchor', 'middle');
-      effectLabel.setAttribute('font-size', '16');
-      effectLabel.setAttribute('fill', '#D32F2F');
-      effectLabel.setAttribute('font-weight', 'bold');
-      effectLabel.textContent = '+15% "Effect"';
-      svg.appendChild(effectLabel);
-
-      // X-axis labels
-      years.forEach((year, i) => {
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', xScale(i));
-        text.setAttribute('y', height - margin.bottom + 20);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '12');
-        text.setAttribute('fill', '#595959');
-        text.textContent = year;
-        svg.appendChild(text);
-      });
-    }
-
-    function renderTrapChart(view) {
-      const svg = document.getElementById('trap-chart');
-      const width = 700, height = 350;
-      const margin = { top: 30, right: 30, bottom: 50, left: 60 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xScale = (i) => margin.left + (i / (years.length - 1)) * plotWidth;
-      const yScale = (v) => margin.top + plotHeight - ((v - 20) / 50) * plotHeight;
-
-      // Grid
-      for (let y = 20; y <= 70; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', '#E0E0E0');
-        svg.appendChild(line);
-
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', margin.left - 10);
-        text.setAttribute('y', yScale(y) + 4);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '12');
-        text.setAttribute('fill', '#595959');
-        text.textContent = y + '%';
-        svg.appendChild(text);
-      }
-
-      // Program line
-      const launchLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      launchLine.setAttribute('x1', xScale(programStart));
-      launchLine.setAttribute('y1', margin.top);
-      launchLine.setAttribute('x2', xScale(programStart));
-      launchLine.setAttribute('y2', height - margin.bottom);
-      launchLine.setAttribute('stroke', '#F9A825');
-      launchLine.setAttribute('stroke-width', '2');
-      launchLine.setAttribute('stroke-dasharray', '5,5');
-      svg.appendChild(launchLine);
-
-      if (view === 'claimed') {
-        // Flat line before
-        const flatBefore = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        flatBefore.setAttribute('x1', xScale(0));
-        flatBefore.setAttribute('y1', yScale(45));
-        flatBefore.setAttribute('x2', xScale(programStart));
-        flatBefore.setAttribute('y2', yScale(45));
-        flatBefore.setAttribute('stroke', '#D32F2F');
-        flatBefore.setAttribute('stroke-width', '3');
-        flatBefore.setAttribute('stroke-dasharray', '8,4');
-        svg.appendChild(flatBefore);
-
-        // Jump after
-        const jumpAfter = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        jumpAfter.setAttribute('x1', xScale(programStart));
-        jumpAfter.setAttribute('y1', yScale(45));
-        jumpAfter.setAttribute('x2', xScale(years.length - 1));
-        jumpAfter.setAttribute('y2', yScale(60));
-        jumpAfter.setAttribute('stroke', '#D32F2F');
-        jumpAfter.setAttribute('stroke-width', '3');
-        svg.appendChild(jumpAfter);
-
-        // Effect annotation
-        const effectText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        effectText.setAttribute('x', xScale(years.length - 1) + 10);
-        effectText.setAttribute('y', yScale(52));
-        effectText.setAttribute('font-size', '14');
-        effectText.setAttribute('fill', '#D32F2F');
-        effectText.setAttribute('font-weight', 'bold');
-        effectText.textContent = 'Claimed: +15%';
-        svg.appendChild(effectText);
-      } else {
-        // Full trend line
-        let pathD = `M ${xScale(0)} ${yScale(rates[0])}`;
-        for (let i = 1; i < years.length; i++) {
-          pathD += ` L ${xScale(i)} ${yScale(rates[i])}`;
-        }
-        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        trendLine.setAttribute('d', pathD);
-        trendLine.setAttribute('stroke', '#0D9488');
-        trendLine.setAttribute('stroke-width', '3');
-        trendLine.setAttribute('fill', 'none');
-        svg.appendChild(trendLine);
-
-        // Data points
-        rates.forEach((rate, i) => {
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', xScale(i));
-          circle.setAttribute('cy', yScale(rate));
-          circle.setAttribute('r', '5');
-          circle.setAttribute('fill', '#0D9488');
-          svg.appendChild(circle);
-        });
-
-        // Annotation
-        const realText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        realText.setAttribute('x', xScale(2));
-        realText.setAttribute('y', yScale(rates[2]) - 15);
-        realText.setAttribute('font-size', '14');
-        realText.setAttribute('fill', '#0D9488');
-        realText.setAttribute('font-weight', 'bold');
-        realText.textContent = 'Pre-existing trend: +3.75%/year';
-        svg.appendChild(realText);
-
-        const effectText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        effectText.setAttribute('x', xScale(years.length - 1) + 10);
-        effectText.setAttribute('y', yScale(60));
-        effectText.setAttribute('font-size', '14');
-        effectText.setAttribute('fill', '#0D9488');
-        effectText.setAttribute('font-weight', 'bold');
-        effectText.textContent = 'Actual effect: 0%';
-        svg.appendChild(effectText);
-      }
-
-      // X-axis
-      years.forEach((year, i) => {
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', xScale(i));
-        text.setAttribute('y', height - margin.bottom + 20);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '12');
-        text.setAttribute('fill', '#595959');
-        text.textContent = year;
-        svg.appendChild(text);
-      });
-    }
-
-    // Toggle buttons
-    document.getElementById('btn-claimed').addEventListener('click', function() {
-      document.getElementById('btn-claimed').classList.add('active');
-      document.getElementById('btn-reality').classList.remove('active');
-      renderTrapChart('claimed');
-    });
-
-    document.getElementById('btn-reality').addEventListener('click', function() {
-      document.getElementById('btn-reality').classList.add('active');
-      document.getElementById('btn-claimed').classList.remove('active');
-      renderTrapChart('reality');
-    });
-
-    // Initial render
-    document.addEventListener('DOMContentLoaded', () => {
-      renderClaimChart();
-      claimChartRendered = true;
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

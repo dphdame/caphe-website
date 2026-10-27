@@ -3,799 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Maturation Threat: ITS Design Solutions | Methods Lab</title>
-  <meta name="description" content="How do you rule out maturation bias? Use Interrupted Time Series to separate pre-existing trends from real program effects. Interactive examples.">
+  <title>Interrupted Time Series & Maturation Trends | CAPHE</title>
+  <meta name="description" content="Use California EDD Paid Family Leave and SDI trajectories (2025-2030) to separate baseline wage/claim maturation from SB 951 statutory policy shifts.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-maturation-solutions">
-  <meta property="og:title" content="Maturation Threat: ITS Design Solutions | Methods Lab">
-  <meta property="og:description" content="How do you rule out maturation bias? Use Interrupted Time Series to separate pre-existing trends from real program effects. Interactive examples.">
+  <meta property="og:title" content="Interrupted Time Series & Maturation Trends | CAPHE">
+  <meta property="og:description" content="Use California EDD Paid Family Leave and SDI trajectories (2025-2030) to separate baseline wage/claim maturation from SB 951 statutory policy shifts.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.caphegroup.org/methods-lab/threat-maturation-solutions">
-  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. CHART CONTAINER
-       ============================================ */
-    .its-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .its-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .legend-line {
-      width: 24px;
-      height: 3px;
-      border-radius: 2px;
-    }
-
-    .legend-line.pre { background: var(--color-secondary); }
-    .legend-line.post { background: var(--color-accent); }
-    .legend-line.counterfactual {
-      background: var(--color-secondary);
-      opacity: 0.4;
-    }
-
-    .stats-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      padding: var(--space-sm) 0;
-      border-bottom: 1px solid var(--color-border-light);
-      font-size: 0.9rem;
-    }
-
-    .stat-row:last-child { border-bottom: none; }
-
-    .stat-label { color: var(--color-text-secondary); }
-
-    .stat-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-      color: var(--color-primary);
-    }
-
-    .stat-value.positive { color: var(--color-success); }
-    .stat-value.neutral { color: var(--color-text-muted); }
-
-    /* ============================================
-       7. SLIDER CONTROLS
-       ============================================ */
-    .slider-control {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .slider-control label {
-      display: block;
-      margin-bottom: var(--space-sm);
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      font-size: 0.95rem;
-    }
-
-    .slider-control input[type="range"] {
-      width: 100%;
-      height: 8px;
-      border-radius: 4px;
-      background: var(--color-border);
-      outline: none;
-      cursor: pointer;
-      -webkit-appearance: none;
-    }
-
-    .slider-control input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      cursor: pointer;
-    }
-
-    .slider-value {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      color: var(--color-primary);
-      margin-top: var(--space-sm);
-      font-weight: 600;
-    }
-
-    /* ============================================
-       8. CALLOUT BOXES
-       ============================================ */
-    .callout-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-
-    .callout-box h4 {
-      color: var(--color-caution);
-      margin-bottom: var(--space-sm);
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-    }
-
-    .callout-box p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .callout-box.success {
-      background: rgba(46, 125, 50, 0.1);
-      border-left-color: var(--color-success);
-    }
-
-    .callout-box.success h4 {
-      color: var(--color-success);
-    }
-
-    /* ============================================
-       9. DEFINITION CARD (KEY CONCEPT)
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card ul {
-      list-style: disc;
-      margin-left: var(--space-lg);
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       10. TWO-COLUMN LAYOUTS
-       ============================================ */
-    .two-column {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .two-column { grid-template-columns: 1fr; }
-    }
-
-    .content-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .content-card h3 {
-      margin-bottom: var(--space-lg);
-      color: var(--color-primary);
-    }
-
-    /* ============================================
-       11. SLOPE COMPARISON
-       ============================================ */
-    .slope-comparison {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .slope-card {
-      text-align: center;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-    }
-
-    .slope-card.pre {
-      background: rgba(13, 148, 136, 0.1);
-      border: 2px solid var(--color-secondary);
-    }
-
-    .slope-card.post {
-      background: rgba(249, 168, 37, 0.1);
-      border: 2px solid var(--color-accent);
-    }
-
-    .slope-card .label {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-xs);
-    }
-
-    .slope-card .value {
-      font-family: var(--font-mono);
-      font-size: 1.8rem;
-      font-weight: 600;
-    }
-
-    .slope-card.pre .value { color: var(--color-secondary); }
-    .slope-card.post .value { color: var(--color-accent); }
-
-    .slope-card .unit {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-
-    .difference-box {
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-      text-align: center;
-    }
-
-    .difference-box.significant {
-      border-color: var(--color-success);
-      background: rgba(46, 125, 50, 0.05);
-    }
-
-    .difference-box.not-significant {
-      border-color: var(--color-text-muted);
-      background: var(--color-bg-code);
-    }
-
-    .difference-title {
-      font-weight: 600;
-      margin-bottom: var(--space-sm);
-    }
-
-    .difference-value {
-      font-family: var(--font-mono);
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    .difference-box.significant .difference-value { color: var(--color-success); }
-    .difference-box.not-significant .difference-value { color: var(--color-text-muted); }
-
-    .p-value {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-top: var(--space-xs);
-    }
-
-    /* ============================================
-       12. FORMULA BOX
-       ============================================ */
-    .formula-box {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      margin-bottom: var(--space-lg);
-      overflow-x: auto;
-    }
-
-    .hypothesis-box {
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-      margin-bottom: var(--space-md);
-    }
-
-    .hypothesis-box .label {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-xs);
-    }
-
-    .hypothesis-box .content {
-      font-family: var(--font-mono);
-    }
-
-    /* ============================================
-       13. AUDIT LIST
-       ============================================ */
-    .audit-list {
-      list-style: none;
-    }
-
-    .audit-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-md);
-      padding: var(--space-md) 0;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .audit-item:last-child { border-bottom: none; }
-
-    .audit-status {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
       font-weight: 700;
-    }
-
-    .audit-status.met {
-      background: rgba(46, 125, 50, 0.15);
-      color: var(--color-success);
-    }
-
-    .audit-status.uncertain {
-      background: rgba(249, 168, 37, 0.15);
-      color: var(--color-caution);
-    }
-
-    .audit-content { flex: 1; }
-
-    .audit-content .assumption {
-      font-weight: 500;
-      color: var(--color-text);
-      margin-bottom: var(--space-xs);
-    }
-
-    .audit-content .explanation {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       14. SENSITIVITY TABLE
-       ============================================ */
-    .sensitivity-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .sensitivity-table th,
-    .sensitivity-table td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .sensitivity-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      color: var(--color-primary-dark);
-    }
-
-    .sensitivity-table tr:hover td {
-      background: rgba(0, 65, 165, 0.02);
-    }
-
-    .effect-none { color: var(--color-text-muted); }
-    .effect-small { color: var(--color-accent); font-weight: 500; }
-    .effect-large { color: var(--color-success); font-weight: 500; }
-
-    .sig-not { color: var(--color-text-muted); }
-    .sig-marginal { color: var(--color-accent); }
-    .sig-yes { color: var(--color-success); font-weight: 500; }
-
-    /* ============================================
-       15. BRIDGING QUESTION
-       ============================================ */
-    .bridging-question {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
+      color: #fff;
       margin: 0;
     }
-
-    /* ============================================
-       16. TAKEAWAY BOX
-       ============================================ */
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-top: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       17. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden { display: none; }
-
-    .tooltip .year-label {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       18. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a { color: var(--color-accent); }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       19. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
     }
 
-    .hidden { display: none !important; }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Maturation Threat: ITS Design Solutions | Methods Lab",
-  "description": "How do you rule out maturation bias? Use Interrupted Time Series to separate pre-existing trends from real program effects. Interactive examples.",
+  "headline": "Multi-Year Trend Splits Separate Ongoing Workforce Growth From Projected State-Law Benefit Jumps",
+  "description": "Use California EDD Paid Family Leave and SDI trajectories (2025-2030) to separate baseline wage/claim maturation from SB 951 statutory policy shifts.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -803,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -814,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How does interrupted time series detect a real program effect?",
+      "name": "How does a multi-year trend model (ITS) differ from a simple before-and-after check?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ITS fits a trend line before and after the intervention and asks whether the post-program slope differs meaningfully from the pre-program slope. A slope difference near zero, as in the tutorial, indicates the improvement was already underway."
+        "text": "A simple before-and-after check subtracts one pre-policy year from one post-policy year and mixes ongoing growth with the policy shift. A multi-year trend model tracks the pre-policy base slope (+1.52% claim growth and +6.88% wage growth) and measures both the Year-1 jump and the post-policy slope."
       }
     },
     {
       "@type": "Question",
-      "name": "What is the counterfactual in an interrupted time series design?",
+      "name": "Why does the California SDI reserve ratio rise from 18.1% in 2025 to 50.7% by 2030 in the base forecast?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The counterfactual is the pre-program trend extended forward as if no program had occurred. The tutorial compares observed post-program data against this no-program projection to isolate any change caused by the intervention."
+        "text": "SB 951 removed the wage tax cap on SDI employee taxes starting January 1, 2024 (taxing all wages across a $1,371.5B base). Weekly benefit payouts stay capped ($1,765/wk in 2026), so base tax revenue grows faster than base payouts."
       }
     },
     {
       "@type": "Question",
-      "name": "Why does ITS focus on the slope rather than the level?",
+      "name": "What happens to the SDI fund reserve under the Expected 12-week PFL plan?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Because maturation produces a continuing trend, a higher post-program level can simply reflect that trend continuing. ITS asks whether the rate of change accelerated, so the slope difference, not the level, signals a genuine effect."
+        "text": "In 2026, the +$623.7M outlay lowers the reserve ratio to 10.8% ($1.96B vs. $3.19B base). The post-SB 951 tax slope then rebuilds the fund balance each year, reaching $6.37B (30.4% reserve ratio, above EDD's 25% floor) by 2030."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -865,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -884,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -900,838 +529,432 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab &middot; Validity & Solutions</div>
-      <h1>Controlling Maturation with Interrupted Time Series</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Interrupted time series (ITS) addresses the maturation threat by fitting separate trend lines before and after an intervention and testing whether the slope changed at the intervention point. Because outcomes may already be moving, ITS compares the post-program slope against a counterfactual that extends the pre-program trend forward. In the tutorial, a county screening program launched in 2019 amid rising rates; when the post-program slope equals the pre-program slope of 2.5% per year, the slope difference is zero and cumulative impact after five and ten years is zero, meaning the program did not accelerate the existing trend.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">ITS design separates pre-existing trends from intervention effects by testing whether the slope changed at the intervention point.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">How ITS Works</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">The Statistical Test</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Assumptions Audit</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Sensitivity Analysis</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Multi-Year Trend Splits Separate Ongoing Workforce Growth From Projected State-Law Benefit Jumps
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Separating steady yearly payroll growth from modeled level and slope shifts after state paid-leave laws.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When evaluating a statewide Paid Family Leave pay increase without a multi-year base trend, a one-year review mixes routine yearly claim growth into the first-year policy jump. In California Paid Family Leave, multi-year trend modeling projects <strong>+39,600 added yearly claims</strong> and <strong>+$623.7M per year in gross outlays</strong> from a 12-week plan while reserves rebuild to <strong>30.4% ($6.37B) by 2030.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Raw year-to-year spending checks mix that policy jump with <strong>+$1.635B</strong> in routine wage and workforce growth (325,055 to 330,000 base claims and $1,090 to $1,165 weekly pay).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Tracking both the Year-1 level shift and the 5-year reserve slope keeps payroll tax rates steady.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Multi-Year Trend Splits Across California SDI/PFL Paths (2025 to 2030)</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Observed 2025 EDD actuals paired with modeled 2026-to-2030 base and expansion fund paths.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 compares California Paid Family Leave and SDI fund paths across base trend, expected, low-bound, and cap scenarios from 2025 to 2030.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Time-Series Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Projected Base</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Trend With No New Law</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Expected Jump</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Expected 12-Wk Plan</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Low Bound</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Low-Bound 12-Wk Plan</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stress Test</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Full-Use 100% Cap</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                2025 Onset Fund Balance*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2.88B bal</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">18.1% ratio</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2.28B bal</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">13.8% ratio</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2.48B bal</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">15.2% ratio</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$1.03B bal</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5.8% ratio</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                2026 Claims &amp; Added Outlay*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">330,000</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$0.0M jump</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">369,600</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$623.7M/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">346,500</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$417.8M/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">396,000</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$1,910.0M/yr</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                2026 Level Shift in Balance*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$3.19B</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">18.2% ratio</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 73%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$1.96B</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">10.8% ratio</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 45%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$2.36B</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">13.2% ratio</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 54%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-$0.58B</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-3.0% deficit</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                2028 Rebuilding Slope*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$6.23B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">32.6% > floor</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$3.69B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">18.7% rebuilding</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$4.53B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">23.1% near floor</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-$1.53B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-7.2% deficit</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                2030 Year-6 Fund Balance*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$10.29B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">50.7% ratio</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$6.37B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">30.4% > floor</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$7.67B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">36.9% > floor</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-$1.70B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-7.6% deficit</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                6-Year Outlay &amp; Tax Rate*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$0.00B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">1.300% base rate</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$4.013B | 1.345%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+0.045 pp</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2.688B | 1.330%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+0.030 pp</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$12.286B | 1.439%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+0.139 pp</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Year 2025 inputs (325,055 PFL claims, $1,090 weekly pay, $15.892B SDI payouts, $3.011B fund balance) are observed EDD actuals. Years 2026 to 2030 are Mode A projections calibrated on the EDD May 2026 DI Fund Forecast.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Trend With No New Law.</strong> 8-Wk Base (Post-SB 951). <strong>Expected 12-Wk Plan.</strong> 35% Take-Up | 12% New Claims. <strong>Low-Bound 12-Wk Plan.</strong> 25% Take-Up | 5% New Claims. <strong>Full-Use 100% Cap.</strong> 100% Take-Up | 20% New Claims.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A 2026-2030 Projections on Observed EDD Baselines (2025 Actuals as Inputs). Ruler 1: Base Trend Growth (No New 2026 Law): <strong>+4,945 Claims | +$1.635B SDI</strong>. Observed inputs are 2025 EDD actuals, and 2026 values are Mode A base projections. Workforce growth (<strong>+1.52%</strong> in yearly claims to <strong>330,000</strong>) and wage growth (weekly pay from <strong>$1,090 to $1,165</strong>, +6.88%) lift projected SDI payouts from <strong>$15.892B to $17.527B (+$1.635B)</strong> with no new law. Ruler 2: Mode A 12-Week Level Jump (Expected 35% Case): <strong>+39,600 Claims | +$623.7M Modeled</strong>. Subtracting the base slope leaves the modeled 12-week jump: <strong>+39,600</strong> added yearly claims (to <strong>369,600</strong>) and <strong>+$623.7M/yr</strong> in gross outlay. The projected 2026 reserve ratio dips from <strong>18.2% to 10.8%</strong> (<strong>$1.96B</strong> balance) before rebuilding to <strong>30.4% ($6.37B)</strong> by 2030.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Stacked State Laws, Slope Rules &amp; Forecast Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How multi-year trend models separate stacked California paid-leave laws across 2024, 2025, and 2026.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares base slopes, level jumps, reserve tradeoffs, and forecasting rules across four SDI/PFL paths.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Trend With No New Law
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Expected 12-Wk Plan
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Low-Bound 12-Wk Plan
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Full-Use 100% Cap
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Base Slope &amp; Policy Shift Driver
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Wage growth lifts weekly pay +6.88%/yr while the uncapped $1,371.5B wage base grows faster.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A 12-week plan drops the 2026 balance by -$1.23B, then rebuilds at +$1.1B/yr through 2030.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Lower take-up softens the 2026 dip to $2.36B and clears the 25% floor in 2029.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A 100% take-up stress test swamps both the 2026 balance and the 2030 slope.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What Level-and-Slope Splits Add
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A base slope separates +$1.635B in routine wage and claim growth from any new law.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The slope term shows the post-2024 rebuild to 30.4% that a 2026 snapshot omits.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Separate markers for the 2024 tax-cap repeal and 2025 90% pay tier keep tax and payout shifts distinct.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Modeling the post-2024 uncapped tax base on its own slope captures full reserve rebuilding speed.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Under the 8-week base, the 1.30% tax builds a $10.29B balance by 2030.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Funding the $4.013B 6-year plan delays hitting the 25% floor from 2028 to 2030 without a +0.045 pp shift.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Even at 25% take-up, the fund takes 3 years to cross the 25% floor in 2029.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Guarding against the 100% cap requires rate-setting rules up to 1.439% if claims surge.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Forecast Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Detrend Wage &amp; Claim Slopes First<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Model the +1.52% claim slope and +6.88% weekly wage growth before scoring any new leave bill.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Track Both 2026 Dip &amp; 2030 Slope<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pair the 12-week plan with a +0.045 pp tax shift or phase rollout along the rebuild slope.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Split 2024 Tax &amp; 2025 Pay Laws<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use separate step markers for the Jan 2024 wage-cap repeal and Jan 2025 90% pay tier.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Add UIC § 984 Reserve Triggers<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Tie automatic payroll tax step-ups to the 25% EDD reserve floor to guard against cap deficits.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Stacked SB 951 Dates &amp; Claim Mix</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Stacked State-Law Timeline (Law Dates vs. Mode A Projections):</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Senate Bill 951</a> set two state-law shifts. First, on <strong>January 1, 2024</strong>, it repealed the SDI wage tax cap, taxing 100% of covered wages ($1,371.5B in 2026). Second, on <strong>January 1, 2025</strong>, it raised pay replacement to 90% for low-wage workers. The level and slope paths shown here are Mode A projections.</p>
+          <p>&bull; <strong>Claim Mix:</strong> Across the <a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD Paid Family Leave Monthly Series</a>, infant bonding makes up <strong>89.0%</strong> of PFL claims (293,700 of 330,000 in 2026). Family care makes up <strong>10.0%</strong>, and military assist makes up <strong>1.0%</strong>.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Base Slope &amp; Policy Shift Driver (Trend With No New Law).</strong> Wage growth lifts weekly pay +6.88%/yr ($1,090 to $1,165) while the uncapped $1,371.5B wage base grows faster. &middot; <strong>Budget Tradeoff (Low-Bound 12-Wk Plan).</strong> Even at 25% take-up ($2.688B over 6 yrs), the fund takes 3 years to cross the 25% floor in 2029. &middot; <strong>Budget Tradeoff (Full-Use 100% Cap).</strong> Guarding against the 100% cap requires rate-setting rules (UIC § 984) up to 1.439% if claims surge.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Multi-Year Trend Splits &amp; Base Slopes (Mode A on Observed EDD Baselines)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>California EDD Paid Family Leave &amp; SDI Actuals and Forecast (2025-2026):</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> (325,055 actual 2025 PFL claims, $1,090 weekly pay, $15.892B SDI payouts; projected 2026 base of 330,000 claims, $1,165 weekly pay, and $17.527B SDI payouts).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>State-Law Shifts Under SB 951 &amp; 12-Week Plans:</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; &sect; 984)</a> and <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> (+39,600 added yearly claims to 369,600 and +$623.7M/yr gross outlay above the base slope).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Multi-Year Reserve Path (2025-2030):</strong> Projected yearly SDI fund balance at 35% take-up dips from 18.2% ($3.19B) to 10.8% ($1.96B) in 2026, then rebuilds to 30.4% ($6.37B, above the 25.0% floor) by 2030.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">EDD Paid Family Leave Monthly Data Series (July 2004 to Feb 2026)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://lao.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Legislative Analyst's Office (LAO) Fiscal Outlooks</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Multi-Year Trend Splits Track Both the Year-1 Dip and the 5-Year Slope</h3>
+            <p class="text-slate-800">When a state passes a law like Senate Bill 951, every covered worker in California enters the new rule on the same day. Because there is no unexposed part of the state, analysts use a multi-year trend model (Multi-Year Trend Split, or ITS) across historical and forecast series. A simple two-year check cannot split policy from trend when wages, worker counts, and tax bases are already climbing.</p>
+            <p class="text-slate-800">Splitting the base slope (+1.52% claim growth, +6.88% weekly wage growth, and the post-2024 uncapped tax slope that lifts base reserves from 18.1% to 50.7%) from the modeled 12-week jump (+39,600 claims, +$623.7M/yr outlay) clarifies the budget choice. A 1-year view in 2026 shows the reserve ratio dipping to 10.8% ($1.96B balance). Yet the post-shift slope through 2030 shows the uncapped wage base rebuilding the fund to $6.37B (30.4%, above EDD's 25% floor) without going negative.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Projections on Observed EDD Baselines):</strong> Year 2025 figures (325,055 PFL claims, $1,090.00 weekly pay, $15.892B SDI payouts, $3.011B fund balance, 18.9% reserve ratio) are observed EDD actuals. Years 2026 to 2030 base and expansion series, including the level-and-slope split, are Mode A projections from /public/tools/pfl-simulator/data/pfl_model_data.json anchored to the EDD May 2026 DI Fund Forecast.</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD Disability Insurance (DI) Fund Forecast (May 2026 Report)</a>, <a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD Paid Family Leave Monthly Data Series (July 2004 to Feb 2026)</a>, <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Unemployment Insurance Code §§ 984 &amp; 3300 (SB 951)</a>, and <a href="https://lao.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Legislative Analyst's Office (LAO) Fiscal Outlooks</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">How does a multi-year trend model (ITS) differ from a simple before-and-after check?</dt>
+                <dd class="text-slate-700 mt-0.5">A simple before-and-after check subtracts one pre-policy year from one post-policy year and mixes ongoing growth with the policy shift. A multi-year trend model tracks the pre-policy base slope (+1.52% claim growth and +6.88% wage growth) and measures both the Year-1 jump and the post-policy slope.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does the California SDI reserve ratio rise from 18.1% in 2025 to 50.7% by 2030 in the base forecast?</dt>
+                <dd class="text-slate-700 mt-0.5">SB 951 removed the wage tax cap on SDI employee taxes starting January 1, 2024 (taxing all wages across a $1,371.5B base). Weekly benefit payouts stay capped ($1,765/wk in 2026), so base tax revenue grows faster than base payouts.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What happens to the SDI fund reserve under the Expected 12-week PFL plan?</dt>
+                <dd class="text-slate-700 mt-0.5">In 2026, the +$623.7M outlay lowers the reserve ratio to 10.8% ($1.96B vs. $3.19B base). The post-SB 951 tax slope then rebuilds the fund balance each year, reaching $6.37B (30.4% reserve ratio, above EDD's 25% floor) by 2030.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/selection-into-treatment" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Selection Into Treatment Across PFL Wage Groups</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact vs. Long-Run Return Models</a></li>
+          <li class="my-2"><a href="/methods-lab/before-after-trap" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating Pre-Post Changes vs. Base Trends</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            A county launched a preventive screening program in 2019. Screening rates were already rising before the program started. The post-program data looks promising, but was the improvement already happening? Use the slider to adjust the post-program slope and see how ITS detects real effects. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="its-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Screening Rate Over Time (ITS Analysis)</h3>
-            <svg id="its-chart" class="chart-svg" role="img" aria-label="ITS chart showing pre and post program trend lines"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-line pre"></span>
-                <span>Pre-Program Trend</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-line post"></span>
-                <span>Post-Program Trend</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-line counterfactual"></span>
-                <span>Counterfactual (no program)</span>
-              </div>
-            </div>
-            <div class="slider-control">
-              <label for="slope-slider">Adjust the post-program slope to explore ITS detection:</label>
-              <input type="range" id="slope-slider" min="1.5" max="4.5" step="0.1" value="2.5" aria-label="Post-program slope adjustment">
-              <div class="slider-value" aria-live="polite" aria-atomic="true">Post-program slope: <span id="slope-display">+2.5</span>% per year</div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>ITS Components</h4>
-              <div class="stat-row">
-                <span class="stat-label">Pre-Program Slope</span>
-                <span class="stat-value" id="pre-slope-stat">+2.5% / year</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">Post-Program Slope</span>
-                <span class="stat-value" id="post-slope-stat">+2.5% / year</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">Slope Difference</span>
-                <span class="stat-value neutral" id="slope-diff-stat">0.0% / year</span>
-              </div>
-            </div>
-
-            <div class="callout-box" id="effect-callout">
-              <h4 id="effect-title">No Program Effect</h4>
-              <p id="effect-description">The post-program slope equals the pre-program slope. Improvement continues at the same pace as before. The program did not accelerate the trend.</p>
-            </div>
-
-            <div class="stat-card">
-              <h4>Cumulative Impact</h4>
-              <div class="stat-row">
-                <span class="stat-label">After 5 years</span>
-                <span class="stat-value" id="impact-5yr">+0.0 pts</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">After 10 years</span>
-                <span class="stat-value" id="impact-10yr">+0.0 pts</span>
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question to Panel 2 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How exactly does ITS separate the program effect from maturation that was already happening?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: HOW ITS WORKS
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">How ITS Works</h2>
-          <p class="panel-intro">
-            ITS fits separate trend lines before and after the intervention. The key question is whether the post-program slope differs meaningfully from the pre-program slope. If improvement was already happening and continues at the same rate, the program added nothing.
-          </p>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is Interrupted Time Series?</h3>
-          <p>An <strong>Interrupted Time Series (ITS)</strong> design tests whether an intervention changed the trajectory of an outcome. Rather than comparing before vs. after levels, it compares before vs. after <em>slopes</em>.</p>
-          <ul>
-            <li>Fits a regression line to pre-intervention data</li>
-            <li>Fits a separate regression line to post-intervention data</li>
-            <li>Tests whether the post-intervention slope differs from what the pre-intervention trend predicted</li>
-          </ul>
-        </div>
-
-        <div class="two-column">
-          <div class="content-card">
-            <h3>The Core Logic</h3>
-            <p>A before-after comparison would credit the program for any improvement seen after launch. ITS asks a sharper question: Did the <em>rate</em> of improvement change?</p>
-            <ul style="list-style: disc; margin-left: var(--space-lg); color: var(--color-text-secondary);">
-              <li style="margin-bottom: var(--space-sm);">Pre-program slope = baseline rate of change (maturation)</li>
-              <li style="margin-bottom: var(--space-sm);">Post-program slope = rate of change after intervention</li>
-              <li>Slope difference = program-attributable acceleration</li>
-            </ul>
-          </div>
-
-          <div class="content-card">
-            <h3>The Counterfactual</h3>
-            <p>ITS constructs a counterfactual by extending the pre-program trend forward. This shows what would have happened if the pre-existing rate of improvement continued.</p>
-            <div style="margin-top: var(--space-md);">
-              <div class="slope-comparison">
-                <div class="slope-card pre">
-                  <div class="label">Pre-Program Slope</div>
-                  <div class="value" id="pre-slope-compare">+2.5</div>
-                  <div class="unit">% per year</div>
-                </div>
-                <div class="slope-card post">
-                  <div class="label">Post-Program Slope</div>
-                  <div class="value" id="post-slope-compare">+2.5</div>
-                  <div class="unit">% per year</div>
-                </div>
-              </div>
-              <div class="difference-box not-significant" id="diff-result-box">
-                <div class="difference-title">Slope Difference</div>
-                <div class="difference-value" id="diff-value">+0.0% / year</div>
-                <div class="p-value" id="p-value-display">p = 0.95 (not significant)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bridging question to Panel 3 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How do we formally test whether the slope change is statistically significant?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: THE STATISTICAL TEST
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">The Statistical Test</h2>
-          <p class="panel-intro">
-            ITS uses regression with an interaction term to test whether the slope changed at the intervention point. The coefficient on this interaction term tells us whether the program accelerated improvement.
-          </p>
-        </div>
-
-        <div class="two-column">
-          <div class="content-card">
-            <h3>The ITS Regression Model</h3>
-            <div class="formula-box">
-              Y<sub>t</sub> = B<sub>0</sub> + B<sub>1</sub>*Time + B<sub>2</sub>*Post + B<sub>3</sub>*(Time*Post) + e<sub>t</sub>
-            </div>
-            <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Where:</p>
-            <ul style="list-style: none; margin-left: var(--space-md); font-size: 0.9rem; color: var(--color-text-secondary);">
-              <li style="margin-bottom: var(--space-sm);"><strong>B<sub>1</sub></strong> = Pre-program slope (baseline trend)</li>
-              <li style="margin-bottom: var(--space-sm);"><strong>B<sub>2</sub></strong> = Level change at intervention (immediate shift)</li>
-              <li style="margin-bottom: var(--space-sm);"><strong style="color: var(--color-primary);">B<sub>3</sub></strong> = <strong>Slope change</strong> (what we test)</li>
-            </ul>
-
-            <div class="hypothesis-box" style="margin-top: var(--space-lg);">
-              <div class="label">Null Hypothesis (H<sub>0</sub>)</div>
-              <div class="content">B<sub>3</sub> = 0 (no slope change)</div>
-            </div>
-            <div class="hypothesis-box">
-              <div class="label">Alternative Hypothesis (H<sub>A</sub>)</div>
-              <div class="content">B<sub>3</sub> &ne; 0 (program changed the slope)</div>
-            </div>
-          </div>
-
-          <div class="content-card">
-            <h3>Current Results</h3>
-            <div class="stat-card" style="margin-bottom: var(--space-lg); box-shadow: none; background: var(--color-bg-code);">
-              <div class="stat-row">
-                <span class="stat-label">B<sub>3</sub> (slope change)</span>
-                <span class="stat-value" id="beta3-value">+0.0</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">Standard Error</span>
-                <span class="stat-value" id="se-value">0.45</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">t-statistic</span>
-                <span class="stat-value" id="t-value">0.00</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-label">p-value</span>
-                <span class="stat-value" id="p-value">0.95</span>
-              </div>
-            </div>
-
-            <div class="callout-box" id="test-conclusion">
-              <h4>Conclusion</h4>
-              <p id="conclusion-text">We fail to reject the null hypothesis. There is no statistically significant slope change. The program did not accelerate improvement beyond the pre-existing trend.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What assumptions must hold for this ITS analysis to give valid conclusions?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: ASSUMPTIONS AUDIT
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Assumptions Audit</h2>
-          <p class="panel-intro">
-            ITS is powerful but requires assumptions. The key threat is concurrent history: something else that changed at the same time as the program. ITS cannot distinguish your intervention from other simultaneous changes.
-          </p>
-        </div>
-
-        <div class="two-column">
-          <div class="content-card">
-            <h3>Key Assumptions</h3>
-            <ul class="audit-list">
-              <li class="audit-item">
-                <span class="audit-status met">&#10003;</span>
-                <div class="audit-content">
-                  <div class="assumption">Pre-program data sufficient for slope estimation</div>
-                  <div class="explanation">We have 5 years of pre-program data (2014-2018), enough to establish a stable baseline trend.</div>
-                </div>
-              </li>
-              <li class="audit-item">
-                <span class="audit-status met">&#10003;</span>
-                <div class="audit-content">
-                  <div class="assumption">Post-program data sufficient for slope estimation</div>
-                  <div class="explanation">We have 6 years of post-program data (2019-2024), enough to detect a new trajectory.</div>
-                </div>
-              </li>
-              <li class="audit-item">
-                <span class="audit-status uncertain">?</span>
-                <div class="audit-content">
-                  <div class="assumption">No concurrent history threat</div>
-                  <div class="explanation">ITS cannot rule out that something else changed in 2019 that also affected screening rates (new state policy, insurance expansion, etc.).</div>
-                </div>
-              </li>
-              <li class="audit-item">
-                <span class="audit-status uncertain">?</span>
-                <div class="audit-content">
-                  <div class="assumption">Linear trends appropriate</div>
-                  <div class="explanation">We assume outcomes follow linear trends. Non-linear patterns (acceleration, ceiling effects) could bias slope estimates.</div>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="content-card">
-            <h3>Strengthening ITS</h3>
-            <p>Single-group ITS is vulnerable to history threats. Adding a comparison group creates a more robust design.</p>
-            <ul style="list-style: disc; margin-left: var(--space-lg); font-size: 0.9rem; color: var(--color-text-secondary); margin-top: var(--space-md);">
-              <li style="margin-bottom: var(--space-sm);">Add a comparison group that did not receive the intervention</li>
-              <li style="margin-bottom: var(--space-sm);">Document any other policy or environmental changes at intervention time</li>
-              <li style="margin-bottom: var(--space-sm);">Test for autocorrelation in residuals</li>
-              <li style="margin-bottom: var(--space-sm);">Check for seasonality that might confound trends</li>
-            </ul>
-
-            <div class="callout-box" style="margin-top: var(--space-lg);">
-              <h4>The History Threat</h4>
-              <p>If a statewide policy also launched in 2019, ITS cannot determine whether your program or the state policy caused the slope change. This is why comparative ITS (with a control group) is stronger than single-group ITS.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bridging question to Panel 5 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How much slope change would be needed for statistical and practical significance?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: SENSITIVITY ANALYSIS
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Sensitivity Analysis</h2>
-          <p class="panel-intro">
-            ITS detects changes in trend slope, but not all statistically significant changes are practically meaningful. This table shows how different slope changes translate to effect sizes and statistical significance.
-          </p>
-        </div>
-
-        <div class="content-card" style="max-width: 900px;">
-          <table class="sensitivity-table">
-            <thead>
-              <tr>
-                <th>Post-Program Slope</th>
-                <th>Slope Difference</th>
-                <th>Statistical Significance</th>
-                <th>Interpretation</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2.5% per year</td>
-                <td>0% difference</td>
-                <td class="sig-not">Not significant (p > 0.05)</td>
-                <td class="effect-none">No effect beyond maturation</td>
-              </tr>
-              <tr>
-                <td>3.0% per year</td>
-                <td>+0.5% difference</td>
-                <td class="sig-marginal">Marginally significant (p ~ 0.10)</td>
-                <td class="effect-small">Small acceleration (+0.5%/yr)</td>
-              </tr>
-              <tr>
-                <td>3.5% per year</td>
-                <td>+1.0% difference</td>
-                <td class="sig-yes">p ~ 0.05</td>
-                <td class="effect-small">Program accelerated by 1%/yr</td>
-              </tr>
-              <tr>
-                <td>4.5% per year</td>
-                <td>+2.0% difference</td>
-                <td class="sig-yes">p &lt; 0.01</td>
-                <td class="effect-large">Program accelerated by 2%/yr</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>What Economists Mean by "Identification"</h3>
-          <p>ITS provides <strong>partial identification</strong> of the program effect. It controls for the maturation threat by accounting for pre-existing trends. However, it cannot rule out history threats (other simultaneous changes).</p>
-          <ul>
-            <li><strong>What ITS controls:</strong> Pre-existing trends (maturation)</li>
-            <li><strong>What ITS cannot control:</strong> Concurrent events (history)</li>
-            <li><strong>Stronger design:</strong> Comparative ITS with a control group addresses both threats</li>
-          </ul>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>ITS asks whether the rate of change shifted, not just whether levels improved.</strong> When pre-existing trends threaten validity, ITS separates program acceleration from natural maturation. The key test is whether the post-intervention slope differs from the pre-intervention slope. For stronger causal claims, combine ITS with a comparison group to also address history threats. <strong>This is what economists mean by "identification through design."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/chw-health-outcomes" style="color:#0041A5;font-weight:600;">Case Study: CHW Programs</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/medicaid-expansion" style="color:#0041A5;font-weight:600;">Case Study: Medicaid Expansion</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/counterfactual-basics" style="color:#0041A5;font-weight:600;">What Is a Counterfactual?</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. DATA AND STATE
-       ============================================ */
-    const PRE_SLOPE = 2.5;  // Fixed pre-program slope
-    let postSlope = 2.5;    // Adjustable post-program slope
-
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateTimeSeriesData(preSlope, postSlope) {
-      const data = [];
-      const baseValue = 40;
-      const programYear = 2019;
-      let seed = 54321;
-
-      function rand() {
-        seed = (seed * 9301 + 49297) % 233280;
-        return seed / 233280;
-      }
-
-      for (let year = 2014; year <= 2024; year++) {
-        let expectedValue;
-        if (year < programYear) {
-          const yearsFromStart = year - 2014;
-          expectedValue = baseValue + (preSlope * yearsFromStart);
-        } else {
-          const yearsPreProgram = programYear - 2014;
-          const valueAtLaunch = baseValue + (preSlope * yearsPreProgram);
-          const yearsPostProgram = year - programYear;
-          expectedValue = valueAtLaunch + (postSlope * yearsPostProgram);
-        }
-
-        const noise = (rand() - 0.5) * 3;
-        const actualValue = expectedValue + noise;
-
-        data.push({
-          year: year,
-          value: Math.round(actualValue * 10) / 10,
-          period: year < programYear ? 'pre' : 'post'
-        });
-      }
-
-      return data;
-    }
-
-    /* ============================================
-       2. CHART RENDERING
-       ============================================ */
-    let chartInitialized = false;
-
-    function renderITSChart() {
-      const svg = document.getElementById('its-chart');
-      if (!svg) return;
-
-      const data = generateTimeSeriesData(PRE_SLOPE, postSlope);
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 40, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 2013.5, xMax = 2024.5;
-      const yMin = 30, yMax = 80;
-
-      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 35; y <= 75; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Program launch line
-      const programLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      programLine.setAttribute('x1', xScale(2019));
-      programLine.setAttribute('x2', xScale(2019));
-      programLine.setAttribute('y1', margin.top);
-      programLine.setAttribute('y2', height - margin.bottom);
-      programLine.setAttribute('stroke', 'var(--color-primary)');
-      programLine.setAttribute('stroke-width', '2');
-      programLine.setAttribute('stroke-dasharray', '6,4');
-      svg.appendChild(programLine);
-
-      const programLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      programLabel.setAttribute('x', xScale(2019));
-      programLabel.setAttribute('y', margin.top - 10);
-      programLabel.setAttribute('text-anchor', 'middle');
-      programLabel.setAttribute('fill', 'var(--color-primary)');
-      programLabel.setAttribute('font-size', '11');
-      programLabel.setAttribute('font-weight', '600');
-      programLabel.textContent = 'Program Launch';
-      svg.appendChild(programLabel);
-
-      // Pre-program fitted line
-      const preY2014 = 40;
-      const preY2018 = 40 + (PRE_SLOPE * 4);
-
-      const preLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      preLine.setAttribute('x1', xScale(2014));
-      preLine.setAttribute('y1', yScale(preY2014));
-      preLine.setAttribute('x2', xScale(2018));
-      preLine.setAttribute('y2', yScale(preY2018));
-      preLine.setAttribute('stroke', 'var(--color-secondary)');
-      preLine.setAttribute('stroke-width', '3');
-      svg.appendChild(preLine);
-
-      // Post-program fitted line
-      const postY2019 = preY2018 + PRE_SLOPE;
-      const postY2024 = postY2019 + (postSlope * 5);
-
-      const postLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      postLine.setAttribute('x1', xScale(2019));
-      postLine.setAttribute('y1', yScale(postY2019));
-      postLine.setAttribute('x2', xScale(2024));
-      postLine.setAttribute('y2', yScale(postY2024));
-      postLine.setAttribute('stroke', 'var(--color-accent)');
-      postLine.setAttribute('stroke-width', '3');
-      svg.appendChild(postLine);
-
-      // Counterfactual line
-      const cfY2024 = postY2019 + (PRE_SLOPE * 5);
-      const cfLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      cfLine.setAttribute('x1', xScale(2019));
-      cfLine.setAttribute('y1', yScale(postY2019));
-      cfLine.setAttribute('x2', xScale(2024));
-      cfLine.setAttribute('y2', yScale(cfY2024));
-      cfLine.setAttribute('stroke', 'var(--color-secondary)');
-      cfLine.setAttribute('stroke-width', '2');
-      cfLine.setAttribute('stroke-dasharray', '8,4');
-      cfLine.setAttribute('opacity', '0.4');
-      svg.appendChild(cfLine);
-
-      // Data points
-      data.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.year));
-        circle.setAttribute('cy', yScale(d.value));
-        circle.setAttribute('r', 6);
-        circle.setAttribute('fill', d.period === 'pre' ? 'var(--color-secondary)' : 'var(--color-accent)');
-        circle.setAttribute('stroke', 'white');
-        circle.setAttribute('stroke-width', '2');
-        circle.setAttribute('style', 'cursor: pointer; transition: transform 0.2s;');
-        circle.setAttribute('data-year', d.year);
-        circle.setAttribute('data-value', d.value);
-        circle.setAttribute('data-period', d.period);
-
-        circle.addEventListener('mouseenter', showTooltip);
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let year = 2014; year <= 2024; year++) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(year));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.setAttribute('font-size', '11');
-        tick.textContent = year;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.textContent = 'Year';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 35; y <= 75; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 10);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.setAttribute('font-size', '11');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Preventive Screening Rate (%)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       3. UPDATE STATS
-       ============================================ */
-    function updateStats() {
-      const slopeDiff = postSlope - PRE_SLOPE;
-
-      // Panel 1 stats
-      document.getElementById('pre-slope-stat').textContent = '+' + PRE_SLOPE.toFixed(1) + '% / year';
-      document.getElementById('post-slope-stat').textContent = '+' + postSlope.toFixed(1) + '% / year';
-
-      const diffStatEl = document.getElementById('slope-diff-stat');
-      diffStatEl.textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(1) + '% / year';
-      diffStatEl.className = 'stat-value ' + (Math.abs(slopeDiff) > 0.5 ? 'positive' : 'neutral');
-
-      // Effect callout
-      const effectTitle = document.getElementById('effect-title');
-      const effectDesc = document.getElementById('effect-description');
-      const effectCallout = document.getElementById('effect-callout');
-
-      if (Math.abs(slopeDiff) < 0.3) {
-        effectTitle.textContent = 'No Program Effect';
-        effectDesc.textContent = 'The post-program slope equals the pre-program slope. Improvement continues at the same pace as before. The program did not accelerate the trend.';
-        effectCallout.className = 'callout-box';
-      } else if (slopeDiff > 0) {
-        effectTitle.textContent = 'Program Accelerated Improvement';
-        effectDesc.textContent = `The post-program slope is ${slopeDiff.toFixed(1)} percentage points steeper per year. The program appears to have accelerated improvement beyond maturation.`;
-        effectCallout.className = 'callout-box success';
-      } else {
-        effectTitle.textContent = 'Program May Have Slowed Improvement';
-        effectDesc.textContent = `The post-program slope is ${Math.abs(slopeDiff).toFixed(1)} percentage points less steep per year. This warrants investigation.`;
-        effectCallout.className = 'callout-box';
-      }
-
-      // Cumulative impact
-      document.getElementById('impact-5yr').textContent = (slopeDiff >= 0 ? '+' : '') + (slopeDiff * 5).toFixed(1) + ' pts';
-      document.getElementById('impact-10yr').textContent = (slopeDiff >= 0 ? '+' : '') + (slopeDiff * 10).toFixed(1) + ' pts';
-
-      // Panel 2 comparison
-      if (document.getElementById('pre-slope-compare')) {
-        document.getElementById('pre-slope-compare').textContent = '+' + PRE_SLOPE.toFixed(1);
-        document.getElementById('post-slope-compare').textContent = '+' + postSlope.toFixed(1);
-        document.getElementById('diff-value').textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(1) + '% / year';
-
-        const tStat = slopeDiff / 0.45;
-        const pValue = Math.min(1, 2 * (1 - normalCDF(Math.abs(tStat))));
-
-        const diffBox = document.getElementById('diff-result-box');
-        const pValueDisplay = document.getElementById('p-value-display');
-
-        if (pValue < 0.05) {
-          diffBox.className = 'difference-box significant';
-          pValueDisplay.textContent = `p = ${pValue.toFixed(3)} (significant)`;
-        } else {
-          diffBox.className = 'difference-box not-significant';
-          pValueDisplay.textContent = `p = ${pValue.toFixed(2)} (not significant)`;
-        }
-      }
-
-      // Panel 3 statistical test
-      if (document.getElementById('beta3-value')) {
-        const tStat = slopeDiff / 0.45;
-        const pValue = Math.min(1, 2 * (1 - normalCDF(Math.abs(tStat))));
-
-        document.getElementById('beta3-value').textContent = (slopeDiff >= 0 ? '+' : '') + slopeDiff.toFixed(2);
-        document.getElementById('t-value').textContent = tStat.toFixed(2);
-        document.getElementById('p-value').textContent = pValue.toFixed(3);
-
-        const conclusionText = document.getElementById('conclusion-text');
-        const testConclusion = document.getElementById('test-conclusion');
-
-        if (pValue < 0.05) {
-          conclusionText.textContent = `We reject the null hypothesis (p = ${pValue.toFixed(3)}). The slope change is statistically significant. The program appears to have accelerated improvement by ${slopeDiff.toFixed(1)} percentage points per year.`;
-          testConclusion.className = 'callout-box success';
-        } else {
-          conclusionText.textContent = `We fail to reject the null hypothesis (p = ${pValue.toFixed(2)}). There is no statistically significant slope change. The program did not accelerate improvement beyond the pre-existing trend.`;
-          testConclusion.className = 'callout-box';
-        }
-      }
-    }
-
-    function normalCDF(x) {
-      const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
-      const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
-
-      const sign = x < 0 ? -1 : 1;
-      x = Math.abs(x) / Math.sqrt(2);
-
-      const t = 1.0 / (1.0 + p * x);
-      const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-
-      return 0.5 * (1.0 + sign * y);
-    }
-
-    /* ============================================
-       4. TOOLTIP
-       ============================================ */
-    function showTooltip(event) {
-      const tooltip = document.getElementById('tooltip');
-      const target = event.target;
-
-      const year = target.getAttribute('data-year');
-      const value = target.getAttribute('data-value');
-      const period = target.getAttribute('data-period');
-
-      tooltip.innerHTML = `
-        <div class="year-label">${year}</div>
-        <div class="metric">Screening Rate: ${parseFloat(value).toFixed(1)}%</div>
-        <div class="metric">${period === 'pre' ? 'Before Program' : 'After Program'}</div>
-      `;
-
-      const rect = target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       5. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Re-render chart when panel 1 becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            renderITSChart();
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       6. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      renderITSChart();
-      chartInitialized = true;
-      updateStats();
-
-      // Slider listener
-      const slider = document.getElementById('slope-slider');
-      const slopeDisplay = document.getElementById('slope-display');
-
-      slider.addEventListener('input', () => {
-        postSlope = parseFloat(slider.value);
-        slopeDisplay.textContent = '+' + postSlope.toFixed(1);
-        renderITSChart();
-        updateStats();
-      });
-
-      // Debounced resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderITSChart();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

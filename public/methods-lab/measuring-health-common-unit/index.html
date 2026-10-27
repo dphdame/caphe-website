@@ -3,880 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>QALYs vs. DALYs Explained | CAPHE</title>
-  <meta name="description" content="How do QALYs and DALYs work? Convert mortality and morbidity into a single metric to compare health interventions. Interactive calculation examples.">
+  <title>Measuring Health in QALYs & VSL Units | CAPHE</title>
+  <meta name="description" content="Translate condition-specific metrics (HbA1c, depression relief, hospitalizations, mortality) into QALYs and HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M).">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/measuring-health-common-unit">
-  <meta property="og:title" content="QALYs vs. DALYs Explained | CAPHE">
-  <meta property="og:description" content="How do QALYs and DALYs work? Convert mortality and morbidity into a single metric to compare health interventions. Interactive calculation examples.">
+  <meta property="og:title" content="Measuring Health in QALYs & VSL Units | CAPHE">
+  <meta property="og:description" content="Translate condition-specific metrics (HbA1c, depression relief, hospitalizations, mortality) into QALYs and HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M).">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.caphegroup.org/methods-lab/measuring-health-common-unit">
-  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 400px;
-    }
-
-    .stats-sidebar {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
+      color: #fff;
+      margin: 0;
     }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* Program cards */
-    .program-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .program-cards { grid-template-columns: 1fr; }
-    }
-
-    .program-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      border-top: 4px solid var(--color-border);
-    }
-
-    .program-card.program-a { border-top-color: var(--color-secondary); }
-    .program-card.program-b { border-top-color: var(--color-accent); }
-    .program-card.program-c { border-top-color: var(--color-primary); }
-
-    .program-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: var(--space-md);
-    }
-
-    .program-metric {
-      display: flex;
-      justify-content: space-between;
-      padding: var(--space-sm) 0;
-      border-bottom: 1px solid var(--color-border-light);
-      font-size: 0.9rem;
-    }
-
-    .program-metric:last-child {
-      border-bottom: none;
-    }
-
-    .metric-label {
-      color: var(--color-text-secondary);
-    }
-
-    .metric-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    /* ============================================
-       7. PANEL 2: THE PROBLEM
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .explanation-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: var(--space-lg) 0;
-    }
-
-    .comparison-table th,
-    .comparison-table td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      color: var(--color-primary-dark);
-      font-size: 0.85rem;
-    }
-
-    .comparison-table td {
-      font-size: 0.9rem;
-    }
-
-    .table-highlight {
-      background: rgba(249, 168, 37, 0.1);
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. PANEL 3: QALYs EXPLAINED
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-sm);
-      color: var(--color-text-secondary);
-    }
-
-    .formula-box {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      text-align: center;
-      margin: var(--space-lg) 0;
-    }
-
-    .formula {
-      font-family: var(--font-mono);
-      font-size: 1.25rem;
-      color: var(--color-primary-dark);
-    }
-
-    .qaly-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      margin-top: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .qaly-grid { grid-template-columns: 1fr; }
-    }
-
-    .qaly-example {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .qaly-example h4 {
-      margin-bottom: var(--space-md);
-      color: var(--color-secondary);
-    }
-
-    .qaly-example.daly h4 {
-      color: var(--color-accent);
-    }
-
-    .qaly-visual {
-      height: 30px;
-      background: var(--color-border-light);
-      border-radius: var(--radius-sm);
-      margin: var(--space-md) 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .qaly-bar {
-      height: 100%;
-      border-radius: var(--radius-sm);
-      transition: width 0.5s ease;
-    }
-
-    .qaly-bar.good { background: var(--color-secondary); }
-    .qaly-bar.lost { background: var(--color-accent); }
-
-    .qaly-label {
-      position: absolute;
-      right: var(--space-sm);
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-
-    /* ============================================
-       9. PANEL 4: INTERACTIVE CALCULATOR
-       ============================================ */
-    .calculator-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .calculator-container { grid-template-columns: 1fr; }
-    }
-
-    .calculator-panel {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .calc-input-group {
-      margin-bottom: var(--space-lg);
-    }
-
-    .calc-input-group label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: var(--space-sm);
-      color: var(--color-text);
-    }
-
-    .calc-input-group .hint {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-    }
-
-    .slider-container {
+    .budget-bar-seg {
       display: flex;
       align-items: center;
-      gap: var(--space-md);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
     }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
 
-    .slider {
-      flex: 1;
-      -webkit-appearance: none;
-      height: 8px;
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
       border-radius: 4px;
-      background: var(--color-border);
-      outline: none;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .slider-value {
-      min-width: 60px;
-      text-align: right;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      color: var(--color-primary);
-    }
-
-    .calc-results {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .calc-result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--space-sm) 0;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .calc-result-row:last-child {
-      border-bottom: none;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
-    .calc-result-label {
-      color: var(--color-text-secondary);
-    }
-
-    .calc-result-value {
-      font-family: var(--font-mono);
-      color: var(--color-primary);
-    }
-
-    .comparison-result {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-top: var(--space-lg);
-    }
-
-    .comparison-result h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-    }
-
-    .comparison-bars {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .comparison-bar-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-    }
-
-    .comparison-bar-label {
-      min-width: 80px;
-      font-size: 0.85rem;
-    }
-
-    .comparison-bar-track {
-      flex: 1;
-      height: 24px;
-      background: rgba(255,255,255,0.2);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-
-    .comparison-bar-fill {
-      height: 100%;
-      border-radius: var(--radius-sm);
-      transition: width 0.5s ease;
-      display: flex;
-      align-items: center;
-      padding-left: var(--space-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .comparison-bar-fill.program-a { background: var(--color-secondary); }
-    .comparison-bar-fill.program-b { background: var(--color-accent); }
-    .comparison-bar-fill.program-c { background: rgba(255,255,255,0.5); }
-
-    /* ============================================
-       10. PANEL 5: KEY INSIGHT
-       ============================================ */
-    .insight-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .insight-grid { grid-template-columns: 1fr; }
-    }
-
-    .insight-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .insight-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       11. BRIDGING QUESTIONS
-       ============================================ */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      margin: 0;
-      color: var(--color-text-secondary);
-    }
-
-    .bridging-question strong {
-      color: var(--color-text);
-    }
-
-    /* ============================================
-       12. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       13. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    /* ============================================
-       14. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Measuring Health in a Common Unit",
-  "description": "Learn how QALYs and DALYs allow comparison across different health outcomes by converting mortality and morbidity into a common metric.",
+  "headline": "Standardized Healthy Life-Years and Federal Life Valuations Place Modeled Programs on Comparable Ledgers",
+  "description": "Translate condition-specific metrics (HbA1c, depression relief, hospitalizations, mortality) into QALYs and HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M).",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -884,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -895,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is a quality-adjusted life year (QALY)?",
+      "name": "What is a Quality-Adjusted Life Year (QALY) and how is it calculated?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A QALY combines length of life and quality of life into one number, weighting each year lived by a quality factor between zero (death) and one (perfect health), so health gains from different programs can be compared."
+        "text": "A QALY combines length of life and daily health quality into one unit, where 1.00 is one year in full health and 0.00 is death. If an outreach team lifts a client's health score from 0.74 to 0.7675 (+0.0275 per year) for 2 years, it produces 0.0534 discounted QALYs at a 3% yearly discount rate."
       }
     },
     {
       "@type": "Question",
-      "name": "Why can't programs be compared using simple counts like cases prevented?",
+      "name": "When should analysts use QALYs ($50K-$150K/QALY) versus the Value of a Statistical Life ($13.6M VSL)?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Cases prevented measure different outcomes across diseases and ignore severity and duration, so they cannot be added or ranked across programs targeting heart disease, diabetes, and mental health."
+        "text": "QALYs and value benchmarks ($50K/$100K/$150K per QALY) are used in Cost-Effectiveness Analysis (CEA) to value daily health gains in care cohorts. VSL ($6.3M Low, $13.6M Central, $20.7M High) is used in Cost-Benefit Analysis (CBA) strictly to value prevented deaths across a population."
       }
     },
     {
       "@type": "Question",
-      "name": "What is the difference between a QALY and a DALY?",
+      "name": "How do we avoid double-counting when a client has both diabetes and depression?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A QALY measures health gained, with higher values better, while a DALY measures health lost to disease and premature death, with lower values better. Both put diverse conditions on a common scale."
+        "text": "Instead of adding two separate illness weights for the same person, assign one primary weight per client (50% chronic care at +0.025, 30% mental health at +0.040, 20% social needs at +0.020). Analysts can also use a single multi-symptom survey like the EQ-5D."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -946,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -965,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -981,793 +529,450 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab - Economic Evaluation</div>
-      <h1>Measuring Health in a Common Unit</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Comparing programs that target different diseases requires a common unit of health. Simple counts, such as cases prevented, cannot be compared across heart disease, diabetes, and mental health interventions because they measure different outcomes. The quality-adjusted life year (QALY) and the disability-adjusted life year (DALY) solve this by combining length and quality of life into a single metric. A QALY weights each year of life by a quality factor from zero to one, allowing diverse programs to be expressed on the same scale and ranked by the health they produce.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">How do you compare preventing one death to improving quality of life for hundreds? QALYs and DALYs convert different health outcomes into a common currency.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="data" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="the-problem" aria-pressed="false">The Problem</button></li>
-        <li><button class="panel-btn" data-panel="qalys-explained" aria-pressed="false">QALYs Explained</button></li>
-        <li><button class="panel-btn" data-panel="interactive-calculator" aria-pressed="false">Calculator</button></li>
-        <li><button class="panel-btn" data-panel="key-insight" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Resource Funding &amp; Economic Value
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Standardized Healthy Life-Years and Federal Life Valuations Place Modeled Programs on Comparable Ledgers
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Putting modeled chronic care, mental health aid, and saved lives into shared budget units.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        Comparing county funding plans across blood sugar clinics, mental health aid, and disease control on separate chart scores leaves budget staff without a shared unit to rank health gains. Putting outcomes into common units shows that a modeled <strong>750-client Santa Clara Community Health Worker cohort</strong> produces <strong>40.04 healthy life-years per year ($4.00M at $100K per year),</strong> while county prevention saves lives at <strong>$109,000 each (125:1 return at $13.6M per life).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Relying only on lab tests undervalues mental health and social aid, which have no blood test yet bring <strong>54.5% (21.83 of 40.04 healthy years)</strong> of modeled gains.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Keeping healthy years and saved-life values on separate ledgers avoids double-counting.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Turning Clinic &amp; Public Health Scores into Shared Budget Units</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Mapping four county health streams from clinic chart scores into parallel QALY and VSL units.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Comparison of four health streams from natural clinic scores into health weights, QALYs, VSL dollars, and return ratios.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Valuation Step
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stream 1: Care (50%)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Chronic Care Control</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stream 2: Care (50%)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Mental &amp; Social Aid</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stream 3: Full Cohort</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Full 750-Client Panel</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stream 4: Deaths (LHA)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">County Death Drop</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Valuation Rule &amp; Group
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CEA: QALYs at $50K/$100K/$150K; 375 chronic care clients/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CEA: QALYs at $50K/$100K/$150K; 225 MH + 150 SDOH = 375 clients/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CEA: QALYs at $50K/$100K/$150K; 750-client CHW panel/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CBA: HHS 2025 VSL $6.3M / $13.6M / $20.7M; 1.94M SCC residents</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Natural Clinic Score
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">HbA1c %, BP mmHg, +25% screening</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">PHQ-9 mood &amp; Z55-Z65 social codes</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-22% ED, -30% IP, -23% Readmit</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">9.16 fewer deaths / 100K per $10/cap</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Base Health Score
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.74 to 0.75 chronic base</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.74 high-need Medi-Cal base</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.40 hospital stay vs. 0.75 stable</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.00 death endpoint</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Yearly Health Lift or Lives Saved
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.025 QALY / yr per client</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.040 (MH) &amp; +0.020 (SDOH) / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.0275 / yr weighted mean</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.74 lives / yr</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">per $19.36M SCC</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Discounted Multi-Year Unit
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.0486/client</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">18.21 QALYs/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.0777 MH / 0.0389 SDOH</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">21.83/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.0534/client</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">40.04 QALYs/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">9.16 lives / 100K</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$109K / life</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Dollar Value
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$1,821,046 / yr QALY Val.</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$2,183,037 / yr QALY Val.</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 16%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$4,004,083 / yr Total QALY</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 29%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$13.6M / Life</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$6.3M-$20.7M</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Value-to-Cost Ratio
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">2.70 : 1</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">at λ = $100K/QALY</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">3.23 : 1</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">at λ = $100K/QALY</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">2.85 : 1 QALY</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2.58:1 HCUP</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">125 : 1</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">58:1 Low to 190:1 High</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Rows marked with <strong class="text-slate-800">*</strong> apply published fee rates or trial parameters to observed baseline data. Open the notes below for full formulas and data sources.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Chronic Care Control.</strong> 375 of 750 CHW Clients / Yr. <strong>Mental &amp; Social Aid.</strong> 225 MH + 150 SDOH Clients / Yr. <strong>Full 750-Client Panel.</strong> Health Lift + Bed Offsets. <strong>County Death Drop.</strong> 1.94M Santa Clara Pop ($10/cap).</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A: Two Parallel Scales, Cohort QALYs (N = 750) and Population VSL (1.94M), Never Summed. Ruler 1: Daily Health Ruler (Discounted QALYs): <strong>0.0534 QALYs / Client ($4.0M Cohort)</strong>. From a <strong>0.74</strong> base health score (0 = dead, 1 = full health), weighted yearly gains (50% chronic at <strong>+0.025</strong>, 30% mental health at <strong>+0.040</strong>, 20% social needs at <strong>+0.020</strong> = <strong>+0.0275/yr</strong>) over 2 years (3% discount) yield <strong>40.04 QALYs/yr</strong> (worth <strong>$4.00M</strong> at $100K/QALY). Ruler 2: Saved-Life Value Ruler (HHS 2025 VSL Tiers): <strong>$13.6M Central VSL (125:1 BCR)</strong>. For county deaths (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">Cholette et al., 2026</a>: <strong>9.16 fewer deaths/100K per $10/person</strong> = <strong>$109,000/life saved</strong>), <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS 2025 VSL</a> tiers value each saved life at <strong>$6.3M (58:1)</strong>, <strong>$13.6M (125:1)</strong>, or <strong>$20.7M (190:1)</strong>.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Shared Unit Rules, Double-Count Limits &amp; Policy Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How analysts avoid double-counting and match the unit to the budget choice.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Comparison of shared unit rules, double-count limits, score ranges, and policy fit across four streams.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Choice
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Chronic Care Control
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Mental &amp; Social Aid
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Full 750-Client Panel
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                County Death Drop
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why Shared Units Aid Budget Choices
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Lets clinics compare a 0.5% HbA1c drop against asthma or blood pressure care.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Mental health aid brings 43.7% of cohort QALYs despite no lab test.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Places daily health gains beside avoided hospital bed days.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Turns death drops into dollar returns.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Double-Counting Limit
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Give one primary health weight per client instead of adding two illness weights.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Keep caseload shares separate.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Do not count hospital bill savings in both the top and bottom of a cost ratio.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Apply the $13.6M VSL only to saved lives, never to daily QALY gains.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Score Range &amp; Sensitivity
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Varying the assumed chronic weight from +0.015 to +0.035 shifts QALYs by ±40%.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Health gains last 2.0 years in the base run.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Hospital stays cut the health score from 0.75 to 0.40.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Federal life values span $6.3M, $11.2M EPA, and $20.7M.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Recommended Policy Use
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Clinic &amp; Health Plan Quality Teams<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use chronic QALYs to support CPT 98960 staffing.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">CalAIM &amp; Mental Health Programs<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use mental and social weights for G0019/G0022 aid.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Hospital &amp; Health System Leaders<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Show cohort QALY value beside HCUP bed savings.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">County Boards &amp; State Lawmakers<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use HHS VSL tiers to support base budgets.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Weighted QALY Math &amp; HHS 2025 VSL Tiers</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Weighted QALY Math (Mode A Scenario Assumptions):</strong> Across 750 clients, the three illustrative cohort streams yield <strong>18.21 QALYs per year</strong> (375 chronic care clients at +0.025/yr), <strong>17.49 QALYs per year</strong> (225 mental health clients at +0.040/yr), and <strong>4.34 QALYs per year</strong> (150 social needs clients at +0.020/yr). Discounted over 2 years at 3.0% per year (factor 1.9417 on a +0.0275 yearly lift), this gives <strong>0.0534 QALYs per client</strong>, or <strong>40.0404252 QALYs per year (40.04 rounded)</strong> across 750 clients.</p>
+          <p>&bull; <strong>HHS 2025 VSL &amp; LHA Death Math (Mode B):</strong> At 9.16 fewer deaths per 100,000 per $10 spent (-0.9158 per $1), the cost per saved life is $10 / (9.158 / 100,000) = <strong>$109,170 ($109,000 rounded)</strong>. This gives return ratios of <strong>58:1 ($6.3M Low)</strong>, <strong>125:1 ($13.6M Central)</strong>, and <strong>190:1 ($20.7M High)</strong>.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Why Shared Units Aid Budget Choices (County Death Drop).</strong> Turns death drops (-9.16 per 100K) into dollar returns ($125 per $1 spent). &middot; <strong>Double-Counting Limit (Mental &amp; Social Aid).</strong> Keep caseload shares separate (50% chronic, 30% mental, 20% social = 100%). &middot; <strong>Score Range &amp; Sensitivity (Mental &amp; Social Aid).</strong> Health gains last 2.0 years in the base run (1.0 to 3.0 years in range checks). &middot; <strong>Score Range &amp; Sensitivity (Full 750-Client Panel).</strong> Hospital stays cut the health score from 0.75 to 0.40 (-0.35 acute drop). &middot; <strong>Score Range &amp; Sensitivity (County Death Drop).</strong> Federal life values span $6.3M (58:1), $11.2M EPA (103:1), and $20.7M (190:1). &middot; <strong>Recommended Policy Use (Chronic Care Control).</strong> Use chronic QALYs (+0.025/yr, $4,859 value) to support CPT 98960 staffing. &middot; <strong>Recommended Policy Use (County Death Drop).</strong> Use HHS VSL tiers ($6.3M to $20.7M, 58:1 to 190:1) to support base budgets.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Resource Funding &amp; Economic Value &middot; QALYs &amp; VSL Valuation (Mode A Standardization)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Healthy Life-Year Gains (QALYs):</strong> <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Second Panel on Cost-Effectiveness in Health and Medicine</a>. We use a 3% yearly discount rate across 750 Santa Clara clients under <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a>. A weighted health lift of +0.0275 per year over 2 years gives 0.0534 QALYs per client. That totals 40.04 QALYs per year, worth $4.00M at $100K per QALY.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Caseload Share Split (Mode A Scenario Assumptions):</strong> Each client gets one main weight in this illustrative cohort scenario: 50% chronic care (+0.025/yr = 18.21 QALYs/yr), 30% mental health (+0.040/yr = 17.49 QALYs/yr), and 20% social needs (+0.020/yr = 4.34 QALYs/yr).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Federal Life Value Tiers (HHS 2025 VSL):</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS ASPE 2025 VSL Schedule</a>. Values are $6.3M Low (58:1 return), $13.6M Central (125:1 return), and $20.7M High (190:1 return) at $109,000 per life saved.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. EPA Mortality Risk Valuation ($11.2M VSL)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS SPA 22-0001</a></li>
+              <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline font-semibold">Cholette et al., 2026</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">How Shared Units Keep Upstream Care from Being Priced at Zero</h3>
+            <p class="text-slate-800">In county health budgets, services with direct billing codes or lab blood tests easily win funding because their outputs are simple to count. Meanwhile, mental health aid, social-needs outreach, and countywide disease tracking face an uphill case. Without a shared unit, a budget office has no clear way to weigh a 20-person depression outreach team against a diabetes clinic or an environmental health unit.</p>
+            <p class="text-slate-800">Turning daily health gains into QALYs and saved lives into HHS Value of a Statistical Life (VSL) tiers levels the playing field. It shows that mental health and social outreach bring more than half (54.5%, or 21.83 of 40.04 QALYs/yr) of a CHW cohort's total quality-of-life gain. At the same time, countywide public health spending saves lives at $109,000 each, returning $58 to $190 in social value per $1 spent.</p>
+          </div>
+          <p><strong>Mode Classification (Mode B Federal Schedules &amp; LHA Slopes + Mode A Cohort QALY Scenario):</strong> HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M), U.S. value benchmarks ($50K / $100K / $150K per QALY), and the CAPHE LHA death slope (-9.16 per 100K per $10 spent) are Mode B facts. Cohort QALY parameters (+0.025/yr chronic, +0.040/yr mental health, +0.020/yr social needs across a 50%/30%/20% split at $1,800/client ongoing cost) and totals (40.04 QALYs/yr across 750 clients, or 0.0534 QALYs/client over 2 years at 3% discounting) are illustrative Mode A scenario assumptions.</p>
+          <p><strong>Primary References &amp; Data Sources:</strong> See <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Department of Health and Human Services (HHS) ASPE Guidelines for Regulatory Impact Analysis (2025 VSL Schedule)</a> and <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. EPA Mortality Risk Valuation ($11.2M VSL)</a>. We also use the <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Second Panel on Cost-Effectiveness in Health and Medicine (3% discount standard)</a> and <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What is a Quality-Adjusted Life Year (QALY) and how is it calculated?</dt>
+                <dd class="text-slate-700 mt-0.5">A QALY combines length of life and daily health quality into one unit, where 1.00 is one year in full health and 0.00 is death. If an outreach team lifts a client's health score from 0.74 to 0.7675 (+0.0275 per year) for 2 years, it produces 0.0534 discounted QALYs at a 3% yearly discount rate.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">When should analysts use QALYs ($50K-$150K/QALY) versus the Value of a Statistical Life ($13.6M VSL)?</dt>
+                <dd class="text-slate-700 mt-0.5">QALYs and value benchmarks ($50K/$100K/$150K per QALY) are used in Cost-Effectiveness Analysis (CEA) to value daily health gains in care cohorts. VSL ($6.3M Low, $13.6M Central, $20.7M High) is used in Cost-Benefit Analysis (CBA) strictly to value prevented deaths across a population.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How do we avoid double-counting when a client has both diabetes and depression?</dt>
+                <dd class="text-slate-700 mt-0.5">Instead of adding two separate illness weights for the same person, assign one primary weight per client (50% chronic care at +0.025, 30% mental health at +0.040, 20% social needs at +0.020). Analysts can also use a single multi-symptom survey like the EQ-5D.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/cost-effectiveness-ratio" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Calculating ICERs & Net Monetary Benefit</a></li>
+          <li class="my-2"><a href="/methods-lab/sensitivity-analysis-cea" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Way VSL & CI Sensitivity Analysis</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact vs. Long-Run ROI</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-data" class="panel active" aria-labelledby="panel-data-heading">
-        <div class="panel-header">
-          <h2 id="panel-data-heading">The Data</h2>
-          <p class="panel-intro">
-            A health department must choose between three programs, each targeting a different condition. The outcomes differ in type and magnitude. Which provides the most health benefit? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="program-cards">
-          <div class="program-card program-a">
-            <h3>Program A: Heart Disease Prevention</h3>
-            <div class="program-metric">
-              <span class="metric-label">Deaths prevented</span>
-              <span class="metric-value">12 per year</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Average age at death</span>
-              <span class="metric-value">68 years</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Life expectancy</span>
-              <span class="metric-value">78 years</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Annual cost</span>
-              <span class="metric-value">$1.2M</span>
-            </div>
-          </div>
-
-          <div class="program-card program-b">
-            <h3>Program B: Diabetes Management</h3>
-            <div class="program-metric">
-              <span class="metric-label">People treated</span>
-              <span class="metric-value">400 per year</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Quality improvement</span>
-              <span class="metric-value">Mild to moderate</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Years of benefit</span>
-              <span class="metric-value">10 years each</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Annual cost</span>
-              <span class="metric-value">$1.2M</span>
-            </div>
-          </div>
-
-          <div class="program-card program-c">
-            <h3>Program C: Mental Health Services</h3>
-            <div class="program-metric">
-              <span class="metric-label">People treated</span>
-              <span class="metric-value">200 per year</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Quality improvement</span>
-              <span class="metric-value">Moderate to major</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Years of benefit</span>
-              <span class="metric-value">5 years each</span>
-            </div>
-            <div class="program-metric">
-              <span class="metric-label">Annual cost</span>
-              <span class="metric-value">$1.2M</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <svg id="outcomes-chart" class="chart-svg" role="img" aria-label="Bar chart comparing program outcomes across different metrics"></svg>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>At First Glance</h4>
-              <div class="stat-item" style="text-align: left; padding: var(--space-sm) 0;">
-                <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin: 0;">
-                  Program A saves lives. Program B helps more people. Program C has the largest individual impact.
-                </p>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>The challenge:</strong> These outcomes are measured in different units. How do we compare 12 lives saved to 400 people with better diabetes control to 200 people with improved mental health?
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Why comparing raw outcomes can lead to poor decisions.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: THE PROBLEM
-           ========================================== -->
-      <section id="panel-the-problem" class="panel" aria-labelledby="panel-problem-heading">
-        <div class="panel-header">
-          <h2 id="panel-problem-heading">The Problem</h2>
-          <p class="panel-intro">
-            Raw outcome counts obscure important differences. A death prevented is not equivalent to a quality-of-life improvement. The magnitude and duration of benefits matter.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="explanation-wrapper">
-            <h3>What Gets Lost in Simple Counts</h3>
-            <table class="comparison-table">
-              <thead>
-                <tr>
-                  <th>What We Measure</th>
-                  <th>What It Misses</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>"12 deaths prevented"</td>
-                  <td>At what age? How many years of life gained?</td>
-                </tr>
-                <tr>
-                  <td>"400 people treated"</td>
-                  <td>How much did their quality of life improve?</td>
-                </tr>
-                <tr class="table-highlight">
-                  <td>"Moderate improvement"</td>
-                  <td>What does "moderate" mean in comparable terms?</td>
-                </tr>
-                <tr>
-                  <td>"10 years of benefit"</td>
-                  <td>Full health for 10 years, or partial benefit?</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <p style="margin-top: var(--space-lg); color: var(--color-text-secondary);">
-              Standard metrics include mortality reduction, incidence rates, and relative risk. Economics asks: <strong>What is the total health gain, measured in a way that allows comparison across conditions?</strong>
-            </p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>The Comparability Problem</h4>
-              <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-                Program A prevents deaths. Program B improves quality of life. Both matter. But to allocate limited resources, we need a common metric.
-              </p>
-            </div>
-
-            <div class="explanation-card">
-              <h4>Duration Matters</h4>
-              <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-                Saving the life of a 30-year-old yields more life-years than saving a 70-year-old. Quality improvements lasting 10 years exceed those lasting 2 years.
-              </p>
-            </div>
-
-            <div class="key-insight">
-              <strong>The economist's approach:</strong> Convert all health outcomes into a single unit that captures both quantity of life (years) and quality of life (health state).
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How QALYs and DALYs solve this measurement problem.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: QALYs EXPLAINED
-           ========================================== -->
-      <section id="panel-qalys-explained" class="panel" aria-labelledby="panel-qalys-heading">
-        <div class="panel-header">
-          <h2 id="panel-qalys-heading">QALYs and DALYs Explained</h2>
-          <p class="panel-intro">
-            Quality-Adjusted Life Years (QALYs) and Disability-Adjusted Life Years (DALYs) are two approaches to the same goal: measuring health in a common unit.
-          </p>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is a QALY?</h3>
-          <p>A <strong>Quality-Adjusted Life Year</strong> combines length of life with quality of life into a single measure.</p>
-          <ul>
-            <li><strong>1 QALY</strong> = one year of life in perfect health</li>
-            <li><strong>0.5 QALYs</strong> = one year at 50% health (e.g., moderate disability)</li>
-            <li><strong>0 QALYs</strong> = death (no life-years)</li>
-          </ul>
-          <div class="formula-box">
-            <div class="formula">QALYs = Years of Life x Quality Weight (0 to 1)</div>
-          </div>
-          <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-            Quality weights come from population surveys that ask people to value different health states. A health state rated 0.8 means people consider it 80% as good as perfect health.
-          </p>
-        </div>
-
-        <div class="qaly-grid">
-          <div class="qaly-example">
-            <h4>QALYs: What We Gain</h4>
-            <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-              QALYs measure health gained. Higher is better. Used in cost-effectiveness analysis to calculate cost per QALY gained.
-            </p>
-            <div class="qaly-visual">
-              <div class="qaly-bar good" style="width: 75%;"></div>
-              <span class="qaly-label">0.75 QALYs/year</span>
-            </div>
-            <p style="font-size: 0.85rem; margin-top: var(--space-md);">
-              <strong>Example:</strong> Living 10 years at quality 0.75 = 7.5 QALYs
-            </p>
-          </div>
-
-          <div class="qaly-example daly">
-            <h4>DALYs: What We Lose</h4>
-            <p style="font-size: 0.9rem; color: var(--color-text-secondary);">
-              DALYs measure health lost. Lower is better. Used in global burden of disease studies. DALY = Years of Life Lost + Years Lived with Disability.
-            </p>
-            <div class="qaly-visual">
-              <div class="qaly-bar lost" style="width: 40%;"></div>
-              <span class="qaly-label">0.40 DALYs lost</span>
-            </div>
-            <p style="font-size: 0.85rem; margin-top: var(--space-md);">
-              <strong>Example:</strong> A condition causing 40% disability for 5 years = 2 DALYs lost
-            </p>
-          </div>
-        </div>
-
-        <div style="background: var(--color-bg); border-radius: var(--radius-lg); padding: var(--space-xl); margin-top: var(--space-xl); box-shadow: var(--shadow-md);">
-          <h3>How Programs Compare in QALYs</h3>
-          <table class="comparison-table" style="margin-top: var(--space-md);">
-            <thead>
-              <tr>
-                <th>Program</th>
-                <th>Raw Outcome</th>
-                <th>Calculation</th>
-                <th>QALYs Gained</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>A: Heart Disease</strong></td>
-                <td>12 deaths prevented</td>
-                <td>12 x 10 years x 0.9 quality</td>
-                <td id="program-a-qalys" style="font-family: var(--font-mono); font-weight: 600;">108</td>
-              </tr>
-              <tr>
-                <td><strong>B: Diabetes</strong></td>
-                <td>400 treated</td>
-                <td>400 x 10 years x 0.15 gain</td>
-                <td id="program-b-qalys" style="font-family: var(--font-mono); font-weight: 600;">600</td>
-              </tr>
-              <tr>
-                <td><strong>C: Mental Health</strong></td>
-                <td>200 treated</td>
-                <td>200 x 5 years x 0.25 gain</td>
-                <td id="program-c-qalys" style="font-family: var(--font-mono); font-weight: 600;">250</td>
-              </tr>
-            </tbody>
-          </table>
-          <p style="font-size: 0.9rem; color: var(--color-text-secondary); margin-top: var(--space-md);">
-            Program B produces the most QALYs despite not preventing any deaths. The diabetes management program helps more people for a longer time, accumulating more total health gain.
-          </p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Try the calculator to see how changing assumptions affects which program looks best.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: INTERACTIVE CALCULATOR
-           ========================================== -->
-      <section id="panel-interactive-calculator" class="panel" aria-labelledby="panel-calc-heading">
-        <div class="panel-header">
-          <h2 id="panel-calc-heading">QALY Calculator</h2>
-          <p class="panel-intro">
-            Adjust the assumptions for each program to see how sensitive the comparison is to these values. Quality weights and life expectancy can shift which program produces the most health benefit.
-          </p>
-        </div>
-
-        <div class="calculator-container">
-          <div class="calculator-panel" style="border-top: 4px solid var(--color-secondary);">
-            <h3 style="color: var(--color-secondary); margin-bottom: var(--space-lg);">Program A: Heart Disease Prevention</h3>
-
-            <div class="calc-input-group">
-              <label>Deaths Prevented Per Year</label>
-              <div class="slider-container">
-                <input type="range" class="slider" id="deaths-prevented" min="5" max="25" value="12" aria-label="Enter number of deaths prevented">
-                <span class="slider-value" id="deaths-prevented-value">12</span>
-              </div>
-            </div>
-
-            <div class="calc-input-group">
-              <label>Years of Life Gained Per Death Prevented</label>
-              <div class="hint">Based on age at death vs. life expectancy</div>
-              <div class="slider-container">
-                <input type="range" class="slider" id="years-gained" min="5" max="20" value="10" aria-label="Enter years of life gained per death prevented">
-                <span class="slider-value" id="years-gained-value">10</span>
-              </div>
-            </div>
-
-            <div class="calc-input-group">
-              <label>Quality of Added Life Years</label>
-              <div class="hint">1.0 = perfect health, 0.5 = moderate disability</div>
-              <div class="slider-container">
-                <input type="range" class="slider" id="quality-a" min="50" max="100" value="90" aria-label="Enter quality of life adjustment for Program A">
-                <span class="slider-value" id="quality-a-value">0.90</span>
-              </div>
-            </div>
-
-            <div class="calc-results">
-              <div class="calc-result-row">
-                <span class="calc-result-label">Deaths x Years x Quality</span>
-                <span class="calc-result-value" id="calc-a-formula">12 x 10 x 0.90</span>
-              </div>
-              <div class="calc-result-row">
-                <span class="calc-result-label">Total QALYs Gained</span>
-                <span class="calc-result-value" id="calc-a-total">108</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="calculator-panel" style="border-top: 4px solid var(--color-accent);">
-            <h3 style="color: var(--color-accent); margin-bottom: var(--space-lg);">Program B: Diabetes Management</h3>
-
-            <div class="calc-input-group">
-              <label>People Treated Per Year</label>
-              <div class="slider-container">
-                <input type="range" class="slider" id="people-treated-b" min="100" max="600" step="50" value="400" aria-label="Enter number of people treated by Program B">
-                <span class="slider-value" id="people-treated-b-value">400</span>
-              </div>
-            </div>
-
-            <div class="calc-input-group">
-              <label>Years of Benefit Per Person</label>
-              <div class="slider-container">
-                <input type="range" class="slider" id="years-benefit-b" min="2" max="20" value="10" aria-label="Enter years of benefit per person for Program B">
-                <span class="slider-value" id="years-benefit-b-value">10</span>
-              </div>
-            </div>
-
-            <div class="calc-input-group">
-              <label>Quality Improvement (QALY gain per year)</label>
-              <div class="hint">0.10 = small improvement, 0.30 = major improvement</div>
-              <div class="slider-container">
-                <input type="range" class="slider" id="quality-b" min="5" max="40" value="15" aria-label="Enter quality of life adjustment for Program B">
-                <span class="slider-value" id="quality-b-value">0.15</span>
-              </div>
-            </div>
-
-            <div class="calc-results">
-              <div class="calc-result-row">
-                <span class="calc-result-label">People x Years x Quality Gain</span>
-                <span class="calc-result-value" id="calc-b-formula">400 x 10 x 0.15</span>
-              </div>
-              <div class="calc-result-row">
-                <span class="calc-result-label">Total QALYs Gained</span>
-                <span class="calc-result-value" id="calc-b-total">600</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="comparison-result" id="comparison-result">
-          <h4>Current Comparison</h4>
-          <div class="comparison-bars">
-            <div class="comparison-bar-item">
-              <span class="comparison-bar-label">Program A</span>
-              <div class="comparison-bar-track">
-                <div class="comparison-bar-fill program-a" id="bar-a" style="width: 18%;"><span id="bar-a-label">108</span></div>
-              </div>
-            </div>
-            <div class="comparison-bar-item">
-              <span class="comparison-bar-label">Program B</span>
-              <div class="comparison-bar-track">
-                <div class="comparison-bar-fill program-b" id="bar-b" style="width: 100%;"><span id="bar-b-label">600</span></div>
-              </div>
-            </div>
-          </div>
-          <p style="margin-top: var(--space-lg); font-size: 0.9rem; opacity: 0.9;" id="comparison-text">
-            Program B produces 5.6x more QALYs than Program A at the same cost.
-          </p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What this means for policy decisions and resource allocation.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-key-insight" class="panel" aria-labelledby="panel-insight-heading">
-        <div class="panel-header">
-          <h2 id="panel-insight-heading">Key Insight</h2>
-          <p class="panel-intro">
-            QALYs and DALYs enable comparisons that raw outcome counts cannot. They reveal trade-offs that matter for resource allocation.
-          </p>
-        </div>
-
-        <div class="insight-grid">
-          <div class="insight-card">
-            <h4>Why Mortality Alone Misleads</h4>
-            <p>A program that prevents 12 deaths sounds more impactful than one that "improves quality of life." But when we account for the number of people helped and the duration of benefit, quality-of-life programs often produce more total health gain.</p>
-          </div>
-
-          <div class="insight-card">
-            <h4>Assumptions Drive Conclusions</h4>
-            <p>The calculator showed how changing quality weights or duration shifts the comparison. These values come from studies, but they involve judgment. Sensitivity analysis reveals which assumptions matter most.</p>
-          </div>
-
-          <div class="insight-card">
-            <h4>Common Units Enable Trade-offs</h4>
-            <p>Health departments face real trade-offs. Spending on one program means not spending on another. QALYs provide a framework for making these comparisons explicit rather than implicit.</p>
-          </div>
-
-          <div class="insight-card">
-            <h4>Limitations Remain</h4>
-            <p>QALYs assume a QALY is equally valuable regardless of who receives it. Some argue a QALY for a severely ill person should count more. Equity considerations require additional analysis.</p>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Quality-Adjusted Life Years (QALYs):</strong> A measure combining quantity and quality of life, where 1 QALY = 1 year of perfect health</div>
-            <div class="concept-item"><strong>Disability-Adjusted Life Years (DALYs):</strong> A measure of health lost, combining years of life lost and years lived with disability</div>
-            <div class="concept-item"><strong>Quality weights:</strong> Values (0 to 1) representing how desirable a health state is relative to perfect health</div>
-            <div class="concept-item"><strong>Comparability problem:</strong> The challenge of comparing outcomes measured in different units</div>
-            <div class="concept-item"><strong>Sensitivity analysis:</strong> Testing how conclusions change when assumptions vary</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Preventing deaths is not automatically more valuable than improving quality of life.</strong> When we convert outcomes to a common unit, programs that help many people for longer periods often produce more total health gain than programs preventing fewer deaths. This does not mean lives saved matter less. It means that thoughtful resource allocation requires measuring all health benefits in comparable terms. <strong>This is what economists mean by "opportunity cost" in health.</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Value for Money track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/cost-effectiveness-ratio" style="color:#0041A5;font-weight:600;">The Cost-Effectiveness Ratio</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/comparator-choice" style="color:#0041A5;font-weight:600;">Choosing the Comparator</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/decision-thresholds" style="color:#0041A5;font-weight:600;">Decision Thresholds</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Sanders GD, et al. Recommendations for Conduct, Methodological Practices, and Reporting of Cost-Effectiveness Analyses: Second Panel on Cost-Effectiveness in Health and Medicine. JAMA. 2016;316(10):1093-1103. <a href="https://pubmed.ncbi.nlm.nih.gov/27623463/" target="_blank" rel="noopener">pubmed.ncbi.nlm.nih.gov</a></li>
-            <li>National Institute for Health and Care Excellence. NICE Health Technology Evaluations: The Manual (PMG36). <a href="https://www.nice.org.uk/process/pmg36/chapter/introduction-to-health-technology-evaluation" target="_blank" rel="noopener">nice.org.uk</a></li>
-            <li>Institute for Clinical and Economic Review. Value Assessment Framework. <a href="https://icer.org/our-approach/methods-process/value-assessment-framework/" target="_blank" rel="noopener">icer.org</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> - California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual program outcomes.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let outcomesChartInitialized = false;
-    let calculatorInitialized = false;
-
-    function showPanel(panelName) {
-      // Update button states
-      panelBtns.forEach(btn => {
-        const isActive = btn.dataset.panel === panelName;
-        btn.classList.toggle('active', isActive);
-        btn.setAttribute('aria-pressed', isActive.toString());
-      });
-
-      // Update panel visibility
-      panels.forEach(panel => {
-        const panelId = panel.id.replace('panel-', '');
-        panel.classList.toggle('active', panelId === panelName);
-      });
-
-      // Initialize charts when panel becomes visible
-      if (panelName === 'data' && !outcomesChartInitialized) {
-        setTimeout(() => {
-          renderOutcomesChart();
-          outcomesChartInitialized = true;
-        }, 50);
-      }
-
-      if (panelName === 'interactive-calculator' && !calculatorInitialized) {
-        setTimeout(() => {
-          initCalculator();
-          calculatorInitialized = true;
-        }, 50);
-      }
-    }
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        showPanel(btn.dataset.panel);
-      });
-    });
-
-    /* ============================================
-       2. OUTCOMES CHART (Panel 1)
-       ============================================ */
-    function renderOutcomesChart() {
-      const svg = document.getElementById('outcomes-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 600;
-      const height = svg.clientHeight || 400;
-      const margin = { top: 60, right: 30, bottom: 80, left: 80 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const programs = [
-        { name: 'Program A', metric: 'Deaths Prevented', value: 12, color: 'var(--color-secondary)' },
-        { name: 'Program B', metric: 'People Treated', value: 400, color: 'var(--color-accent)' },
-        { name: 'Program C', metric: 'People Treated', value: 200, color: 'var(--color-primary)' }
-      ];
-
-      const maxValue = Math.max(...programs.map(p => p.value));
-      const barWidth = plotWidth / programs.length * 0.6;
-      const gap = plotWidth / programs.length * 0.4;
-
-      // Title
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      title.setAttribute('x', width / 2);
-      title.setAttribute('y', 20);
-      title.setAttribute('text-anchor', 'middle');
-      title.setAttribute('font-size', '14');
-      title.setAttribute('font-weight', '600');
-      title.setAttribute('fill', 'var(--color-text)');
-      title.textContent = 'Raw Outcomes by Program (Different Units)';
-      svg.appendChild(title);
-
-      // Y-axis label
-      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
-      yAxisLabel.setAttribute('y', 20);
-      yAxisLabel.setAttribute('transform', 'rotate(-90)');
-      yAxisLabel.setAttribute('text-anchor', 'middle');
-      yAxisLabel.setAttribute('font-size', '12');
-      yAxisLabel.setAttribute('fill', 'var(--color-text-secondary)');
-      yAxisLabel.textContent = 'Raw Value';
-      svg.appendChild(yAxisLabel);
-
-      programs.forEach((prog, i) => {
-        const barHeight = (prog.value / maxValue) * plotHeight;
-        const x = margin.left + i * (barWidth + gap) + gap / 2;
-        const y = margin.top + plotHeight - barHeight;
-
-        // Bar
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', y);
-        rect.setAttribute('width', barWidth);
-        rect.setAttribute('height', barHeight);
-        rect.setAttribute('fill', prog.color);
-        rect.setAttribute('rx', '4');
-        svg.appendChild(rect);
-
-        // Value label
-        const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        valueLabel.setAttribute('x', x + barWidth / 2);
-        valueLabel.setAttribute('y', y - 10);
-        valueLabel.setAttribute('text-anchor', 'middle');
-        valueLabel.setAttribute('font-size', '14');
-        valueLabel.setAttribute('font-weight', '600');
-        valueLabel.setAttribute('fill', 'var(--color-text)');
-        valueLabel.textContent = prog.value;
-        svg.appendChild(valueLabel);
-
-        // Program name
-        const nameLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        nameLabel.setAttribute('x', x + barWidth / 2);
-        nameLabel.setAttribute('y', height - margin.bottom + 20);
-        nameLabel.setAttribute('text-anchor', 'middle');
-        nameLabel.setAttribute('font-size', '12');
-        nameLabel.setAttribute('font-weight', '600');
-        nameLabel.setAttribute('fill', 'var(--color-text)');
-        nameLabel.textContent = prog.name;
-        svg.appendChild(nameLabel);
-
-        // Metric label
-        const metricLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        metricLabel.setAttribute('x', x + barWidth / 2);
-        metricLabel.setAttribute('y', height - margin.bottom + 38);
-        metricLabel.setAttribute('text-anchor', 'middle');
-        metricLabel.setAttribute('font-size', '10');
-        metricLabel.setAttribute('fill', 'var(--color-text-muted)');
-        metricLabel.textContent = prog.metric;
-        svg.appendChild(metricLabel);
-      });
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      // Note about incomparability
-      const note = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      note.setAttribute('x', width / 2);
-      note.setAttribute('y', height - 10);
-      note.setAttribute('text-anchor', 'middle');
-      note.setAttribute('font-size', '11');
-      note.setAttribute('font-style', 'italic');
-      note.setAttribute('fill', 'var(--color-text-muted)');
-      note.textContent = 'Note: These values cannot be directly compared (different units)';
-      svg.appendChild(note);
-    }
-
-    /* ============================================
-       3. INTERACTIVE CALCULATOR (Panel 4)
-       ============================================ */
-    function initCalculator() {
-      // Program A sliders
-      const deathsSlider = document.getElementById('deaths-prevented');
-      const yearsSlider = document.getElementById('years-gained');
-      const qualityASlider = document.getElementById('quality-a');
-
-      // Program B sliders
-      const peopleSlider = document.getElementById('people-treated-b');
-      const yearsBSlider = document.getElementById('years-benefit-b');
-      const qualityBSlider = document.getElementById('quality-b');
-
-      function updateCalculations() {
-        // Program A values
-        const deaths = parseInt(deathsSlider.value);
-        const yearsA = parseInt(yearsSlider.value);
-        const qualityA = parseInt(qualityASlider.value) / 100;
-
-        // Program B values
-        const people = parseInt(peopleSlider.value);
-        const yearsB = parseInt(yearsBSlider.value);
-        const qualityB = parseInt(qualityBSlider.value) / 100;
-
-        // Update display values
-        document.getElementById('deaths-prevented-value').textContent = deaths;
-        document.getElementById('years-gained-value').textContent = yearsA;
-        document.getElementById('quality-a-value').textContent = qualityA.toFixed(2);
-
-        document.getElementById('people-treated-b-value').textContent = people;
-        document.getElementById('years-benefit-b-value').textContent = yearsB;
-        document.getElementById('quality-b-value').textContent = qualityB.toFixed(2);
-
-        // Calculate QALYs
-        const qalyA = deaths * yearsA * qualityA;
-        const qalyB = people * yearsB * qualityB;
-
-        // Update formulas
-        document.getElementById('calc-a-formula').textContent = `${deaths} x ${yearsA} x ${qualityA.toFixed(2)}`;
-        document.getElementById('calc-b-formula').textContent = `${people} x ${yearsB} x ${qualityB.toFixed(2)}`;
-
-        // Update totals
-        document.getElementById('calc-a-total').textContent = Math.round(qalyA);
-        document.getElementById('calc-b-total').textContent = Math.round(qalyB);
-
-        // Update comparison bars
-        const maxQaly = Math.max(qalyA, qalyB);
-        const barA = document.getElementById('bar-a');
-        const barB = document.getElementById('bar-b');
-
-        barA.style.width = `${(qalyA / maxQaly) * 100}%`;
-        barB.style.width = `${(qalyB / maxQaly) * 100}%`;
-
-        document.getElementById('bar-a-label').textContent = Math.round(qalyA);
-        document.getElementById('bar-b-label').textContent = Math.round(qalyB);
-
-        // Update comparison text
-        const ratio = Math.max(qalyA, qalyB) / Math.min(qalyA, qalyB);
-        const winner = qalyB > qalyA ? 'B' : 'A';
-        document.getElementById('comparison-text').textContent =
-          `Program ${winner} produces ${ratio.toFixed(1)}x more QALYs than Program ${winner === 'A' ? 'B' : 'A'} at the same cost.`;
-      }
-
-      // Add event listeners
-      [deathsSlider, yearsSlider, qualityASlider, peopleSlider, yearsBSlider, qualityBSlider].forEach(slider => {
-        slider.addEventListener('input', updateCalculations);
-      });
-
-      // Initial calculation
-      updateCalculations();
-    }
-
-    /* ============================================
-       4. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Render initial chart
-      renderOutcomesChart();
-      outcomesChartInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          const activePanel = document.querySelector('.panel.active');
-          if (activePanel) {
-            const panelId = activePanel.id.replace('panel-', '');
-            if (panelId === 'data') {
-              renderOutcomesChart();
-            }
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

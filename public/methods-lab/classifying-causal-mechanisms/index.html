@@ -3,1063 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Causal Mechanisms: From Theory to Testable Design</title>
-  <meta name="description" content="Map competing causal explanations to research designs that can distinguish between them. Interactive tool for building testable causal frameworks.">
+  <title>Separating Mediators From Confounders | CAPHE</title>
+  <meta name="description" content="Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/classifying-causal-mechanisms">
-  <meta property="og:title" content="Causal Mechanisms: From Theory to Testable Design">
-  <meta property="og:description" content="Map competing causal explanations to research designs that can distinguish between them. Interactive tool for building testable causal frameworks.">
+  <meta property="og:title" content="Separating Mediators From Confounders | CAPHE">
+  <meta property="og:description" content="Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.caphegroup.org/methods-lab/classifying-causal-mechanisms">
-  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* Bridging question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
       margin: 0;
     }
-
-    /* ============================================
-       6. INTRO PANEL
-       ============================================ */
-    .intro-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .intro-container { grid-template-columns: 1fr; }
-    }
-
-    .content-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .content-card h3 {
-      margin-bottom: var(--space-lg);
-      color: var(--color-primary);
-    }
-
-    .scenario-box {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-lg);
-    }
-
-    .scenario-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-    }
-
-    .scenario-text {
-      font-size: 1.1rem;
-      font-style: italic;
-      color: var(--color-text);
-    }
-
-    .explanation-list {
-      list-style: none;
-    }
-
-    .explanation-item {
-      display: flex;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-sm);
-      border-left: 3px solid var(--color-secondary);
-    }
-
-    .explanation-number {
-      width: 28px;
-      height: 28px;
-      background: var(--color-secondary);
-      color: white;
-      border-radius: 50%;
+    .budget-bar-seg {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .explanation-text {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .sidebar-cards {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .info-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .info-card h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .info-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .insight-box {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       7. MECHANISM TYPES PANEL
-       ============================================ */
-    .mechanism-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--space-lg);
-    }
-
-    .mechanism-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      border-top: 4px solid var(--color-primary);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .mechanism-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .mechanism-card.confounding {
-      border-top-color: var(--color-warning);
-    }
-
-    .mechanism-card.reverse {
-      border-top-color: var(--color-accent);
-    }
-
-    .mechanism-card.selection {
-      border-top-color: var(--color-caution);
-    }
-
-    .mechanism-card.causal {
-      border-top-color: var(--color-success);
-    }
-
-    .mechanism-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: var(--space-md);
-      background: var(--color-bg-alt);
-    }
-
-    .mechanism-card.confounding .mechanism-icon { color: var(--color-warning); }
-    .mechanism-card.reverse .mechanism-icon { color: var(--color-accent); }
-    .mechanism-card.selection .mechanism-icon { color: var(--color-caution); }
-    .mechanism-card.causal .mechanism-icon { color: var(--color-success); }
-
-    .mechanism-card h3 {
-      margin-bottom: var(--space-sm);
-    }
-
-    .mechanism-card .mechanism-tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--space-md);
-    }
-
-    .mechanism-card.confounding .mechanism-tag {
-      background: rgba(245, 124, 0, 0.1);
-      color: var(--color-warning);
-    }
-
-    .mechanism-card.reverse .mechanism-tag {
-      background: rgba(249, 168, 37, 0.1);
-      color: var(--color-accent);
-    }
-
-    .mechanism-card.selection .mechanism-tag {
-      background: rgba(245, 127, 23, 0.1);
-      color: var(--color-caution);
-    }
-
-    .mechanism-card.causal .mechanism-tag {
-      background: rgba(46, 125, 50, 0.1);
-      color: var(--color-success);
-    }
-
-    .mechanism-example {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      font-style: italic;
-      margin-bottom: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-    }
-
-    .mechanism-test {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-
-    .mechanism-test strong {
-      color: var(--color-text);
-    }
-
-    /* ============================================
-       8. INTERACTIVE CLASSIFIER PANEL
-       ============================================ */
-    .classifier-container {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 1000px) {
-      .classifier-container { grid-template-columns: 1fr; }
-    }
-
-    .decision-tree {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .tree-progress {
-      display: flex;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-xl);
-      padding-bottom: var(--space-md);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .progress-step {
-      padding: var(--space-xs) var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-    }
-
-    .progress-step.active {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    .progress-step.completed {
-      background: var(--color-success);
-      color: white;
-    }
-
-    .tree-question {
-      margin-bottom: var(--space-xl);
-    }
-
-    .question-number {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-    }
-
-    .question-text {
-      font-size: 1.25rem;
-      font-family: var(--font-serif);
-      color: var(--color-primary-dark);
-      margin-bottom: var(--space-lg);
-    }
-
-    .question-hint {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
-    }
-
-    .answer-options {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .answer-btn {
-      padding: var(--space-lg);
-      background: var(--color-bg-alt);
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-    }
-
-    .answer-btn:hover {
-      border-color: var(--color-primary);
-      background: rgba(0, 65, 165, 0.05);
-    }
-
-    .answer-btn.selected {
-      border-color: var(--color-primary);
-      background: rgba(0, 65, 165, 0.1);
-    }
-
-    .classification-result {
-      display: none;
-      padding: var(--space-xl);
-      border-radius: var(--radius-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .classification-result.show {
-      display: block;
-    }
-
-    .classification-result.confounding {
-      background: rgba(245, 124, 0, 0.1);
-      border: 2px solid var(--color-warning);
-    }
-
-    .classification-result.reverse {
-      background: rgba(249, 168, 37, 0.1);
-      border: 2px solid var(--color-accent);
-    }
-
-    .classification-result.selection {
-      background: rgba(245, 127, 23, 0.1);
-      border: 2px solid var(--color-caution);
-    }
-
-    .classification-result.causal {
-      background: rgba(46, 125, 50, 0.1);
-      border: 2px solid var(--color-success);
-    }
-
-    .result-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: var(--space-sm);
-    }
-
-    .result-title {
-      font-size: 1.25rem;
-      font-family: var(--font-serif);
-      margin-bottom: var(--space-md);
-    }
-
-    .result-explanation {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .result-design {
-      padding: var(--space-md);
-      background: white;
-      border-radius: var(--radius-md);
-    }
-
-    .result-design h4 {
-      font-size: 0.85rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .result-design p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .tree-controls {
-      display: flex;
-      gap: var(--space-md);
-      margin-top: var(--space-xl);
-      padding-top: var(--space-md);
-      border-top: 1px solid var(--color-border-light);
-    }
-
-    .control-btn {
-      padding: var(--space-sm) var(--space-lg);
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: var(--color-bg);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .control-btn:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-    }
-
-    .control-btn.primary {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .control-btn.primary:hover {
-      background: var(--color-primary-dark);
-    }
-
-    .classifier-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .path-tracker {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .path-tracker h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .path-list {
-      list-style: none;
-    }
-
-    .path-item {
-      display: flex;
-      gap: var(--space-sm);
-      padding: var(--space-sm) 0;
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .path-item:last-child {
-      border-bottom: none;
-    }
-
-    .path-q {
-      color: var(--color-text-muted);
-      flex-shrink: 0;
-    }
-
-    .path-a {
-      color: var(--color-primary);
-      font-weight: 500;
-    }
-
-    .scenario-selector {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .scenario-selector h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .scenario-btn {
-      width: 100%;
-      padding: var(--space-md);
-      margin-bottom: var(--space-sm);
-      background: var(--color-bg-alt);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      text-align: left;
-      cursor: pointer;
-      font-family: var(--font-sans);
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-
-    .scenario-btn:hover {
-      border-color: var(--color-primary);
-    }
-
-    .scenario-btn.active {
-      border-color: var(--color-primary);
-      background: rgba(0, 65, 165, 0.05);
-    }
-
-    /* ============================================
-       9. DESIGN RECOMMENDATIONS PANEL
-       ============================================ */
-    .recommendations-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .recommendations-container { grid-template-columns: 1fr; }
-    }
-
-    .design-table-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      overflow-x: auto;
-    }
-
-    .design-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .design-table th,
-    .design-table td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .design-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      color: var(--color-primary-dark);
-      font-size: 0.85rem;
-    }
-
-    .design-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .design-table tr:hover td {
-      background: var(--color-bg-alt);
-    }
-
-    .mechanism-badge {
-      display: inline-block;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .mechanism-badge.confounding {
-      background: rgba(245, 124, 0, 0.1);
-      color: var(--color-warning);
-    }
-
-    .mechanism-badge.reverse {
-      background: rgba(249, 168, 37, 0.1);
-      color: #B8860B;
-    }
-
-    .mechanism-badge.selection {
-      background: rgba(245, 127, 23, 0.1);
-      color: var(--color-caution);
-    }
-
-    .mechanism-badge.causal {
-      background: rgba(46, 125, 50, 0.1);
-      color: var(--color-success);
-    }
-
-    .design-name {
-      font-weight: 500;
-      color: var(--color-primary);
-    }
-
-    .design-description {
-      color: var(--color-text-secondary);
-      font-size: 0.85rem;
-    }
-
-    .recommendations-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .decision-checklist {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .decision-checklist h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .checklist-item {
-      display: flex;
-      gap: var(--space-sm);
-      padding: var(--space-sm) 0;
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .checklist-icon {
-      color: var(--color-secondary);
-      flex-shrink: 0;
-    }
-
-    /* ============================================
-       10. KEY INSIGHT PANEL
-       ============================================ */
-    .insight-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: var(--space-xl);
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       11. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       12. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      white-space: nowrap;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      padding: 0 4px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .skip-link:focus {
-      top: 0;
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Interactive Tool: Classifying Causal Mechanisms",
-  "description": "Transform a list of possible explanations into testable research designs. Learn the economist's approach: map each causal story to a study design that can distinguish it from alternatives.",
+  "headline": "Post-Enrollment Clinic-Visit Controls Remove the Primary Care Pathway From Modeled Hospital Evaluations",
+  "description": "Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -1067,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -1078,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What are the four types of causal mechanisms?",
+      "name": "Why shouldn't an analyst control for post-start clinic visits when measuring whether CHWs cut hospital stays?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Confounding (a third factor causes both X and Y), reverse causation (Y influences X rather than the reverse), selection bias (being in the sample depends on X, Y, or both), and a true causal effect (X genuinely causes Y once alternatives are ruled out)."
+        "text": "Raising primary care visits (from 57.1% to 71.7% TOT, OR = 1.90) is a main care step through which CHWs prevent hospital stays (-30%). Controlling for post-start clinic visits holds that step fixed. That blocks part of the program path and understates total CHW value."
       }
     },
     {
       "@type": "Question",
-      "name": "How does classifying a mechanism help choose a research design?",
+      "name": "How can an analyst tell whether a variable is a confounder or a care step?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Each mechanism maps to designs suited to test it. Confounding calls for instrumental variables, regression discontinuity, or difference-in-differences; reverse causation calls for panel data, leads and lags, or event studies; selection bias calls for redefining the sample or bounds analysis."
+        "text": "Check the clock and the direction of cause. A confounder is set BEFORE the program starts (like baseline age, pre-program poverty, or county land area) and affects both participation and health. A care step changes AFTER the program starts because of the program."
       }
     },
     {
       "@type": "Question",
-      "name": "How does this approach differ from statistical control?",
+      "name": "What is an instrument, and why is it kept out of the outcome controls?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A statistics-focused approach lists possible confounders and adjusts for them. The economics approach classifies explanations by type and seeks variation in treatment that is independent of the classified threats, the identification strategy, rather than searching for the right adjustment."
+        "text": "An instrument shifts the policy input (here, county public health spending) without a direct path to the health outcome. It enters Stage 1 of two-stage least squares to isolate spending shifts that are not caused by death spikes. In the LHA panel of 57 California counties (2003-2023), the instruments have a first-stage F of 314.1 and Hansen J of 4.49 (p = 0.343). Adding an instrument as an outcome control would absorb the clean spending variation."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -1129,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -1148,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -1164,835 +529,436 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Advanced Methods</div>
-      <h1>Interactive Tool: Classifying Causal Mechanisms</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Classifying causal mechanisms means sorting the competing explanations for an observed correlation into distinct types so each can be matched to a research design that distinguishes it from the alternatives. The tutorial groups explanations into four categories: confounding (a common cause of both variables), reverse causation (the outcome influences the treatment), selection bias (sample membership depends on treatment or outcome), and a true causal effect. Each category implies a different identification strategy, so classification is the first step toward designing a study that can rule out rival mechanisms rather than merely adjusting for measured covariates.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Transform a list of possible explanations into testable research designs. Learn to map each causal story to a study design that can distinguish it from alternatives.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Problem</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Mechanism Types</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Classifier Tool</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Design Matching</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; System Dynamics &amp; Feedback
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Post-Enrollment Clinic-Visit Controls Remove the Primary Care Pathway From Modeled Hospital Evaluations
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Splitting pre-program background factors from care steps on the path in modeled hospital savings checks.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When an analyst models how food access links to diabetes while holding high blood pressure fixed, the regression drops part of the diet-to-disease path, while adjusting for baseline poverty isolates the income gap. In California Community Health Worker evaluations, leaving post-start clinic visits open keeps the full <strong>30% drop in hospital stays</strong> tied to a <strong>14.6 point rise in primary care visits (71.7% vs. 57.1%).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Controlling for post-start clinic visits removes that care path, while restricting a provider test set to <strong>55,018 active 2024 billers</strong> leaves only <strong>9 of 95 excluded providers</strong> (after <strong>90.5%</strong> exited before 2024).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Adjusting only for pre-program traits keeps the full policy impact intact.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Four Variable Roles in Health Policy Data and Models</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Each column uses a separate CAPHE dataset to show how variable roles guide model controls.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four-column grid showing the source file, causal path, estimate when left out or added as a control, base input, and model rule.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Variable Role
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 1: Confounder</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Baseline County Poverty</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 2: Care Step</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Primary Care Visits</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 3: Collider</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Active Billing Subset</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 4: Instrument</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Supply-Side Budget Shift</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Source File
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Food access tracts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">408 tracts</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CHW trial data</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">TOT rates</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Medicaid claims &amp; OIG list</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">County spending panel</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">57 counties</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Causal Path
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Poverty -> Distance &amp; Food Need</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CHW -> Clinic Visits -> Stays</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Bans -> Tenure <- Bill Features</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Shift -> Spending -> Deaths</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Result When Left Out
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance looks helpful</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-0.578 slope</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Total effect kept</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-30% stays</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Full list kept: 95 of 95 exclusions</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Same-year slope mixes outbreak aid</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Result When Added as Control
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance: -0.017 flat slope</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Direct part only</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">path dropped</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Active-only subset: 9 of 95 left</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Stage 1 use: 9.16 fewer deaths / 100K</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Base Input
+              </th>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Poverty explains 62.2% of gap</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 62%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">71.7% vs. 57.1% visits</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">1.90x</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Active months: 38.0th vs. 50.0th</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 38%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Holds across 46 of 47 models</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">97.9%</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 98%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Model Rule
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">ADD as baseline control</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">LEAVE OPEN in total model</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">DO NOT filter or control</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">USE in Stage 1 only</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode A Synthesis on Exact Source Statistics):</strong> Each column draws on a separate CAPHE dataset; the four roles are not estimated in one joint regression. Role 1: raw distance β = -0.578 (p &lt; 0.0001); with poverty controlled, distance β = -0.017 (p = 0.827); poverty model R² = 62.2%. Role 2: visit uptake 71.7% vs. 57.1%, OR = 1.90 (TOT). Role 3: full-universe screening AUC = 0.724 (95% CI 0.667-0.777) vs. observed active-only subgroup AUC = 0.442 (95% CI 0.212-0.664; exit-year reweighted AUC = 0.653). Role 4: -9.16 IV slope (first-stage F = 314.1; Hansen J = 4.49, p = 0.343; holds in 46 of 47 models; standardized per $10/capita in the LHA Calculator and labeled per $1/capita in working-paper Tables 1-5).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Baseline County Poverty.</strong> Shared Cause (X <- C -> Y) | N = 408 Santa Clara tracts (ACS); unit: tract. <strong>Primary Care Visits.</strong> Program Path (X -> M -> Y) | Santa Clara CHW cohort (TOT); unit: member. <strong>Active Billing Subset.</strong> Shared Effect (X -> K <- Y) | N = 488,032 Medicaid billing NPIs (55,018 active in 2024); unit: billing NPI. <strong>Supply-Side Budget Shift.</strong> Stage 1 Shift (Z -> X -> Y) | 57 CA counties, 2003-2023 panel; unit: county-year.</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Synthesis With Observed CAPHE Estimates as Base Inputs. Ruler 1: Model Controlling for the Care Step: <strong>Reports β_direct Only (Care Path α·γ Held Fixed)</strong>. Adding post-start primary care visits as a control holds the care step fixed. The model then reports only the direct part. It leaves out the gain that runs through the <strong>+14.6 point rise in clinic visits (71.7% vs. 57.1%)</strong>. Ruler 2: Path-Matched Model (Total Effect): <strong>Reports τ_total = β_direct + α·γ</strong>. Controlling only for pre-program traits like baseline poverty, and leaving clinic visits open, keeps the <strong>total effect</strong>. In the CHW trials, that total effect is a <strong>30% drop in hospital stays</strong>.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Decision Guide: When to Control, Leave Open, or Use Stage 1</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Choosing model controls that match each variable's role in county health evaluations.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision grid mapping each variable role to its timing, model choice, budget impact, and audit rule.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Confounder: Baseline Poverty
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Care Step: Primary Care Visits
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Collider: Active Billing Subset
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Instrument: Supply-Side Shift
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Timing &amp; Path Check
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Set before the program starts, such as baseline tract poverty.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Changed by the program on the way to health gains, such as CHW clinic visits.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A post-billing status where 90.5% of excluded billers exited before 2024.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Shifts county health spending in Stage 1 without a direct link to death rates.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Model Choice by Role
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Add baseline poverty as a control so income gaps do not slant store distance slopes.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Measure the CHW effect on hospital stays without controlling for post-start clinic visits.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Keep the full provider list instead of limiting the test set to 2024 active billers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Put the budget shift in Stage 1 and report first-stage strength in the table notes.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Consequence
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Skipping baseline controls can steer food grants toward high-income areas.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Controlling for clinic visits removes the care path and understates CHW hospital savings.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The 2024 active subset drops 86 of 95 excluded billers and falls below a coin-flip rank.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding the Stage 1 shift as a control absorbs the clean spending changes.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Audit Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Lock Pre-Program Controls<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Measure and control for background factors at baseline before enrollment starts.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Report Total Effect First<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Estimate the total program effect first, then show care-path shares in a second step.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Full List Totals<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Run full-list checks before looking at active-biller or admitted-patient subsets.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Instruments in Stage 1<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use instruments only in Stage 1 and never add them as outcome controls.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Over-Control Math, Collider &amp; Instrument Notes, Data Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Program Step Over-Control Math:</strong> Suppose treatment X shifts care step M (M = α·X + u) and Y = β_direct·X + γ·M + ε. The total effect of X on Y is τ_total = β_direct + α·γ. Adding M as a control estimates only β_direct. The share removed is α·γ / τ_total. It reaches 100% only when β_direct = 0. The CAPHE CHW inputs (71.7% vs. 57.1%, OR = 1.90; -30% hospital stays) do not split those two pieces.</p>
+          <p>&bull; <strong>Separate Datasets (Mode A Synthesis):</strong> The four columns show roles using four separate CAPHE files. Values are observed base inputs from each file. They are not from one joint regression and should not be compared across columns.</p>
+          <p>&bull; <strong>Subgroup Selection Note:</strong> In the linked Medicaid file, the 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls) show an observed screening AUC of 0.442 (95% CI 0.212-0.664), compared with 0.724 (95% CI 0.667-0.777) across all 487,479 providers and 0.653 when exit-year reweighted. Months Active has a SHAP correlation of r = -0.9009, and excluded providers sit at the 38.0th vs. 50.0th median peer percentile of active months, though with 9 active cases the subgroup difference does not isolate early exit as the sole cause.</p>
+          <p>&bull; <strong>Instrument &amp; Unit Note:</strong> Instruments play a different role from controls. In the LHA panel (57 California counties, 2003-2023), county budgets react to death rates. The 9.16 fewer deaths/100K IV estimate uses Lewbel (2012) instruments (first-stage F = 314.1, Hansen J = 4.49, p = 0.343) in Stage 1 of 2SLS instead of as outcome controls. Across source files, Tables 1-5 of lewbel_iv_results_section.tex label -9.158 per $1/capita, while Section 4.4 and lha-calculator.js standardize -9.16 per $10/capita (-0.916 per $1/capita).</p>
+          <p>&bull; <strong>Data Provenance:</strong> Inputs come from FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv and regression_model_statistics.csv (R² = 62.2%), METHODOLOGICAL_REVIEW_ARTICLES_5-12.md (disability OR = 1.76), CHWs/08_PhD_Final/DERIVATIONS.md and Kangovi et al. (2020) (71.7% vs. 57.1% TOT, OR = 1.90, -30% hospital stays), Mcaid/05_fraud_detection/paper/output/results.json (prospective_auc = 0.724, active_subset_auc = 0.442, shap_months_active_r; peer ranks in output/tables/tab_a3_base_rates.tex), and public/tools/lha-calculator/method.html (-9.158, F = 314.1, Hansen J = 4.49, p = 0.343, 57 counties, 2003-2023).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Timing &amp; Path Check (Baseline County Poverty).</strong> Set before the program starts, such as baseline tract poverty (62.2% of food need gap).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> System Dynamics &amp; Feedback &middot; Confounders, Program Steps, Colliders &amp; Instruments (Mode A Synthesis)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Pre-Program Baseline Confounders vs. Program Mechanisms:</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a> Santa Clara tract panel covers 408 tracts (baseline poverty explains 62.2% of food-need variance). <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), <em>Health Affairs</em></a> shows 71.7% vs. 57.1% primary care visits (OR = 1.90) and -30% hospital stays.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Filtered Subsample &amp; Supply-Side Variables:</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> linked to <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a> shows a 0.724 full-list AUC vs. 0.442 AUC in the 2024 active-biller subset (0.653 when exit-year reweighted). The 57-county LHA spending panel finds a -9.16 deaths/100K IV slope (first-stage F = 314.1; evaluated per $10/capita in the LHA Calculator and labeled per $1/capita in working-paper Tables 1-5).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Methodological Reference on Control Selection:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), <em>Sociological Methods &amp; Research</em></a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi, S., et al. (2020), Health Affairs (IMPaCT CHW RCTs)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Lewbel, A. (2012), JBES</a></li>
+              <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">OIG LEIE</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Mapping the System Path Comes Before Running the Model</h3>
+            <p class="text-slate-800">Adding every health and income variable to a tract regression mixes pre-program income gaps with health steps that sit on the path between food and chronic disease. If a variable is a pre-program confounder (such as poverty explaining 62.2% of tract food-need variance), leaving it out slants the slope. If a variable is a post-start care step, such as a Community Health Worker linking a patient to primary care (raising visits from 57.1% to 71.7%, OR = 1.90) to prevent a hospital stay, controlling for clinic visits subtracts part of the program's gain.</p>
+            <p class="text-slate-800">Before running a model, health economists map each variable in a causal diagram. Confounders are shared causes measured before treatment, so analysts control for them. Care steps sit on the causal path, so analysts leave them open when measuring total impact. Colliders and post-outcome filters like active 2024 billing alter the evaluation sample (where the 2024 active subset shows an observed 0.442 AUC vs. 0.724 on the full list), so analysts avoid filtering on them. Instruments shift treatment with no direct link to the outcome, so analysts use them in Stage 1 (as the LHA panel does with F = 314.1).</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Synthesis on Observed Inputs):</strong> The role rules and model guide are a Mode A synthesis. The numbers in Table 1 (tract poverty R² = 62.2%; CHW primary care visits 71.7% vs. 57.1% TOT, OR = 1.90, and -30% hospital stays; Medicaid screening AUC = 0.724 full list vs. observed AUC = 0.442 in the 2024 active subset; LHA first-stage F = 314.1, J = 4.49, p = 0.343) are observed outputs from four separate CAPHE files.</p>
+          <p><strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", Sociological Methods &amp; Research</a>; <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), Health Affairs (IMPaCT CHW RCTs)</a>; <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES</a>; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; and <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why shouldn't an analyst control for post-start clinic visits when measuring whether CHWs cut hospital stays?</dt>
+                <dd class="text-slate-700 mt-0.5">Raising primary care visits (from 57.1% to 71.7% TOT, OR = 1.90) is a main care step through which CHWs prevent hospital stays (-30%). Controlling for post-start clinic visits holds that step fixed. That blocks part of the program path and understates total CHW value.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How can an analyst tell whether a variable is a confounder or a care step?</dt>
+                <dd class="text-slate-700 mt-0.5">Check the clock and the direction of cause. A confounder is set BEFORE the program starts (like baseline age, pre-program poverty, or county land area) and affects both participation and health. A care step changes AFTER the program starts because of the program.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What is an instrument, and why is it kept out of the outcome controls?</dt>
+                <dd class="text-slate-700 mt-0.5">An instrument shifts the policy input (here, county public health spending) without a direct path to the health outcome. It enters Stage 1 of two-stage least squares to isolate spending shifts that are not caused by death spikes. In the LHA panel of 57 California counties (2003-2023), the instruments have a first-stage F of 314.1 and Hansen J of 4.49 (p = 0.343). Adding an instrument as an outcome control would absorb the clean spending variation.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Active-Only Subsample Selection Bias</a></li>
+          <li class="my-2"><a href="/methods-lab/reverse-causation-feedback" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Needs-Driven Spending & Prevention ROI</a></li>
+          <li class="my-2"><a href="/methods-lab/chw-health-outcomes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating CHW Impact & Medi-Cal Billing</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE PROBLEM (INTRO)
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Problem</h2>
-          <p class="panel-intro">
-            You observe a correlation between X and Y. Someone asks, "Why might this be?" You list several possible explanations. <em style="opacity: 0.7;">(Scenario is illustrative.)</em>
-          </p>
-        </div>
-
-        <div class="intro-container">
-          <div class="content-card">
-            <div class="scenario-box">
-              <div class="scenario-label">Example Scenario</div>
-              <p class="scenario-text">"Counties with community health worker (CHW) programs have lower hospitalization rates. What explains this correlation?"</p>
-            </div>
-
-            <h3>Possible Explanations</h3>
-            <ul class="explanation-list">
-              <li class="explanation-item">
-                <span class="explanation-number">1</span>
-                <span class="explanation-text"><strong>CHWs prevent hospitalizations.</strong> The program itself reduces emergency visits through care coordination and patient education.</span>
-              </li>
-              <li class="explanation-item">
-                <span class="explanation-number">2</span>
-                <span class="explanation-text"><strong>Well-organized counties do both.</strong> Counties with strong public health infrastructure implement CHW programs AND have lower hospitalization rates for unrelated reasons.</span>
-              </li>
-              <li class="explanation-item">
-                <span class="explanation-number">3</span>
-                <span class="explanation-text"><strong>Low hospitalizations enable CHW programs.</strong> Counties with fewer emergencies have more capacity to implement preventive programs.</span>
-              </li>
-              <li class="explanation-item">
-                <span class="explanation-number">4</span>
-                <span class="explanation-text"><strong>Sick patients leave CHW counties.</strong> People who need more hospital care move to counties with better hospital access, leaving CHW counties with healthier populations.</span>
-              </li>
-            </ul>
-          </div>
-
-          <aside class="sidebar-cards">
-            <div class="info-card">
-              <h4>The Adjustment Approach</h4>
-              <p>List possible confounders, then statistically control for them. Add more variables until the association "looks right."</p>
-            </div>
-
-            <div class="info-card">
-              <h4>The Economist Approach</h4>
-              <p>Classify each explanation by type, then design a study that can distinguish between them. Different mechanisms require different research designs.</p>
-            </div>
-
-            <div class="insight-box">
-              <strong>The key difference:</strong> Economists match the research design to the threat. Each mechanism type has specific designs that can test it.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Before we can match explanations to designs, we need to classify them. Each type of causal mechanism requires a different research strategy.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: MECHANISM TYPES
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Mechanism Types</h2>
-          <p class="panel-intro">
-            Causal explanations fall into four categories. Each represents a different causal structure with different implications for research design.
-          </p>
-        </div>
-
-        <div class="mechanism-grid">
-          <div class="mechanism-card confounding">
-            <div class="mechanism-icon">C</div>
-            <span class="mechanism-tag">Alternative Explanation</span>
-            <h3>Confounding</h3>
-            <div class="mechanism-example">
-              "Well-organized counties do both." A third factor (county capacity) causes both CHW programs and low hospitalizations.
-            </div>
-            <p class="mechanism-test">
-              <strong>Key question:</strong> Is there a common cause driving both X and Y?
-            </p>
-          </div>
-
-          <div class="mechanism-card reverse">
-            <div class="mechanism-icon">R</div>
-            <span class="mechanism-tag">Wrong Direction</span>
-            <h3>Reverse Causation</h3>
-            <div class="mechanism-example">
-              "Low hospitalizations enable CHW programs." The outcome actually causes the treatment, not the other way around.
-            </div>
-            <p class="mechanism-test">
-              <strong>Key question:</strong> Did Y happen before X, or could Y have caused X?
-            </p>
-          </div>
-
-          <div class="mechanism-card selection">
-            <div class="mechanism-icon">S</div>
-            <span class="mechanism-tag">Sample Problem</span>
-            <h3>Selection Bias</h3>
-            <div class="mechanism-example">
-              "Sick patients leave CHW counties." Who enters or exits the sample depends on both X and Y, creating a spurious correlation.
-            </div>
-            <p class="mechanism-test">
-              <strong>Key question:</strong> Does being in the sample depend on X, Y, or both?
-            </p>
-          </div>
-
-          <div class="mechanism-card causal">
-            <div class="mechanism-icon">T</div>
-            <span class="mechanism-tag">The Target</span>
-            <h3>True Causal Effect</h3>
-            <div class="mechanism-example">
-              "CHWs prevent hospitalizations." X actually causes Y through a mechanism we can understand and potentially replicate.
-            </div>
-            <p class="mechanism-test">
-              <strong>Key question:</strong> After ruling out alternatives, does X genuinely cause Y?
-            </p>
-          </div>
-        </div>
-
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>Why Classification Matters</h3>
-          <p>Each mechanism type requires a different research strategy:</p>
-          <ul>
-            <li><strong>Confounding</strong> requires finding variation in X that is independent of the confounder</li>
-            <li><strong>Reverse causation</strong> requires establishing timing or finding X variation that could not be caused by Y</li>
-            <li><strong>Selection bias</strong> requires either changing the sample definition or modeling the selection process</li>
-            <li><strong>True effects</strong> can only be confirmed by ruling out the alternatives</li>
-          </ul>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How do you classify an explanation? Use the interactive decision tree to categorize any causal story.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: INTERACTIVE CLASSIFIER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Classifier Tool</h2>
-          <p class="panel-intro">
-            Use this decision tree to classify any causal explanation. Answer each question based on the mechanism being proposed.
-          </p>
-        </div>
-
-        <div class="classifier-container">
-          <div class="decision-tree">
-            <div class="tree-progress">
-              <span class="progress-step active" id="step-1">Q1</span>
-              <span class="progress-step" id="step-2">Q2</span>
-              <span class="progress-step" id="step-3">Q3</span>
-              <span class="progress-step" id="step-4">Result</span>
-            </div>
-
-            <div id="tree-content">
-              <!-- Question 1 -->
-              <div class="tree-question" id="question-1">
-                <div class="question-number">Question 1 of 3</div>
-                <div class="question-text">Does this explanation involve a third variable that affects both the treatment and the outcome?</div>
-                <div class="question-hint">
-                  Look for phrases like "both happen because of..." or "a common factor drives..." or "the same underlying reason causes..."
-                </div>
-                <div class="answer-options">
-                  <button class="answer-btn" data-answer="yes" data-question="1" onclick="handleAnswer(1, 'yes')">
-                    <strong>Yes</strong> - A third factor causes both X and Y
-                  </button>
-                  <button class="answer-btn" data-answer="no" data-question="1" onclick="handleAnswer(1, 'no')">
-                    <strong>No</strong> - The explanation is about a direct relationship between X and Y
-                  </button>
-                </div>
-              </div>
-
-              <!-- Question 2 -->
-              <div class="tree-question" id="question-2" style="display: none;">
-                <div class="question-number">Question 2 of 3</div>
-                <div class="question-text">Does this explanation suggest Y might cause X, rather than X causing Y?</div>
-                <div class="question-hint">
-                  Look for phrases like "enables," "allows," "creates conditions for," or any suggestion that the outcome influences the treatment.
-                </div>
-                <div class="answer-options">
-                  <button class="answer-btn" data-answer="yes" data-question="2" onclick="handleAnswer(2, 'yes')">
-                    <strong>Yes</strong> - Y might actually cause or influence X
-                  </button>
-                  <button class="answer-btn" data-answer="no" data-question="2" onclick="handleAnswer(2, 'no')">
-                    <strong>No</strong> - The explanation maintains that X comes before Y
-                  </button>
-                </div>
-              </div>
-
-              <!-- Question 3 -->
-              <div class="tree-question" id="question-3" style="display: none;">
-                <div class="question-number">Question 3 of 3</div>
-                <div class="question-text">Does this explanation involve who enters or leaves the sample based on the treatment or outcome?</div>
-                <div class="question-hint">
-                  Look for phrases like "people leave," "patients move," "cases drop out," "only those who... are observed," or any suggestion that sample composition depends on X or Y.
-                </div>
-                <div class="answer-options">
-                  <button class="answer-btn" data-answer="yes" data-question="3" onclick="handleAnswer(3, 'yes')">
-                    <strong>Yes</strong> - Sample membership depends on X, Y, or both
-                  </button>
-                  <button class="answer-btn" data-answer="no" data-question="3" onclick="handleAnswer(3, 'no')">
-                    <strong>No</strong> - Sample composition is not part of the explanation
-                  </button>
-                </div>
-              </div>
-
-              <!-- Results -->
-              <div class="classification-result confounding" id="result-confounding">
-                <div class="result-label">Classification</div>
-                <div class="result-title">Confounding</div>
-                <p class="result-explanation">
-                  This explanation proposes a third factor that causes both the treatment and the outcome. The observed correlation between X and Y may be entirely spurious.
-                </p>
-                <div class="result-design">
-                  <h4>Recommended Design Strategy</h4>
-                  <p>Find variation in X that is independent of the confounder. Consider instrumental variables, regression discontinuity, or natural experiments where the confounder does not influence treatment assignment.</p>
-                </div>
-              </div>
-
-              <div class="classification-result reverse" id="result-reverse">
-                <div class="result-label">Classification</div>
-                <div class="result-title">Reverse Causation</div>
-                <p class="result-explanation">
-                  This explanation suggests the outcome influences the treatment, not the reverse. The arrow points the wrong direction.
-                </p>
-                <div class="result-design">
-                  <h4>Recommended Design Strategy</h4>
-                  <p>Establish timing with panel data, use leads and lags, or find treatment variation that occurred before the outcome could have influenced it. Consider Granger causality tests or event studies.</p>
-                </div>
-              </div>
-
-              <div class="classification-result selection" id="result-selection">
-                <div class="result-label">Classification</div>
-                <div class="result-title">Selection Bias</div>
-                <p class="result-explanation">
-                  This explanation involves sample composition changing based on treatment, outcome, or both. The correlation may exist only in the observed sample.
-                </p>
-                <div class="result-design">
-                  <h4>Recommended Design Strategy</h4>
-                  <p>Redefine the sample to avoid conditioning on post-treatment variables, model the selection process explicitly, or use bounds analysis to estimate the range of possible effects.</p>
-                </div>
-              </div>
-
-              <div class="classification-result causal" id="result-causal">
-                <div class="result-label">Classification</div>
-                <div class="result-title">Potential Causal Effect</div>
-                <p class="result-explanation">
-                  This explanation proposes that X genuinely causes Y. To confirm, you must rule out confounding, reverse causation, and selection bias.
-                </p>
-                <div class="result-design">
-                  <h4>Recommended Design Strategy</h4>
-                  <p>Design studies to rule out each alternative mechanism. Use experimental or quasi-experimental methods that create as-if-random variation in X. The effect is identified only after alternatives are eliminated.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="tree-controls">
-              <button class="control-btn" id="btn-restart" onclick="restartClassifier()">Start Over</button>
-              <button class="control-btn" id="btn-back" onclick="goBack()" style="display: none;">Go Back</button>
-            </div>
-          </div>
-
-          <aside class="classifier-sidebar">
-            <div class="path-tracker">
-              <h4>Your Classification Path</h4>
-              <ul class="path-list" id="path-list">
-                <li class="path-item" style="color: var(--color-text-muted); font-style: italic;">
-                  Answer questions to see your path
-                </li>
-              </ul>
-            </div>
-
-            <div class="scenario-selector">
-              <h4>Try These Scenarios</h4>
-              <button class="scenario-btn active" onclick="loadScenario(1)">
-                CHW & Hospitalizations
-              </button>
-              <button class="scenario-btn" onclick="loadScenario(2)">
-                Education & Income
-              </button>
-              <button class="scenario-btn" onclick="loadScenario(3)">
-                Insurance & Health
-              </button>
-            </div>
-
-            <div class="insight-box">
-              <strong>Remember:</strong> Most observed correlations have multiple possible explanations. Your job is to classify each one, then design a study that can distinguish between them.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Once you have classified each explanation, match it to a research design. Different mechanisms require different methods.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: DESIGN RECOMMENDATIONS
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Design Matching</h2>
-          <p class="panel-intro">
-            Each mechanism type has research designs suited to testing it. The table below maps classifications to recommended approaches.
-          </p>
-        </div>
-
-        <div class="recommendations-container">
-          <div class="design-table-wrapper">
-            <table class="design-table">
-              <thead>
-                <tr>
-                  <th>Mechanism</th>
-                  <th>Design Approach</th>
-                  <th>What It Does</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="mechanism-badge confounding">Confounding</span></td>
-                  <td>
-                    <div class="design-name">Instrumental Variables</div>
-                    <div class="design-description">Uses a variable that affects X but not Y directly</div>
-                  </td>
-                  <td>Isolates variation in X independent of confounders</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge confounding">Confounding</span></td>
-                  <td>
-                    <div class="design-name">Regression Discontinuity</div>
-                    <div class="design-description">Compares units just above/below a threshold</div>
-                  </td>
-                  <td>Creates as-if-random assignment near cutoff</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge confounding">Confounding</span></td>
-                  <td>
-                    <div class="design-name">Difference-in-Differences</div>
-                    <div class="design-description">Compares changes in treated vs. control groups</div>
-                  </td>
-                  <td>Removes time-invariant confounders</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
-                  <td>
-                    <div class="design-name">Panel Data with Lags</div>
-                    <div class="design-description">Uses past X to predict future Y</div>
-                  </td>
-                  <td>Establishes temporal precedence</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
-                  <td>
-                    <div class="design-name">Event Study</div>
-                    <div class="design-description">Tracks outcomes before and after treatment</div>
-                  </td>
-                  <td>Shows Y was flat before X changed</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge reverse">Reverse Causation</span></td>
-                  <td>
-                    <div class="design-name">Granger Causality</div>
-                    <div class="design-description">Tests if past X predicts future Y beyond Y's own history</div>
-                  </td>
-                  <td>Distinguishes which variable leads</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
-                  <td>
-                    <div class="design-name">Bounds Analysis</div>
-                    <div class="design-description">Estimates range of effects under different assumptions</div>
-                  </td>
-                  <td>Shows how much selection could matter</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
-                  <td>
-                    <div class="design-name">Heckman Selection Model</div>
-                    <div class="design-description">Jointly models selection and outcome</div>
-                  </td>
-                  <td>Corrects for non-random sample</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge selection">Selection Bias</span></td>
-                  <td>
-                    <div class="design-name">Intent-to-Treat Analysis</div>
-                    <div class="design-description">Analyzes by initial assignment, not actual treatment</div>
-                  </td>
-                  <td>Avoids conditioning on post-treatment behavior</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge causal">True Effect</span></td>
-                  <td>
-                    <div class="design-name">RCT (Gold Standard)</div>
-                    <div class="design-description">Randomly assigns treatment</div>
-                  </td>
-                  <td>Eliminates all confounding by design</td>
-                </tr>
-                <tr>
-                  <td><span class="mechanism-badge causal">True Effect</span></td>
-                  <td>
-                    <div class="design-name">Natural Experiment</div>
-                    <div class="design-description">Exploits as-if-random variation from real-world events</div>
-                  </td>
-                  <td>Approximates random assignment</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <aside class="recommendations-sidebar">
-            <div class="decision-checklist">
-              <h4>Before Choosing a Design</h4>
-              <div class="checklist-item">
-                <span class="checklist-icon">></span>
-                <span>Have you listed all plausible mechanisms?</span>
-              </div>
-              <div class="checklist-item">
-                <span class="checklist-icon">></span>
-                <span>Have you classified each one?</span>
-              </div>
-              <div class="checklist-item">
-                <span class="checklist-icon">></span>
-                <span>Does your design address the most likely threat?</span>
-              </div>
-              <div class="checklist-item">
-                <span class="checklist-icon">></span>
-                <span>Can you explain what variation you are using?</span>
-              </div>
-              <div class="checklist-item">
-                <span class="checklist-icon">></span>
-                <span>What threats does your design NOT address?</span>
-              </div>
-            </div>
-
-            <div class="info-card">
-              <h4>The 80/20 Rule</h4>
-              <p>Most observational studies fail because of confounding. Designs that address confounding (IV, RD, DiD) will solve most problems. Reverse causation and selection bias matter, but less often.</p>
-            </div>
-
-            <div class="insight-box">
-              <strong>No design solves everything.</strong> Be explicit about what threats your chosen design addresses and what threats remain.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> The key insight ties it all together. Classification is the first step; the goal is identification.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            Classifying causal mechanisms is not the end goal. It is the first step toward designing research that can distinguish between competing explanations.
-          </p>
-        </div>
-
-        <div class="insight-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/classifying-causal-mechanisms/assets/classifying-causal-mechanisms-dag.png"
-              alt="Flowchart showing the classification process: from observed correlation through mechanism classification to matched research design, with four mechanism types (confounding, reverse causation, selection bias, true effect) each pointing to specific design strategies"
-              class="dag-image"
-            >
-            <p class="dag-caption">Classification transforms a list of possible explanations into a research strategy. Each mechanism type maps to designs that can test it.</p>
-          </div>
-
-          <div class="definition-card">
-            <h3>The Classification-to-Design Workflow</h3>
-            <p>The economist's approach to observational data follows a systematic process:</p>
-            <ul>
-              <li><strong>List:</strong> Write down every plausible explanation for the observed correlation</li>
-              <li><strong>Classify:</strong> Sort each explanation into confounding, reverse causation, selection, or true effect</li>
-              <li><strong>Match:</strong> Identify research designs that can distinguish between the classified mechanisms</li>
-              <li><strong>Design:</strong> Choose the design that addresses the most plausible threat given available data</li>
-              <li><strong>Acknowledge:</strong> Be explicit about which threats your design cannot address</li>
-            </ul>
-          </div>
-
-          <div class="concepts-box">
-            <h3>Questions That Drive Better Research</h3>
-            <div class="concept-list">
-              <div class="concept-item"><strong>What would make this explanation false?</strong> Every mechanism should be testable in principle.</div>
-              <div class="concept-item"><strong>What variation am I using?</strong> The source of treatment variation determines what confounders are ruled out.</div>
-              <div class="concept-item"><strong>What is my identifying assumption?</strong> State explicitly what must be true for your design to work.</div>
-              <div class="concept-item"><strong>What threats remain?</strong> No design addresses all mechanisms. Honest research acknowledges limitations.</div>
-            </div>
-          </div>
-
-          <div class="takeaway-box">
-            <h4>Key Takeaway</h4>
-            <p>
-              <strong>Correlation invites multiple explanations; research design narrows them down.</strong> A statistics-focused approach would be to list possible confounders and control for them statistically. Economics classifies explanations by type and designs studies that can rule out each category. The goal is not to find the "right" adjustment, but to find variation in treatment that is independent of the threats you have classified. <strong>This is what economists mean by "identification strategy."</strong>
-            </p>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Causal Pitfalls track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/sensitivity-analysis-cea" style="color:#0041A5;font-weight:600;">Sensitivity Analysis</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/cea-uncertain-effects" style="color:#0041A5;font-weight:600;">CEA Under Uncertainty</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/reverse-causation-feedback" style="color:#0041A5;font-weight:600;">Reverse Causation and Feedback</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <script>
-    /* ============================================
-       1. STATE MANAGEMENT
-       ============================================ */
-    let currentQuestion = 1;
-    let answers = {};
-    let classificationHistory = [];
-
-    const scenarios = {
-      1: {
-        name: 'CHW & Hospitalizations',
-        explanations: [
-          { text: 'CHWs prevent hospitalizations', type: 'causal' },
-          { text: 'Well-organized counties do both', type: 'confounding' },
-          { text: 'Low hospitalizations enable CHW programs', type: 'reverse' },
-          { text: 'Sick patients leave CHW counties', type: 'selection' }
-        ]
-      },
-      2: {
-        name: 'Education & Income',
-        explanations: [
-          { text: 'Education increases earning potential', type: 'causal' },
-          { text: 'Family background drives both', type: 'confounding' },
-          { text: 'Higher income allows more education', type: 'reverse' },
-          { text: 'Only employed people are observed', type: 'selection' }
-        ]
-      },
-      3: {
-        name: 'Insurance & Health',
-        explanations: [
-          { text: 'Insurance improves access to care', type: 'causal' },
-          { text: 'Employed people have both insurance and health', type: 'confounding' },
-          { text: 'Healthy people are more likely to get insured', type: 'reverse' },
-          { text: 'Uninsured who die are not observed', type: 'selection' }
-        ]
-      }
-    };
-
-    /* ============================================
-       2. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-      });
-    });
-
-    /* ============================================
-       3. DECISION TREE LOGIC
-       ============================================ */
-    function handleAnswer(questionNum, answer) {
-      answers[questionNum] = answer;
-      classificationHistory.push({ question: questionNum, answer: answer });
-
-      // Update button states
-      const buttons = document.querySelectorAll(`[data-question="${questionNum}"]`);
-      buttons.forEach(btn => {
-        btn.classList.remove('selected');
-        if (btn.dataset.answer === answer) {
-          btn.classList.add('selected');
-        }
-      });
-
-      // Update progress
-      document.getElementById(`step-${questionNum}`).classList.remove('active');
-      document.getElementById(`step-${questionNum}`).classList.add('completed');
-
-      // Determine next step
-      setTimeout(() => {
-        if (questionNum === 1 && answer === 'yes') {
-          // Confounding
-          showResult('confounding');
-        } else if (questionNum === 1 && answer === 'no') {
-          showQuestion(2);
-        } else if (questionNum === 2 && answer === 'yes') {
-          // Reverse causation
-          showResult('reverse');
-        } else if (questionNum === 2 && answer === 'no') {
-          showQuestion(3);
-        } else if (questionNum === 3 && answer === 'yes') {
-          // Selection bias
-          showResult('selection');
-        } else if (questionNum === 3 && answer === 'no') {
-          // True causal effect
-          showResult('causal');
-        }
-
-        updatePathTracker();
-      }, 200);
-    }
-
-    function showQuestion(num) {
-      // Hide all questions
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`question-${i}`).style.display = 'none';
-      }
-      // Hide all results
-      document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
-
-      // Show target question
-      document.getElementById(`question-${num}`).style.display = 'block';
-      currentQuestion = num;
-
-      // Update progress
-      document.getElementById(`step-${num}`).classList.add('active');
-
-      // Show back button
-      document.getElementById('btn-back').style.display = 'inline-block';
-    }
-
-    function showResult(type) {
-      // Hide all questions
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`question-${i}`).style.display = 'none';
-      }
-
-      // Show result
-      document.getElementById(`result-${type}`).classList.add('show');
-
-      // Update progress
-      document.getElementById('step-4').classList.add('active');
-      document.getElementById('step-4').classList.add('completed');
-    }
-
-    function restartClassifier() {
-      currentQuestion = 1;
-      answers = {};
-      classificationHistory = [];
-
-      // Reset progress indicators
-      for (let i = 1; i <= 4; i++) {
-        document.getElementById(`step-${i}`).classList.remove('active', 'completed');
-      }
-      document.getElementById('step-1').classList.add('active');
-
-      // Hide all results
-      document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
-
-      // Reset button states
-      document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
-
-      // Show first question
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`question-${i}`).style.display = i === 1 ? 'block' : 'none';
-      }
-
-      // Hide back button
-      document.getElementById('btn-back').style.display = 'none';
-
-      // Reset path tracker
-      updatePathTracker();
-    }
-
-    function goBack() {
-      if (classificationHistory.length === 0) return;
-
-      // Remove last answer
-      classificationHistory.pop();
-      const lastQuestion = Object.keys(answers).pop();
-      if (lastQuestion) {
-        delete answers[lastQuestion];
-      }
-
-      // Reset to previous state
-      if (classificationHistory.length === 0) {
-        restartClassifier();
-      } else {
-        const prevQuestion = classificationHistory.length === 0 ? 1 :
-          classificationHistory[classificationHistory.length - 1].question + 1;
-
-        // Update progress
-        for (let i = prevQuestion; i <= 4; i++) {
-          document.getElementById(`step-${i}`).classList.remove('active', 'completed');
-        }
-
-        // Hide results
-        document.querySelectorAll('.classification-result').forEach(r => r.classList.remove('show'));
-
-        // Show appropriate question
-        showQuestion(prevQuestion > 3 ? 3 : prevQuestion);
-        currentQuestion = prevQuestion;
-
-        updatePathTracker();
-      }
-    }
-
-    function updatePathTracker() {
-      const pathList = document.getElementById('path-list');
-
-      if (classificationHistory.length === 0) {
-        pathList.innerHTML = `
-          <li class="path-item" style="color: var(--color-text-muted); font-style: italic;">
-            Answer questions to see your path
-          </li>
-        `;
-        return;
-      }
-
-      const questionLabels = {
-        1: 'Third variable?',
-        2: 'Y causes X?',
-        3: 'Sample changes?'
-      };
-
-      pathList.innerHTML = classificationHistory.map(item => `
-        <li class="path-item">
-          <span class="path-q">Q${item.question}:</span>
-          <span>${questionLabels[item.question]}</span>
-          <span class="path-a">${item.answer.toUpperCase()}</span>
-        </li>
-      `).join('');
-    }
-
-    function loadScenario(num) {
-      // Update button states
-      document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-
-      // Reset classifier for new scenario
-      restartClassifier();
-
-      // Could display scenario-specific content here
-      console.log('Loaded scenario:', scenarios[num].name);
-    }
-
-    /* ============================================
-       4. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize classifier state
-      restartClassifier();
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

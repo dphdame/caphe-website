@@ -3,751 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Difference-in-Differences & History Shocks | CAPHE</title>
+  <meta name="description" content="Difference-in-Differences on telehealth-eligible vs. other Medicaid billing providers (2018-2024) separates shared shocks from service-specific change.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-history-solutions">
+  <meta property="og:title" content="Difference-in-Differences & History Shocks | CAPHE">
+  <meta property="og:description" content="Difference-in-Differences on telehealth-eligible vs. other Medicaid billing providers (2018-2024) separates shared shocks from service-specific change.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/threat-history-solutions">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Controlling for History Threats (DiD) | CAPHE</title>
-  <meta name="description" content="Learn how difference-in-differences (DiD) uses parallel trends to isolate treatment effects from common shocks that affect everyone.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-history-solutions">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-error: #C9553A;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-      --color-did: #059669;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 1.75rem; }
-    h2 { font-size: 1.4rem; }
-    h3 { font-size: 1.15rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
     }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    .header h1 {
-      color: white;
-      margin-bottom: var(--space-sm);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    .eyebrow {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.85;
-      margin-bottom: var(--space-xs);
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .subtitle {
-      font-size: 1rem;
-      opacity: 0.9;
-      max-width: 700px;
-      margin: 0 auto var(--space-md);
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      flex-wrap: wrap;
-    }
-
-    .panel-btn {
-      background: transparent;
-      border: 2px solid transparent;
-      padding: var(--space-sm) var(--space-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      border-radius: var(--radius-md);
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
-      color: var(--color-did);
-    }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-did);
-      color: white;
-      border-color: var(--color-did);
-    }
-
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
-    }
-
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. COMPONENT STYLES
-       ============================================ */
-    .did-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .did-grid { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .card h3 {
-      margin-bottom: var(--space-lg);
-      color: var(--color-did);
-    }
-
-    /* DiD Table */
-    .did-table {
+    .col-header-banner {
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-      margin-bottom: var(--space-lg);
-    }
-
-    .did-table th, .did-table td {
-      padding: var(--space-sm) var(--space-md);
-      text-align: center;
-      border: 1px solid var(--color-border);
-    }
-
-    .did-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    .did-table td {
-      font-family: var(--font-mono);
-    }
-
-    .did-table .program-row {
-      background: rgba(13, 148, 136, 0.08);
-    }
-
-    .did-table .comparison-row {
-      background: rgba(249, 168, 37, 0.08);
-    }
-
-    .did-table .diff-row {
-      background: rgba(5, 150, 105, 0.12);
-      font-weight: 600;
-    }
-
-    .did-table .highlight-cell {
-      background: rgba(5, 150, 105, 0.2);
-      font-weight: 700;
-      color: var(--color-did);
-    }
-
-    /* Formula Box */
-    .formula-box {
-      background: linear-gradient(135deg, rgba(5,150,105,0.08) 0%, rgba(5,150,105,0.02) 100%);
-      border-left: 4px solid var(--color-did);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-    }
-
-    .formula-box h4 {
-      color: var(--color-did);
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .formula-line {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      margin: var(--space-sm) 0;
-      color: var(--color-text);
-    }
-
-    .formula-result {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--color-did);
-      margin-top: var(--space-md);
-      text-align: center;
-    }
-
-    /* Chart */
-    .chart-wrapper {
-      min-height: 320px;
-      position: relative;
-      margin-bottom: var(--space-md);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-wrapper svg {
-      width: 100%;
-      height: 100%;
-      min-height: 320px;
-    }
-
-    /* Controls */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      align-items: center;
-    }
-
-    .controls-label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-    }
-
-    .toggle-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--color-did);
-    }
-
-    .toggle-btn.active {
-      background: var(--color-did);
-      color: white;
-      border-color: var(--color-did);
-    }
-
-    /* Legend */
-    .chart-legend {
-      display: flex;
-      gap: var(--space-lg);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .legend-dot.program {
-      background: var(--color-secondary);
-    }
-
-    .legend-dot.comparison {
-      background: var(--color-accent);
-    }
-
-    .legend-line {
-      width: 20px;
-      height: 2px;
-    }
-
-    .legend-line.counterfactual {
-      background: var(--color-secondary);
-      opacity: 0.4;
-    }
-
-    /* ============================================
-       7. DEFINITION CARD (KEY CONCEPT)
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      color: var(--color-text);
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card ul {
-      margin-top: var(--space-sm);
-      padding-left: var(--space-lg);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       8. EXPLANATION CONTAINER
-       ============================================ */
-    .explanation-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .explanation-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      margin-top: var(--space-lg);
-    }
-
-    @media (max-width: 750px) {
-      .explanation-grid { grid-template-columns: 1fr; }
-    }
-
-    .concept-card {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      border-top: 4px solid var(--color-did);
-    }
-
-    .concept-card h4 {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      margin-bottom: var(--space-sm);
-      color: var(--color-text);
-    }
-
-    .concept-card p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .concept-card ul {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      padding-left: var(--space-lg);
-    }
-
-    .key-insight {
-      background: linear-gradient(135deg, rgba(5,150,105,0.08) 0%, rgba(5,150,105,0.02) 100%);
-      border-left: 4px solid var(--color-did);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin-top: var(--space-lg);
-    }
-
-    .key-insight h4 {
-      color: var(--color-did);
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       9. AUDIT CONTAINER
-       ============================================ */
-    .audit-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .audit-list {
-      list-style: none;
-      margin-top: var(--space-lg);
-    }
-
-    .audit-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .audit-item:last-child {
-      border-bottom: none;
-    }
-
-    .audit-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+    }
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
       font-weight: 700;
-      font-size: 1rem;
+      color: #fff;
+      margin: 0;
+    }
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .audit-icon.pass {
-      background: rgba(46,125,50,0.15);
-      color: var(--color-success);
-    }
-
-    .audit-icon.fail {
-      background: rgba(201,85,58,0.15);
-      color: var(--color-error);
-    }
-
-    .audit-icon.uncertain {
-      background: rgba(249,168,37,0.2);
-      color: #B8860B;
-    }
-
-    .audit-content h5 {
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      margin-bottom: var(--space-xs);
-      color: var(--color-text);
-    }
-
-    .audit-content p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .interpretation-box {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .interpretation-box h4 {
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      margin-bottom: var(--space-sm);
-      color: var(--color-text);
-    }
-
-    .interpretation-box p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       10. SENSITIVITY CONTAINER
-       ============================================ */
-    .sensitivity-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .sensitivity-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      margin-top: var(--space-lg);
-    }
-
-    .sensitivity-table th, .sensitivity-table td {
-      padding: var(--space-sm) var(--space-md);
-      text-align: left;
-      border: 1px solid var(--color-border);
-    }
-
-    .sensitivity-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    .sensitivity-table td {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-    }
-
-    .sensitivity-table tr:nth-child(even) {
-      background: var(--color-bg-alt);
-    }
-
-    .sensitivity-table .baseline-row {
-      background: rgba(5, 150, 105, 0.1);
-    }
-
-    /* ============================================
-       11. BRIDGING BOX
-       ============================================ */
-    .bridging-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-box p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .bridging-box p:first-child {
-      font-size: 1.05rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       12. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-text);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      opacity: 0.9;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    /* ============================================
-       13. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-text);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 280px;
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    /* Accessibility */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Controlling for History Threats (DiD)",
-  "description": "Learn how difference-in-differences (DiD) uses parallel trends to isolate treatment effects from common shocks that affect everyone.",
+  "headline": "Unaffected Comparison Groups Separate Program-Specific Provider Growth From System-Wide Enrollment Surges",
+  "description": "Difference-in-Differences on telehealth-eligible vs. other Medicaid billing providers (2018-2024) separates shared shocks from service-specific change.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -755,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -766,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How does difference-in-differences isolate a program effect?",
+      "name": "How does a two-group comparison (DiD) separate policy shifts from a shared wave?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "DiD removes any change that affected both groups equally by subtracting the comparison group's change from the treated group's change. In the tutorial, (-15.2) minus (-12.8) yields a DiD effect of -2.4 emergency department visits per 10,000."
+        "text": "It subtracts the before-and-after change in a comparison group hit by the same wave (other Medicaid care, +18.71% from 2019 to 2023) from the change in the treated group (video care, +24.33%). That leaves a +5.62 percentage-point net gap."
       }
     },
     {
       "@type": "Question",
-      "name": "Why is adding more controls not enough for history threats?",
+      "name": "Why does the 2019-to-2024 net gap (+4.60 pp) differ from the 2019-to-2023 gap (+5.62 pp)?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The tutorial notes that adding controls misses the point because a common shock affects everyone regardless of measured covariates. DiD addresses this by differencing out whatever changed for both the treated and comparison groups."
+        "text": "From 2023 to 2024, video-care providers fell 10.26% and other-care providers fell 9.89%. Both drops reflect Medicaid redetermination and unpaid Nov and Dec 2024 claims."
       }
     },
     {
       "@type": "Question",
-      "name": "What assumption must hold for difference-in-differences to be valid?",
+      "name": "What must hold for other Medicaid care to work as a valid comparison group?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "DiD relies on parallel trends, meaning the two groups would have moved together absent the program. The tutorial includes an assumptions audit and sensitivity analysis to test how the estimate changes when that assumption is relaxed."
+        "text": "Both care groups must follow parallel paths when no new video rule is enacted. In 2018 to 2019, the treated group grew 1.21 points faster. Extending that pre-2020 gap trims the 2019-to-2023 net gap to +0.78 pp."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -817,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -836,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -852,603 +529,468 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab - Validity & Solutions</div>
-      <h1>Controlling for History Threats (DiD)</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Difference-in-differences (DiD) controls history threats by using parallel trends to separate a program effect from common shocks that affect everyone. Rather than adding more covariates, DiD subtracts the change observed in a comparison group from the change in the treated group. In the tutorial, County A's emergency department visits fell 15.2 points and County B's fell 12.8 points, so the DiD estimate is the difference of differences, 2.4 visits per 10,000. That remaining gap is the portion of improvement unique to the program after removing the shared trend.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">"Add more controls" misses the point. Difference-in-differences uses parallel trends to isolate treatment effects from common shocks that affect everyone.</p>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Unaffected Comparison Groups Separate Program-Specific Provider Growth From System-Wide Enrollment Surges
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Comparing treated and comparison care lines to separate modeled policy shifts from broad enrollment waves.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When evaluating a county Medi-Cal service rollout by tracking only enrolled clinics, a single-group review credits statewide enrollment waves to the local pilot. Comparing telehealth-eligible Medicaid services against other Medicaid care across <strong>84 months (2018 to 2024)</strong> isolates a modeled net <strong>+5.62 percentage point provider gain through 2023</strong> and <strong>+4.60 percentage points through 2024.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> A single-group pre-post check credits all <strong>+24.33%</strong> growth to telehealth without subtracting the <strong>+18.71%</strong> enrollment wave that lifted other care at the same time.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Pairing the two-group check with the <strong>+1.21-point</strong> pre-2020 base gap bounds the budget forecast.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
     </div>
-  </header>
 
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <ul>
-      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-      <li><button class="panel-btn" data-panel="2" aria-pressed="false">How DiD Works</button></li>
-      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Assumptions Audit</button></li>
-      <li><button class="panel-btn" data-panel="4" aria-pressed="false">Sensitivity Analysis</button></li>
-    </ul>
-  </nav>
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Two-Group Medicaid Provider Panel Across 4 Study Windows (2018 to 2024)</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Yearly means of monthly billing providers from HHS Medicaid claims with modeled two-group gaps and base-trend checks.
+      </p>
+    </div>
 
-  <main class="main" role="main" id="main-content">
-    <div class="container">
-      <!-- Panel 1: The Data -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            Both the program county and the comparison county show improved outcomes after 2020. DiD subtracts out the common trend to isolate what is unique to the program county. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
 
-        <div class="did-grid">
-          <div class="card">
-            <h3>DiD Calculation Table</h3>
-            <table class="did-table">
-              <thead>
-                <tr>
-                  <th>County</th>
-                  <th>Pre (2019)</th>
-                  <th>Post (2022)</th>
-                  <th>Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="program-row">
-                  <td><strong>County A</strong><br><span style="font-size:0.8em;color:#595959">(Has Program)</span></td>
-                  <td>85.2</td>
-                  <td>70.0</td>
-                  <td style="color:var(--color-success)">-15.2</td>
-                </tr>
-                <tr class="comparison-row">
-                  <td><strong>County B</strong><br><span style="font-size:0.8em;color:#595959">(No Program)</span></td>
-                  <td>88.0</td>
-                  <td>75.2</td>
-                  <td style="color:var(--color-success)">-12.8</td>
-                </tr>
-                <tr class="diff-row">
-                  <td><strong>Difference</strong></td>
-                  <td>-2.8</td>
-                  <td>-5.2</td>
-                  <td class="highlight-cell">-2.4</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div class="formula-box">
-              <h4>The DiD Formula</h4>
-              <div class="formula-line">DiD = (CountyA<sub>post</sub> - CountyA<sub>pre</sub>) - (CountyB<sub>post</sub> - CountyB<sub>pre</sub>)</div>
-              <div class="formula-line">DiD = (-15.2) - (-12.8)</div>
-              <div class="formula-result">DiD Effect = -2.4 ED visits per 10,000</div>
-            </div>
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 compares treated video care and other Medicaid care across a pre-2020 base and three post-2019 windows.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Two-Group Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Pre-2020 Check</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Base 2018 to 2019</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Peak Window</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">2019 to 2023</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Full Post Window</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">2019 to 2024</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Renewal Year</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">2023 to 2024</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Video Care Monthly Providers
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">84,422 -> 91,399</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">91,399 -> 113,638</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">91,399 -> 101,978</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">113,638 -> 101,978</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Video Care Change
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+6,977</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+8.26%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+22,239</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+24.33%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+10,579</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+11.57%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-11,660</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-10.26%</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Other Care Monthly Providers
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">101,905 -> 109,087</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">109,087 -> 129,492</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">109,087 -> 116,690</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">129,492 -> 116,690</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Other Care Change
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+7,182</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+7.05%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+20,405</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+18.71%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+7,603</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+6.97%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-12,802</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-9.89%</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Ruler 2: Net Two-Group Gap*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+1.21 pp</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">base gap</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 22%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+5.62 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+4.60 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 82%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-0.37 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 7%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Gap Minus Pre-2020 Slope*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Base ref</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.00</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.78 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">after 4 yrs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-1.45 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">after 5 yrs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-1.58 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">after 1 yr</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Medicaid Paid: Video vs. Other
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$19.23B->$23.56B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$85.47B->$99.06B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$23.56B->$40.29B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$99.06B->$153.37B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$23.56B->$34.93B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$99.06B->$145.72B</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$40.29B->$34.93B</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$153.37B->$145.72B</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
           </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Provider counts and paid dollars come from the HHS Medicaid Provider Spending file (84 months, Jan 2018 to Dec 2024). Mode A rows subtract the other-care % change from the video-care % change and test extending the +1.21 pp 2018-to-2019 gap.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Base 2018 to 2019.</strong> Before 2020 Pay Rules. <strong>2019 to 2023.</strong> Stay-Enrolled Years. <strong>2019 to 2024.</strong> Includes 2024 Renewal Year. <strong>2023 to 2024.</strong> Renewal Restart Window.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Two-Group Check on HHS Medicaid Provider Spending (84 Months, Jan 2018 to Dec 2024). Ruler 1: Single-Group Pre-Post Change (Includes Shared Medicaid Waves): <strong>+22,239 Providers (+24.33%)</strong>. Video care in Medicaid averaged <strong>91,399</strong> monthly billing providers in 2019 and <strong>113,638</strong> in 2023 (<strong>+22,239</strong>, <strong>+24.33%</strong>). That raw jump mixes broad enrollment growth, stay-enrolled rules, and any video pay shift into one count. Ruler 2: Mode A Two-Group Gap vs. Other Medicaid Care: <strong>+5.62 pp (2023); +4.60 pp (2024)</strong>. In the Mode A two-group check, subtracting the other-care gain (<strong>+18.71%</strong>) leaves <strong>+5.62 pp</strong> (24.33 &minus; 18.71) through 2023 and <strong>+4.60 pp</strong> (11.57 &minus; 6.97) through 2024. The 2018 to 2019 growth gap was already <strong>+1.21 pp</strong> (8.26 &minus; 7.05). Part of the post-2019 gap may continue that earlier trend.</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/methodology/when-to-use-did/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">When Difference-in-Differences Fits &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/medicaid-data-landscape/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Medicaid Provider Spending File Guide &rarr;</a>
+        </p>
+      </div>
+    </div>
 
-          <div class="card">
-            <h3>Visualizing the Counterfactual</h3>
-            <div class="controls">
-              <span class="controls-label">Show:</span>
-              <button class="toggle-btn active" id="toggle-actual">Actual Data</button>
-              <button class="toggle-btn" id="toggle-counterfactual">+ Counterfactual</button>
-            </div>
-            <div class="chart-wrapper">
-              <h3 class="chart-title">ED Visit Rate Over Time by County</h3>
-              <svg id="did-chart" aria-label="DiD visualization showing actual and counterfactual trends"></svg>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item"><span class="legend-dot program"></span>County A (Program)</div>
-              <div class="legend-item"><span class="legend-dot comparison"></span>County B (Comparison)</div>
-              <div class="legend-item" id="legend-counterfactual" style="display:none"><span class="legend-line counterfactual"></span>Counterfactual</div>
-            </div>
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Shared Shocks, Base Trends &amp; Budget Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How subtracting shared enrollment waves changes how much growth budget teams credit to policy.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares shared waves, base-trend checks, budget tradeoffs, and next steps across four windows.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Base 2018 to 2019
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                2019 to 2023
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                2019 to 2024
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                2023 to 2024
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Shared Shift in Other Care
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Both care lines grew before 2020, staying within 1.21 points.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Other care growth matches 77% of the +24.33% gain, leaving +5.62 pp.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Through 2024, other care growth matches 60% of the +11.57% gain.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Both groups dropped by ~10% in 2024 from shared claim lags.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Pre-2020 Base Trend Check
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Video care grew 1.21 points faster before 2020, so the two lines were not flat.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Extending the 1.21-point yearly gap for 4 years leaves +0.78 pp of the +5.62 pp gap.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Extending the gap for 5 years turns the +4.60 pp gap into -1.45 pp in 2024.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                One pre-2020 year gives just two yearly means, so monthly leads give a fuller check.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Budget teams can show the net gap under both zero and 1.21-point pre-2020 drift.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Funding expansion on +24.33% alone credits video rules with broad Medicaid growth.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Paid dollars rose in lockstep, leaving a +1.16 pp paid gap.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Reading the 2024 dip as a video drop-off cuts a service line whose net gap is -0.37 pp.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Policy Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Add Earlier Base Months<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Include pre-2018 months or monthly leads to test if the 1.21-point gap stays steady.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Show Net Gap Next to Raw Gain<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Present the +5.62 pp net gap beside the +24.33% raw change in budget briefs.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Bound the 2024 Net Estimate<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Report the 2024 net gap under flat trends and extended drift.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Wait for Late-2024 Claims<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Refresh Nov and Dec 2024 after claims clear before reading the 2024 dip as real.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Shared Shock Timing &amp; Two-Group Math</span>
           </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Mode A Two-Group Math (2019 to 2023, <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> yearly means):</strong> &Delta;Video = (113,638 &minus; 91,399) / 91,399 = +24.33%. &Delta;Other = (129,492 &minus; 109,087) / 109,087 = +18.71%. Net gap = 24.33 &minus; 18.71 = <strong>+5.62 pp</strong>. Through 2024: (+11.57%) &minus; (+6.97%) = <strong>+4.60 pp</strong>. Pre-2020 (2018 to 2019): (+8.26%) &minus; (+7.05%) = <strong>+1.21 pp</strong>.</p>
+          <p>&bull; <strong>Late-2024 Claim Lags:</strong> In the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> series, billing providers drop in Nov and Dec 2024 for both groups (video 88,364 and 47,562; other 101,476 and 57,878). Jan to Oct 2024 ranged from 101,691 to 119,937 and 118,399 to 130,486. Using Jan to Oct 2024 means (108,781 video, +19.02% vs. 2019; 124,092 other, +13.76%) yields a 2019-to-2024 net gap of +5.26 pp.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Shared Shift in Other Care (Base 2018 to 2019).</strong> Both care lines grew before 2020 (+8.26% vs. +7.05%), staying within 1.21 points. &middot; <strong>Shared Shift in Other Care (2019 to 2024).</strong> Through 2024, other care growth (+6.97%) matches 60% of the +11.57% gain (+4.60 pp). &middot; <strong>Shared Shift in Other Care (2023 to 2024).</strong> Both groups dropped by ~10% in 2024 (-10.26% vs. -9.89%) from shared claim lags. &middot; <strong>Budget Tradeoff (2019 to 2024).</strong> Paid dollars rose in lockstep (+48.26% vs. +47.10%), leaving a +1.16 pp paid gap. &middot; <strong>Best-Fit Policy Rule (2019 to 2024).</strong> Report the 2024 net gap under flat trends (+4.60 pp) and extended drift (-1.45 pp).</p>
         </div>
+      </details>
+    </div>
 
-        <!-- Bridging question to Panel 2 -->
-        <div class="bridging-box">
-          <p><strong>County A improved by 15.2 points, but County B also improved by 12.8 points.</strong></p>
-          <p>What changed for everyone? And how do we separate the program effect from these common shocks?</p>
-        </div>
-      </section>
-
-      <!-- Panel 2: How DiD Works -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">How DiD Works</h2>
-          <p class="panel-intro">
-            Difference-in-differences removes the effect of anything that changed for everyone at the same time. What remains is the effect unique to the treated group.
-          </p>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is Difference-in-Differences?</h3>
-          <p>DiD is a quasi-experimental design that estimates causal effects by comparing changes over time between a treated group and a comparison group. It works by:</p>
-          <ul>
-            <li><strong>First difference:</strong> Comparing before vs. after within each group</li>
-            <li><strong>Second difference:</strong> Subtracting the comparison group's change from the treatment group's change</li>
-            <li><strong>Result:</strong> Removing any shared trends that affected both groups equally</li>
-          </ul>
-          <p style="margin-top: var(--space-md);"><strong>Core assumption:</strong> Without treatment, both groups would have followed the same trajectory (parallel trends).</p>
-        </div>
-
-        <div class="explanation-container">
-          <div class="explanation-grid">
-            <div class="concept-card">
-              <h4>The Core Logic</h4>
-              <p>If Medi-Cal expansion helped everyone equally, both counties should improve by the same amount. The <em>extra</em> improvement in County A beyond what County B experienced is attributed to the program.</p>
-              <ul>
-                <li>County B's change = statewide effect only</li>
-                <li>County A's change = statewide + program effect</li>
-                <li>Subtract to isolate program effect</li>
-              </ul>
-            </div>
-            <div class="concept-card">
-              <h4>The Counterfactual</h4>
-              <p>We can never observe what would have happened to County A without the program. DiD <em>constructs</em> this counterfactual by assuming County A would have followed County B's trajectory.</p>
-              <ul>
-                <li>The dashed line shows this "what if"</li>
-                <li>Gap between actual and counterfactual = effect</li>
-                <li>Relies on parallel trends assumption</li>
-              </ul>
-            </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
           </div>
-
-          <div class="key-insight">
-            <h4>Why This Matters for Policy Evaluation</h4>
-            <p>Without DiD, we might credit County A's program for the full 15.2-point improvement. With DiD, we see that 12.8 points would have happened anyway (it happened in County B too). Only 2.4 points appear attributable to the program.</p>
-            <p style="margin-top: var(--space-sm);"><strong>This is what economists mean by "differencing out common shocks."</strong> The comparison group reveals the counterfactual trend, so we can isolate the treatment effect.</p>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Two-Group Checks &amp; Shared Shocks (Mode A on HHS Medicaid Provider Spending)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Two-Group Medicaid Provider Spending Panel (2018-2024):</strong> <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending File</a> monthly counts (84 months). Billing providers for telehealth-eligible care grew +24.33% (91,399 to 113,638). Other Medicaid care grew +18.71% (109,087 to 129,492), leaving a +5.62 pp net gap through 2023 and +4.60 pp through 2024.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Pre-2020 Base Trend Check (2018-2019):</strong> Billing providers for video care grew +8.26% (84,422 to 91,399) versus +7.05% (101,905 to 109,087) for other care, a +1.21 pp yearly pre-2020 gap.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Medicaid Continuous Coverage &amp; Telehealth Rules:</strong> <a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS T-MSIS Analytic Files Documentation</a> and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Medicaid.gov Open Data</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS Telehealth Policy Guidance</a></li>
+            </ol>
           </div>
-        </div>
-
-        <!-- Bridging question to Panel 3 -->
-        <div class="bridging-box">
-          <p><strong>DiD isolates a 2.4-point effect. But should we trust this estimate?</strong></p>
-          <p>The method relies on assumptions that may or may not hold. The next panel audits each assumption for this scenario.</p>
-        </div>
-      </section>
-
-      <!-- Panel 3: Assumptions Audit -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Assumptions Audit</h2>
-          <p class="panel-intro">
-            DiD estimates are only valid if key assumptions hold. This audit evaluates each assumption and flags potential vulnerabilities.
-          </p>
-        </div>
-
-        <div class="audit-container">
-          <h3>Checking DiD Assumptions</h3>
-          <ul class="audit-list">
-            <li class="audit-item">
-              <span class="audit-icon pass">&#10003;</span>
-              <div class="audit-content">
-                <h5>Parallel Pre-Trends</h5>
-                <p>Before 2020, both counties showed similar flat trends in ED visits. This supports (but does not prove) that they would have continued similarly without intervention.</p>
-              </div>
-            </li>
-            <li class="audit-item">
-              <span class="audit-icon uncertain">?</span>
-              <div class="audit-content">
-                <h5>No Spillover Effects</h5>
-                <p>We assume County B was not affected by County A's program. If County A's success attracted patients from neighboring counties, our comparison may be biased.</p>
-              </div>
-            </li>
-            <li class="audit-item">
-              <span class="audit-icon pass">&#10003;</span>
-              <div class="audit-content">
-                <h5>Stable Unit Treatment Value (SUTVA)</h5>
-                <p>Each county's outcome depends only on its own treatment status. No evidence of interference between counties in this scenario.</p>
-              </div>
-            </li>
-            <li class="audit-item">
-              <span class="audit-icon uncertain">?</span>
-              <div class="audit-content">
-                <h5>No Differential Shocks</h5>
-                <p>We assume no other county-specific events occurred around 2020. If County A also opened a new hospital, that confounds our estimate.</p>
-              </div>
-            </li>
-            <li class="audit-item">
-              <span class="audit-icon pass">&#10003;</span>
-              <div class="audit-content">
-                <h5>Correct Timing</h5>
-                <p>We correctly identify 2020 as the treatment year. The program started in January 2020 and we compare 2019 (pre) to 2022 (post).</p>
-              </div>
-            </li>
-          </ul>
-
-          <div class="interpretation-box">
-            <h4>Overall Assessment</h4>
-            <p>This DiD analysis has reasonable support: parallel pre-trends are visible and timing is clear. We cannot rule out spillover or other county-specific shocks. The 2.4-point estimate should be interpreted as suggestive, not definitive.</p>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">How Two-Group Comparisons Guide Budget Choices</h3>
+            <p class="text-slate-800">During broad shifts like the 2020 to 2024 enrollment wave and Medicaid redetermination, almost every Medicaid count moves at once. If an agency credits telehealth policy with the raw +24.33% rise in billing providers, it cannot tell if that gain came from new billing rules or a system-wide enrollment surge.</p>
+            <p class="text-slate-800">A two-group comparison (Side-by-Side Group Comparison, or DiD) uses a second care line on the same timeline, here other Medicaid care (+18.71%), to subtract the shared shift. That step changes the budget takeaway. The +24.33% raw gain narrows to +5.62 pp through 2023 and +4.60 pp through 2024. Extending the +1.21-point pre-2020 gap trims it to +0.78 pp and -1.45 pp. The result rests on how closely the two groups tracked before the rule change.</p>
           </div>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-box">
-          <p><strong>Some assumptions are uncertain. How sensitive is our conclusion?</strong></p>
-          <p>The next panel explores how the estimated effect changes under different assumption violations.</p>
-        </div>
-      </section>
-
-      <!-- Panel 4: Sensitivity Analysis -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Sensitivity Analysis</h2>
-          <p class="panel-intro">
-            These questions help identify how robust the DiD estimate is to plausible assumption violations. They reveal where the analysis is most vulnerable to bias.
-          </p>
-        </div>
-
-        <div class="sensitivity-container">
-          <h3>Effect Estimates Under Different Scenarios</h3>
-          <table class="sensitivity-table">
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th>Assumption Violation</th>
-                <th>Adjusted Effect</th>
-                <th>Interpretation</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="baseline-row">
-                <td><strong>Baseline DiD</strong></td>
-                <td>None (parallel trends hold)</td>
-                <td><strong>-2.4</strong></td>
-                <td>Program reduces ED visits by 2.4 per 10k</td>
-              </tr>
-              <tr>
-                <td>Diverging Trends</td>
-                <td>County A was improving 1 pt/yr faster pre-2020</td>
-                <td>-0.4</td>
-                <td>Most of "effect" was pre-existing trend</td>
-              </tr>
-              <tr>
-                <td>Positive Spillover</td>
-                <td>Program also helped County B residents</td>
-                <td>-3.5 to -4.5</td>
-                <td>True effect larger than measured</td>
-              </tr>
-              <tr>
-                <td>New Hospital Opened</td>
-                <td>New facility reduced ED use independently</td>
-                <td>-1.0 to -1.5</td>
-                <td>Hospital explains part of the drop</td>
-              </tr>
-              <tr>
-                <td>Measurement Shift</td>
-                <td>County A changed ED coding in 2020</td>
-                <td>Unknown</td>
-                <td>Effect could be artifact of measurement</td>
-              </tr>
-              <tr>
-                <td>Alternative Comparison</td>
-                <td>Using a different comparison county</td>
-                <td>-1.8 to -3.2</td>
-                <td>Effect sensitive to comparison choice</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="interpretation-box">
-            <h4>What This Tells Us</h4>
-            <p>The baseline DiD estimate of -2.4 is sensitive to assumptions. Under plausible violations:</p>
-            <ul style="margin-top: var(--space-sm); padding-left: var(--space-lg); font-size: 0.9rem; color: var(--color-text-secondary);">
-              <li><strong>Lower bound:</strong> If County A was already improving faster, the true effect could be near zero</li>
-              <li><strong>Upper bound:</strong> If the program spilled over to help the comparison county, the true effect could be larger (-4 or more)</li>
-              <li><strong>Recommendation:</strong> Report the 2.4-point effect with bounds of roughly 0 to -4.5 depending on assumptions</li>
+          <p><strong>Mode Classification (Mode A Two-Group Check on Observed Series):</strong> Billing provider counts and paid dollars come from the HHS Medicaid Provider Spending file (telehealth_month_summary.parquet, Jan 2018 to Dec 2024), split by whether a code allows telehealth billing. Net two-group gaps and pre-trend bounds are Mode A calculations on these observed series. Unit of analysis: care-group-month (2 groups &times; 84 months = 168 rows).</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending File</a>, <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Medicaid.gov Open Data</a>, <a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS T-MSIS Analytic Files Documentation</a>, and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/when-to-use-did/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Using difference-in-differences in practice</a>.
+                <span>When a comparison group can stand in for the treated group, which assumptions matter, and worked cases labeled by whether their materials are public or article-reported.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/medicaid-data-landscape/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">What 238 Million Medicaid Billing Rows Can Support</a>.
+                <span>Row grain of the HHS Medicaid provider-spending file (aggregated billing cells by provider, procedure code, and month) and its suppression rules for multi-period comparisons.</span>
+              </li>
             </ul>
           </div>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <h4>Key Takeaway</h4>
-            <p><strong>DiD does not prove causation, but it reveals which assumptions matter most.</strong> When parallel trends hold and no differential shocks occur, DiD provides a credible estimate of treatment effects. When these assumptions fail, the method can mislead.</p>
-            <p style="margin-top: var(--space-sm);">Policy changes, eligibility cutoffs, and geographic boundaries can provide the variation needed for credible DiD estimates. <strong>This is what economists mean by "identification."</strong></p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">How does a two-group comparison (DiD) separate policy shifts from a shared wave?</dt>
+                <dd class="text-slate-700 mt-0.5">It subtracts the before-and-after change in a comparison group hit by the same wave (other Medicaid care, +18.71% from 2019 to 2023) from the change in the treated group (video care, +24.33%). That leaves a +5.62 percentage-point net gap.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does the 2019-to-2024 net gap (+4.60 pp) differ from the 2019-to-2023 gap (+5.62 pp)?</dt>
+                <dd class="text-slate-700 mt-0.5">From 2023 to 2024, video-care providers fell 10.26% and other-care providers fell 9.89%. Both drops reflect Medicaid redetermination and unpaid Nov and Dec 2024 claims.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What must hold for other Medicaid care to work as a valid comparison group?</dt>
+                <dd class="text-slate-700 mt-0.5">Both care groups must follow parallel paths when no new video rule is enacted. In 2018 to 2019, the treated group grew 1.21 points faster. Extending that pre-2020 gap trims the 2019-to-2023 net gap to +0.78 pp.</dd>
+              </div>
+            </dl>
           </div>
         </div>
-      </section>
+      </details>
     </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/parallel-trends-power" style="color:#0041A5;font-weight:600;">Understanding the Limits of Parallel Trends Tests</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-maturation-solutions" style="color:#0041A5;font-weight:600;">Interrupted Time Series</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/chw-health-outcomes" style="color:#0041A5;font-weight:600;">Case Study: CHW Programs</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/before-after-trap" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating Pre-Post Changes vs. Base Trends</a></li>
+          <li class="my-2"><a href="/methods-lab/parallel-trends-power" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Pre-Trend Noise Bands & Drift Bounds</a></li>
+          <li class="my-2"><a href="/methods-lab/identical-data-opposite-policies" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Nominal vs. Cost-Adjusted Medi-Cal Pay</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Card D, Krueger AB. Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania. NBER Working Paper 4509; 1994. <a href="https://www.nber.org/papers/w4509" target="_blank" rel="noopener">nber.org</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> - California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. DATA FOR VISUALIZATION
-       ============================================ */
-    const years = [2017, 2018, 2019, 2020, 2021, 2022];
-    const programStart = 2020;
-
-    const riversideData = [
-      { year: 2017, value: 84.5 },
-      { year: 2018, value: 85.8 },
-      { year: 2019, value: 85.2 },
-      { year: 2020, value: 78.0 },
-      { year: 2021, value: 73.5 },
-      { year: 2022, value: 70.0 }
-    ];
-
-    const sanJoaquinData = [
-      { year: 2017, value: 87.2 },
-      { year: 2018, value: 88.5 },
-      { year: 2019, value: 88.0 },
-      { year: 2020, value: 82.0 },
-      { year: 2021, value: 78.0 },
-      { year: 2022, value: 75.2 }
-    ];
-
-    // Counterfactual: County A following County B's trajectory
-    const counterfactualData = [
-      { year: 2019, value: 85.2 },
-      { year: 2020, value: 79.2 }, // Same drop as SJ: 88->82 = -6, so 85.2-6 = 79.2
-      { year: 2021, value: 75.2 }, // SJ: 82->78 = -4, so 79.2-4 = 75.2
-      { year: 2022, value: 72.4 }  // SJ: 78->75.2 = -2.8, so 75.2-2.8 = 72.4
-    ];
-
-    let showCounterfactual = false;
-
-    /* ============================================
-       2. CHART RENDERING
-       ============================================ */
-    function renderDidChart() {
-      const svg = document.getElementById('did-chart');
-      const container = svg.parentElement;
-      const width = container.clientWidth || 450;
-      const height = 320;
-      const margin = { top: 30, right: 25, bottom: 45, left: 55 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      svg.innerHTML = '';
-
-      const xMin = years[0], xMax = years[years.length - 1];
-      const yMin = 65, yMax = 92;
-
-      const xScale = (v) => margin.left + ((v - xMin) / (xMax - xMin)) * plotWidth;
-      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Event shading
-      const shadingRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      shadingRect.setAttribute('x', xScale(programStart));
-      shadingRect.setAttribute('y', margin.top);
-      shadingRect.setAttribute('width', xScale(xMax) - xScale(programStart));
-      shadingRect.setAttribute('height', plotHeight);
-      shadingRect.setAttribute('fill', 'rgba(5, 150, 105, 0.06)');
-      svg.appendChild(shadingRect);
-
-      // Event line
-      const eventLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      eventLine.setAttribute('x1', xScale(programStart));
-      eventLine.setAttribute('x2', xScale(programStart));
-      eventLine.setAttribute('y1', margin.top);
-      eventLine.setAttribute('y2', margin.top + plotHeight);
-      eventLine.setAttribute('stroke', '#059669');
-      eventLine.setAttribute('stroke-width', '2');
-      eventLine.setAttribute('stroke-dasharray', '6,4');
-      svg.appendChild(eventLine);
-
-      const eventLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      eventLabel.setAttribute('x', xScale(programStart) + 5);
-      eventLabel.setAttribute('y', margin.top + 14);
-      eventLabel.setAttribute('fill', '#059669');
-      eventLabel.setAttribute('font-size', '10');
-      eventLabel.setAttribute('font-weight', '500');
-      eventLabel.textContent = 'Program Start';
-      svg.appendChild(eventLabel);
-
-      // Grid lines
-      for (let i = 0; i <= 4; i++) {
-        const y = yMin + (i / 4) * (yMax - yMin);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', '#E0E0E0');
-        svg.appendChild(line);
-
-        const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        lbl.setAttribute('x', margin.left - 8);
-        lbl.setAttribute('y', yScale(y) + 4);
-        lbl.setAttribute('text-anchor', 'end');
-        lbl.setAttribute('fill', '#595959');
-        lbl.setAttribute('font-size', '11');
-        lbl.textContent = y.toFixed(0);
-        svg.appendChild(lbl);
-      }
-
-      // X-axis labels
-      years.forEach(year => {
-        const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        lbl.setAttribute('x', xScale(year));
-        lbl.setAttribute('y', height - 12);
-        lbl.setAttribute('text-anchor', 'middle');
-        lbl.setAttribute('fill', '#424242');
-        lbl.setAttribute('font-size', '11');
-        lbl.textContent = year;
-        svg.appendChild(lbl);
-      });
-
-      // Y-axis label
-      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
-      yAxisLabel.setAttribute('y', 14);
-      yAxisLabel.setAttribute('transform', 'rotate(-90)');
-      yAxisLabel.setAttribute('text-anchor', 'middle');
-      yAxisLabel.setAttribute('fill', '#424242');
-      yAxisLabel.setAttribute('font-size', '12');
-      yAxisLabel.textContent = 'ED Visits per 10,000';
-      svg.appendChild(yAxisLabel);
-
-      // Draw counterfactual first (behind)
-      if (showCounterfactual) {
-        let cfPathD = `M ${xScale(counterfactualData[0].year)} ${yScale(counterfactualData[0].value)}`;
-        counterfactualData.forEach(d => { cfPathD += ` L ${xScale(d.year)} ${yScale(d.value)}`; });
-        const cfPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        cfPath.setAttribute('d', cfPathD);
-        cfPath.setAttribute('fill', 'none');
-        cfPath.setAttribute('stroke', '#0D9488');
-        cfPath.setAttribute('stroke-width', '2');
-        cfPath.setAttribute('stroke-dasharray', '8,4');
-        cfPath.setAttribute('opacity', '0.5');
-        svg.appendChild(cfPath);
-
-        // DiD arrow
-        const arrowY1 = yScale(counterfactualData[3].value);
-        const arrowY2 = yScale(riversideData[5].value);
-        const arrowX = xScale(2022);
-
-        const arrowLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        arrowLine.setAttribute('x1', arrowX + 15);
-        arrowLine.setAttribute('x2', arrowX + 15);
-        arrowLine.setAttribute('y1', arrowY1);
-        arrowLine.setAttribute('y2', arrowY2);
-        arrowLine.setAttribute('stroke', '#059669');
-        arrowLine.setAttribute('stroke-width', '2');
-        arrowLine.setAttribute('marker-end', 'url(#arrowhead)');
-        arrowLine.setAttribute('marker-start', 'url(#arrowhead-up)');
-        svg.appendChild(arrowLine);
-
-        const didLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        didLabel.setAttribute('x', arrowX + 22);
-        didLabel.setAttribute('y', (arrowY1 + arrowY2) / 2 + 4);
-        didLabel.setAttribute('fill', '#059669');
-        didLabel.setAttribute('font-size', '11');
-        didLabel.setAttribute('font-weight', '600');
-        didLabel.textContent = '-2.4';
-        svg.appendChild(didLabel);
-      }
-
-      // Draw lines function
-      function drawLine(data, color) {
-        let pathD = `M ${xScale(data[0].year)} ${yScale(data[0].value)}`;
-        data.forEach(d => { pathD += ` L ${xScale(d.year)} ${yScale(d.value)}`; });
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', pathD);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', color);
-        path.setAttribute('stroke-width', '3');
-        svg.appendChild(path);
-
-        data.forEach(d => {
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', xScale(d.year));
-          circle.setAttribute('cy', yScale(d.value));
-          circle.setAttribute('r', '5');
-          circle.setAttribute('fill', color);
-          circle.setAttribute('stroke', 'white');
-          circle.setAttribute('stroke-width', '2');
-          svg.appendChild(circle);
-        });
-      }
-
-      drawLine(sanJoaquinData, '#F9A825');
-      drawLine(riversideData, '#0D9488');
-    }
-
-    /* ============================================
-       3. TOGGLE CONTROLS
-       ============================================ */
-    document.getElementById('toggle-actual').addEventListener('click', () => {
-      showCounterfactual = false;
-      document.getElementById('toggle-actual').classList.add('active');
-      document.getElementById('toggle-counterfactual').classList.remove('active');
-      document.getElementById('legend-counterfactual').style.display = 'none';
-      renderDidChart();
-    });
-
-    document.getElementById('toggle-counterfactual').addEventListener('click', () => {
-      showCounterfactual = true;
-      document.getElementById('toggle-counterfactual').classList.add('active');
-      document.getElementById('toggle-actual').classList.remove('active');
-      document.getElementById('legend-counterfactual').style.display = 'flex';
-      renderDidChart();
-    });
-
-    /* ============================================
-       4. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Re-render chart when panel 1 becomes visible
-        if (panelNum === '1') {
-          setTimeout(renderDidChart, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       5. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      renderDidChart();
-
-      // Debounced resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(renderDidChart, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

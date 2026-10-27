@@ -3,846 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Selection Into Treatment & CA Paid Leave | CAPHE</title>
+  <meta name="description" content="Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/selection-into-treatment">
+  <meta property="og:title" content="Selection Into Treatment & CA Paid Leave | CAPHE">
+  <meta property="og:description" content="Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/selection-into-treatment">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Who Gets Treated? Selection Explained | CAPHE</title>
-  <meta name="description" content="Before comparing outcomes, economists ask: Why did some units get treatment and others didn't? Learn how selection into treatment affects causal inference.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/selection-into-treatment">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       7. PANEL 2: WHO GETS TREATED (DAG)
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.resources {
-      border-left-color: var(--color-primary);
-    }
-
-    .pathway-item.politics {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.infrastructure {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. PANEL 3: SELECTION MECHANISMS (Interactive)
-       ============================================ */
-    .selection-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .selection-container { grid-template-columns: 1fr; }
-    }
-
-    .filter-controls {
+    .budget-bar-seg {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
       flex-wrap: wrap;
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .filter-label {
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--color-text-secondary);
-      margin-right: var(--space-sm);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .filter-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .filter-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .mechanism-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .mechanism-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .mechanism-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .mechanism-card p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-    }
-
-    .mechanism-stats {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-      margin-top: var(--space-md);
-      padding-top: var(--space-md);
-      border-top: 1px solid var(--color-border-light);
-    }
-
-    .mechanism-stat-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-    }
-
-    .mechanism-stat-label {
-      color: var(--color-text-secondary);
-    }
-
-    .mechanism-stat-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    .insight-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.85rem;
-    }
-
-    .insight-box p {
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-box p:last-child {
-      margin-bottom: 0;
-      color: var(--color-text-secondary);
-    }
-
-    /* Definition Card */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-      color: var(--color-text);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       9. PANEL 4: IMPLICATIONS
-       ============================================ */
-    .implications-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .implications-grid { grid-template-columns: 1fr; }
-    }
-
-    .implication-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .implication-card.warning {
-      border-left-color: var(--color-caution);
-    }
-
-    .implication-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .implication-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .implication-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .comparison-table {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .comparison-table h3 {
-      margin-bottom: var(--space-lg);
-      color: var(--color-primary);
-    }
-
-    .comparison-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .comparison-table th,
-    .comparison-table td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-table th {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 600;
-    }
-
-    .comparison-table td {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .comparison-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .comparison-table .highlight {
-      background: rgba(249, 168, 37, 0.1);
-    }
-
-    /* ============================================
-       10. PANEL 5: KEY INSIGHT
-       ============================================ */
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* Bridging Question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      margin: 0;
-      font-size: 1rem;
-      color: var(--color-text);
-    }
-
-    .bridging-question p:last-child {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-top: var(--space-sm);
-    }
-
-    /* ============================================
-       11. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       12. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 240px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       13. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
 
-    .hidden {
-      display: none;
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
     }
-    .skip-link:focus {
-      top: 0;
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Who Gets Treated? Selection Explained",
-  "description": "Before comparing outcomes, economists ask: Why did some units get treatment and others didn't? Learn how selection into treatment affects causal inference.",
+  "headline": "Wage-Tier Replacement Rates and Job Protection Shape Projected Paid Family Leave Take-Up",
+  "description": "Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -850,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -861,55 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is selection into treatment?",
+      "name": "Why does PFL take-up differ from total covered workers in California?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "It is when units receiving treatment differ systematically from those that do not. It creates bias when the characteristics driving treatment adoption are also related to the outcome, so comparisons mix the treatment effect with selection."
+        "text": "All 18.5 million SDI-covered workers pay into the fund. Yet low-wage workers face cash limits when pay replacement sits below 90%. They also face job-protection gaps when PFL pays for 8 weeks while CFRA protects jobs for 12 unpaid weeks."
       }
     },
     {
       "@type": "Question",
-      "name": "Why does selection make program effects hard to scale?",
+      "name": "How did Senate Bill 951 shift tax and pay shares in California Paid Family Leave?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "If wealthy, well-resourced counties adopt a program and already have better outcomes, some benefit may be attributed to the program that would have happened anyway. Scaling to counties without those advantages may not replicate the observed results."
+        "text": "SB 951 removed the SDI wage tax cap on January 1, 2024, so high earners pay tax on all wages. It then raised pay replacement to 90% for low-wage workers on January 1, 2025. Under a 12-week plan, Q1 (<$25K) workers gain +$19.7M net per year."
       }
     },
     {
       "@type": "Question",
-      "name": "Can statistical controls eliminate selection bias?",
+      "name": "How does private firm offset affect SDI reserves versus worker income?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Controls help but cannot eliminate bias from unmeasured factors that predict both adoption and outcomes. Selection on unobservables remains a fundamental threat that adjustment alone does not solve."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What does selection bias mean for the counterfactual?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "We never observe what would have happened to treated units without treatment. Selection makes that counterfactual especially hard to estimate because treated and untreated units were not comparable to begin with."
+        "text": "When firms use state PFL pay to offset private paid leave (30% in the Expected case), net new cash to workers drops from $602.8M to $422.0M. Yet the state SDI fund still pays out the full $623.7M gross outlay."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -920,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -939,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -955,961 +529,478 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Design Essentials</div>
-      <h1>Who Gets Treated? Selection Explained</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Selection into treatment occurs when the units that receive a treatment differ systematically from those that do not, so that treatment assignment is related to outcomes for reasons other than the treatment itself. Before comparing outcomes, economists ask what determines which units get treated. In this CAPHE lab, wealthier California counties with more health infrastructure are far more likely to adopt a maternal health program and already have lower mortality, so a simple treated-versus-untreated comparison confounds the program's effect with selection. The fix is not more sophisticated adjustment but finding sources of treatment variation unrelated to potential outcomes.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Before comparing outcomes, economists ask: "Why did some units get treatment and others didn't?" The answer reveals whether selection bias will plague your analysis.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Who Gets Treated?</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Selection Mechanisms</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Implications</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Wage-Tier Replacement Rates and Job Protection Shape Projected Paid Family Leave Take-Up
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Modeling how higher pay rates and job protection shift leave claims across low-wage and high-wage workers.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When sizing a Paid Family Leave expansion from 8 to 12 weeks, using one statewide claim rate misprices fund reserves because low-wage and high-wage workers claim leave at different rates. Across California's <strong>18.5 million covered workers,</strong> pairing a 12-week cap with <strong>90% low-wage pay replacement</strong> delivers <strong>$422.0M per year in modeled net worker pay</strong> and a <strong>+$19.7M yearly net gain</strong> for the lowest-paid fifth of workers.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Assuming 100% of eligible claimants take every week overstates yearly fund outlays by <strong>3.1 times ($1,910.0M vs. $623.7M)</strong> because job rules and firm top-offs shape take-up.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Modeling take-up across all five wage groups prices the payroll tax shift at <strong>+0.045 percentage points.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Leave Take-Up, Tax Share &amp; Net Gains Across Wage Groups</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How SB 951 pay rates (90% vs. 70%) and uncapped SDI payroll taxes shape net gains across California wage tiers.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 shows modeled Paid Family Leave expansion costs and net gains across worker wage groups.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Wage &amp; Tax Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 1 (<$25K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Lowest Wage Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 2 ($25K-$45K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Second Wage Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Groups 3-4 ($45K-$110K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Middle Wage Groups</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 5 ($110K+)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Top Wage Group</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                SB 951 Weekly Pay Rate
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% of weekly wage</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% of weekly wage</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% (Mid) to 70% (Upper-Mid)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">70%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">capped at $1,765/wk</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Covered Workers
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">25.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">22.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15.0% of workers</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Added SDI Tax*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">7.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$43.7M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">12.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$74.8M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">42.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$264.7M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.6%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$240.5M tax</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Added PFL Pay*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$63.4M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">19.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$78.1M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">45.3%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$186.4M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">20.2%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$83.0M pay</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Net Yearly Transfer (Pay Minus Tax)*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+$19.7M Net Gain</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+$3.3M Net Gain</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 2%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-$78.2M Net Tax</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 50%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-$157.5M Net Tax</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Take-Up Factor
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% pay + CFRA gap</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Cash need + firm size >=5</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Partial firm top-off</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">30% to 50% firm offset</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Wage group shares come from U.S. Census ACS 5-year microdata (18.5M SDI-covered workers) anchored to the EDD May 2026 DI Fund Forecast (330,000 baseline claims, $1,371.5B taxable wages). Mode A rows model a 12-week PFL expansion at 35% added-week take-up.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Lowest Wage Group.</strong> Mean Wage $18K (25% of Workers). <strong>Second Wage Group.</strong> Mean Wage $35K (22% of Workers). <strong>Middle Wage Groups.</strong> 38% of Covered Workers. <strong>Top Wage Group.</strong> Mean Wage $165K (15% of Workers).</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Model on Observed Baselines: EDD 2025-2026 Claims &amp; ACS 5-Year Wage Groups (N = 18.5M Workers). Ruler 1: Full-Use Cap (100% Take-Up, 0% Firm Offset): <strong>$1,910.0M Outlay (396K Claims)</strong>. Unit: modeled claimants and yearly SDI fund totals. Suppose every modeled claimant took all 4 added weeks (100% take-up) and new claims rose 20% (<strong>396,000 claims</strong>) with zero firm offset. Yearly gross SDI outlays would hit <strong>$1,910.0M</strong>. That would push the modeled SDI reserve to a <strong>-$0.58B (-3.0%) deficit</strong>. Ruler 2: Expected Choice &amp; SB 951 Net Share (35% Take-Up): <strong>$623.7M Gross | +$19.7M to Q1</strong>. Unit: modeled claimants, yearly SDI fund totals, and wage groups. Expected take-up (<strong>35.0%</strong> of added weeks, <strong>12.0%</strong> new claims = <strong>369,600 claims</strong>) costs <strong>$623.7M/yr</strong> in gross SDI outlay. Net worker gain is <strong>$422.0M</strong> after 30% firm offset. A <strong>+0.045 pp</strong> SDI tax shift funds the plan and sends a <strong>+$19.7M yearly net gain</strong> to Q1 (<$25K) workers.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Take-Up Rules, Firm Offsets &amp; Policy Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How worker take-up shapes who gains from paid leave and what the state fund pays.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares take-up drivers, firm offsets, and policy rules across worker wage groups.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Lowest Wage Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Second Wage Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Middle Wage Groups
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Top Wage Group
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cash &amp; Job-Rule Factor
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                At the old 60% pay rate, low-wage workers could not afford a 40% pay cut.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                CFRA protects jobs for 12 weeks at firms with 5+ staff.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Middle-wage workers weigh 70% to 90% PFL pay against sick days and home bills.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High-wage staff often get private firm leave that tops off or replaces state PFL pay.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                How Group Take-Up Shifts the Model
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cash limits show why low-wage workers took shorter leave before the 90% pay tier.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Group take-up reflects job rules in small firms that a flat 100% cap leaves out.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding 12.0% new claims captures higher use when pay and weeks rise.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Splitting $623.7M gross cost from $422.0M net worker pay accounts for 30% firm offset.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding 4 weeks without the 90% pay floor would shift added pay toward high earners.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Closing the 4-week gap between PFL and CFRA costs +$623.7M/yr.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The $1,765 weekly cap limits high-wage cost while keeping 90% pay below $63,000.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Removing the wage tax cap means top earners fund 38.6% and claim 20.2%.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Policy Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair 90% Pay With Clinic Outreach<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Link 90% pay with WIC and prenatal clinics so low-wage families claim their +$19.7M gain.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Match 12-Week PFL to CFRA Rules<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Align 12-week PFL pay with 12-week CFRA job protection to close the 4-week unpaid gap.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Split Gross Fund Cost From Net Gain<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Budget reserves for $623.7M gross cost while scoring worker gains on $422.0M net pay.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Uncapped SDI Tax Base<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use the uncapped $1,371.5B wage base so a 4-week expansion adds +0.045 pp in tax.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Model Inputs, Firm Offset Math &amp; State Benchmarks</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Mode A Model Disclosure:</strong> Individual EDD tax files are private. Group shares across Q1 to Q5 wage tiers are modeled with <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS 2019-2023 5-Year PUMS</a> wage data (18.5M covered workers). Totals are anchored to <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD May 2026 DI Fund Forecast</a> baselines (330,000 forecast 2026 PFL claims, $1,165 weekly pay, and $1,371.5B taxable wages).</p>
+          <p>&bull; <strong>Firm Offset vs. Fund Cash Outlay:</strong> Private firm offset (50% Low, 30% Expected, 0% Cap) lowers <em>net added worker pay</em> ($422.0M Expected vs. $602.8M gross pay) when firms coordinate private paid leave with state PFL. Yet the state fund still pays the full <em>gross SDI cash outlay</em> ($623.7M with $21.1M admin).</p>
+          <p>&bull; <strong>Peer State Rates:</strong> California's 90% low-wage pay tier under SB 951 matches Washington and Colorado (90%). It sits above New Jersey (85%) and New York (67%).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Cash &amp; Job-Rule Factor (Second Wage Group).</strong> CFRA protects jobs for 12 weeks at firms with 5+ staff, but PFL pays for 8 weeks. &middot; <strong>Budget Tradeoff (Second Wage Group).</strong> Closing the 4-week gap between PFL and CFRA costs +$623.7M/yr (+0.045 pp tax).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare How Worker Take-Up &amp; Firm Offset Shift Annual PFL Outlays</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Comparing modeled yearly SDI outlays and net worker gains across low, expected, and cap scenarios.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare How Worker Take-Up &amp; Firm Offset Shift Annual PFL Outlays">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 1 · Low Bound</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">25% Added Take-Up | 50% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$417.8M Gross | $201.8M Net</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Modeled yearly claims hit 346,500 (+0.030 pp tax shift), while firm offset halves net added worker pay.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 2 · Expected Choice</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">35% Added Take-Up | 30% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$623.7M Gross | $422.0M Net</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Modeled yearly claims hit 369,600 (+0.045 pp tax shift) and send +$23.0M net to the lowest two wage groups.</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Scenario 3 · Full-Use Cap</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">100% Added Take-Up | 0% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$1,910.0M Gross | -$0.58B Deficit</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">A 100% take-up stress test triples yearly gross outlay and pushes SDI cash reserves into a -3.0% deficit.</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Scenario Math, 6-Year Outlays &amp; SDI Reserve Notes</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Scenario 1 Low Bound (25% Added Weeks / +5% New Claims):</strong> Adds +16,500 new claims (from 330,000 base to 346,500/yr). That creates <strong>$417.8M/yr</strong> in gross SDI outlay (<strong>$2.688B</strong> over 6 years, 1.33% SDI tax rate) and <strong>$201.8M/yr</strong> in net worker pay after 50% firm offset.</p>
+          <p>&bull; <strong>Scenario 2 Expected Choice (35% Added Weeks / +12% New Claims):</strong> Adds +39,600 new claims (369,600/yr total). That creates <strong>$623.7M/yr</strong> in gross SDI outlay (<strong>$4.013B</strong> over 6 years, 1.345% SDI tax rate) and <strong>$422.0M/yr</strong> in net worker pay after 30% firm offset.</p>
+          <p>&bull; <strong>Scenario 3 Full-Use Cap (100% Added Weeks / +20% New Claims):</strong> Adds +66,000 new claims (396,000/yr total). Gross outlay rises to <strong>$1,910.0M/yr</strong> (<strong>$12.286B</strong> over 6 years) and pushes the 2026 SDI reserve to a <strong>-$0.58B (-3.0%)</strong> deficit.</p>
+        </div>
+      </details>
+    </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Worker Take-Up &amp; Tax Share (Mode A on ACS &amp; EDD Baselines)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>California Paid Family Leave &amp; Workforce Baselines:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> (18.5M covered workers, $1,371.5B taxable wages, 330,000 forecast 2026 PFL claims) and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS 2019-2023 5-Year Microdata</a>.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>SB 951 Pay Tiers &amp; Tax Rules:</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; Gov. Code &sect; 12945.2)</a> sets 90% pay for low-wage workers starting Jan 1, 2025 and removes the SDI wage tax cap starting Jan 1, 2024. That yields a +$19.7M yearly net gain for Q1 workers and +$23.0M across Q1 and Q2.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Expected Take-Up vs. Full-Use Cap:</strong> <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> models 35% added-week take-up at $623.7M in yearly gross cost and $422.0M in net worker pay after 30% employer offset, versus $1,910.0M at 100% take-up.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">EDD Paid Family Leave Monthly Data Series</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019-2023 5-Year Microdata</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Worker Take-Up Shapes Both Causal Models and Tax Fairness</h3>
+            <p class="text-slate-800">In program studies, selection into treatment means people who enroll differ from those who do not. For health economists and state budget leads, worker choice is also the policy path itself. California gives 12 weeks of unpaid job protection under CFRA, yet PFL pays for only 8 weeks. Low-wage workers without savings drop out at week 9, while salaried staff with firm top-offs take all 12 weeks.</p>
+            <p class="text-slate-800">Modeling worker take-up next to tax shares avoids two budget errors. It avoids over-budgeting for a 100% cap ($1,910.0M/yr) and avoids assuming leave expansions only help top earners. SB 951 raised low-wage pay to 90% and removed the wage tax cap on high earners. At 35% expected take-up ($623.7M/yr gross cost), the plan scores +0.095 on progressivity and sends +$23.0M in net gains to the bottom two wage groups.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Model on Observed Baselines):</strong> Base 2025 PFL claims (325,055 yearly claims), weekly pay ($1,090), and SDI fund balance ($3.011B) are observed EDD records. Forecast 2026 baselines (330,000 claims, $1,165 weekly pay, $1,371.5B taxable wages) and wage-group shares are Mode A projections from the <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a>.</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Employment Development Department (EDD) May 2026 Disability Insurance Fund Forecast</a>, <a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD Paid Family Leave Monthly Data Series</a>, <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC § 3300 &amp; Gov. Code § 12945.2)</a>, and <a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019-2023 5-Year Microdata</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why does PFL take-up differ from total covered workers in California?</dt>
+                <dd class="text-slate-700 mt-0.5">All 18.5 million SDI-covered workers pay into the fund. Yet low-wage workers face cash limits when pay replacement sits below 90%. They also face job-protection gaps when PFL pays for 8 weeks while CFRA protects jobs for 12 unpaid weeks.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How did Senate Bill 951 shift tax and pay shares in California Paid Family Leave?</dt>
+                <dd class="text-slate-700 mt-0.5">SB 951 removed the SDI wage tax cap on January 1, 2024, so high earners pay tax on all wages. It then raised pay replacement to 90% for low-wage workers on January 1, 2025. Under a 12-week plan, Q1 (<$25K) workers gain +$19.7M net per year.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does private firm offset affect SDI reserves versus worker income?</dt>
+                <dd class="text-slate-700 mt-0.5">When firms use state PFL pay to offset private paid leave (30% in the Expected case), net new cash to workers drops from $602.8M to $422.0M. Yet the state SDI fund still pays out the full $623.7M gross outlay.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/threat-maturation-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Year Trend Splits on PFL & SB 951</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact & SDI Reserve Floor Rules</a></li>
+          <li class="my-2"><a href="/methods-lab/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Filtered Subsets & Full-Pool Calibration</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            California counties show different rates of maternal mortality. Some adopted a new maternal health program; others did not. Counties with the program have lower mortality. Is the program working? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">County Wealth vs Maternal Mortality</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing county wealth versus maternal mortality rate, colored by program adoption"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>No Program</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Has Program</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>County Breakdown</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-program-count">--</div>
-                  <div class="stat-label">With Program</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-no-program-count">--</div>
-                  <div class="stat-label">Without Program</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Average Maternal Mortality</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-program-avg">--</div>
-                  <div class="stat-label">With Program</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-no-program-avg">--</div>
-                  <div class="stat-label">Without Program</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>What we see:</strong> Counties with the maternal health program have mortality rates about <span id="stat-difference">--</span> per 100,000 lower on average.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>The crucial question:</strong> Is the program reducing mortality, or are certain types of counties more likely to adopt it?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: WHO GETS TREATED?
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Who Gets Treated?</h2>
-          <p class="panel-intro">
-            Economists start by asking: "What determines which units receive treatment?" The answer reveals potential threats to causal inference. If treatment assignment is related to outcomes for reasons other than the treatment itself, simple comparisons will be misleading.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/selection-into-treatment/assets/selection-into-treatment-dag.png"
-              alt="Causal diagram showing multiple factors (wealth, infrastructure, political will) affecting both program adoption and maternal mortality, with a dashed arrow from program to mortality indicating uncertain causal effect"
-              class="dag-image"
-            >
-            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to measure.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Factors Predicting Adoption</h4>
-              <div class="pathway-list">
-                <div class="pathway-item resources">
-                  <strong>County Wealth</strong>
-                  <p>Wealthy counties have more resources to implement new programs and already have lower mortality rates.</p>
-                </div>
-                <div class="pathway-item politics">
-                  <strong>Political Will</strong>
-                  <p>Counties with health-focused leadership prioritize maternal care programs and make other health investments.</p>
-                </div>
-                <div class="pathway-item infrastructure">
-                  <strong>Existing Infrastructure</strong>
-                  <p>Counties with more hospitals and clinics can more easily launch new initiatives and provide better care generally.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The selection problem:</strong> Each factor that predicts program adoption also predicts better outcomes. Counties that adopt the program would likely have lower mortality even without the program.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Understanding selection:</strong> The association between program and outcomes reflects two things mixed together.</p>
-          <p>How do we separate the causal effect from the selection effect?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: SELECTION MECHANISMS
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Selection Mechanisms</h2>
-          <p class="panel-intro">
-            Use the filters below to explore what predicts program adoption. When certain characteristics strongly predict treatment, comparing treated and untreated units becomes problematic.
-          </p>
-        </div>
-
-        <div class="filter-controls">
-          <span class="filter-label">Explore by:</span>
-          <button class="filter-btn active" data-filter="all">All Counties</button>
-          <button class="filter-btn" data-filter="wealth">By Wealth</button>
-          <button class="filter-btn" data-filter="infrastructure">By Infrastructure</button>
-          <button class="filter-btn" data-filter="timing">By Adoption Timing</button>
-        </div>
-
-        <div class="selection-container">
-          <div class="chart-wrapper">
-            <svg id="selection-chart" class="chart-svg" role="img" aria-label="Interactive scatter plot exploring selection into treatment"></svg>
-          </div>
-
-          <aside class="mechanism-sidebar">
-            <div class="mechanism-card">
-              <h4 id="mechanism-title">Selection Pattern</h4>
-              <p id="mechanism-description">Select a filter to explore how different county characteristics predict program adoption.</p>
-              <div class="mechanism-stats">
-                <div class="mechanism-stat-row">
-                  <span class="mechanism-stat-label">Adoption rate (high):</span>
-                  <span class="mechanism-stat-value" id="stat-high-adoption">--</span>
-                </div>
-                <div class="mechanism-stat-row">
-                  <span class="mechanism-stat-label">Adoption rate (low):</span>
-                  <span class="mechanism-stat-value" id="stat-low-adoption">--</span>
-                </div>
-                <div class="mechanism-stat-row">
-                  <span class="mechanism-stat-label">Ratio:</span>
-                  <span class="mechanism-stat-value" id="stat-adoption-ratio">--</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="insight-box">
-              <p id="selection-insight"><strong>Explore the patterns:</strong> Use the filters to see how wealth, infrastructure, and timing relate to program adoption.</p>
-            </div>
-          </aside>
-        </div>
-
-        <div class="definition-card">
-          <h3>Selection Into Treatment</h3>
-          <p><strong>Selection into treatment</strong> occurs when units that receive treatment differ systematically from those that do not. It creates bias when:</p>
-          <ul>
-            <li>The same factors that predict treatment also predict outcomes</li>
-            <li>Treated units would have different outcomes even without treatment</li>
-            <li>The treatment-outcome association reflects both causation and selection</li>
-          </ul>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>The pattern is clear:</strong> Wealthier counties with better infrastructure are far more likely to adopt the program.</p>
-          <p>What does this mean for interpreting the mortality difference?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: IMPLICATIONS
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Implications</h2>
-          <p class="panel-intro">
-            Selection into treatment has profound consequences for policy evaluation. The observed difference between treated and untreated groups tells us little about what would happen if we implemented the program elsewhere.
-          </p>
-        </div>
-
-        <div class="comparison-table">
-          <h3>What the Comparison Actually Captures</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Component</th>
-                <th>Description</th>
-                <th>What It Means</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>True Program Effect</strong></td>
-                <td>Lives saved by the program itself</td>
-                <td>What we want to measure</td>
-              </tr>
-              <tr class="highlight">
-                <td><strong>Selection Effect</strong></td>
-                <td>Advantage from being a county that adopts programs</td>
-                <td>Wealthier, better-resourced counties would do better anyway</td>
-              </tr>
-              <tr>
-                <td><strong>Observed Difference</strong></td>
-                <td>Program Effect + Selection Effect</td>
-                <td>Overstates the true impact of the program</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="implications-grid">
-          <div class="implication-card">
-            <h4>Overestimating Program Benefits</h4>
-            <p>If wealthy counties adopt programs and have better outcomes, we may attribute to the program what would have happened anyway.</p>
-            <div class="implication-prompt">
-              What would mortality look like in these counties if they had NOT adopted the program?
-            </div>
-          </div>
-
-          <div class="implication-card warning">
-            <h4>Misleading Policy Conclusions</h4>
-            <p>Scaling a program to different counties may not replicate the observed benefits if those counties lack the same underlying advantages.</p>
-            <div class="implication-prompt">
-              Would the program work equally well in under-resourced counties that haven't adopted it?
-            </div>
-          </div>
-
-          <div class="implication-card">
-            <h4>The Counterfactual Problem</h4>
-            <p>We never observe what would have happened to treated counties without treatment. Selection makes this counterfactual especially hard to estimate.</p>
-            <div class="implication-prompt">
-              The control group may not tell us what treated counties would have experienced.
-            </div>
-          </div>
-
-          <div class="implication-card warning">
-            <h4>Regression Cannot Fully Adjust</h4>
-            <p>Statistical controls help but cannot eliminate bias from unmeasured factors that predict both adoption and outcomes.</p>
-            <div class="implication-prompt">
-              What unmeasured factors might wealthy counties have that affect mortality?
-            </div>
-          </div>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Selection is a fundamental challenge:</strong> It does not invalidate observational research, but it demands careful thinking about the treatment assignment mechanism.</p>
-          <p>What strategies can address selection bias?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            Understanding selection is the first step toward credible causal inference. These questions help you think about whether selection threatens your analysis. They do not guarantee valid causal estimates, but they reveal where the analysis is vulnerable.
-          </p>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Questions Economists Ask About Selection</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>What predicts treatment?</strong> List the factors that make units more likely to receive treatment.</div>
-            <div class="concept-item"><strong>Do those factors also predict outcomes?</strong> If so, selection bias is likely.</div>
-            <div class="concept-item"><strong>Is there overlap?</strong> Are there similar treated and untreated units to compare?</div>
-            <div class="concept-item"><strong>What is unmeasured?</strong> Even after controlling for observables, what hidden factors might remain?</div>
-            <div class="concept-item"><strong>Why did some units NOT get treated?</strong> The reasons for non-adoption matter as much as reasons for adoption.</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Selection into treatment is not a statistical problem with a statistical fix.</strong> When units that receive treatment differ systematically from those that do not, simple comparisons confound causation with selection. The solution is not more sophisticated adjustment but finding sources of treatment variation that operate independently of the factors that determine outcomes. Policy mandates, geographic rollouts, and eligibility thresholds can provide this. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-regression-to-mean" style="color:#0041A5;font-weight:600;">Regression to the Mean</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-history-solutions" style="color:#0041A5;font-weight:600;">Difference-in-Differences</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/parallel-trends-power" style="color:#0041A5;font-weight:600;">Understanding the Limits of Parallel Trends Tests</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateCountyData() {
-      const countyNames = [
-        'Alameda', 'Alpine', 'Amador', 'Butte', 'Calaveras', 'Colusa', 'Contra Costa',
-        'Del Norte', 'El Dorado', 'Fresno', 'Glenn', 'Humboldt', 'Imperial', 'Inyo',
-        'Kern', 'Kings', 'Lake', 'Lassen', 'Los Angeles', 'Madera', 'Marin', 'Mariposa',
-        'Mendocino', 'Merced', 'Modoc', 'Mono', 'Monterey', 'Napa', 'Nevada', 'Orange',
-        'Placer', 'Plumas', 'Riverside', 'Sacramento', 'San Benito', 'San Bernardino',
-        'San Diego', 'San Francisco', 'San Joaquin', 'San Luis Obispo', 'San Mateo',
-        'Santa Barbara', 'Santa Clara', 'Santa Cruz', 'Shasta', 'Sierra', 'Siskiyou',
-        'Solano', 'Sonoma', 'Stanislaus', 'Sutter', 'Tehama', 'Trinity', 'Tulare',
-        'Tuolumne', 'Ventura', 'Yolo', 'Yuba'
-      ];
-
-      const data = [];
-      let seed = 123;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // County wealth (affects both adoption and outcomes)
-        const wealth = rand() * 100;
-
-        // Health infrastructure (affects both adoption and outcomes)
-        const infrastructure = 20 + rand() * 80;
-
-        // Political will (affects adoption, some effect on outcomes)
-        const politicalWill = rand() * 100;
-
-        // Selection mechanism: wealthy counties with good infrastructure more likely to adopt
-        const adoptionScore = wealth * 0.4 + infrastructure * 0.35 + politicalWill * 0.25;
-        const hasProgram = adoptionScore > 55 ? (rand() > 0.2) : (rand() > 0.85);
-
-        // Timing of adoption (earlier = more resources/will)
-        const adoptionYear = hasProgram ? (2015 + Math.floor((1 - adoptionScore/100) * 8)) : null;
-
-        // Maternal mortality: lower with wealth, infrastructure, and program
-        // True program effect is small (about 3 per 100k)
-        const baseMortality = 35 - (wealth * 0.15) - (infrastructure * 0.1);
-        const programEffect = hasProgram ? -3 : 0;
-        const noise = (rand() - 0.5) * 10;
-        const maternalMortality = Math.max(5, Math.min(50, baseMortality + programEffect + noise));
-
-        data.push({
-          name: countyNames[i],
-          wealth: Math.round(wealth),
-          infrastructure: Math.round(infrastructure),
-          politicalWill: Math.round(politicalWill),
-          hasProgram: hasProgram,
-          adoptionYear: adoptionYear,
-          maternalMortality: Math.round(maternalMortality * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let selectionInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            } else {
-              renderScatterPlot();
-            }
-          }, 50);
-        }
-        if (panelNum === '3') {
-          setTimeout(() => {
-            if (!selectionInitialized) {
-              renderSelectionChart('all');
-              selectionInitialized = true;
-            } else {
-              renderSelectionChart(currentFilter);
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 80 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 0, yMax = 55;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 10; y <= 50; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.wealth));
-        circle.setAttribute('cy', yScale(d.maternalMortality));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.hasProgram ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'County Wealth Index';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 10; y <= 50; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 20);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
-      yLabel.textContent = 'Maternal Mortality (per 100,000)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. SELECTION CHART (Panel 3)
-       ============================================ */
-    let currentFilter = 'all';
-
-    function renderSelectionChart(filter) {
-      currentFilter = filter;
-      const svg = document.getElementById('selection-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 80 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      // Determine x-axis variable based on filter
-      let xVar, xLabel, xMax;
-      if (filter === 'wealth' || filter === 'all') {
-        xVar = 'wealth';
-        xLabel = 'County Wealth Index';
-        xMax = 100;
-      } else if (filter === 'infrastructure') {
-        xVar = 'infrastructure';
-        xLabel = 'Health Infrastructure Index';
-        xMax = 100;
-      } else if (filter === 'timing') {
-        xVar = 'wealth';
-        xLabel = 'County Wealth Index';
-        xMax = 100;
-      }
-
-      const xMin = 0;
-      const yMin = 0, yMax = 55;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Background regions for wealth/infrastructure filters
-      if (filter === 'wealth' || filter === 'infrastructure') {
-        // Low region
-        const lowRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        lowRect.setAttribute('x', xScale(0));
-        lowRect.setAttribute('y', margin.top);
-        lowRect.setAttribute('width', xScale(50) - xScale(0));
-        lowRect.setAttribute('height', plotHeight);
-        lowRect.setAttribute('fill', 'rgba(13, 148, 136, 0.05)');
-        svg.appendChild(lowRect);
-
-        // High region
-        const highRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        highRect.setAttribute('x', xScale(50));
-        highRect.setAttribute('y', margin.top);
-        highRect.setAttribute('width', xScale(100) - xScale(50));
-        highRect.setAttribute('height', plotHeight);
-        highRect.setAttribute('fill', 'rgba(249, 168, 37, 0.05)');
-        svg.appendChild(highRect);
-
-        // Dividing line
-        const divLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        divLine.setAttribute('x1', xScale(50));
-        divLine.setAttribute('x2', xScale(50));
-        divLine.setAttribute('y1', margin.top);
-        divLine.setAttribute('y2', height - margin.bottom);
-        divLine.setAttribute('stroke', 'var(--color-border)');
-        divLine.setAttribute('stroke-dasharray', '5,5');
-        svg.appendChild(divLine);
-
-        // Labels
-        const lowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        lowLabel.setAttribute('x', xScale(25));
-        lowLabel.setAttribute('y', margin.top + 20);
-        lowLabel.setAttribute('text-anchor', 'middle');
-        lowLabel.setAttribute('font-size', '11');
-        lowLabel.setAttribute('fill', 'var(--color-text-muted)');
-        lowLabel.textContent = filter === 'wealth' ? 'Lower Wealth' : 'Lower Infrastructure';
-        svg.appendChild(lowLabel);
-
-        const highLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        highLabel.setAttribute('x', xScale(75));
-        highLabel.setAttribute('y', margin.top + 20);
-        highLabel.setAttribute('text-anchor', 'middle');
-        highLabel.setAttribute('font-size', '11');
-        highLabel.setAttribute('fill', 'var(--color-text-muted)');
-        highLabel.textContent = filter === 'wealth' ? 'Higher Wealth' : 'Higher Infrastructure';
-        svg.appendChild(highLabel);
-      }
-
-      // Grid lines
-      for (let y = 10; y <= 50; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points with filter-specific styling
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        const xVal = d[xVar];
-        circle.setAttribute('cx', xScale(xVal));
-        circle.setAttribute('cy', yScale(d.maternalMortality));
-        circle.setAttribute('r', 8);
-
-        if (filter === 'timing' && d.hasProgram && d.adoptionYear) {
-          // Color by adoption year
-          const yearColors = {
-            2015: '#1565C0',
-            2016: '#1976D2',
-            2017: '#1E88E5',
-            2018: '#2196F3',
-            2019: '#42A5F5',
-            2020: '#64B5F6',
-            2021: '#90CAF9',
-            2022: '#BBDEFB'
-          };
-          circle.setAttribute('fill', yearColors[d.adoptionYear] || 'var(--color-secondary)');
-          circle.setAttribute('opacity', '0.9');
-        } else {
-          circle.setAttribute('fill', d.hasProgram ? 'var(--color-accent)' : 'var(--color-secondary)');
-          circle.setAttribute('opacity', '0.8');
-        }
-
-        circle.setAttribute('style', 'cursor: pointer; transition: all 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxisLine.setAttribute('x1', margin.left);
-      xAxisLine.setAttribute('x2', width - margin.right);
-      xAxisLine.setAttribute('y1', height - margin.bottom);
-      xAxisLine.setAttribute('y2', height - margin.bottom);
-      xAxisLine.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxisLine);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabelText.setAttribute('x', width / 2);
-      xLabelText.setAttribute('y', height - 10);
-      xLabelText.setAttribute('text-anchor', 'middle');
-      xLabelText.setAttribute('font-size', '12');
-      xLabelText.setAttribute('fill', 'var(--color-text)');
-      xLabelText.textContent = xLabel;
-      svg.appendChild(xLabelText);
-
-      // Y-axis
-      const yAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxisLine.setAttribute('x1', margin.left);
-      yAxisLine.setAttribute('x2', margin.left);
-      yAxisLine.setAttribute('y1', margin.top);
-      yAxisLine.setAttribute('y2', height - margin.bottom);
-      yAxisLine.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxisLine);
-
-      for (let y = 10; y <= 50; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabelText.setAttribute('x', 20);
-      yLabelText.setAttribute('y', height / 2);
-      yLabelText.setAttribute('text-anchor', 'middle');
-      yLabelText.setAttribute('font-size', '12');
-      yLabelText.setAttribute('fill', 'var(--color-text)');
-      yLabelText.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
-      yLabelText.textContent = 'Maternal Mortality (per 100,000)';
-      svg.appendChild(yLabelText);
-
-      updateSelectionStats(filter, xVar);
-    }
-
-    function updateSelectionStats(filter, xVar) {
-      const titleEl = document.getElementById('mechanism-title');
-      const descEl = document.getElementById('mechanism-description');
-      const insightEl = document.getElementById('selection-insight');
-      const highAdoptEl = document.getElementById('stat-high-adoption');
-      const lowAdoptEl = document.getElementById('stat-low-adoption');
-      const ratioEl = document.getElementById('stat-adoption-ratio');
-
-      if (filter === 'all') {
-        titleEl.textContent = 'Selection Pattern';
-        descEl.textContent = 'Select a filter to explore how different county characteristics predict program adoption.';
-        highAdoptEl.textContent = '--';
-        lowAdoptEl.textContent = '--';
-        ratioEl.textContent = '--';
-        insightEl.innerHTML = '<strong>Explore the patterns:</strong> Use the filters to see how wealth, infrastructure, and timing relate to program adoption.';
-        return;
-      }
-
-      let highGroup, lowGroup, groupLabel;
-      if (filter === 'wealth') {
-        highGroup = countyData.filter(d => d.wealth >= 50);
-        lowGroup = countyData.filter(d => d.wealth < 50);
-        groupLabel = 'Wealth';
-      } else if (filter === 'infrastructure') {
-        highGroup = countyData.filter(d => d.infrastructure >= 50);
-        lowGroup = countyData.filter(d => d.infrastructure < 50);
-        groupLabel = 'Infrastructure';
-      } else if (filter === 'timing') {
-        const earlyAdopters = countyData.filter(d => d.hasProgram && d.adoptionYear <= 2018);
-        const lateAdopters = countyData.filter(d => d.hasProgram && d.adoptionYear > 2018);
-
-        titleEl.textContent = 'Adoption Timing';
-        descEl.textContent = 'Earlier adopters (2015-2018) tend to be wealthier counties. Later adopters (2019-2022) are catching up.';
-
-        const earlyAvgWealth = mean(earlyAdopters.map(d => d.wealth));
-        const lateAvgWealth = mean(lateAdopters.map(d => d.wealth));
-
-        highAdoptEl.textContent = earlyAvgWealth.toFixed(0);
-        lowAdoptEl.textContent = lateAvgWealth.toFixed(0);
-        ratioEl.textContent = (earlyAvgWealth / lateAvgWealth).toFixed(1) + 'x';
-
-        document.querySelector('.mechanism-stat-row:nth-child(1) .mechanism-stat-label').textContent = 'Avg wealth (early):';
-        document.querySelector('.mechanism-stat-row:nth-child(2) .mechanism-stat-label').textContent = 'Avg wealth (late):';
-
-        insightEl.innerHTML = '<strong>Early adopters are wealthier.</strong> Counties that implemented the program first had more resources to begin with. This timing pattern reflects selection, not just program effectiveness.';
-        return;
-      }
-
-      const highAdoption = highGroup.filter(d => d.hasProgram).length / highGroup.length * 100;
-      const lowAdoption = lowGroup.filter(d => d.hasProgram).length / lowGroup.length * 100;
-      const ratio = highAdoption / lowAdoption;
-
-      titleEl.textContent = groupLabel + ' and Adoption';
-      descEl.textContent = `Counties with higher ${groupLabel.toLowerCase()} are much more likely to have adopted the program.`;
-
-      document.querySelector('.mechanism-stat-row:nth-child(1) .mechanism-stat-label').textContent = 'Adoption rate (high):';
-      document.querySelector('.mechanism-stat-row:nth-child(2) .mechanism-stat-label').textContent = 'Adoption rate (low):';
-
-      highAdoptEl.textContent = highAdoption.toFixed(0) + '%';
-      lowAdoptEl.textContent = lowAdoption.toFixed(0) + '%';
-      ratioEl.textContent = ratio.toFixed(1) + 'x';
-
-      if (filter === 'wealth') {
-        insightEl.innerHTML = '<strong>Wealthy counties are ' + ratio.toFixed(1) + 'x more likely to adopt.</strong> These same counties have lower mortality even before the program. The observed benefit mixes causation with selection.';
-      } else if (filter === 'infrastructure') {
-        insightEl.innerHTML = '<strong>Counties with better infrastructure adopt at ' + ratio.toFixed(1) + 'x the rate.</strong> More hospitals and clinics make new programs easier to implement. They also directly improve maternal outcomes.';
-      }
-    }
-
-    // Filter button handlers
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderSelectionChart(btn.dataset.filter);
-      });
-    });
-
-    /* ============================================
-       6. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      let programStatus = data.hasProgram ? 'Has Program' : 'No Program';
-      if (data.hasProgram && data.adoptionYear) {
-        programStatus += ` (${data.adoptionYear})`;
-      }
-
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">Wealth: ${data.wealth}</div>
-        <div class="metric">Infrastructure: ${data.infrastructure}</div>
-        <div class="metric">Mortality: ${data.maternalMortality} per 100k</div>
-        <div class="metric">${programStatus}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const programCounties = countyData.filter(d => d.hasProgram);
-      const noProgramCounties = countyData.filter(d => !d.hasProgram);
-
-      const programAvg = mean(programCounties.map(d => d.maternalMortality));
-      const noProgramAvg = mean(noProgramCounties.map(d => d.maternalMortality));
-      const diff = noProgramAvg - programAvg;
-
-      document.getElementById('stat-program-count').textContent = programCounties.length;
-      document.getElementById('stat-no-program-count').textContent = noProgramCounties.length;
-      document.getElementById('stat-program-avg').textContent = programAvg.toFixed(1);
-      document.getElementById('stat-no-program-avg').textContent = noProgramAvg.toFixed(1);
-      document.getElementById('stat-difference').textContent = diff.toFixed(1);
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-          if (document.getElementById('panel-3').classList.contains('active')) {
-            renderSelectionChart(currentFilter);
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

@@ -3,570 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Study Design Hierarchy for Causal Inference | CAPHE</title>
-  <meta name="description" content="Which study designs produce the strongest causal evidence? Rank RCTs, quasi-experiments, and observational designs by how well they isolate treatment effects.">
+  <title>Matching Study Designs to Policy Questions | CAPHE</title>
+  <meta name="description" content="Match 4 California health policy questions to the right design: Admin-ACS Linkage, Multi-Year Trend Splits, 57-County Panels, and Outreach Trials.">
   <link rel="canonical" href="https://www.caphegroup.org/methods-lab/study-design-ladder">
-  <meta property="og:title" content="Study Design Hierarchy for Causal Inference | CAPHE">
-  <meta property="og:description" content="Which study designs produce the strongest causal evidence? Rank RCTs, quasi-experiments, and observational designs by how well they isolate treatment effects.">
+  <meta property="og:title" content="Matching Study Designs to Policy Questions | CAPHE">
+  <meta property="og:description" content="Match 4 California health policy questions to the right design: Admin-ACS Linkage, Multi-Year Trend Splits, 57-County Panels, and Outreach Trials.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.caphegroup.org/methods-lab/study-design-ladder">
-  <meta property="og:image" content="https://www.caphegroup.org/assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* Reset & Base */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-success: #2E7D32;
-      --color-error: #C9553A;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem;
-      --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
-      font-size: 16px;
-      line-height: 1.6;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
-    h1, h2, h3 { font-family: var(--font-serif); color: var(--color-primary-dark); line-height: 1.3; }
-    h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; } h3 { font-size: 1.15rem; }
-
-    .container { max-width: 900px; margin: 0 auto; padding: 0 var(--space-lg); }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-      color: white; padding: var(--space-xl) 0; text-align: center;
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-    .header h1 { color: white; margin-bottom: var(--space-sm); }
-    .eyebrow { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; margin-bottom: var(--space-xs); }
-    .subtitle { font-size: 1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
-
-    /* Panel Nav */
-    .panel-nav {
-      background: var(--color-bg); border-bottom: 1px solid var(--color-border);
-      position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
     }
-    .panel-nav ul { list-style: none; display: flex; justify-content: center; gap: var(--space-xs); padding: var(--space-sm) 0; flex-wrap: wrap; }
-    .panel-btn {
-      background: transparent; border: 2px solid transparent;
-      padding: var(--space-sm) var(--space-md); font-family: var(--font-sans);
-      font-size: 0.9rem; font-weight: 500; color: var(--color-text-secondary);
-      cursor: pointer; border-radius: var(--radius-md); transition: all 0.2s ease;
+    p, td, dd, li {
+      text-wrap: pretty;
     }
-    .panel-btn:hover { background: var(--color-bg-alt); color: var(--color-primary); }
-    .panel-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main & Panels */
-    .main { padding: var(--space-xl) 0 var(--space-2xl); }
-    .panel { display: none; animation: fadeIn 0.3s ease; }
-    .panel.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
 
-    .panel-header { margin-bottom: var(--space-xl); }
-    .panel-header h2 { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-    .panel-number {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 2rem; height: 2rem; background: var(--color-primary); color: white;
-      border-radius: 50%; font-size: 1rem; font-family: var(--font-sans); font-weight: 600;
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
-    .panel-intro { font-size: 1rem; color: var(--color-text-secondary); max-width: 700px; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* Ladder Container */
-    .ladder-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    /* Ladder Visual */
-    .ladder {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-      max-width: 700px;
-      margin: 0 auto var(--space-xl);
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
     }
-
-    .ladder-rung {
-      display: grid;
-      grid-template-columns: 60px 1fr;
-      gap: var(--space-md);
-      align-items: center;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 5px solid var(--color-border);
-      background: var(--color-bg-alt);
-      transition: all 0.2s ease;
-    }
-
-    .ladder-rung:hover {
-      transform: translateX(4px);
-    }
-
-    .ladder-rung.rung-1 { border-left-color: #BDBDBD; }
-    .ladder-rung.rung-2 { border-left-color: #9E9E9E; }
-    .ladder-rung.rung-3 { border-left-color: var(--color-secondary); }
-    .ladder-rung.rung-4 { border-left-color: var(--color-primary); }
-
-    .rung-number {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: white;
+      overflow: hidden;
     }
-
-    .rung-1 .rung-number { background: #BDBDBD; }
-    .rung-2 .rung-number { background: #9E9E9E; }
-    .rung-3 .rung-number { background: var(--color-secondary); }
-    .rung-4 .rung-number { background: var(--color-primary); }
-
-    .rung-content h3 {
-      font-family: var(--font-sans);
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-xs);
-    }
-
-    .rung-metaphor {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .rung-example {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      font-style: italic;
-    }
-
-    /* Strength indicator */
-    .strength-dots {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      gap: 4px;
-      margin-top: var(--space-sm);
-    }
-
-    .strength-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--color-border);
-    }
-
-    .rung-1 .strength-dot:nth-child(1) { background: #BDBDBD; }
-    .rung-2 .strength-dot:nth-child(-n+2) { background: #9E9E9E; }
-    .rung-3 .strength-dot:nth-child(-n+3) { background: var(--color-secondary); }
-    .rung-4 .strength-dot { background: var(--color-primary); }
-
-    .strength-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    /* Key insight box */
-    .key-insight {
-      background: linear-gradient(135deg, rgba(0,65,165,0.06) 0%, rgba(0,65,165,0.02) 100%);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin-top: var(--space-lg);
-    }
-    .key-insight h4 {
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-    }
-    .key-insight p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Quiz Container */
-    .quiz-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .scenario-card {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-lg);
-      border: 2px solid var(--color-border);
-    }
-
-    .scenario-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: var(--space-md);
-    }
-
-    .scenario-number {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .scenario-result {
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-      display: none;
-    }
-
-    .scenario-result.correct {
-      background: rgba(46,125,50,0.1);
-      color: var(--color-success);
-      display: inline-block;
-    }
-
-    .scenario-result.incorrect {
-      background: rgba(201,85,58,0.1);
-      color: var(--color-error);
-      display: inline-block;
-    }
-
-    .scenario-text {
-      font-size: 1rem;
-      color: var(--color-text);
-      line-height: 1.7;
-      margin-bottom: var(--space-lg);
-    }
-
-    .answer-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-sm);
-    }
-
-    @media (max-width: 600px) {
-      .answer-options { grid-template-columns: 1fr; }
-    }
-
-    .answer-btn {
-      padding: var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-    }
-
-    .answer-btn:hover:not(:disabled) {
-      border-color: var(--color-primary-light);
-      background: rgba(0,65,165,0.02);
-    }
-
-    .answer-btn.selected {
-      border-color: var(--color-primary);
-      background: rgba(0,65,165,0.05);
-    }
-
-    .answer-btn.correct {
-      border-color: var(--color-success);
-      background: rgba(46,125,50,0.08);
-    }
-
-    .answer-btn.incorrect {
-      border-color: var(--color-error);
-      background: rgba(201,85,58,0.08);
-    }
-
-    .answer-btn:disabled {
-      cursor: default;
-      opacity: 0.7;
-    }
-
-    .explanation {
-      margin-top: var(--space-md);
-      padding: var(--space-md);
-      background: rgba(0,65,165,0.05);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      display: none;
-    }
-
-    .explanation.show {
-      display: block;
-    }
-
-    /* Score */
-    .score-display {
-      text-align: center;
-      padding: var(--space-lg);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      margin-top: var(--space-lg);
-    }
-
-    .score-number {
-      font-size: 2rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-    }
-
-    .score-label {
-      font-size: 0.9rem;
-      color: var(--color-text-muted);
-    }
-
-    /* Comparison Container */
-    .comparison-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    .comparison-scenario {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-accent);
-    }
-
-    .comparison-scenario h4 {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .comparison-scenario p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Results Grid */
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--space-md);
-      margin-bottom: var(--space-xl);
-    }
-
-    .result-card {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      text-align: center;
-      border-top: 4px solid var(--color-border);
-    }
-
-    .result-card.rung-1 { border-top-color: #BDBDBD; }
-    .result-card.rung-2 { border-top-color: #9E9E9E; }
-    .result-card.rung-3 { border-top-color: var(--color-secondary); }
-    .result-card.rung-4 { border-top-color: var(--color-primary); }
-
-    .result-design {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: var(--space-sm);
-    }
-
-    .result-effect {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin-bottom: var(--space-xs);
-    }
-
-    .result-card.rung-1 .result-effect { color: #595959; }
-    .result-card.rung-2 .result-effect { color: #616161; }
-    .result-card.rung-3 .result-effect { color: var(--color-secondary); }
-    .result-card.rung-4 .result-effect { color: var(--color-primary); }
-
-    .result-interpretation {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Takeaway */
-    .takeaway {
-      background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(13,148,136,0.02) 100%);
-      border-left: 4px solid var(--color-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-    }
-
-    .takeaway h4 {
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--color-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .takeaway p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .takeaway ul {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      padding-left: var(--space-lg);
-    }
-
-    .takeaway li {
-      margin-bottom: var(--space-xs);
-    }
-
-    /* Bridging Question */
-    .bridging-question {
-      margin-top: var(--space-xl);
-      padding: var(--space-lg);
-      background: linear-gradient(135deg, rgba(0,65,165,0.04) 0%, rgba(0,65,165,0.01) 100%);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-primary-light);
-    }
-    .bridging-question p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid #F57C00;
-      position: relative;
-    }
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: #F57C00;
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-    .definition-card h3 {
-      font-size: 1.15rem;
-      margin-bottom: var(--space-md);
-    }
-    .definition-card p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-    .definition-card ul {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      padding-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-    }
-
-    /* Footer */
-    .footer { background: var(--color-text); color: white; padding: var(--space-xl) 0; text-align: center; }
-    .footer p { margin-bottom: var(--space-sm); opacity: 0.9; font-size: 0.9rem; }
-    .footer a { color: var(--color-accent); }
-
-    /* Accessibility */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       white-space: nowrap;
-      border: 0;
+      overflow: hidden;
+      padding: 0 4px;
     }
-    .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .skip-link:focus {
-      top: 0;
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Hierarchy of Evidence in Study Design",
-  "description": "Not all study designs are equal for causal inference. What matters is whether the design isolates the causal effect.",
+  "headline": "Each Public Health Budget Question Requires a Distinct Empirical Study Design",
+  "description": "Match 4 California health policy questions to the right design: Admin-ACS Linkage, Multi-Year Trend Splits, 57-County Panels, and Outreach Trials.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -574,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -585,55 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Why do randomized trials rank above observational designs?",
+      "name": "Why does the ACS survey undercount Santa Clara County adult Medi-Cal members by 40.2%?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Randomization makes treatment and control groups comparable on average, so differences in outcomes can be attributed to the treatment. Lower-rung designs leave open that the groups already differed or that other changes occurred at the same time."
+        "text": "Home surveys face a known Medicaid undercount. People mix up Medi-Cal plan names (like Santa Clara Family Health Plan or Anthem Blue Cross) with private plans or leave out household members. Fixing totals to DHCS state records (255,601 adults vs. 152,811 in ACS) while using ACS for language and work-hour shares fixes the group base."
       }
     },
     {
       "@type": "Question",
-      "name": "Can the same data give different causal answers?",
+      "name": "What did the 82,695-person California Medicaid outreach trial (NBER WP 34191) show about text wording vs. live calls?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. In this lab, one county's diabetes-program data produces four different effect estimates depending on the design. A simple cross-sectional comparison suggests a 12% drop, while difference-in-differences attributes only about 3-5% to the program."
+        "text": "Across four written arms testing different SMS and email wording, renewal lift was 0%. Only the fifth arm, which added a live phone call, raised renewals by 8% to 11% (+1.0 to +1.8 pp). Live human help clears paperwork hurdles where text tweaks do not."
       }
     },
     {
       "@type": "Question",
-      "name": "What is identification in causal inference?",
+      "name": "Why does splitting a referral funnel into start (27.8%), reach (69.2%), and link (78.1%) matter for teams?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Identification is the source of variation in treatment that lets analysts separate cause from correlation. The key question is not which design ranks highest but what variation identifies the causal effect in a given setting."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can a strong observational study beat a weak RCT?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. The ladder is a useful shortcut, but a well-designed observational study with a credible identification strategy can be more convincing than a poorly executed randomized trial."
+        "text": "Looking only at the 15.0% overall completion rate (0.278 × 0.692 × 0.781) makes CHW outreach look weak. Splitting the funnel shows that CHWs link 78.1% of the patients they reach. The real operational gap is starting the referral (27.8%)."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -644,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -663,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -679,494 +529,428 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
-      <h1>Hierarchy of Evidence in Study Design</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">The hierarchy of evidence ranks study designs by how well they isolate a causal effect: randomized trials sit at the top, followed by difference-in-differences, then pre-post comparisons, and cross-sectional snapshots at the bottom. Lower rungs cannot tell whether a program caused an improvement because the groups may already have differed or something else may have changed at the same time. This CAPHE lab shows the same diabetes-program data yielding four different answers depending on design, with a simple comparison overstating a 5% effect as 12%. What matters most is not the rung but identification: finding variation in treatment that separates cause from correlation.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Not all study designs are equal for causal inference. What matters is whether the design isolates the causal effect.</p>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Each Public Health Budget Question Requires a Distinct Empirical Study Design
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We match linked state records, trend splits, county panels, and outreach trials to each budget question.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        In California public health budgeting, teams answer four separate questions on headcount, state law shifts, county returns, and outreach scripts that no single study design can solve alone. Matching each question to the right method locates <strong>120,239 Medi-Cal members</strong> needing renewal outreach,<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> <strong>+39,600 Paid Family Leave claims,</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> <strong>9.16 fewer deaths per 100,000</strong> from county health spending,<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> and an <strong>8% to 11% renewal lift</strong> from live calls.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[4]</a></sup> Using one raw source alone undercounts Medi-Cal adults by <strong>-40.2%</strong> in home surveys or mixes trend growth with new policy shifts.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Pairing linked records, trend splits, county panels, and outreach trials gives leaders a full toolkit.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[4]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
     </div>
-  </header>
 
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <ul>
-      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Ladder</button></li>
-      <li><button class="panel-btn" data-panel="2" aria-pressed="false">Spot the Design</button></li>
-      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Same Data, Different Answers</button></li>
-      <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't See</button></li>
-      <li><button class="panel-btn" data-panel="5" aria-pressed="false">Identification</button></li>
-    </ul>
-  </nav>
-
-  <main class="main" role="main" id="main-content">
-    <div class="container">
-      <!-- Panel 1: The Ladder -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Ladder</h2>
-          <p class="panel-intro">
-            A county launched a diabetes prevention program in 2020. Hospitalizations dropped 12% by 2023. Did the program work? Your answer depends on how you study the question. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="ladder-container">
-          <div class="ladder">
-            <!-- Rung 4: RCT (top) -->
-            <div class="ladder-rung rung-4">
-              <div class="rung-number">4</div>
-              <div class="rung-content">
-                <h3>Randomized Trial</h3>
-                <p class="rung-metaphor"><strong>The coin flip.</strong> Randomly assign who gets the program.</p>
-                <p class="rung-example">"We randomly assigned 10 clinics to offer the diabetes program; 10 others served as controls."</p>
-                <div class="strength-dots">
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                </div>
-                <p class="strength-label">Strongest evidence</p>
-              </div>
-            </div>
-
-            <!-- Rung 3: DiD -->
-            <div class="ladder-rung rung-3">
-              <div class="rung-number">3</div>
-              <div class="rung-content">
-                <h3>Difference-in-Differences</h3>
-                <p class="rung-metaphor"><strong>Compare the change.</strong> Did the program group improve more than others?</p>
-                <p class="rung-example">"Our county's hospitalizations dropped 12%; the neighboring county without the program dropped 7%. Difference: 5%."</p>
-                <div class="strength-dots">
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                </div>
-                <p class="strength-label">Good evidence (with assumptions)</p>
-              </div>
-            </div>
-
-            <!-- Rung 2: Pre-Post -->
-            <div class="ladder-rung rung-2">
-              <div class="rung-number">2</div>
-              <div class="rung-content">
-                <h3>Pre-Post</h3>
-                <p class="rung-metaphor"><strong>Before and after photo.</strong> Did things change after the program started?</p>
-                <p class="rung-example">"Before the diabetes program: 85 hospitalizations per 10k. After: 75. That's a 12% drop."</p>
-                <div class="strength-dots">
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                </div>
-                <p class="strength-label">Limited evidence</p>
-              </div>
-            </div>
-
-            <!-- Rung 1: Cross-Sectional -->
-            <div class="ladder-rung rung-1">
-              <div class="rung-number">1</div>
-              <div class="rung-content">
-                <h3>Cross-Sectional</h3>
-                <p class="rung-metaphor"><strong>A snapshot.</strong> Compare groups at one point in time.</p>
-                <p class="rung-example">"Counties with the diabetes program have 12% fewer hospitalizations than counties without it."</p>
-                <div class="strength-dots">
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                  <span class="strength-dot"></span>
-                </div>
-                <p class="strength-label">Weakest evidence</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="key-insight">
-            <h4>Why does the rung matter?</h4>
-            <p>Lower rungs cannot tell you whether the program caused the improvement. Maybe those groups were already different. Maybe something else changed at the same time. Higher rungs handle these problems better.</p>
-          </div>
-
-          <div class="bridging-question">
-            <p><strong>Next:</strong> Can you recognize which rung a study is on when you encounter it in the wild?</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Panel 2: Spot the Design -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Spot the Design</h2>
-          <p class="panel-intro">
-            Read each scenario and identify which study design is being used. This skill helps you evaluate claims you encounter in reports and news.
-          </p>
-        </div>
-
-        <div class="quiz-container">
-          <!-- Scenario 1 -->
-          <div class="scenario-card" data-scenario="1">
-            <div class="scenario-header">
-              <span class="scenario-number">Scenario 1 of 4</span>
-              <span class="scenario-result" id="result-1"></span>
-            </div>
-            <p class="scenario-text">
-              "A health department report shows that counties participating in the nutrition program have 15% lower rates of food insecurity than counties without the program."
-            </p>
-            <div class="answer-options">
-              <button class="answer-btn" data-answer="cross" data-correct="true">Cross-Sectional</button>
-              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
-              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
-              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
-            </div>
-            <div class="explanation" id="explanation-1">
-              <strong>Cross-Sectional.</strong> This is a snapshot comparison at one time point. We don't know if program counties were already better off before the program, or if something else explains the difference.
-            </div>
-          </div>
-
-          <!-- Scenario 2 -->
-          <div class="scenario-card" data-scenario="2">
-            <div class="scenario-header">
-              <span class="scenario-number">Scenario 2 of 4</span>
-              <span class="scenario-result" id="result-2"></span>
-            </div>
-            <p class="scenario-text">
-              "Before the clinic opened, the neighborhood had 12 emergency room visits per 100 residents per year. Two years after, it dropped to 8 visits per 100 residents."
-            </p>
-            <div class="answer-options">
-              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
-              <button class="answer-btn" data-answer="prepost" data-correct="true">Pre-Post</button>
-              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
-              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
-            </div>
-            <div class="explanation" id="explanation-2">
-              <strong>Pre-Post.</strong> This compares before and after in the same group. But ER visits might have been dropping everywhere—we have no comparison group to know if this change is unusual.
-            </div>
-          </div>
-
-          <!-- Scenario 3 -->
-          <div class="scenario-card" data-scenario="3">
-            <div class="scenario-header">
-              <span class="scenario-number">Scenario 3 of 4</span>
-              <span class="scenario-result" id="result-3"></span>
-            </div>
-            <p class="scenario-text">
-              "We compared diabetes rates before and after the wellness program in participating workplaces AND in similar workplaces that didn't participate. Participating workplaces improved by 4 percentage points more than the comparison workplaces."
-            </p>
-            <div class="answer-options">
-              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
-              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
-              <button class="answer-btn" data-answer="did" data-correct="true">Difference-in-Differences</button>
-              <button class="answer-btn" data-answer="rct">Randomized Trial</button>
-            </div>
-            <div class="explanation" id="explanation-3">
-              <strong>Difference-in-Differences.</strong> This compares the <em>change</em> in two groups. By subtracting out the comparison group's change, we control for trends that affect everyone. This is stronger, but assumes both groups would have followed similar paths without the program.
-            </div>
-          </div>
-
-          <!-- Scenario 4 -->
-          <div class="scenario-card" data-scenario="4">
-            <div class="scenario-header">
-              <span class="scenario-number">Scenario 4 of 4</span>
-              <span class="scenario-result" id="result-4"></span>
-            </div>
-            <p class="scenario-text">
-              "We randomly selected 50 of our 100 clinics to receive the new patient outreach program. After one year, the randomly selected clinics had 20% higher screening rates than the other 50 clinics."
-            </p>
-            <div class="answer-options">
-              <button class="answer-btn" data-answer="cross">Cross-Sectional</button>
-              <button class="answer-btn" data-answer="prepost">Pre-Post</button>
-              <button class="answer-btn" data-answer="did">Difference-in-Differences</button>
-              <button class="answer-btn" data-answer="rct" data-correct="true">Randomized Trial</button>
-            </div>
-            <div class="explanation" id="explanation-4">
-              <strong>Randomized Trial.</strong> Random assignment means there's no systematic reason why one group would be different from the other at the start. Any difference we see at the end is likely due to the program.
-            </div>
-          </div>
-
-          <div class="score-display">
-            <div class="score-number" id="score">0 / 4</div>
-            <div class="score-label">Correct answers</div>
-          </div>
-
-          <div class="bridging-question">
-            <p><strong>Next:</strong> You can recognize the design. But does it matter which one you use? Watch the same data produce four different answers.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Panel 3: Same Data, Different Answers -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Same Data, Different Answers</h2>
-          <p class="panel-intro">
-            Return to our diabetes program. Same county, same data, but watch how the "effect" changes depending on the study design.
-          </p>
-        </div>
-
-        <div class="comparison-container">
-          <div class="comparison-scenario">
-            <h4>The Diabetes Prevention Program</h4>
-            <p>A county launched a diabetes prevention program in 2020. By 2023, hospitalizations for diabetes complications had dropped. The health department wants to know: did the program work?</p>
-          </div>
-
-          <h3 style="margin-bottom: var(--space-lg);">The same data, four different answers:</h3>
-
-          <div class="results-grid">
-            <div class="result-card rung-1">
-              <div class="result-design">Cross-Sectional</div>
-              <div class="result-effect">-12%</div>
-              <div class="result-interpretation">"Program counties have 12% fewer hospitalizations than non-program counties."</div>
-            </div>
-            <div class="result-card rung-2">
-              <div class="result-design">Pre-Post</div>
-              <div class="result-effect">-10%</div>
-              <div class="result-interpretation">"Hospitalizations dropped 10% after the program started."</div>
-            </div>
-            <div class="result-card rung-3">
-              <div class="result-design">Diff-in-Diff</div>
-              <div class="result-effect">-5%</div>
-              <div class="result-interpretation">"Our county improved 5% more than the comparison county."</div>
-            </div>
-            <div class="result-card rung-4">
-              <div class="result-design">Randomized Trial</div>
-              <div class="result-effect">-3%</div>
-              <div class="result-interpretation">"Randomly assigned clinics had 3% fewer hospitalizations."</div>
-            </div>
-          </div>
-
-          <div class="key-insight" style="margin-bottom: var(--space-xl);">
-            <h4>Why do the numbers shrink as we climb?</h4>
-            <p>Lower-rung designs mix up the program effect with other things. Maybe program counties were already healthier. Maybe hospitalization rates were dropping statewide due to Medi-Cal expansion. Higher-rung designs strip away these alternative explanations, leaving only the true program effect.</p>
-          </div>
-
-          <div class="takeaway">
-            <h4>The Real Effect: Probably Around 3-5%</h4>
-            <p>The diabetes program likely reduced hospitalizations by 3-5%, not the 12% that a simple comparison suggests. That's still meaningful, but it's a different story than "the program cut hospitalizations by 12%."</p>
-          </div>
-
-          <div class="bridging-question">
-            <p><strong>Next:</strong> Even with a better design, we still have a 5% effect estimate. But can we be sure that number is right? What might we be missing?</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Panel 4: What We Can't See -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">What We Can't See</h2>
-          <p class="panel-intro">
-            Even with a good study design, important questions remain unanswered. Here's what the ladder alone cannot tell you about the diabetes program.
-          </p>
-        </div>
-
-        <div class="comparison-container">
-          <div class="comparison-scenario">
-            <h4>You've Climbed to Rung 3 (Difference-in-Differences)</h4>
-            <p>You found that the diabetes program reduced hospitalizations by about 5% compared to the neighboring county. The health department is excited. But before they expand the program statewide, someone asks...</p>
-          </div>
-
-          <div class="results-grid" style="grid-template-columns: 1fr 1fr;">
-            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
-              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Is it worth the cost?</h4>
-              <p class="result-interpretation">The program costs $2 million per year. Is a 5% reduction in hospitalizations a good return on investment? What else could we do with that money?</p>
-            </div>
-            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
-              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Would it work elsewhere?</h4>
-              <p class="result-interpretation">Our county has good primary care access. Would the program work in a rural county with fewer clinics? We studied one comparison—is that enough?</p>
-            </div>
-            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
-              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Are we sure about the comparison?</h4>
-              <p class="result-interpretation">We assumed our county and the neighboring county would have followed similar trends. But what if they wouldn't have? How wrong could we be?</p>
-            </div>
-            <div class="result-card" style="border-top-color: var(--color-accent); text-align: left;">
-              <div class="result-design" style="color: var(--color-accent);">Unanswered Question</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">Who benefits most?</h4>
-              <p class="result-interpretation">The 5% average effect might hide variation. Maybe the program helps some patients a lot and others not at all. Should we target it differently?</p>
-            </div>
-          </div>
-
-          <div class="key-insight">
-            <h4>The Gap</h4>
-            <p>Study design tells you <em>whether</em> something worked. It does not tell you <em>whether it's worth it</em>, <em>where else it would work</em>, or <em>how confident you should be</em> in your answer. These questions require a different toolkit.</p>
-          </div>
-
-          <div class="bridging-question">
-            <p><strong>Next:</strong> Economists have a word for what we're after here: identification. What does it mean, and how does it change the question?</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Panel 5: Identification -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Identification</h2>
-          <p class="panel-intro">
-            Climbing the ladder isn't just about "better" designs. It's about identification: finding sources of variation that let you isolate the causal effect from everything else.
-          </p>
-        </div>
-
-        <div class="comparison-container">
-          <div class="definition-card">
-            <h3>What Is Identification?</h3>
-            <p><strong>Identification</strong> is the economist's answer to the question: "What variation in treatment lets us separate cause from correlation?"</p>
-            <ul>
-              <li>An RCT identifies the effect because random assignment creates variation unrelated to confounders</li>
-              <li>A policy cutoff identifies the effect because people just above and below the threshold are otherwise similar</li>
-              <li>A difference-in-differences design identifies the effect if treatment timing is unrelated to pre-existing trends</li>
-            </ul>
-            <p style="margin-top: var(--space-md);">The question isn't "which design is highest on the ladder?" The question is: "What source of variation identifies the causal effect in my setting?"</p>
-          </div>
-
-          <div class="comparison-scenario">
-            <h4>Back to the Diabetes Program</h4>
-            <p>You found a 5% effect using difference-in-differences. The board wants to expand statewide. How do you advise them?</p>
-          </div>
-
-          <h3 style="margin-bottom: var(--space-lg);">Tools that extend the analysis:</h3>
-
-          <div class="results-grid" style="grid-template-columns: 1fr 1fr;">
-            <div class="result-card rung-3" style="text-align: left;">
-              <div class="result-design">Sensitivity Analysis</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"How wrong could we be?"</h4>
-              <p class="result-interpretation">Test what happens if your assumptions are violated. If parallel trends didn't hold, the true effect might be anywhere from 2% to 8%. Report a range, not just a point estimate.</p>
-            </div>
-            <div class="result-card rung-3" style="text-align: left;">
-              <div class="result-design">Cost-Effectiveness</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Is it worth it?"</h4>
-              <p class="result-interpretation">At $2M/year preventing 50 hospitalizations, that's $40,000 per hospitalization avoided. Compare to alternatives: what else could $2M buy?</p>
-            </div>
-            <div class="result-card rung-3" style="text-align: left;">
-              <div class="result-design">Heterogeneity Analysis</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Who benefits most?"</h4>
-              <p class="result-interpretation">Break down the effect by subgroup. Maybe the program works best for patients with A1C > 9. Target resources where they'll have the most impact.</p>
-            </div>
-            <div class="result-card rung-3" style="text-align: left;">
-              <div class="result-design">External Validity</div>
-              <h4 style="font-size: 1rem; margin: var(--space-sm) 0;">"Where else would it work?"</h4>
-              <p class="result-interpretation">Compare your county's characteristics to others. If the program worked because of your strong primary care network, it may not transfer to underserved areas without adaptation.</p>
-            </div>
-          </div>
-
-          <div class="takeaway" style="background: linear-gradient(135deg, rgba(0,65,165,0.08) 0%, rgba(0,65,165,0.02) 100%); border-left-color: var(--color-primary);">
-            <h4 style="color: var(--color-primary);">The Economist's Perspective</h4>
-            <p><strong>The ladder is a useful shortcut, but identification is the real goal.</strong> A well-designed observational study with a strong identification strategy can be more credible than a poorly executed RCT. When the board asks "did the program work?", the answer depends on whether you can point to variation in treatment that separates cause from correlation. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong></p>
-          </div>
-        </div>
-      </section>
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Matching Four California Health Policy Questions to the Right Study Design</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare four CAPHE studies across budget question, raw baseline error, matched design, and main result.
+      </p>
     </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Evidence Credibility track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/p-hacking-multiple-testing" style="color:#0041A5;font-weight:600;">Detecting P-Hacking</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/regression-tables-confounding" style="color:#0041A5;font-weight:600;">Reading Regression Tables</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-history-maturation" style="color:#0041A5;font-weight:600;">History and Maturation</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four-column study design matrix comparing Admin-Survey Linkage, Trend Split + Simulation, Routine-Budget Panel, and Outreach Trial + Funnel Check.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Study Design Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Rung 1: Target Size</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Record + Survey Link</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Rung 2: Law Shift</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Trend Split + Model</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Rung 3: County Panel</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Routine-Budget Panel</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Rung 4: Outreach Step</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Outreach Trial + Funnel</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Budget Question
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">How many members need language help?</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">What will SB 951 + 12-wk PFL cost?</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Does county health spending save lives?</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Which outreach script lifts renewals?</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Raw Baseline Gap
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">ACS alone undercounts by -40.2%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">152.8K vs 255.6K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-post mixes +1.52% claim drift &amp; +3.5% pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Raw yearly mean gives +0.18</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">plus sign</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Total rate leaves out 85% pre-visit drop</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Matched Study Method
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Fix totals to DHCS; use ACS shares</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Split 2025-26 base slope from law jump</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Track routine budget shifts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">46 of 47</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5-arm trial (N=82,695) + funnel check</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Main Result
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">120,239 Exposed</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">23K Sp/Viet LEP</span>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+39,600 Claims</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$623.7M Gross</span>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">9.16 Fewer Deaths/100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">125:1 BCR</span>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+8-11% Call Lift</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">15.0% CHW Link</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Key Check or Group Detail
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15,559 Spanish + 7,467 Viet + 3,489 Chinese</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">325,055 (2025) -> 330,000 base vs. 369,600</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">99.4% match to 2001-2008 study</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">9.10</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Text and email arms: 0% lift</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Direct Budget Action
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Hire bilingual staff for 26,515 adults</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Set payroll tax at +0.04 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$60/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Back base county LHA</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$109K/life</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Fund live calls and CHWs over text tweaks</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates; Rung 2 Mode A Simulation):</strong> Each column uses a separate study group (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). The Rung 2 PFL SB 951 claim and cost numbers are Mode A simulation outputs. In Rung 3, the raw yearly average is +0.18 deaths per 100,000 per $10 per resident (p = 0.64, 95% range crosses zero). Rung 3 routine-budget model uses variance-based IV with first-stage F = 314.1 and Hansen J = 4.49 (p = 0.343), holding across 46 of 47 checks.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Record + Survey Link.</strong> SCC Medi-Cal HR 1 Scope.. <strong>Trend Split + Model.</strong> CA Paid Family Leave (SB 951).. <strong>Routine-Budget Panel.</strong> 57-County LHA Pay (21 Yrs).. <strong>Outreach Trial + Funnel.</strong> Call Scripts &amp; CHW Reach..</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Multi-Design Summary Across Medi-Cal, Paid Family Leave, County LHA &amp; CHW Outreach Studies. Ruler 1: Single-Source &amp; Raw Estimates (Undercounts, Drift &amp; Surge Mix): <strong>-40.2% Undercount | -12.3% Drift | +0.18 Raw Avg</strong>. Using an unmatched design undercounts Santa Clara adult Medi-Cal members by <strong>-40.2% in ACS surveys</strong> (152,811 vs. 255,601 DHCS). It also misreads a <strong>-12.31% pre-law enrollment drop</strong> or flips the sign in county spending (<strong>+0.18 raw average</strong>). Ruler 2: Matched Design Toolkit (Linked Records, Trend Split, County Panel &amp; Trials): <strong>120,239 Target | +39.6K PFL | 9.16 Fewer Deaths | +8-11% Lift</strong>. Matching each question to its design finds <strong>120,239 exposed members</strong> and <strong>+39,600 PFL claims ($623.7M)</strong>. It also finds <strong>9.16 fewer deaths/100K ($109K/life, 125:1 BCR)</strong> and <strong>+8% to +11% live-call renewal lift</strong>.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. How Each Study Design Guides Agency Plans and Budgets</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We show how linked records, trend splits, county panels, and outreach trials work together.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix evaluating when to use each study design, what data it adds, the risk of a mismatch, and team actions.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Record + Survey Link
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Trend Split + Model
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Routine-Budget Panel
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Outreach Trial + Funnel
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                When This Design Fits Best
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                When a team sizes a target group and finds language or age subgroups before launch.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                When a state law starts on one date statewide.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                When budgets shift across 57 counties over 21 years and surge aid tracks death spikes.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                When a team tests outreach scripts across 82,695 members or checks referral steps.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What This Design Adds
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Gives the exact county headcount and language shares to staff outreach.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Splits yearly wage and claim growth from the new law jump.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Tracks death rates across 21 years and 57 counties while splitting routine care from outbreak grants.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Checks each referral step to show that 78.1% of reached patients link to care once reached.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk When Design and Question Mismatch
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using raw ACS survey counts under-budgets renewal staff by 40.2%.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Treating a pre-law -12.31% enrollment drop as a 2027 law effect overstates loss.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using raw yearly averages to judge county health budgets mixes outbreak aid with steady prevention.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Spending months testing SMS text wording delays live phone calls that lift renewals +8% to +11%.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Action Plan for Agency Teams
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Link State Totals + Survey Shares<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use DHCS rolls for total headcount and ACS microdata for language shares.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Model Base Slopes Before Laws<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use multi-year trend splits to separate wage growth from new benefit jumps.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use Routine-Budget Panels for ROI<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Judge multi-year county budgets with 21-year panels that split out surge grants.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Test Outreach Calls &amp; Funnels<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use outreach trials and funnel checks to tune call scripts and CHW caseloads.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Referral Funnel Math &amp; Multi-Study Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>CHW Referral Funnel Math (Mode B Published Trial Split):</strong> In the Bronx CHW study (N = 3,522 patients, 5,021 referrals; INTERVENTION_DESIGN.md:L185-232), total referral completion was 15.0%. That equals 27.8% started outreach &times; 69.2% of started were reached (19.2% of total) &times; 78.1% of reached linked to care (0.278 × 0.692 × 0.781 = 0.1502 = 15.0%).</p>
+          <p>&bull; <strong>Data Provenance:</strong> Exact numbers come from scc_hr1_medicaid/SCC_HR1_MediCal_Risk_Profiles.md (L13-112), scc_hr1_medicaid/scc_dhcs_medical_enrollment.csv (L2-15), INTERVENTION_DESIGN.md (L19-232), public/tools/pfl-simulator/data/pfl_model_data.json (L20-169), and src/frontend/js/lha-calculator.js (L28-72).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>When This Design Fits Best (Trend Split + Model).</strong> When a state law (like SB 951's jump to 90% pay) starts on one date statewide. &middot; <strong>What This Design Adds (Record + Survey Link).</strong> Gives the exact county headcount and language shares (like 7,467 Vietnamese members) to staff outreach. &middot; <strong>What This Design Adds (Trend Split + Model).</strong> Splits yearly wage and claim growth (+1.52% claims, +6.88% pay) from the new law jump (+39,600 claims). &middot; <strong>Risk When Design and Question Mismatch (Record + Survey Link).</strong> Using raw ACS survey counts (152,811 vs. 255,601 DHCS adults) under-budgets renewal staff by 40.2%. &middot; <strong>Risk When Design and Question Mismatch (Trend Split + Model).</strong> Treating a pre-law -12.31% enrollment drop (120,239 to 105,436 in 2025) as a 2027 law effect overstates loss.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Matching Designs to Questions (Mode B Portfolio)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Medi-Cal Certified Eligibles &amp; Redetermination Dashboards Linked With U.S. Census ACS PUMS.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Employment Development Department (EDD)</a>: May 2026 Disability Insurance &amp; Paid Family Leave Fund Forecast.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller's Office</a>: 57-County Public Health Spending Panel (2003&ndash;2023) &amp; <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014)</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">National Bureau of Economic Research (NBER WP 34191)</a>: California Medicaid Renewal Outreach 5-Arm Trial (N = 82,695).</li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown (2014), Health Economics</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Health Agencies Use All Four Methods Together</h3>
+            <p class="text-slate-800">A county health director launching a Medi-Cal renewal or chronic-care plan needs four types of proof at four steps. First, record-survey linkage sizes the group (fixing the -40.2% ACS undercount to find 120,239 exposed adults and 26,515 LEP members). Second, trend models split baseline enrollment drift (-12.31%) from new laws. Third, 21-year county panels measure department returns (9.16 fewer deaths/100K, 125:1 BCR). Fourth, outreach trials test which contact channel works.</p>
+            <p class="text-slate-800">Checking each step of the delivery funnel turns study numbers into daily fixes. In California's 5-arm renewal outreach trial (N = 82,695, NBER WP 34191), changing the wording of texts and emails gave a 0% difference. Adding a live phone call lifted renewals by +8% to +11% (+1.0 to +1.8 pp). Likewise, splitting a CHW referral funnel shows that 78.1% of reached patients link to care. The 15.0% overall rate points to an early gap in starting referrals (27.8%), not a gap in CHW support.</p>
+          </div>
+          <p><strong>Mode B Studies + Mode A PFL Simulation:</strong> Rung 1 (120,239 DHCS / 152,811 ACS vs. 255,601), Rung 3 (-9.16 routine-budget panel), and Rung 4 (NBER WP 34191 N = 82,695 and Bronx CHW 27.8% × 69.2% × 78.1% = 15.0%) are observed Mode B studies. Rung 2 (330,000 vs. 369,600 PFL claims, $623.7M) is a Mode A simulation calibrated to EDD forecasts. The four rungs use four separate groups (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). Their estimates are not pooled on one scale.</p>
+          <p><strong>Main Sources:</strong> We cite <a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">NBER Working Paper 34191 (California Medicaid Renewal Outreach 5-Arm Trial, N = 82,695)</a> and <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Enrollment Dashboards</a>. We also use <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 DI Fund Forecast</a> and <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), Health Economics</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why does the ACS survey undercount Santa Clara County adult Medi-Cal members by 40.2%?</dt>
+                <dd class="text-slate-700 mt-0.5">Home surveys face a known Medicaid undercount. People mix up Medi-Cal plan names (like Santa Clara Family Health Plan or Anthem Blue Cross) with private plans or leave out household members. Fixing totals to DHCS state records (255,601 adults vs. 152,811 in ACS) while using ACS for language and work-hour shares fixes the group base.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What did the 82,695-person California Medicaid outreach trial (NBER WP 34191) show about text wording vs. live calls?</dt>
+                <dd class="text-slate-700 mt-0.5">Across four written arms testing different SMS and email wording, renewal lift was 0%. Only the fifth arm, which added a live phone call, raised renewals by 8% to 11% (+1.0 to +1.8 pp). Live human help clears paperwork hurdles where text tweaks do not.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does splitting a referral funnel into start (27.8%), reach (69.2%), and link (78.1%) matter for teams?</dt>
+                <dd class="text-slate-700 mt-0.5">Looking only at the 15.0% overall completion rate (0.278 × 0.692 × 0.781) makes CHW outreach look weak. Splitting the funnel shows that CHWs link 78.1% of the patients they reach. The real operational gap is starting the referral (27.8%).</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/medicaid-expansion" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Medi-Cal Redetermination Funnel & Churn</a></li>
+          <li class="my-2"><a href="/methods-lab/observational-to-experimental" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Routine County Public Health Budgets Lower Premature Deaths After Separating Outbreak Spending</a></li>
+          <li class="my-2"><a href="/methods-lab/threat-maturation-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Year Trend Splits in CA Paid Leave</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <script>
-    // Panel navigation
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-        panelBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-      });
-    });
-
-    // Quiz functionality
-    let score = 0;
-    let answered = 0;
-
-    document.querySelectorAll('.answer-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const card = this.closest('.scenario-card');
-        const scenarioNum = card.dataset.scenario;
-        const buttons = card.querySelectorAll('.answer-btn');
-        const explanation = document.getElementById(`explanation-${scenarioNum}`);
-        const result = document.getElementById(`result-${scenarioNum}`);
-
-        // If already answered, ignore
-        if (buttons[0].disabled) return;
-
-        // Disable all buttons
-        buttons.forEach(b => b.disabled = true);
-
-        // Mark selected
-        this.classList.add('selected');
-
-        // Check if correct
-        const isCorrect = this.dataset.correct === 'true';
-
-        if (isCorrect) {
-          this.classList.add('correct');
-          result.textContent = '✓ Correct';
-          result.classList.add('correct');
-          score++;
-        } else {
-          this.classList.add('incorrect');
-          result.textContent = '✗ Incorrect';
-          result.classList.add('incorrect');
-          // Highlight correct answer
-          buttons.forEach(b => {
-            if (b.dataset.correct === 'true') {
-              b.classList.add('correct');
-            }
-          });
-        }
-
-        answered++;
-
-        // Show explanation
-        explanation.classList.add('show');
-
-        // Update score
-        document.getElementById('score').textContent = `${score} / 4`;
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

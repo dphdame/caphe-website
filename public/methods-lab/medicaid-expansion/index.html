@@ -3,836 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Medi-Cal Churn & Work Requirement Funnel | CAPHE</title>
+  <meta name="description" content="Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/medicaid-expansion">
+  <meta property="og:title" content="Medi-Cal Churn & Work Requirement Funnel | CAPHE">
+  <meta property="og:description" content="Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/medicaid-expansion">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Case Study: Medicaid Expansion's Effect on Hospitals | CAPHE</title>
-  <meta name="description" content="Explore whether Medicaid expansion causes higher hospital use or if states with better healthcare infrastructure both expand Medicaid and have different utilization patterns. Learn to identify state-level selection and policy endogeneity.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/medicaid-expansion">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. DEFINITION CARD (KEY CONCEPT)
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-    }
-
-    /* ============================================
-       7. BRIDGING QUESTION
-       ============================================ */
-    .bridging-question {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      margin: 0;
-      font-size: 1rem;
-      color: var(--color-text);
-    }
-
-    /* ============================================
-       8. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       9. PANEL 2: THE PROBLEM (DAG)
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.causal {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.confounding {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       10. PANEL 3: SEEING THE CONFOUNDER
-       ============================================ */
-    .stratified-section {
-      margin-bottom: var(--space-2xl);
-    }
-
-    .filter-controls {
+    .budget-bar-seg {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
       flex-wrap: wrap;
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .filter-label {
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--color-text-secondary);
-      margin-right: var(--space-sm);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .filter-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .filter-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .stratified-grid {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .stratified-grid { grid-template-columns: 1fr; }
-    }
-
-    .comparison-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .comparison-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-md);
-    }
-
-    .comparison-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-      padding-bottom: var(--space-xs);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      padding: var(--space-xs) 0;
-    }
-
-    .comparison-label {
-      color: var(--color-text-secondary);
-    }
-
-    .comparison-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    .comparison-row.difference {
-      margin-top: var(--space-xs);
-      padding-top: var(--space-sm);
-      border-top: 1px dashed var(--color-border);
-    }
-
-    .comparison-row.difference .comparison-value {
-      color: var(--color-primary);
-    }
-
-    .insight-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.85rem;
-    }
-
-    .insight-box p {
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-box p:last-child {
-      margin-bottom: 0;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       11. PANEL 4: WHAT WE CAN'T MEASURE
-       ============================================ */
-    .unmeasured-section {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .unmeasured-section h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-intro {
-      font-size: 1.05rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-lg);
-      max-width: 700px;
-    }
-
-    .unmeasured-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .unmeasured-grid { grid-template-columns: 1fr; }
-    }
-
-    .unmeasured-image {
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius-md);
-    }
-
-    .unmeasured-explanation h4 {
-      color: var(--color-accent);
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-explanation p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       12. PANEL 5: QUESTIONS TO CONSIDER
-       ============================================ */
-    .questions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .questions-grid { grid-template-columns: 1fr; }
-    }
-
-    .question-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .question-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .question-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .question-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       13. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       14. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .state-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       15. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Case Study: Medicaid Expansion's Effect on Hospitals",
-  "description": "Explore whether Medicaid expansion causes higher hospital use or if states with better healthcare infrastructure both expand Medicaid and have different utilization patterns. Learn to identify state-level selection and policy endogeneity.",
+  "headline": "Most Projected Medi-Cal Renewal Losses Stem From Preventable Paperwork Drop-Offs Rather Than Lost Eligibility",
+  "description": "Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -840,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -851,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Why can't I just compare Medicaid expansion states to non-expansion states?",
+      "name": "What share of Santa Clara County Medi-Cal expansion adults already work or qualify for an exemption?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Expansion was a non-random policy choice. States that expanded differ systematically in healthcare infrastructure, politics, and population health, so a direct comparison mixes the policy effect with these pre-existing differences."
+        "text": "In Census data scaled to the 120,239 DHCS base, 77.5% of expansion adults already work at least 80 hours per month (38.0%) or hold a caregiver, disability, or student exemption (39.5%). Another 11.0% work in self-employed or part-time roles, reaching 88.5% in all. Only 11.5% (13,767 adults) have no logged work or survey exemption."
       }
     },
     {
       "@type": "Question",
-      "name": "What is policy endogeneity in the Medicaid expansion case?",
+      "name": "Why does Santa Clara County face a higher per-capita disenrollment rate than the statewide DHCS average?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Policy endogeneity means the decision to expand reflects underlying state characteristics that also affect outcomes. States with robust healthcare systems both expanded more often and already had higher utilization, biasing naive comparisons."
+        "text": "The state DHCS check funnel exempts 373,389 adults living in high-unemployment or disaster counties before paper checks. Santa Clara County has a low jobless rate (~4.1%). As a result, 0% of its adults get a countywide jobless waiver. Projected six-month losses rise from 36,218 (flat state share) to 41,100."
       }
     },
     {
       "@type": "Question",
-      "name": "What study designs address Medicaid expansion selection bias?",
+      "name": "Which Medi-Cal groups experience the highest avoidable procedural churn?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Natural experiments help, including difference-in-differences comparing utilization changes in expansion versus non-expansion states and randomized variation like the Oregon Medicaid lottery, which bypass much of the selection problem."
+        "text": "Exempt caregivers, disabled adults, and students face 6,831 avoidable form losses per cycle (72.4% avoidable). Self-employed and part-time workers follow with 3,319 avoidable form losses per cycle (64.6% avoidable)."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -902,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -921,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -937,893 +529,479 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
-      <h1>Case Study: Medicaid Expansion's Effect on Hospitals</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">States that expanded Medicaid show higher emergency department and hospitalization rates, but the comparison is confounded by policy endogeneity: expansion was not random. States with more hospitals, physicians, and healthcare capacity were both more likely to expand and already had higher utilization regardless of coverage. Because expansion and non-expansion states differ in political orientation, infrastructure, and population health, a simple cross-sectional contrast conflates the policy effect with selection. Controlling for infrastructure shrinks the apparent effect, and credible estimates lean on designs such as difference-in-differences or the Oregon Medicaid lottery that supply variation closer to random.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">States that expanded Medicaid show higher emergency department and hospitalization rates. Did sick states expand, or does Medicaid increase utilization? This case explores state-level selection and policy endogeneity.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Seeing the Confounder</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't Measure</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Questions to Consider</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Most Projected Medi-Cal Renewal Losses Stem From Preventable Paperwork Drop-Offs Rather Than Lost Eligibility
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        How our modeled renewal check splits form drop-offs among working and exempt adults from true income exits.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When reviewing Medi-Cal renewal drops, one county total leaves out whether adults lost eligibility or missed a form check.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> In Santa Clara County, low jobless rates rule out a countywide waiver.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Yet <strong>88.5%</strong> of Medicaid expansion adults already work or hold an exemption.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> In our modeled four-group check, <strong>52.5%</strong> of projected disenrollment comes from avoidable form drops <strong>(14,219 of 27,076</strong> per cycle).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Flat state scaling projects <strong>36,218 to 41,100</strong> losses with no group split.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Splitting the funnel guides staff to exempt caregivers, disabled adults, and part-time workers.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Six-Month Renewal Funnel Across Four Medi-Cal Adult Groups</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Group size, auto-match rates, and modeled form losses across four Santa Clara County groups.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four Santa Clara County Medi-Cal groups compared by size, auto-match rate, six-month loss, and avoidable form drops.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Group &amp; Funnel Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Working >= 80 Hrs/Mo</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rule Exemptions</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Gig &amp; Part-Time Work</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">No Recorded Work</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                DHCS-Scaled Adult Count
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">45,703</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">39.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">47,530</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">11.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">13,226</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">11.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">13,767</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Census Survey Adult Count
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">50,934</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">52,971</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">14,752</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15,341</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Auto Data Match Rate
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">80.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0% to 70.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">10.0% to 45.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.0% matched</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Six-Month Plan Losses<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">6,367</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">19.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">9,435</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.8%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5,138</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">44.6%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">6,136</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Avoidable Form Losses<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">35.0%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">2,228</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 35%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">72.4%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">6,831</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">64.6%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">3,319</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 65%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">30.0%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">1,841</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 30%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Renewal Form Hurdle
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Wage lag or two jobs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unlinked school or care forms</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Hard 1099 or cash logs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unlogged health or care hours</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> This six-month renewal funnel models 27,076 group losses per cycle. Of those, 14,219 (52.5%) are avoidable form drops. It is scaled to the June 2025 Santa Clara County DHCS count of 120,239 expansion adults. Group shares come from U.S. Census ACS 2019–2023 5-Year PUMS data (133,998 weighted adults, rounded to 134,000; n = 6,297 unweighted records across 15 PUMAs).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Working >= 80 Hrs/Mo.</strong> Regular W-2 wage earners. <strong>Rule Exemptions.</strong> Caregivers, disabled adults, and students. <strong>Gig &amp; Part-Time Work.</strong> Self-employed and seasonal workers. <strong>No Recorded Work.</strong> No visible ACS survey exemption.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Calibrated Six-Month Renewal Funnel on Observed DHCS Baseline (120,239). Ruler 1: Flat-Share Aggregate Disenrollment View (County-Scaled Funnel): <strong>36,218 to 41,100 / Cycle</strong>. Applying the flat 2.5949% state share to the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS state funnel</a> projects <strong>36,218</strong> six-month losses. That rises to <strong>41,100</strong> with a 0% county jobless waiver share. It does not split form drops from lost eligibility. Ruler 2: Group Eligibility &amp; Procedural Churn Ruler: <strong>88.5% Eligible | 52.5% Avoidable</strong>. Census data (<a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ACS 2019–2023 PUMS</a> scaled to <strong>120,239</strong> DHCS adults) shows <strong>77.5%</strong> work &ge;80 hrs/mo or hold an exemption. Another <strong>11.0%</strong> work part-time (<strong>88.5%</strong> total). Of <strong>27,076</strong> modeled losses, <strong>14,219 (52.5%)</strong> are avoidable.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Group Profiles, Form Hurdles &amp; County Actions</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How county teams match each adult group to its main form hurdle and best fix.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Guide matching four Medi-Cal adult groups to form hurdles, staff priorities, and county actions.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Working >= 80 Hrs/Mo
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rule Exemptions
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Gig &amp; Part-Time Work
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                No Recorded Work
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Work &amp; Home Profile
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                W-2 retail, food, health, and warehouse workers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Parents, disabled adults, and students.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                App drivers, home helpers, and seasonal part-time workers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Jobless or family-care adults with no logged exemption.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What One Total Leaves Out
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pay file lags affect 20% who meet work rules.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                State law exempts 100% of this group from work rules.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                One-month checks skip valid hours over six months.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Unlogged health needs qualify for clinic exemptions.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                County Staff Priority
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Clear 80% by state wage files before outreach.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Accounts for 6,831 form drops per cycle.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Swap long tax logs for a one-page pay form.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pair renewal calls with clinic checks and local slots.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best County Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Auto Wage Match + Text Upload<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Clear 80% by wage data and add phone paystub upload.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Clinic &amp; School Auto-Flag<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pre-fill health and care exemptions from clinic and school files.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Six-Month Rule + Short Form<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Count any valid month in six plus simple cash forms.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Health Screen &amp; Local Slot<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Screen for health exemptions and link to local service slots.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Pre-Policy Baseline Drift &amp; Local Unemployment Adjustment</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Observed Pre-Policy Drift (DHCS Count):</strong> Santa Clara County expansion adult counts fell by <strong>-12.31%</strong> (-14,803 adults, from 120,239 in June 2025 to 105,436 in June 2026 in <a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CHHS Open Data</a>). That drop happened during routine unwinding before any work rule began.</p>
+          <p>&bull; <strong>Zero Jobless Waiver Adjustment (Mode A):</strong> State DHCS funnel numbers subtract 373,389 adults in high-unemployment counties before paper checks (<code>dhcs_verification_funnel_scc.csv:5</code>). Santa Clara County has a low jobless rate (~4.1%). It gets a 0.0% county waiver share. Its paper check pool rises by +9,689 (from 72,437 to 82,126). At a 50% paper loss rate, county losses reach <strong>41,100 per cycle</strong> instead of the flat-scaled 36,218.</p>
+          <p>&bull; <strong>Phone Notice Upload Gain:</strong> Adding phone notice upload and form help stops 1,423 more DHCS-scaled losses (+3,131 on the ACS scale). Total stopped disenrollment rises from 14,219 to <strong>15,642 of 27,076 (57.8%)</strong> on the DHCS scale. That equals <strong>17,350 of 30,007 (57.8%)</strong> on the unscaled ACS base.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Work &amp; Home Profile (Rule Exemptions).</strong> Parents (18,950), disabled adults (18,370), and students (10,210).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare Modeled Renewal Losses Across Three County Outreach Plans</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Projected six-month Medi-Cal losses across three county plans on the 120,239 adult baseline.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare Modeled Renewal Losses Across Three County Outreach Plans">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 1 · Base Renewal</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">No Targeted County Outreach</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">27,076 Projected Losses / Cycle</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">With no help, half of adults sent paper forms after auto data checks lose coverage each six-month cycle.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 2 · Exemption &amp; Lookback</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Auto Flagging + Six-Month Check</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">10,150 Saved (37.5% of Losses)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Clinic and school auto-flags for caregivers and students plus a six-month hour check stop 71.4% of avoidable form drops.</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Scenario 3 · Full Help + Phone Upload</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">All Four Groups + Phone Upload</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">15,642 Saved (57.8% of Losses)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Adding wage follow-up, health screens, and phone form upload across all four groups stops over half of six-month losses.</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Scenario Calculations, Group Splits &amp; ACS-Weighted Scale Crosswalk</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Scenario 1 Base Counts:</strong> In the four-group model scaled to 120,239 DHCS adults, 54,152 reach paper renewal after auto checks. Of those, <strong>27,076 (50.0%)</strong> lose plans each six-month cycle. That equals <strong>30,174</strong> on the 133,998 ACS 2019–2023 PUMS base, or <strong>41,100</strong> under flat state scaling with a 0.0% county jobless waiver.</p>
+          <p>&bull; <strong>Scenario 2 Group Math:</strong> Auto clinic and school flags for exempt adults stop <strong>6,831</strong> modeled losses per cycle (1,241 caregivers + 2,295 disabled or new-parent adults + 3,295 students). Six-month hour checks for part-time workers stop <strong>3,319</strong> losses. Together they stop <strong>10,150 losses</strong> (37.5% of 27,076 total losses, or 71.4% of the 14,219 avoidable pool).</p>
+          <p>&bull; <strong>Scenario 3 Full Plan &amp; Phone Upload:</strong> Adding wage follow-up for W-2 workers stops <strong>2,228</strong> losses. Clinic health checks and local service slots for non-working adults stop <strong>1,841</strong> losses. That brings the total to <strong>14,219 (52.5%)</strong>. Pairing with phone form upload adds <strong>+1,423</strong> DHCS-scaled saves, reaching <strong>15,642 of 27,076 (57.8%)</strong> on the DHCS scale (<strong>17,350 of 30,007 [57.8%]</strong> on the ACS scale).</p>
+        </div>
+      </details>
+    </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Flagship Case Study (Mode A Calibrated Funnel on Observed DHCS Enrollment Baseline)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Health and Human Services (CHHS) Open Data Portal: Medi-Cal Certified Eligibles with Demographics by Month</a> (<code>scc_dhcs_medical_enrollment.csv:1-134</code>). Santa Clara County June 2025 Final count is 472,014 total, 255,601 adults 19–64, and 120,239 ACA expansion adults 19–64. That equals 2.5949% of 4,633,636 statewide. The June 2026 count is 105,436 (-12.31% pre-policy drop). The state Step 1–5 funnel comes from the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS Implementation Plan for New Eligibility and Enrollment Changes under H.R. 1</a> (Webinar Deck, Feb 5, 2026, slides 13, 20–26, 34; <code>dhcs_verification_funnel_scc.csv:1-11</code>). Statewide, 1,842,155 (39.8%) clear at Steps 1–4. Santa Clara gets a 0.0% Step 2 jobless waiver share. That shifts +9,689 adults into Step 5 paper checks (82,126 vs. 72,437 flat-scaled) and yields 41,100 vs. 36,218 losses at a 50% Step 5 loss rate.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019–2023 5-Year PUMS</a> (<code>extract_pums.py</code> &amp; <code>scc_hr1_medicaid_risk_profiles.csv:1-46</code>). We pull 97,933 person records across all 15 Santa Clara County PUMAs (08501–08515). The subset has n = 6,297 unweighted adults ages 19–64 on Medicaid/Medi-Cal (HINS4 = 1) without Medicare/SSI (HINS3 != 1, SSP = 0) at income &le;138% FPL (POVPIP &le; 138). Using person weight PWGTP and 80 replicate weights (PWGTP1–PWGTP80) gives 133,998 &plusmn; 3,905 (rounded to 134,000) adults. Scaling to the 120,239 DHCS base shows <strong>77.5% (93,233 DHCS-scaled)</strong> meet the &ge;80 hr/mo rule in Group 1 (38.01%, 45,703 DHCS-scaled; 50,934 &plusmn; 2,423 ACS) or hold a rule exemption in Group 2 (39.53%, 47,530 DHCS-scaled; 52,971 ACS across Bucket B care &lt;14 [30,074], Bucket C birth/disability [11,129], and Bucket D student [11,768]). Another <strong>11.01% (13,226 DHCS-scaled; 14,752 ACS)</strong> work in Group 3 gig or part-time jobs (Buckets E [3,313], F [7,467], G [3,972]). Their status rests on a 1-month-in-6 lookback (88.5% = 106,459 summed across rounded groups, or 106,472 unrounded [0.885499 &times; 120,239]). That leaves <strong>11.45% (13,767 DHCS-scaled; 15,341 ACS)</strong> in Group 4 without recorded work or a survey exemption.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">KFF Medicaid Unwinding &amp; Work Requirement Research</a> (Methodological reference: form disenrollment and check funnel benchmarks). <strong>CAPHE Mode A Renewal Funnel Model</strong> (<code>churn_reduction_model.py</code>, <code>churn_reduction_model_scc.csv:1-24</code>, <code>scc_hr1_synthesis.csv:8-15</code>, <code>INTERVENTION_DESIGN.md:155,239-241</code>). For each group g, the Step 5 paper pool is M_g = N_g &times; p_step5. Here p_step5 is the share not cleared at Steps 1–4. Group 1 has 12,734 at Step 5. Group 2 has 18,870 (4,512 B + 6,120 C + 8,238 D). Group 3 has 10,275. Group 4 has 12,273. The total is M = 54,152. At the DHCS 50% Step 5 loss rate (L_g = 0.50 &times; M_g), six-month losses are 6,367 (13.9% of Group 1) + 9,435 (19.9% of Group 2) + 5,138 (38.8% of Group 3) + 6,136 (44.6% of Group 4) = 27,076 per cycle (30,174 on the 133,998 ACS scale). Multiplying L_g by avoidable shares r_g (0.35 in Group 1 = 2,228; 0.724 in Group 2 = 6,831 [1,241 B + 2,295 C + 3,295 D]; 0.646 in Group 3 = 3,319; 0.30 in Group 4 = 1,841) gives <strong>14,219 of 27,076 (52.5%)</strong> avoidable losses per cycle (10,150 in Groups 2–3). Adding phone form upload raises that to <strong>15,642 of 27,076 (57.8%)</strong> (+1,423 DHCS-scaled; 17,350 of 30,007 on the ACS scale).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">DHCS H.R. 1 Implementation Plan Webinar Deck (Feb 5, 2026)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">ACS 2019–2023 PUMS</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">How Funnel Decomposition Changes County Retention Budgeting</h3>
+            <p class="text-slate-800">When a county sees a projected 36,000 to 41,000 drop in Medi-Cal plans, one top-line total gives no clear plan for staff. If leaders think those adults found job plans or chose not to work, the county will plan for smaller clinic panels. Meanwhile, ER teams will absorb thousands of newly uninsured patients who lost care over an unreturned form.</p>
+            <p class="text-slate-800">Splitting the renewal funnel by check stage and Census group shows that <strong>88.5%</strong> of Santa Clara County's 120,239 expansion adults work at least 80 hours per month, hold a rule exemption, or work part-time hours. In our county model, <strong>71.4%</strong> of all avoidable form losses (<strong>10,150 of 14,219</strong> per cycle) hit exempt caregivers, disabled adults, students, and part-time workers. Moving outreach funds to clinic and school auto-flags, six-month hour checks, and one-page pay forms keeps people covered at a fraction of broad ad costs.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Calibrated Funnel on Observed Enrollment Baseline):</strong> The county check funnel (36,218 to 41,100 per cycle under top-down scaling; 27,076 group losses and 14,219 or 52.5% avoidable in the 4-group model) is a Mode A model (<code>dhcs_verification_funnel_scc.csv:1-11</code>, <code>churn_reduction_model_scc.csv:1-24</code>). It is scaled to Santa Clara County's June 2025 DHCS base of 120,239 expansion adults (105,436 in June 2026; <code>scc_dhcs_medical_enrollment.csv:1-134</code>). The 133,998 &plusmn; 3,905 count (rounded to 134,000) is the ACS 2019–2023 5-Year PUMS weighted base (<code>n = 6,297</code> records across PUMAs 08501–08515) used for group shares.</p>
+          <p><strong>Primary Data Sources &amp; Extract Specifications:</strong> Sources include the <a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Health and Human Services (CHHS) Open Data Portal</a> (June 2025 Final to June 2026), the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS H.R. 1 Implementation Plan Webinar Deck (Feb 5, 2026)</a>, the <a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019–2023 5-Year PUMS</a> (weights PWGTP and PWGTP1–PWGTP80), and <a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">KFF Medicaid Unwinding &amp; Work Requirement Research</a>.</p>
+          <p><strong>Reconciliation of DHCS vs. ACS Denominators &amp; Rounding:</strong> Table 1 lists both DHCS-scaled counts (<code>N = 120,239</code>: Group 1 = 45,703 [38.01%], Group 2 = 47,530 [39.53%], Group 3 = 13,226 [11.01%], Group 4 = 13,767 [11.45%]; sum of rounded groups 1–3 = 106,459, or 106,472 at unrounded 0.885499 &times; 120,239) and unscaled ACS PUMS weights (<code>N = 133,998</code>, rounded to 134,000: 50,934 + 52,971 + 14,752 + 15,341). County teams can match state plan dashboards directly to Census files.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What share of Santa Clara County Medi-Cal expansion adults already work or qualify for an exemption?</dt>
+                <dd class="text-slate-700 mt-0.5">In Census data scaled to the 120,239 DHCS base, 77.5% of expansion adults already work at least 80 hours per month (38.0%) or hold a caregiver, disability, or student exemption (39.5%). Another 11.0% work in self-employed or part-time roles, reaching 88.5% in all. Only 11.5% (13,767 adults) have no logged work or survey exemption.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does Santa Clara County face a higher per-capita disenrollment rate than the statewide DHCS average?</dt>
+                <dd class="text-slate-700 mt-0.5">The state DHCS check funnel exempts 373,389 adults living in high-unemployment or disaster counties before paper checks. Santa Clara County has a low jobless rate (~4.1%). As a result, 0% of its adults get a countywide jobless waiver. Projected six-month losses rise from 36,218 (flat state share) to 41,100.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Which Medi-Cal groups experience the highest avoidable procedural churn?</dt>
+                <dd class="text-slate-700 mt-0.5">Exempt caregivers, disabled adults, and students face 6,831 avoidable form losses per cycle (72.4% avoidable). Self-employed and part-time workers follow with 3,319 avoidable form losses per cycle (64.6% avoidable).</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/before-after-trap" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating Pre-Post Changes Against Baseline Trends in Pre-Policy Drift</a></li>
+          <li class="my-2"><a href="/methods-lab/selection-into-treatment" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Selection Into Treatment & Administrative Take-Up</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact & Reserve Floor Analysis</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            Each dot represents a U.S. state. States that expanded Medicaid tend to have higher hospital utilization rates. Is this evidence that Medicaid expansion increases hospital use? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Hospital Utilization by State Healthcare Index</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing State Healthcare Index versus Hospital Utilization Rate across U.S. states"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>No Medicaid Expansion</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Expanded Medicaid</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>State Breakdown</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-expanded-count">--</div>
-                  <div class="stat-label">Expanded</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-not-expanded-count">--</div>
-                  <div class="stat-label">Not Expanded</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Average Utilization Rate</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-expanded-avg">--</div>
-                  <div class="stat-label">Expanded</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-not-expanded-avg">--</div>
-                  <div class="stat-label">Not Expanded</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>What we see:</strong> States that expanded Medicaid have hospital utilization rates about <span id="stat-difference">--</span> visits per 1,000 higher on average.
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question to Panel 2 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Does this correlation mean Medicaid expansion causes higher hospital use? Or could something else explain both the expansion decision and the utilization rates?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: THE PROBLEM
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">The Problem</h2>
-          <p class="panel-intro">
-            States with stronger healthcare systems were more likely to expand Medicaid. Those same systems also facilitate higher healthcare utilization regardless of insurance coverage.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/medicaid-expansion/assets/medicaid-dag-confounding.png"
-              alt="Causal diagram showing State Healthcare Infrastructure affecting both Medicaid Expansion and Hospital Utilization, with a dashed arrow from Medicaid Expansion to Hospital Utilization indicating uncertain causal effect"
-              class="dag-image"
-            >
-            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow represents the effect we want to measure.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Two Possible Explanations</h4>
-              <div class="pathway-list">
-                <div class="pathway-item causal">
-                  <strong>Medicaid expansion increases access</strong>
-                  <p>More people have coverage, so they use hospitals and EDs more because they can finally afford care.</p>
-                </div>
-                <div class="pathway-item confounding">
-                  <strong>Infrastructure drives both</strong>
-                  <p>States with more hospitals, doctors, and healthcare capacity both expand Medicaid AND have higher utilization regardless of coverage.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The confounding problem:</strong> If "State Healthcare Infrastructure" causes both Medicaid expansion and hospital utilization, the association we observe between expansion and utilization is confounded. We cannot determine how much of the difference stems from expansion itself.
-            </div>
-          </aside>
-        </div>
-
-        <!-- KEY CONCEPT card -->
-        <div class="definition-card">
-          <h3>What Is Policy Endogeneity?</h3>
-          <p><strong>Policy endogeneity</strong> occurs when the same factors that influence a policy decision also influence the outcomes we want to measure. In this case:</p>
-          <ul>
-            <li>States with robust healthcare systems are more likely to expand Medicaid</li>
-            <li>Those same states already have higher healthcare utilization due to better access</li>
-            <li>The policy "choice" is not random; it reflects underlying state characteristics</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">This creates a fundamental problem: we cannot simply compare expansion states to non-expansion states because they differ in ways beyond just the policy.</p>
-        </div>
-
-        <!-- Bridging question to Panel 3 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> If healthcare infrastructure confounds this relationship, what happens when we compare states with similar infrastructure levels?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: SEEING THE CONFOUNDER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Seeing the Confounder</h2>
-          <p class="panel-intro">
-            If healthcare infrastructure drives both Medicaid expansion and hospital use, then comparing states within the same infrastructure level should show a smaller expansion effect. Use the filters below to stratify the data.
-          </p>
-        </div>
-
-        <!-- Stratification section -->
-        <div class="stratified-section">
-          <div class="filter-controls">
-            <span class="filter-label">Filter by Infrastructure Level:</span>
-            <button class="filter-btn active" data-filter="all">All States</button>
-            <button class="filter-btn" data-filter="low">Low (0-33)</button>
-            <button class="filter-btn" data-filter="medium">Medium (34-66)</button>
-            <button class="filter-btn" data-filter="high">High (67-100)</button>
-          </div>
-
-          <div class="stratified-grid">
-            <div class="chart-wrapper">
-              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing Medicaid expansion effect within infrastructure levels"></svg>
-            </div>
-
-            <aside class="comparison-sidebar">
-              <div class="comparison-card">
-                <h4>Overall Comparison</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">Expanded:</span>
-                  <span class="comparison-value" id="overall-expanded">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Not Expanded:</span>
-                  <span class="comparison-value" id="overall-not-expanded">--</span>
-                </div>
-                <div class="comparison-row difference">
-                  <span class="comparison-label">Difference:</span>
-                  <span class="comparison-value" id="overall-diff">--</span>
-                </div>
-              </div>
-
-              <div class="comparison-card">
-                <h4>Within This Stratum</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">Expanded:</span>
-                  <span class="comparison-value" id="stratum-expanded">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Not Expanded:</span>
-                  <span class="comparison-value" id="stratum-not-expanded">--</span>
-                </div>
-                <div class="comparison-row difference">
-                  <span class="comparison-label">Difference:</span>
-                  <span class="comparison-value" id="stratum-diff">--</span>
-                </div>
-              </div>
-
-              <div class="insight-box">
-                <p><strong>What's happening?</strong></p>
-                <p id="stratification-insight">Select an infrastructure level to see how the expansion effect changes when comparing similar states.</p>
-              </div>
-            </aside>
-          </div>
-        </div>
-
-        <!-- KEY CONCEPT card -->
-        <div class="definition-card">
-          <h3>What Is State-Level Selection?</h3>
-          <p><strong>State-level selection</strong> describes how states "select into" policies based on their characteristics. States that expand Medicaid are not a random subset of all states. They differ systematically in:</p>
-          <ul>
-            <li>Political orientation and governance priorities</li>
-            <li>Existing healthcare infrastructure and capacity</li>
-            <li>Historical patterns of public health investment</li>
-            <li>Population health needs and demographics</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">When we control for healthcare infrastructure, the apparent effect shrinks. This reveals how much of the original association was driven by selection rather than the policy effect.</p>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Controlling for infrastructure helped, but what about factors we cannot observe or measure? Political climate, provider attitudes, and health culture may also drive both expansion and utilization.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: WHAT WE CAN'T MEASURE
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">What We Can't Measure</h2>
-          <p class="panel-intro">
-            Stratification helped with what we measured. Some factors that influence both Medicaid expansion and hospital utilization do not appear in any dataset.
-          </p>
-        </div>
-
-        <div class="unmeasured-section">
-          <div class="unmeasured-grid">
-            <img
-              src="/methods-lab/medicaid-expansion/assets/medicaid-unmeasured-dag.png"
-              alt="Causal diagram showing both measured (Healthcare Infrastructure) and unmeasured (Political Climate, Provider Willingness) confounders affecting Medicaid expansion and hospital utilization"
-              class="unmeasured-image"
-            >
-            <div class="unmeasured-explanation">
-              <h4>Political Climate and Provider Willingness</h4>
-              <p>
-                States with supportive political climates may both embrace Medicaid expansion more readily AND have healthcare systems more willing to serve newly insured patients.
-              </p>
-              <p>
-                Provider willingness to accept Medicaid patients, community health norms, and public health investment are difficult to capture in datasets. Yet they could drive both the "treatment" (expansion) and the "outcome" (utilization).
-              </p>
-              <p>
-                <strong>This is the problem of unmeasured confounding.</strong> Regardless of how carefully we adjust for what we can see, hidden factors may remain unaccounted for.
-              </p>
-            </div>
-          </div>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <strong>The implication:</strong> Even with perfect data on healthcare infrastructure, we still could not be certain the remaining expansion effect is causal. Unmeasured confounding cannot be fixed by collecting more of the same type of data. It requires a different approach entirely.
-          </div>
-        </div>
-
-        <!-- KEY CONCEPT card -->
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>What Is Unmeasured Confounding?</h3>
-          <p><strong>Unmeasured confounding</strong> occurs when variables we cannot observe or quantify affect both the treatment and the outcome. Unlike measured confounders (which we can control for through stratification or regression), unmeasured confounders remain hidden sources of bias.</p>
-          <ul>
-            <li>No amount of statistical sophistication can eliminate bias from variables we do not measure</li>
-            <li>Sensitivity analysis can assess how strong an unmeasured confounder would need to be to explain away our findings</li>
-            <li>Better study designs (natural experiments, instrumental variables) can sometimes bypass this problem</li>
-          </ul>
-        </div>
-
-        <!-- Bridging question to Panel 5 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What questions should we ask when evaluating claims about Medicaid expansion's effects? How do economists approach this identification challenge?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: QUESTIONS TO CONSIDER
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Questions to Consider</h2>
-          <p class="panel-intro">
-            These questions help identify confounding threats that statistical adjustment cannot fix. They will not prove causation, but they reveal where the analysis is most vulnerable to bias.
-          </p>
-        </div>
-
-        <div class="questions-grid">
-          <div class="question-card">
-            <h4>What else differs between expansion and non-expansion states?</h4>
-            <p>States that expanded Medicaid might differ from other states in many ways beyond just having expansion.</p>
-            <div class="question-prompt">
-              What other characteristics might explain why some states have both Medicaid expansion AND higher hospital utilization?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Is this a fair comparison?</h4>
-            <p>Cross-sectional data shows us a snapshot, not a story. We compare different states at one point in time.</p>
-            <div class="question-prompt">
-              Are expansion states truly comparable to non-expansion states? What would make them more comparable?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Which came first?</h4>
-            <p>In this data, we see utilization and expansion status at the same time. We do not know the full sequence.</p>
-            <div class="question-prompt">
-              Did Medicaid expansion lead to higher utilization, or do states with higher utilization patterns tend to expand Medicaid?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>What study design would help?</h4>
-            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
-            <div class="question-prompt">
-              What kind of study would give you more confidence that Medicaid expansion actually causes higher hospital use?
-            </div>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Confounding:</strong> a third variable affects both treatment and outcome</div>
-            <div class="concept-item"><strong>Policy endogeneity:</strong> factors driving policy choice also affect outcomes</div>
-            <div class="concept-item"><strong>State-level selection:</strong> systematic differences between states that adopt different policies</div>
-            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we cannot adjust for</div>
-            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both policy adoption and outcomes, the solution is not better adjustment. It requires finding sources of policy variation that operate independently of unmeasured confounders. Timing of policy rollouts, eligibility thresholds, and geographic discontinuities can provide this. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/counterfactual-basics" style="color:#0041A5;font-weight:600;">What Is a Counterfactual?</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/before-after-trap" style="color:#0041A5;font-weight:600;">The Before-After Trap</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/control-groups-not-enough" style="color:#0041A5;font-weight:600;">Why Control Groups Aren't Enough</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Card D, Krueger AB. Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania. NBER Working Paper 4509; 1994. <a href="https://www.nber.org/papers/w4509" target="_blank" rel="noopener">nber.org</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual state-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateStateData() {
-      const stateNames = [
-        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
-        'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-        'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
-        'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-        'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-        'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-        'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
-        'Wisconsin', 'Wyoming'
-      ];
-
-      const data = [];
-      let seed = 42;
-
-      for (let i = 0; i < 50; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // Healthcare infrastructure (confounder) - higher = more infrastructure
-        const infrastructure = rand() * 100;
-
-        // Medicaid expansion is more likely in high-infrastructure states
-        const expanded = infrastructure > 55 ? (rand() > 0.25) : (rand() > 0.75);
-
-        // Hospital utilization depends on infrastructure (and a small true expansion effect)
-        const baseUtilization = 180 + (infrastructure * 1.2);
-        const expansionEffect = expanded ? 15 : 0; // Small true effect
-        const noise = (rand() - 0.5) * 50;
-        const utilizationRate = Math.min(380, Math.max(150, baseUtilization + expansionEffect + noise));
-
-        data.push({
-          name: stateNames[i],
-          infrastructure: Math.round(infrastructure),
-          expanded: expanded,
-          utilizationRate: Math.round(utilizationRate * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const stateData = generateStateData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let stratifiedInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-        if (panelNum === '3') {
-          setTimeout(() => {
-            if (!stratifiedInitialized) {
-              renderStratifiedChart('all');
-              stratifiedInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 140, yMax = 400;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 150; y <= 380; y += 50) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points
-      stateData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.infrastructure));
-        circle.setAttribute('cy', yScale(d.utilizationRate));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.expanded ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'State Healthcare Infrastructure Index';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 150; y <= 380; y += 50) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Hospital Utilization Rate (per 1,000)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. STRATIFIED CHART (Panel 3)
-       ============================================ */
-    let currentFilter = 'all';
-
-    function renderStratifiedChart(filter) {
-      currentFilter = filter;
-      const svg = document.getElementById('stratified-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 140, yMax = 400;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.infrastructure <= 33;
-        if (filter === 'medium') return d.infrastructure > 33 && d.infrastructure <= 66;
-        if (filter === 'high') return d.infrastructure > 66;
-        return true;
-      };
-
-      // Background shading for filter region
-      if (filter !== 'all') {
-        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        let x1, x2;
-        if (filter === 'low') { x1 = 0; x2 = 33; }
-        if (filter === 'medium') { x1 = 33; x2 = 66; }
-        if (filter === 'high') { x1 = 66; x2 = 100; }
-        shade.setAttribute('x', xScale(x1));
-        shade.setAttribute('y', margin.top);
-        shade.setAttribute('width', xScale(x2) - xScale(x1));
-        shade.setAttribute('height', plotHeight);
-        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.05)');
-        svg.appendChild(shade);
-      }
-
-      // Grid lines
-      for (let y = 150; y <= 380; y += 50) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points
-      stateData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.infrastructure));
-        circle.setAttribute('cy', yScale(d.utilizationRate));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.expanded ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'State Healthcare Infrastructure Index';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 150; y <= 380; y += 50) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Hospital Utilization Rate (per 1,000)';
-      svg.appendChild(yLabel);
-
-      updateComparisonStats(filter);
-    }
-
-    function updateComparisonStats(filter) {
-      const expandedAll = stateData.filter(d => d.expanded);
-      const notExpandedAll = stateData.filter(d => !d.expanded);
-
-      const overallExpandedMean = mean(expandedAll.map(d => d.utilizationRate));
-      const overallNotExpandedMean = mean(notExpandedAll.map(d => d.utilizationRate));
-      const overallDiff = overallExpandedMean - overallNotExpandedMean;
-
-      document.getElementById('overall-expanded').textContent = overallExpandedMean.toFixed(1);
-      document.getElementById('overall-not-expanded').textContent = overallNotExpandedMean.toFixed(1);
-      document.getElementById('overall-diff').textContent = '+' + overallDiff.toFixed(1);
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.infrastructure <= 33;
-        if (filter === 'medium') return d.infrastructure > 33 && d.infrastructure <= 66;
-        if (filter === 'high') return d.infrastructure > 66;
-        return true;
-      };
-
-      const expandedFiltered = stateData.filter(d => d.expanded && inFilter(d));
-      const notExpandedFiltered = stateData.filter(d => !d.expanded && inFilter(d));
-
-      const insightEl = document.getElementById('stratification-insight');
-
-      if (expandedFiltered.length > 0 && notExpandedFiltered.length > 0) {
-        const stratumExpandedMean = mean(expandedFiltered.map(d => d.utilizationRate));
-        const stratumNotExpandedMean = mean(notExpandedFiltered.map(d => d.utilizationRate));
-        const stratumDiff = stratumExpandedMean - stratumNotExpandedMean;
-
-        document.getElementById('stratum-expanded').textContent = stratumExpandedMean.toFixed(1);
-        document.getElementById('stratum-not-expanded').textContent = stratumNotExpandedMean.toFixed(1);
-        document.getElementById('stratum-diff').textContent = (stratumDiff >= 0 ? '+' : '') + stratumDiff.toFixed(1);
-
-        if (filter === 'all') {
-          insightEl.textContent = 'Select an infrastructure level to see how the expansion effect changes when comparing similar states.';
-        } else {
-          const reduction = ((overallDiff - stratumDiff) / overallDiff * 100).toFixed(0);
-          if (stratumDiff <= 20) {
-            insightEl.innerHTML = '<strong>The difference shrinks significantly.</strong> Within ' + filter + '-infrastructure states, the expansion difference is only ' + stratumDiff.toFixed(1) + ' visits per 1,000. Healthcare infrastructure explains much of what we saw overall.';
-          } else {
-            insightEl.innerHTML = 'Within ' + filter + '-infrastructure states, the expansion difference is ' + stratumDiff.toFixed(1) + ' visits per 1,000 (' + reduction + '% smaller than the overall ' + overallDiff.toFixed(1) + ').';
-          }
-        }
-      } else {
-        document.getElementById('stratum-expanded').textContent = 'N/A';
-        document.getElementById('stratum-not-expanded').textContent = 'N/A';
-        document.getElementById('stratum-diff').textContent = '--';
-        insightEl.textContent = 'Not enough states in this stratum for both groups.';
-      }
-    }
-
-    // Filter button handlers
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderStratifiedChart(btn.dataset.filter);
-      });
-    });
-
-    /* ============================================
-       6. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="state-name">${data.name}</div>
-        <div class="metric">Infrastructure: ${data.infrastructure}</div>
-        <div class="metric">Utilization: ${data.utilizationRate} per 1,000</div>
-        <div class="metric">${data.expanded ? 'Expanded Medicaid' : 'No Expansion'}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const expandedStates = stateData.filter(d => d.expanded);
-      const notExpandedStates = stateData.filter(d => !d.expanded);
-
-      const expandedAvg = mean(expandedStates.map(d => d.utilizationRate));
-      const notExpandedAvg = mean(notExpandedStates.map(d => d.utilizationRate));
-      const diff = expandedAvg - notExpandedAvg;
-
-      document.getElementById('stat-expanded-count').textContent = expandedStates.length;
-      document.getElementById('stat-not-expanded-count').textContent = notExpandedStates.length;
-      document.getElementById('stat-expanded-avg').textContent = Math.round(expandedAvg);
-      document.getElementById('stat-not-expanded-avg').textContent = Math.round(notExpandedAvg);
-      document.getElementById('stat-difference').textContent = Math.round(diff);
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-          if (document.getElementById('panel-3').classList.contains('active')) {
-            renderStratifiedChart(currentFilter);
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

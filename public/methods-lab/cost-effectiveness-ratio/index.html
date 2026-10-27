@@ -3,934 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Cost-Effectiveness Ratios & NMB Thresholds | CAPHE</title>
+  <meta name="description" content="Evaluate Incremental Cost-Effectiveness Ratios ($36,089/QALY operating, $37,712/QALY with startup) and Net Monetary Benefit (+$12.8M at $100K/QALY).">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio">
+  <meta property="og:title" content="Cost-Effectiveness Ratios & NMB Thresholds | CAPHE">
+  <meta property="og:description" content="Evaluate Incremental Cost-Effectiveness Ratios ($36,089/QALY operating, $37,712/QALY with startup) and Net Monetary Benefit (+$12.8M at $100K/QALY).">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>The Cost-Effectiveness Ratio | CAPHE</title>
-  <meta name="description" content="Learn how the Incremental Cost-Effectiveness Ratio (ICER) transforms 'Does it work?' into 'Is it worth it?' The ICER is the core metric of economic evaluation in health policy.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    code, .mono { font-family: var(--font-mono); }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. DATA CONTAINER (Panel 1)
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .comparison-table {
+    .col-header-banner {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: var(--space-md);
-    }
-
-    .comparison-table th,
-    .comparison-table td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-table th {
-      background: var(--color-bg-alt);
-      font-weight: 600;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-text-muted);
-    }
-
-    .comparison-table td {
-      font-size: 1rem;
-    }
-
-    .comparison-table .program-name {
-      font-weight: 600;
-      color: var(--color-primary-dark);
-    }
-
-    .comparison-table .value-cell {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-    }
-
-    .comparison-table .program-a {
-      color: var(--color-secondary);
-    }
-
-    .comparison-table .program-b {
-      color: var(--color-accent);
-    }
-
-    .stats-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* Bridging question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin: 0;
-    }
-
-    /* ============================================
-       7. CALCULATING ICER (Panel 2)
-       ============================================ */
-    .icer-container {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .icer-container { grid-template-columns: 1fr; }
-    }
-
-    .formula-box {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .formula-display {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-xl);
-      text-align: center;
-      margin-bottom: var(--space-xl);
-    }
-
-    .formula-main {
-      font-size: 1.5rem;
-      font-family: var(--font-serif);
-      color: var(--color-primary-dark);
-      margin-bottom: var(--space-md);
-    }
-
-    .formula-fraction {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      vertical-align: middle;
-    }
-
-    .formula-numerator,
-    .formula-denominator {
-      padding: var(--space-xs) var(--space-md);
-    }
-
-    .formula-numerator {
-      border-bottom: 2px solid var(--color-primary);
-    }
-
-    .formula-equals {
-      margin: 0 var(--space-md);
-      font-size: 1.5rem;
-    }
-
-    .formula-result {
-      font-family: var(--font-mono);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--color-primary);
-    }
-
-    .calculation-steps {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-lg);
-    }
-
-    .calc-step {
-      display: flex;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-primary);
-    }
-
-    .step-number {
-      width: 28px;
-      height: 28px;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      flex-shrink: 0;
+      overflow: hidden;
     }
-
-    .step-content {
-      flex: 1;
-    }
-
-    .step-label {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: var(--space-xs);
-    }
-
-    .step-value {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text);
-    }
-
-    .icer-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .icer-result-card {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      text-align: center;
-    }
-
-    .icer-result-card h4 {
-      color: white;
-      font-size: 0.9rem;
-      opacity: 0.9;
-      margin-bottom: var(--space-md);
-    }
-
-    .icer-value-large {
-      font-size: 2.5rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      font-family: var(--font-mono);
-      margin-bottom: var(--space-sm);
-    }
-
-    .icer-unit {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    .interpretation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .interpretation-card h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .interpretation-card p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       8. INTERPRETING ICER (Panel 3)
-       ============================================ */
-    .interpret-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .interpret-container { grid-template-columns: 1fr; }
-    }
-
-    .threshold-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .threshold-card h3 {
-      margin-bottom: var(--space-lg);
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .threshold-card h3::before {
-      content: "";
-      width: 4px;
-      height: 24px;
-      border-radius: 2px;
-    }
-
-    .threshold-card.accept h3::before {
-      background: var(--color-success);
-    }
-
-    .threshold-card.reject h3::before {
-      background: var(--color-warning);
-    }
-
-    .threshold-range {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-lg);
-    }
-
-    .threshold-value {
-      font-size: 2rem;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      margin-bottom: var(--space-sm);
-    }
-
-    .threshold-card.accept .threshold-value {
-      color: var(--color-success);
-    }
-
-    .threshold-card.reject .threshold-value {
-      color: var(--color-warning);
-    }
-
-    .threshold-label {
-      font-size: 0.9rem;
-      color: var(--color-text-muted);
-    }
-
-    .threshold-examples {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .example-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .example-icon {
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .threshold-card.accept .example-icon {
-      color: var(--color-success);
-    }
-
-    .threshold-card.reject .example-icon {
-      color: var(--color-warning);
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-top: var(--space-xl);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       9. CE-PLANE (Panel 4)
-       ============================================ */
-    .plane-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .plane-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 450px;
-    }
-
-    .quadrant-legend {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-      margin-top: var(--space-lg);
-    }
-
-    .quadrant-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      font-size: 0.85rem;
-    }
-
-    .quadrant-color {
-      width: 16px;
-      height: 16px;
-      border-radius: var(--radius-sm);
-    }
-
-    .plane-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .quadrant-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid;
-    }
-
-    .quadrant-card.dominant { border-left-color: var(--color-success); }
-    .quadrant-card.dominated { border-left-color: #D32F2F; }
-    .quadrant-card.tradeoff-ne { border-left-color: var(--color-accent); }
-    .quadrant-card.tradeoff-sw { border-left-color: var(--color-primary); }
-
-    .quadrant-card h4 {
-      font-size: 0.9rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .quadrant-card.dominant h4 { color: var(--color-success); }
-    .quadrant-card.dominated h4 { color: #D32F2F; }
-    .quadrant-card.tradeoff-ne h4 { color: var(--color-accent); }
-    .quadrant-card.tradeoff-sw h4 { color: var(--color-primary); }
-
-    .quadrant-card p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    .slider-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .slider-container label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-    }
-
-    .slider-container input[type="range"] {
-      width: 100%;
-      margin-bottom: var(--space-sm);
-    }
-
-    .slider-value {
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-primary);
-    }
-
-    /* ============================================
-       10. KEY INSIGHT (Panel 5)
-       ============================================ */
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
+    .budget-bar-seg {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      margin-bottom: var(--space-xl);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
     }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
 
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
+    .bar-legend {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       11. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       12. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 240px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .program-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       13. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "The Cost-Effectiveness Ratio",
-  "description": "Learn how the Incremental Cost-Effectiveness Ratio (ICER) transforms 'Does it work?' into 'Is it worth it?' The ICER is the core metric of economic evaluation in health policy.",
+  "headline": "Multi-Year Cost-Effectiveness Models Spread Year-One Startup Costs Across Ongoing Health Gains",
+  "description": "Evaluate Incremental Cost-Effectiveness Ratios ($36,089/QALY operating, $37,712/QALY with startup) and Net Monetary Benefit (+$12.8M at $100K/QALY).",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -938,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -949,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How is the incremental cost-effectiveness ratio (ICER) calculated?",
+      "name": "What is the difference between a \"cost-effective\" program and a \"dominant (cost-saving)\" program?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The ICER divides the difference in cost between two programs by the difference in health effect, usually yielding a dollar-per-QALY figure that summarizes the additional cost of each extra unit of health gained."
+        "text": "A program is cost-effective when it improves health (ΔE > 0) at an added cost (ΔC > 0) whose ratio (ICER = ΔC / ΔE) stays below the value benchmark (such as $36,089 to $37,712/QALY vs. $100,000/QALY). A program is dominant (cost-saving) only when it both improves health (ΔE > 0) and cuts net spending (ΔC < 0)."
       }
     },
     {
       "@type": "Question",
-      "name": "How do you decide whether an ICER is cost-effective?",
+      "name": "Why do analysts report Net Monetary Benefit (NMB) alongside the ICER?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Compare the ICER to a willingness-to-pay threshold. If the cost per QALY is below the threshold, such as $50,000, the program represents good value; if it is above, the program is not considered cost-effective."
+        "text": "Because the ICER is a ratio (ΔC / ΔE), it does not show total program scale, and a negative ratio can mean either a cost-saving plan (ΔC < 0, ΔE > 0) or a worse plan (ΔC > 0, ΔE < 0). Net value (λ·ΔE − ΔC) is linear, additive, and clear across all cases."
       }
     },
     {
       "@type": "Question",
-      "name": "What does the cost-effectiveness plane show?",
+      "name": "How much does Year 1 startup training change the 5-year cost per QALY?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The plane plots incremental cost on one axis and incremental effect on the other. The quadrant a program falls in reveals whether it is dominant, dominated, or a tradeoff requiring a threshold to judge."
+        "text": "In Year 1 alone, startup and ramp-up costs raise the ratio to $48,202 per QALY ($1,930,000 for 40.04 QALYs). Spread across the full 5-year horizon (200.20 QALYs), adding $325,000 in startup moves the ratio from $36,089/QALY ($7,225,000 operating) to $37,712/QALY ($7,550,000 total), well below the $50,000/QALY benchmark."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -1000,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -1019,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -1035,822 +529,479 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Economic Evaluation</div>
-      <h1>The Cost-Effectiveness Ratio</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">The incremental cost-effectiveness ratio (ICER) is the core metric of economic evaluation. It is calculated as the difference in cost between two options divided by the difference in health effect, typically expressed as dollars per quality-adjusted life year (QALY). An ICER is judged against a willingness-to-pay (WTP) threshold: a program is considered cost-effective when its cost per QALY falls below the threshold and not cost-effective when it exceeds it. Plotting incremental cost against incremental effect on the cost-effectiveness plane shows whether an option dominates or is dominated by its comparator.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">A large effect size tells us a program works. But what is the effect size per dollar spent? The ICER (incremental cost-effectiveness ratio) answers this question and is the core metric of economic evaluation.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Calculating ICER</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Interpreting ICER</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">The CE Plane</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Resource Funding &amp; Economic Value
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Multi-Year Cost-Effectiveness Models Spread Year-One Startup Costs Across Ongoing Health Gains
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Scoring modeled county care teams across startup and ongoing years using cost per healthy year and net value.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        Judging a multi-year care team on Year 1 unit costs alone overstates the ongoing price of services that pay one-time training bills before steady health gains arrive. Across Santa Clara County's modeled <strong>5-year, 750-client-per-year CHW program,</strong> direct operations produce <strong>200.20 healthy life-years at $36,089 per healthy year</strong> and create <strong>+$12.80M in net value</strong> at the standard <strong>$100,000 benchmark.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Judging the team on Year 1 alone raises the unit cost to <strong>$48,202 per healthy year</strong> because <strong>$325,000 in startup costs</strong> lands before ongoing costs drop to <strong>$35,090.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Even with full startup included <strong>($7,550,000 total, or $37,712 per healthy year),</strong> the 5-year model clears the strict <strong>$50,000 benchmark (+$2.46M net value).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Cost per QALY &amp; Net Value Across 4 Accounting Horizons</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Comparing Year 1 launch, Years 2-5 ongoing care, 5-year operating totals, and 5-year full startup totals.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Comparison of Cost-Effectiveness Ratios and Net Monetary Benefits across Year 1, Years 2-5, 5-year operating, and 5-year full startup horizons.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                CEA &amp; NMB Metric
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Year 1 Ramp</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Year 1 Launch</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Years 2 to 5</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Ongoing Care</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">5-Yr Operating</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">5-Year Direct Run</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">5-Yr Total</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">5-Year With Startup</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Program Cost
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$1,930,000</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yr 1</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$1,405,000 / yr</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yrs 2-5</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$7,225,000</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr operating</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$7,550,000</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr w/ startup</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Health Gain
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">40.04 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yr 1</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">40.04 QALYs / yr</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yrs 2-5</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">200.20 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr total</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">200.20 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr total</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Ruler 1: ICER
+              </th>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$48,202 / QALY</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Yr 1</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 96%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$35,090 / QALY</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Yrs 2-5</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 70%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$36,089 / QALY</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">operating</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$37,712 / QALY</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">w/ startup</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 75%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                NMB at λ = $50,000 / QALY
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$72,021</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yr 1 net</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$597,021 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$2,785,106</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr operating</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$2,460,106</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr w/ startup</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                NMB at λ = $100,000 / QALY
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$2,074,043</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yr 1 net</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$2,599,043 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$12,795,213</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr operating</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$12,470,213</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr w/ startup</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                NMB at λ = $150,000 / QALY
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$4,076,064</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Yr 1 net</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$4,601,064 / yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$22,805,319</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr operating</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+$22,480,319</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5-yr w/ startup</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Rows marked with <strong class="text-slate-800">*</strong> apply published fee rates or trial parameters to observed baseline data. Open the notes below for full formulas and data sources.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Year 1 Launch.</strong> $2,500/Client + $55K Startup. <strong>Ongoing Care.</strong> $1,800/Client + $55K Startup. <strong>5-Year Direct Run.</strong> 3,750 Client-Years (Excl. Startup). <strong>5-Year With Startup.</strong> $7.225M Operating + $325K Startup.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A 5-Year Cohort Horizons ($36,089 Operating vs. $37,712 With Startup). Ruler 1: Cost per Healthy Year (ICER = ΔC / ΔE): <strong>$36,089 Oper. | $37,712 Total</strong>. Dividing 5-year direct operating cost (<strong>$7,225,000</strong>) by <strong>200.20 QALYs</strong> gives <strong>$36,089/QALY</strong>, while dividing full cost with startup (<strong>$7,550,000</strong>) by <strong>200.20 QALYs</strong> gives <strong>$37,712/QALY</strong>. Both sit well below the <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ICER</a> <strong>$50,000/QALY</strong> benchmark. Ruler 2: 5-Year Net Dollar Value (NMB = λ·ΔE − ΔC): <strong>+$12.80M at λ = $100K/QALY</strong>. Valuing <strong>200.20 QALYs</strong> in dollars (NMB = λ·ΔE − ΔC) gives a positive net gain at every U.S. benchmark: <strong>+$2.79M</strong> at &lambda; = $50K, <strong>+$12.80M</strong> at &lambda; = $100K, and <strong>+$22.81M</strong> at &lambda; = $150K (<strong>+$12.47M</strong> at $100K with startup).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Benchmark Math, Cost-Saving Terms &amp; Policy Rules</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Why analysts pair Net Monetary Benefit with cost ratios and separate cost-effective from cost-saving.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Comparison of ICER vs NMB math, cost-saving terms, benchmark sensitivity, and policy rules.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Choice
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Year 1 Launch
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Ongoing Care
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                5-Year Direct Run
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                5-Year With Startup
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                How ICER and NMB Behave
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Year 1 cost sits near $50K, giving +$72,021 net value.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cutting unit cost to $1,800 saves $525,000/yr and lowers ICER by $13,112.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Five-year operating net value scales from +$2.79M to +$22.81M.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding $325,000 startup lifts the 5-year ratio from $36,089 to $37,712/QALY.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cost-Effective vs. Cost-Saving
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A gross ICER of $48,202/QALY is cost-effective, not cost-saving.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The term "dominant" applies only when net ΔCost < 0 and ΔE > 0.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Counting modeled bed savings makes net cost -$418,330/yr.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                In the IMPaCT RCT, hospital savings returned $2.47 per $1 spent.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Judging a team only on Year 1 costs over-weights one-time training.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Setting ongoing contracts at $35,090/QALY keeps costs on track.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using only a $50K benchmark omits $10.01M in value at the $100K standard.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Spreading $325,000 startup over 5 years adds just $1,623/QALY to the 5-year ratio.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Recommended Policy Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Score Pilots Over a 3-to-5-Year Contract<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Spread Year 1 training over a multi-year contract.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Report Both Gross ICER and Net Bed Savings<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Show gross ICER beside net bed savings.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Rank County Programs by Net Value at $100K<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use 5-year net value to rank programs.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Compare Both Operating and Full-Startup Ledgers<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Report both $36,089/QALY and $37,712/QALY.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Exact 5-Year Horizon Math &amp; Trial Benchmarks</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Exact 5-Year Horizon Arithmetic (Mode A Scenario Assumptions):</strong> Under the illustrative cohort assumptions (750 clients/yr, +0.0275/yr weighted lift over 2 years at 3.0% discount), each cohort year yields <strong>40.0404252 QALYs/yr</strong> (<strong>200.202126 QALYs</strong> over 5 years, displayed as 40.04 and 200.20). Dividing <strong>$1,930,000</strong> (Year 1: 750 &times; $2,500 + $55,000 amortized startup) by 40.0404252 gives <strong>$48,202/QALY</strong>; dividing <strong>$1,405,000/yr</strong> (Years 2 to 5: 750 &times; $1,800 + $55,000 startup) by 40.0404252 gives <strong>$35,090/QALY</strong>. Over 5 years, dividing <strong>$7,225,000</strong> (operating excluding $325,000 total startup) by 200.202126 gives <strong>$36,089/QALY</strong>, and dividing <strong>$7,550,000</strong> ($1,930,000 + 4 &times; $1,405,000, or $7,225,000 + $325,000 startup) by 200.202126 gives <strong>$37,712/QALY</strong>.</p>
+          <p>&bull; <strong>Hospital Offset &amp; Trial Context:</strong> In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">IMPaCT randomized trial (Kangovi et al., 2020, Health Affairs)</a> and <a href="https://www.cdc.gov/diabetes/php/toolkits/chw.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC Community Health Worker Evidence Base</a>, acute-care savings offset program outlays ($2.47 returned per $1 in IMPaCT). In our Mode A scenario, applying an illustrative $1,823,330/yr hospital bed offset against $1,405,000/yr ongoing cost yields a net saving of -$418,330/yr (dominant).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Cost-Effective vs. Cost-Saving (Year 1 Launch).</strong> A gross ICER of $48,202/QALY (ΔC > 0, ΔE > 0) is cost-effective, not cost-saving. &middot; <strong>Cost-Effective vs. Cost-Saving (5-Year With Startup).</strong> In the IMPaCT RCT (Kangovi et al., 2020), hospital savings returned $2.47 per $1 spent. &middot; <strong>Recommended Policy Rule (Year 1 Launch).</strong> Spread Year 1 training ($2,500/client + startup) over a multi-year contract. &middot; <strong>Recommended Policy Rule (5-Year Direct Run).</strong> Use 5-year net value (+$12.80M operating, +$12.47M w/ startup) to rank programs. &middot; <strong>Recommended Policy Rule (5-Year With Startup).</strong> Report both $36,089/QALY (operating) and $37,712/QALY (with $325K startup).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare 5-Year Net Value Across Benchmarks (λ)</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Comparing modeled 5-year net value (operating and full startup) across three U.S. health value benchmarks.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare 5-Year Net Value Across Benchmarks (λ)">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Benchmark 1 · Strict</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">λ = $50,000 per QALY</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">5-Yr NMB = +$2,785,106 (+$2.46M w/ Startup)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Even at the strictest $50,000 benchmark, both the operating ($36,089/QALY) and full-startup ($37,712/QALY) ledgers give positive net value.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Benchmark 2 · U.S. Standard</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">λ = $100,000 per QALY</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">5-Yr NMB = +$12,795,213 (+$12.47M w/ Startup)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">At the standard U.S. benchmark, the 10-CHW team creates +$12.80 million in modeled 5-year operating net value (+$12.47M with startup).</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Benchmark 3 · Upper Bound</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">λ = $150,000 per QALY</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">5-Yr NMB = +$22,805,319 (+$22.48M w/ Startup)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">At the upper benchmark for high-need chronic care, modeled 5-year operating net value reaches +$22.81 million (+$22.48M with startup).</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Scenario Math &amp; Startup Amortization Across Benchmarks</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Net Value Formula (NMB = &lambda;&middot;&Delta;E &minus; &Delta;C):</strong> Over 5 years, the illustrative 10-CHW scenario produces <strong>200.202126 unrounded QALYs</strong> (5 &times; 40.0404252 QALYs/yr, displayed as 200.20) against <strong>$7,225,000</strong> in direct operating bills (<strong>$7,550,000</strong> with $325,000 total startup). Table 1 costs are gross outlays before Medi-Cal SPA 22-0001 billing or hospital bed offsets.</p>
+          <p>&bull; <strong>Unrounded 5-Year Benchmark Math:</strong> Computing 5-year NMB from unrounded QALYs (200.202126) and rounding to the nearest dollar gives: at &lambda; = $50,000/QALY, $10,010,106.30 minus $7,225,000 = <strong>+$2,785,106</strong> operating (minus $7,550,000 = <strong>+$2,460,106</strong> with startup); at &lambda; = $100,000/QALY, $20,020,212.60 minus $7,225,000 = <strong>+$12,795,213</strong> operating (<strong>+$12,470,213</strong> with startup); at &lambda; = $150,000/QALY, $30,030,318.90 minus $7,225,000 = <strong>+$22,805,319</strong> operating (<strong>+$22,480,319</strong> with startup).</p>
+          <p>&bull; <strong>Nearest-Dollar Rounding Rule Across Horizons:</strong> Each Table 1 cell is computed from unrounded QALYs (40.0404252/yr; 200.202126 over 5 years) and rounded independently to the nearest dollar. Because of nearest-dollar rounding, summing the rounded Year 1 cell and four rounded Years 2 to 5 cells (+$72,021 + 4 &times; $597,021 = +$2,460,105 at $50K; +$2,074,043 + 4 &times; $2,599,043 = +$12,470,215 at $100K; +$4,076,064 + 4 &times; $4,601,064 = +$22,480,320 at $150K) differs by $1 to $2 from the unrounded 5-year full-startup totals (+$2,460,106; +$12,470,213; +$22,480,319).</p>
+        </div>
+      </details>
+    </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Resource Funding &amp; Economic Value &middot; ICER, NMB &amp; Thresholds (Mode A CEA Horizons)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Santa Clara 5-Year CHW Value Scenario (Mode A):</strong> <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a> illustrative cohort scenario. Serving 750 clients per year over 5 years gives 200.20 discounted QALYs (40.04 QALYs/yr). Direct operating cost is $7,225,000 ($36,089/QALY), or $7,550,000 with $325,000 in startup ($37,712/QALY).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Startup vs. Ongoing Years (Mode A):</strong> In this illustrative scenario, Year 1 cost per healthy year is $48,202/QALY ($1,930,000 for 40.04 QALYs: $2,500/client + $55,000 amortized startup). It drops to $35,090/QALY in Years 2 to 5 ($1,405,000/yr for 40.04 QALYs/yr: $1,800/client + $55,000 startup).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Net Value &amp; Hospital Offset Benchmarks:</strong> <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ICER Valuation Benchmarks</a>. Five-year operating net value is +$2.79M at $50K/QALY, +$12.80M at $100K/QALY, and +$22.81M at $150K/QALY (+$2.46M, +$12.47M, and +$22.48M with full startup). In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">IMPaCT CHW RCT (Kangovi et al., 2020)</a>, acute-care savings yielded $2.47 per $1 invested.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Sanders et al. (2016) Second Panel on Cost-Effectiveness in Health and Medicine</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Neumann, Cohen &amp; Weinstein (2014), "Updating Cost-Effectiveness: The Curious Resilience of the $50,000-per-QALY Threshold," NEJM</a></li>
+              <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="https://www.cdc.gov/diabetes/php/toolkits/chw.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC Community Health Worker Evidence Base</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Net Dollar Value Pairs with the Cost Ratio in County Budgets</h3>
+            <p class="text-slate-800">When analysts report a cost ratio ($36,089 per QALY operating, or $37,712 per QALY with startup), two practical questions arise from county leaders. First, how do we know whether $36,089 to $37,712 per QALY is a good value? Second, how do we compare a small team with a low ratio against a larger program with a slightly higher ratio? Value benchmarks ($50,000, $100,000, and $150,000 per QALY) answer the first question. Net Monetary Benefit (NMB = λ·ΔE − ΔC) answers the second.</p>
+            <p class="text-slate-800">Valuing health gains in dollars at the $100,000 per QALY benchmark and subtracting program bills shows that a 10-CHW team creates +$12.80 million in operating net value over 5 years (+$12.47M with startup, and +$2.46M to +$2.79M even at the strict $50,000 benchmark). Pairing Year 1 startup tables with 5-year cumulative ledgers shows county boards that the program stays high-value across every U.S. threshold.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Cost-Effectiveness Model on Illustrative Cohort Assumptions):</strong> Program cost inputs ($2,500/client Year 1, $1,800/client ongoing, $55,000/yr amortized startup plus $50,000 Year 1 onboarding = $325,000 total startup; $1,930,000 Yr 1, $1,405,000/yr Yrs 2-5, $7,225,000 5-yr operating, $7,550,000 5-yr with startup), QALYs (40.0404252/yr, 200.202126 5-yr), hospital bed offset ($1,823,330/yr), ICERs ($48,202 Yr 1, $35,090 Yrs 2-5, $36,089 operating, $37,712 with startup), and net values are illustrative Mode A closed-form scenario calculations.</p>
+          <p><strong>Average vs. Incremental Scenario Comparison:</strong> Comparing the illustrative 10-CHW scenario ($7,550,000 with startup for 200.20 QALYs) against usual care gives an average ratio of $37,712/QALY ($36,089 operating). Compared against an illustrative smaller 5-to-6 CHW scenario ($3,115,606 for 112.11 QALYs = $27,790/QALY), the incremental step-up adds +$4,434,394 for +88.09 QALYs (ICER = $50,339/QALY), following the incremental framework in <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Sanders et al. (2016) Second Panel on Cost-Effectiveness in Health and Medicine</a>.</p>
+          <p><strong>Primary References &amp; Data Sources:</strong> See <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Institute for Clinical and Economic Review (ICER) Value Assessment Framework ($50K-$150K/QALY)</a> and <a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann, Cohen &amp; Weinstein (2014), "Updating Cost-Effectiveness: The Curious Resilience of the $50,000-per-QALY Threshold," NEJM</a>. We also use <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a> and the <a href="https://www.cdc.gov/diabetes/php/toolkits/chw.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC Community Health Worker Evidence Base</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What is the difference between a "cost-effective" program and a "dominant (cost-saving)" program?</dt>
+                <dd class="text-slate-700 mt-0.5">A program is cost-effective when it improves health (ΔE > 0) at an added cost (ΔC > 0) whose ratio (ICER = ΔC / ΔE) stays below the value benchmark (such as $36,089 to $37,712/QALY vs. $100,000/QALY). A program is dominant (cost-saving) only when it both improves health (ΔE > 0) and cuts net spending (ΔC < 0).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why do analysts report Net Monetary Benefit (NMB) alongside the ICER?</dt>
+                <dd class="text-slate-700 mt-0.5">Because the ICER is a ratio (ΔC / ΔE), it does not show total program scale, and a negative ratio can mean either a cost-saving plan (ΔC < 0, ΔE > 0) or a worse plan (ΔC > 0, ΔE < 0). Net value (λ·ΔE − ΔC) is linear, additive, and clear across all cases.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How much does Year 1 startup training change the 5-year cost per QALY?</dt>
+                <dd class="text-slate-700 mt-0.5">In Year 1 alone, startup and ramp-up costs raise the ratio to $48,202 per QALY ($1,930,000 for 40.04 QALYs). Spread across the full 5-year horizon (200.20 QALYs), adding $325,000 in startup moves the ratio from $36,089/QALY ($7,225,000 operating) to $37,712/QALY ($7,550,000 total), well below the $50,000/QALY benchmark.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/chw-health-outcomes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">CHW Program Impact & Acute-Care Cost Offsets</a></li>
+          <li class="my-2"><a href="/methods-lab/measuring-health-common-unit" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Measuring Health in QALYs & HHS 2025 VSL Tiers</a></li>
+          <li class="my-2"><a href="/methods-lab/sensitivity-analysis-cea" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Way Sensitivity Analysis in CEA & CBA</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            A county health department is choosing between two diabetes prevention programs. Both programs reduce diabetes incidence, but they differ in costs and effects. Which should they fund? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 style="margin-bottom: var(--space-lg);">Comparing Two Diabetes Prevention Programs</h3>
-            <table class="comparison-table">
-              <thead>
-                <tr>
-                  <th>Metric</th>
-                  <th>Standard Care</th>
-                  <th>Program A (Lifestyle)</th>
-                  <th>Program B (Medication)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="program-name">Annual Cost per Person</td>
-                  <td class="value-cell">$500</td>
-                  <td class="value-cell program-a">$2,800</td>
-                  <td class="value-cell program-b">$4,200</td>
-                </tr>
-                <tr>
-                  <td class="program-name">QALYs Gained (10 years)</td>
-                  <td class="value-cell">8.2</td>
-                  <td class="value-cell program-a">8.9</td>
-                  <td class="value-cell program-b">9.1</td>
-                </tr>
-                <tr>
-                  <td class="program-name">Diabetes Cases Prevented</td>
-                  <td class="value-cell">--</td>
-                  <td class="value-cell program-a">28 per 100</td>
-                  <td class="value-cell program-b">32 per 100</td>
-                </tr>
-                <tr>
-                  <td class="program-name">Program Components</td>
-                  <td class="value-cell" style="font-size: 0.9rem;">Routine monitoring</td>
-                  <td class="value-cell program-a" style="font-size: 0.9rem;">Diet, exercise, coaching</td>
-                  <td class="value-cell program-b" style="font-size: 0.9rem;">Metformin + monitoring</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div style="margin-top: var(--space-xl); padding: var(--space-md); background: var(--color-bg-alt); border-radius: var(--radius-md);">
-              <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
-                <strong>QALY (Quality-Adjusted Life Year):</strong> A measure that combines length of life with quality of life. One QALY equals one year of life in perfect health. A year lived with chronic illness might count as 0.7 QALYs.
-              </p>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>Program A vs Standard Care</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" style="color: var(--color-secondary);">+$2,300</div>
-                  <div class="stat-label">Added Cost</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" style="color: var(--color-secondary);">+0.7</div>
-                  <div class="stat-label">QALYs Gained</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Program B vs Standard Care</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" style="color: var(--color-accent);">+$3,700</div>
-                  <div class="stat-label">Added Cost</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" style="color: var(--color-accent);">+0.9</div>
-                  <div class="stat-label">QALYs Gained</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>The dilemma:</strong> Program B produces more health benefit than Program A. But Program B also costs more. Is the extra benefit worth the extra cost?
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How do we compare programs that differ in both costs and effects? We need a ratio that expresses value: the cost per unit of health gained.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: CALCULATING ICER
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Calculating the ICER</h2>
-          <p class="panel-intro">
-            The Incremental Cost-Effectiveness Ratio (ICER) answers a specific question: How much additional cost does it take to gain one additional unit of health (usually a QALY)?
-          </p>
-        </div>
-
-        <div class="icer-container">
-          <div class="formula-box">
-            <div class="formula-display">
-              <div class="formula-main">
-                ICER <span class="formula-equals">=</span>
-                <span class="formula-fraction">
-                  <span class="formula-numerator">Cost<sub>New</sub> - Cost<sub>Comparator</sub></span>
-                  <span class="formula-denominator">Effect<sub>New</sub> - Effect<sub>Comparator</sub></span>
-                </span>
-                <span class="formula-equals">=</span>
-                <span class="formula-fraction">
-                  <span class="formula-numerator">Incremental Cost</span>
-                  <span class="formula-denominator">Incremental Effect</span>
-                </span>
-              </div>
-            </div>
-
-            <h3 style="margin-bottom: var(--space-lg);">Program A vs Standard Care</h3>
-            <div class="calculation-steps">
-              <div class="calc-step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                  <div class="step-label">Incremental Cost</div>
-                  <div class="step-value">$2,800 - $500 = <strong>$2,300</strong></div>
-                </div>
-              </div>
-              <div class="calc-step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                  <div class="step-label">Incremental Effect (QALYs)</div>
-                  <div class="step-value">8.9 - 8.2 = <strong>0.7 QALYs</strong></div>
-                </div>
-              </div>
-              <div class="calc-step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                  <div class="step-label">ICER Calculation</div>
-                  <div class="step-value">$2,300 / 0.7 = <strong style="color: var(--color-secondary);">$3,286 per QALY</strong></div>
-                </div>
-              </div>
-            </div>
-
-            <div style="margin-top: var(--space-xl); padding-top: var(--space-xl); border-top: 1px solid var(--color-border);">
-              <h3 style="margin-bottom: var(--space-lg);">Program B vs Standard Care</h3>
-              <div class="calculation-steps">
-                <div class="calc-step">
-                  <div class="step-number">1</div>
-                  <div class="step-content">
-                    <div class="step-label">Incremental Cost</div>
-                    <div class="step-value">$4,200 - $500 = <strong>$3,700</strong></div>
-                  </div>
-                </div>
-                <div class="calc-step">
-                  <div class="step-number">2</div>
-                  <div class="step-content">
-                    <div class="step-label">Incremental Effect (QALYs)</div>
-                    <div class="step-value">9.1 - 8.2 = <strong>0.9 QALYs</strong></div>
-                  </div>
-                </div>
-                <div class="calc-step">
-                  <div class="step-number">3</div>
-                  <div class="step-content">
-                    <div class="step-label">ICER Calculation</div>
-                    <div class="step-value">$3,700 / 0.9 = <strong style="color: var(--color-accent);">$4,111 per QALY</strong></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <aside class="icer-sidebar">
-            <div class="icer-result-card" aria-live="polite">
-              <h4>Program A ICER</h4>
-              <div class="icer-value-large" style="color: #4DB6AC;">$3,286</div>
-              <div class="icer-unit">per QALY gained</div>
-            </div>
-
-            <div class="icer-result-card" aria-live="polite" style="background: linear-gradient(135deg, var(--color-accent) 0%, #E65100 100%);">
-              <h4>Program B ICER</h4>
-              <div class="icer-value-large">$4,111</div>
-              <div class="icer-unit">per QALY gained</div>
-            </div>
-
-            <div class="interpretation-card">
-              <h4>What Do These Numbers Mean?</h4>
-              <p>
-                Program A costs <strong>$3,286</strong> for each additional year of healthy life it produces compared to standard care.
-              </p>
-              <p style="margin-top: var(--space-md);">
-                Program B costs <strong>$4,111</strong> per QALY. It produces more health, but at a higher cost per unit of health.
-              </p>
-            </div>
-
-            <div class="observation-box">
-              <strong>Insight:</strong> Lower ICER means better value. Program A delivers health gains more efficiently than Program B.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> We know Program A has a lower ICER. But is $3,286 per QALY a good deal? How do decision-makers decide what's "worth it"?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: INTERPRETING ICER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Interpreting the ICER</h2>
-          <p class="panel-intro">
-            An ICER alone is meaningless without context. We need a benchmark: how much is society willing to pay for one additional year of healthy life? This is called the willingness-to-pay (WTP) threshold.
-          </p>
-        </div>
-
-        <div class="interpret-container">
-          <div class="threshold-card accept">
-            <h3>Cost-Effective</h3>
-            <div class="threshold-range">
-              <div class="threshold-value">ICER &lt; WTP Threshold</div>
-              <div class="threshold-label">The program delivers good value for money</div>
-            </div>
-            <div class="threshold-examples">
-              <div class="example-item">
-                <span class="example-icon">+</span>
-                <span>Program A at $3,286/QALY is cost-effective if WTP = $50,000</span>
-              </div>
-              <div class="example-item">
-                <span class="example-icon">+</span>
-                <span>Program B at $4,111/QALY is also cost-effective at WTP = $50,000</span>
-              </div>
-              <div class="example-item">
-                <span class="example-icon">+</span>
-                <span>Both programs represent reasonable value compared to what we typically pay for health</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="threshold-card reject">
-            <h3>Not Cost-Effective</h3>
-            <div class="threshold-range">
-              <div class="threshold-value">ICER &gt; WTP Threshold</div>
-              <div class="threshold-label">The program costs too much for the health it delivers</div>
-            </div>
-            <div class="threshold-examples">
-              <div class="example-item">
-                <span class="example-icon">!</span>
-                <span>A cancer drug at $500,000/QALY exceeds most thresholds</span>
-              </div>
-              <div class="example-item">
-                <span class="example-icon">!</span>
-                <span>Resources could produce more health elsewhere</span>
-              </div>
-              <div class="example-item">
-                <span class="example-icon">!</span>
-                <span>Rejection doesn't mean the drug doesn't work; it means the price is too high</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="definition-card">
-          <h3>Common WTP Thresholds</h3>
-          <p>Different countries and organizations use different thresholds. These reflect societal values and budget constraints.</p>
-          <ul style="margin-top: var(--space-md);">
-            <li><strong>United States:</strong> $50,000 - $150,000 per QALY (informal, varies by context)</li>
-            <li><strong>United Kingdom (NICE):</strong> ~$30,000 - $45,000 per QALY (explicit threshold)</li>
-            <li><strong>World Health Organization:</strong> 1-3x GDP per capita as a reference point</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">
-            <strong>Important:</strong> These thresholds represent opportunity cost. Money spent on one program cannot be spent on another. A threshold of $50,000/QALY implies we could typically produce one QALY for $50,000 through other health investments.
-          </p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> The ICER gives us a number, but real-world decisions are more complex. How do we visualize the full landscape of cost-effectiveness trade-offs?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: THE CE PLANE
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">The Cost-Effectiveness Plane</h2>
-          <p class="panel-intro">
-            The CE plane plots incremental costs (y-axis) against incremental effects (x-axis). This visualization reveals four distinct scenarios, each requiring different decision logic.
-          </p>
-        </div>
-
-        <div class="plane-container">
-          <div class="chart-wrapper">
-            <svg id="ce-plane-chart" class="chart-svg" role="img" aria-label="Cost-effectiveness plane showing incremental costs versus incremental effects with four quadrants"></svg>
-
-            <div class="quadrant-legend">
-              <div class="quadrant-item">
-                <div class="quadrant-color" style="background: var(--color-success);"></div>
-                <span>Southeast: Dominant (more effect, less cost)</span>
-              </div>
-              <div class="quadrant-item">
-                <div class="quadrant-color" style="background: #D32F2F;"></div>
-                <span>Northwest: Dominated (less effect, more cost)</span>
-              </div>
-              <div class="quadrant-item">
-                <div class="quadrant-color" style="background: var(--color-accent);"></div>
-                <span>Northeast: Trade-off (more effect, more cost)</span>
-              </div>
-              <div class="quadrant-item">
-                <div class="quadrant-color" style="background: var(--color-primary);"></div>
-                <span>Southwest: Trade-off (less effect, less cost)</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="plane-sidebar">
-            <div class="slider-container">
-              <label for="wtp-slider">Willingness-to-Pay Threshold</label>
-              <input type="range" id="wtp-slider" min="10000" max="200000" value="50000" step="5000" aria-label="Adjust willingness-to-pay threshold">
-              <div class="slider-value" aria-live="polite" aria-atomic="true">$<span id="wtp-value">50,000</span> per QALY</div>
-            </div>
-
-            <div class="quadrant-card dominant">
-              <h4>Southeast Quadrant</h4>
-              <p>Always adopt. More effective AND less costly than comparator. This is rare in practice.</p>
-            </div>
-
-            <div class="quadrant-card dominated">
-              <h4>Northwest Quadrant</h4>
-              <p>Always reject. Less effective AND more costly. No reasonable scenario favors adoption.</p>
-            </div>
-
-            <div class="quadrant-card tradeoff-ne">
-              <h4>Northeast Quadrant</h4>
-              <p>Most common scenario. Adopt if ICER is below your WTP threshold (the slope of the line).</p>
-            </div>
-
-            <div class="quadrant-card tradeoff-sw">
-              <h4>Southwest Quadrant</h4>
-              <p>Less common. Adopt if savings justify the loss in effect. Relevant for cost-saving alternatives.</p>
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What are the key lessons? How does the ICER transform the way economists think about program effectiveness?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            The ICER transforms program evaluation from "Does it work?" to "Is it worth it?" This shift recognizes that health budgets are finite and every dollar has an opportunity cost.
-          </p>
-        </div>
-
-        <div class="dag-wrapper">
-          <img
-            src="/methods-lab/cost-effectiveness-ratio/assets/cost-effectiveness-ratio-dag.png"
-            alt="Conceptual diagram showing how the ICER compares incremental costs to incremental effects, with the WTP threshold determining adoption decisions"
-            class="dag-image"
-          >
-          <p class="dag-caption">The ICER translates clinical effectiveness into economic value by expressing health gains in terms of the resources required to achieve them.</p>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Questions Economists Ask That Others Might Not</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Incremental thinking:</strong> What is the additional benefit of this intervention compared to the next best alternative?</div>
-            <div class="concept-item"><strong>Opportunity cost:</strong> What health gains are we giving up by spending money here instead of elsewhere?</div>
-            <div class="concept-item"><strong>Value for money:</strong> Is this the most efficient way to produce health improvement?</div>
-            <div class="concept-item"><strong>Threshold thinking:</strong> At what price does this intervention stop being worthwhile?</div>
-            <div class="concept-item"><strong>Budget impact:</strong> Can we afford this at scale, even if the ICER is favorable?</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Effectiveness is not the same as value.</strong> A program can be highly effective yet not cost-effective if it consumes resources that could produce more health elsewhere. The ICER forces us to think in terms of health produced per dollar spent, not just health produced. This is what economists mean by efficiency: maximizing total health outcomes within budget constraints. <strong>Every funding decision is also a decision not to fund something else.</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Value for Money track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/comparator-choice" style="color:#0041A5;font-weight:600;">Choosing the Comparator</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/decision-thresholds" style="color:#0041A5;font-weight:600;">Decision Thresholds</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/comparing-two-programs" style="color:#0041A5;font-weight:600;">Case Study: Comparing Programs</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Sanders GD, et al. Recommendations for Conduct, Methodological Practices, and Reporting of Cost-Effectiveness Analyses: Second Panel on Cost-Effectiveness in Health and Medicine. JAMA. 2016;316(10):1093-1103. <a href="https://pubmed.ncbi.nlm.nih.gov/27623463/" target="_blank" rel="noopener">pubmed.ncbi.nlm.nih.gov</a></li>
-            <li>National Institute for Health and Care Excellence. NICE Health Technology Evaluations: The Manual (PMG36). <a href="https://www.nice.org.uk/process/pmg36/chapter/introduction-to-health-technology-evaluation" target="_blank" rel="noopener">nice.org.uk</a></li>
-            <li>Institute for Clinical and Economic Review. Value Assessment Framework. <a href="https://icer.org/our-approach/methods-process/value-assessment-framework/" target="_blank" rel="noopener">icer.org</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual program costs or outcomes.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA FOR CE PLANE
-       ============================================ */
-    const programs = [
-      { name: 'Program A (Lifestyle)', deltaCost: 2300, deltaQALY: 0.7, color: '#0D9488' },
-      { name: 'Program B (Medication)', deltaCost: 3700, deltaQALY: 0.9, color: '#F9A825' },
-      { name: 'Program C (Intensive)', deltaCost: 8500, deltaQALY: 1.2, color: '#1565C0' },
-      { name: 'Program D (Combo)', deltaCost: 12000, deltaQALY: 1.1, color: '#7B1FA2' },
-      { name: 'Program E (Budget)', deltaCost: -500, deltaQALY: 0.3, color: '#00796B' },
-      { name: 'Program F (Failed)', deltaCost: 4000, deltaQALY: -0.2, color: '#D32F2F' }
-    ];
-
-    /* ============================================
-       2. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let cePlaneInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render CE plane when panel 4 becomes visible
-        if (panelNum === '4') {
-          setTimeout(() => {
-            if (!cePlaneInitialized) {
-              renderCEPlane();
-              cePlaneInitialized = true;
-            } else {
-              renderCEPlane();
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       3. CE PLANE CHART
-       ============================================ */
-    let currentWTP = 50000;
-
-    function renderCEPlane() {
-      const svg = document.getElementById('ce-plane-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 450;
-      const margin = { top: 40, right: 40, bottom: 70, left: 80 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      // Scale ranges
-      const xMin = -0.5, xMax = 1.5;
-      const yMin = -3000, yMax = 15000;
-
-      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Background quadrants
-      const quadrants = [
-        { x1: xMin, x2: 0, y1: 0, y2: yMax, fill: 'rgba(211, 47, 47, 0.08)' },  // NW - dominated
-        { x1: 0, x2: xMax, y1: 0, y2: yMax, fill: 'rgba(249, 168, 37, 0.08)' }, // NE - tradeoff
-        { x1: xMin, x2: 0, y1: yMin, y2: 0, fill: 'rgba(0, 65, 165, 0.08)' },   // SW - tradeoff
-        { x1: 0, x2: xMax, y1: yMin, y2: 0, fill: 'rgba(46, 125, 50, 0.08)' }   // SE - dominant
-      ];
-
-      quadrants.forEach(q => {
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', xScale(q.x1));
-        rect.setAttribute('y', yScale(q.y2));
-        rect.setAttribute('width', xScale(q.x2) - xScale(q.x1));
-        rect.setAttribute('height', yScale(q.y1) - yScale(q.y2));
-        rect.setAttribute('fill', q.fill);
-        svg.appendChild(rect);
-      });
-
-      // Axes
-      // X-axis (horizontal at y=0)
-      const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxisLine.setAttribute('x1', margin.left);
-      xAxisLine.setAttribute('x2', width - margin.right);
-      xAxisLine.setAttribute('y1', yScale(0));
-      xAxisLine.setAttribute('y2', yScale(0));
-      xAxisLine.setAttribute('stroke', 'var(--color-text)');
-      xAxisLine.setAttribute('stroke-width', '2');
-      svg.appendChild(xAxisLine);
-
-      // Y-axis (vertical at x=0)
-      const yAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxisLine.setAttribute('x1', xScale(0));
-      yAxisLine.setAttribute('x2', xScale(0));
-      yAxisLine.setAttribute('y1', margin.top);
-      yAxisLine.setAttribute('y2', height - margin.bottom);
-      yAxisLine.setAttribute('stroke', 'var(--color-text)');
-      yAxisLine.setAttribute('stroke-width', '2');
-      svg.appendChild(yAxisLine);
-
-      // Grid lines
-      for (let x = -0.5; x <= 1.5; x += 0.5) {
-        if (x !== 0) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', xScale(x));
-          line.setAttribute('x2', xScale(x));
-          line.setAttribute('y1', margin.top);
-          line.setAttribute('y2', height - margin.bottom);
-          line.setAttribute('stroke', 'var(--color-border-light)');
-          line.setAttribute('stroke-dasharray', '3,3');
-          svg.appendChild(line);
-        }
-
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x.toFixed(1);
-        svg.appendChild(tick);
-      }
-
-      for (let y = -2000; y <= 14000; y += 4000) {
-        if (y !== 0) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', margin.left);
-          line.setAttribute('x2', width - margin.right);
-          line.setAttribute('y1', yScale(y));
-          line.setAttribute('y2', yScale(y));
-          line.setAttribute('stroke', 'var(--color-border-light)');
-          line.setAttribute('stroke-dasharray', '3,3');
-          svg.appendChild(line);
-        }
-
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 10);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y >= 0 ? `$${(y/1000).toFixed(0)}k` : `-$${Math.abs(y/1000).toFixed(0)}k`;
-        svg.appendChild(tick);
-      }
-
-      // WTP threshold line (slope = WTP)
-      const wtpX1 = 0;
-      const wtpY1 = 0;
-      const wtpX2 = xMax;
-      const wtpY2 = currentWTP * xMax;
-
-      const wtpLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      wtpLine.setAttribute('x1', xScale(wtpX1));
-      wtpLine.setAttribute('y1', yScale(wtpY1));
-      wtpLine.setAttribute('x2', xScale(wtpX2));
-      wtpLine.setAttribute('y2', yScale(Math.min(wtpY2, yMax)));
-      wtpLine.setAttribute('stroke', 'var(--color-primary)');
-      wtpLine.setAttribute('stroke-width', '2');
-      wtpLine.setAttribute('stroke-dasharray', '8,4');
-      svg.appendChild(wtpLine);
-
-      // WTP label
-      const wtpLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      wtpLabel.setAttribute('x', xScale(1.2));
-      wtpLabel.setAttribute('y', yScale(Math.min(currentWTP * 1.2, yMax - 1500)));
-      wtpLabel.setAttribute('font-size', '11');
-      wtpLabel.setAttribute('fill', 'var(--color-primary)');
-      wtpLabel.textContent = `WTP = $${(currentWTP/1000).toFixed(0)}k/QALY`;
-      svg.appendChild(wtpLabel);
-
-      // Origin point
-      const origin = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      origin.setAttribute('cx', xScale(0));
-      origin.setAttribute('cy', yScale(0));
-      origin.setAttribute('r', 6);
-      origin.setAttribute('fill', 'white');
-      origin.setAttribute('stroke', 'var(--color-text)');
-      origin.setAttribute('stroke-width', '2');
-      svg.appendChild(origin);
-
-      // Data points
-      programs.forEach(p => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(p.deltaQALY));
-        circle.setAttribute('cy', yScale(p.deltaCost));
-        circle.setAttribute('r', 10);
-        circle.setAttribute('fill', p.color);
-        circle.setAttribute('stroke', 'white');
-        circle.setAttribute('stroke-width', '2');
-        circle.setAttribute('style', 'cursor: pointer;');
-
-        // Determine if cost-effective
-        const icer = p.deltaQALY > 0 ? p.deltaCost / p.deltaQALY : Infinity;
-        const isCE = p.deltaQALY > 0 && (p.deltaCost <= 0 || icer <= currentWTP);
-
-        circle.addEventListener('mouseenter', (e) => showProgramTooltip(e, p, icer, isCE));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-
-        // Label
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', xScale(p.deltaQALY) + 14);
-        label.setAttribute('y', yScale(p.deltaCost) + 4);
-        label.setAttribute('font-size', '10');
-        label.setAttribute('fill', 'var(--color-text-secondary)');
-        label.textContent = p.name.split(' ')[1];
-        svg.appendChild(label);
-      });
-
-      // Axis labels
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 15);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '13');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Incremental QALYs (vs Standard Care)';
-      svg.appendChild(xLabel);
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 20);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '13');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 20, ${height / 2})`);
-      yLabel.textContent = 'Incremental Cost ($)';
-      svg.appendChild(yLabel);
-
-      // Quadrant labels
-      const quadrantLabels = [
-        { x: 0.75, y: 10000, text: 'NE: Trade-off', color: 'var(--color-accent)' },
-        { x: -0.25, y: 10000, text: 'NW: Dominated', color: '#D32F2F' },
-        { x: 0.75, y: -1500, text: 'SE: Dominant', color: 'var(--color-success)' },
-        { x: -0.25, y: -1500, text: 'SW: Trade-off', color: 'var(--color-primary)' }
-      ];
-
-      quadrantLabels.forEach(q => {
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', xScale(q.x));
-        label.setAttribute('y', yScale(q.y));
-        label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('font-size', '11');
-        label.setAttribute('font-weight', '600');
-        label.setAttribute('fill', q.color);
-        label.setAttribute('opacity', '0.7');
-        label.textContent = q.text;
-        svg.appendChild(label);
-      });
-    }
-
-    /* ============================================
-       4. TOOLTIP
-       ============================================ */
-    function showProgramTooltip(event, program, icer, isCE) {
-      const tooltip = document.getElementById('tooltip');
-
-      let icerText = '';
-      if (program.deltaQALY <= 0) {
-        icerText = 'N/A (no QALY gain)';
-      } else if (program.deltaCost <= 0) {
-        icerText = 'Dominant (cost-saving)';
-      } else {
-        icerText = `$${Math.round(icer).toLocaleString()}/QALY`;
-      }
-
-      const status = isCE ? '<span style="color: #2E7D32;">Cost-effective</span>' : '<span style="color: #D32F2F;">Not cost-effective</span>';
-
-      tooltip.innerHTML = `
-        <div class="program-name">${program.name}</div>
-        <div class="metric">Incremental Cost: $${program.deltaCost.toLocaleString()}</div>
-        <div class="metric">Incremental QALYs: ${program.deltaQALY.toFixed(2)}</div>
-        <div class="metric">ICER: ${icerText}</div>
-        <div class="metric" style="margin-top: 4px;">${status}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       5. WTP SLIDER
-       ============================================ */
-    const wtpSlider = document.getElementById('wtp-slider');
-    const wtpValueDisplay = document.getElementById('wtp-value');
-
-    if (wtpSlider) {
-      wtpSlider.addEventListener('input', () => {
-        currentWTP = parseInt(wtpSlider.value);
-        wtpValueDisplay.textContent = currentWTP.toLocaleString();
-        if (cePlaneInitialized) {
-          renderCEPlane();
-        }
-      });
-    }
-
-    /* ============================================
-       6. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initial render if panel 4 is active (unlikely on load)
-      if (document.getElementById('panel-4').classList.contains('active')) {
-        renderCEPlane();
-        cePlaneInitialized = true;
-      }
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-4').classList.contains('active') && cePlaneInitialized) {
-            renderCEPlane();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

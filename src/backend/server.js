@@ -35,34 +35,65 @@ app.use((req, res, next) => {
     return next();
   }
 
+  const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+
+  // Consolidated Methods Lab syllabus & echo duplicates -> single-hop 301 to canonical module
+  // Checked before generic .html / trailing-slash redirects so /methods-lab/<old>/ is 1 hop
+  const consolidatedLabRedirects = {
+    'counterfactual-basics': '/methods-lab/before-after-trap',
+    'control-groups-not-enough': '/methods-lab/selection-into-treatment',
+    'threat-maturation-trends': '/methods-lab/before-after-trap',
+    'threat-history-events': '/methods-lab/before-after-trap',
+    'threat-history-maturation': '/methods-lab/before-after-trap',
+    'correlation-causation-interactive': '/methods-lab/collider-bias',
+    'threat-confounding-selection': '/methods-lab/collider-bias',
+    'why-it-works-isnt-enough': '/methods-lab/cost-effectiveness-ratio',
+    'comparator-choice': '/methods-lab/cost-effectiveness-ratio',
+    'decision-thresholds': '/methods-lab/cost-effectiveness-ratio',
+    'cea-uncertain-effects': '/methods-lab/sensitivity-analysis-cea',
+    'regression-tables-confounding': '/methods-lab/observational-to-experimental',
+    'confounding-assessment-checklist': '/methods-lab/reverse-causation-feedback',
+    'comparing-two-programs': '/methods-lab/chw-health-outcomes'
+  };
+  const normalizedPath = urlPath.replace(/\/$/, '').replace(/(?:\/index)?\.html$/i, '') || '/';
+  // Redirect /case-studies and /case-studies/<slug> to /methods-lab and /methods-lab/<slug>
+  if (normalizedPath === '/case-studies') {
+    return res.redirect(301, '/methods-lab' + qs);
+  }
+  if (normalizedPath.startsWith('/case-studies/')) {
+    return res.redirect(301, '/methods-lab/' + normalizedPath.slice('/case-studies/'.length) + qs);
+  }
+  const maybeRetiredSlug = normalizedPath.startsWith('/methods-lab/')
+    ? normalizedPath.slice('/methods-lab/'.length)
+    : normalizedPath.slice(1);
+  if (consolidatedLabRedirects[maybeRetiredSlug]) {
+    return res.redirect(301, consolidatedLabRedirects[maybeRetiredSlug] + qs);
+  }
+
   // Redirect .html URLs to clean URLs (301 for SEO)
   if (urlPath.endsWith('.html')) {
     const cleanUrl = urlPath.slice(0, -5); // Remove .html
     const redirectTo = cleanUrl === '/index' ? '/' : cleanUrl;
-    return res.redirect(301, redirectTo + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
+    return res.redirect(301, redirectTo + qs);
   }
 
   // Redirect trailing slashes to non-trailing (except root)
   if (urlPath.length > 1 && urlPath.endsWith('/')) {
     const cleanUrl = urlPath.slice(0, -1); // Remove trailing slash
-    return res.redirect(301, cleanUrl + (req.url.includes('?') ? '?' + req.url.split('?')[1] : ''));
+    return res.redirect(301, cleanUrl + qs);
   }
 
-  // Redirect broken lab URLs (e.g., /selection-into-treatment -> /methods-lab/selection-into-treatment)
-  // This handles old bookmarks, cached links, and incorrectly shared URLs
+  // Redirect bare lab URLs (e.g., /selection-into-treatment -> /methods-lab/selection-into-treatment)
   const labSlugs = [
-    'before-after-trap', 'budget-impact', 'cea-uncertain-effects', 'chw-health-outcomes',
-    'classifying-causal-mechanisms', 'collider-bias', 'comparator-choice', 'comparing-two-programs',
-    'confounding-assessment-checklist', 'control-groups-not-enough', 'correlation-causation-interactive',
-    'cost-effectiveness-ratio', 'counterfactual-basics', 'decision-thresholds', 'food-affordability-tradeoffs',
+    'before-after-trap', 'budget-impact', 'chw-health-outcomes',
+    'classifying-causal-mechanisms', 'collider-bias',
+    'cost-effectiveness-ratio', 'food-affordability-tradeoffs',
     'food-insecurity-diabetes', 'geographic-variables', 'identical-data-opposite-policies', 'measurement-error-claims',
     'measuring-health-common-unit', 'medicaid-expansion', 'observational-to-experimental',
-    'p-hacking-multiple-testing', 'parallel-trends-power', 'regression-tables-confounding',
+    'p-hacking-multiple-testing', 'parallel-trends-power',
     'reverse-causation-feedback', 'selection-into-treatment', 'sensitivity-analysis-cea',
-    'study-design-ladder', 'threat-confounding-selection', 'threat-history-events',
-    'threat-history-maturation', 'threat-history-solutions', 'threat-maturation-solutions',
-    'threat-maturation-trends', 'threat-measurement-instrumentation', 'threat-regression-to-mean',
-    'why-it-works-isnt-enough'
+    'study-design-ladder', 'threat-history-solutions', 'threat-maturation-solutions',
+    'threat-measurement-instrumentation', 'threat-regression-to-mean'
   ];
   const pathWithoutSlash = urlPath.replace(/\/$/, '');
   const slug = pathWithoutSlash.slice(1); // Remove leading /
@@ -88,7 +119,6 @@ app.use((req, res, next) => {
   };
   const legacyKey = urlPath.replace(/\/$/, '') || '/';
   if (legacyRedirects[legacyKey]) {
-    const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
     return res.redirect(301, legacyRedirects[legacyKey] + qs);
   }
 
@@ -558,7 +588,7 @@ app.post('/api/membership/apply', async (req, res) => {
           <p>While we review your professional membership application, you already have Community Member access! Check your email for a separate message to set up your password.</p>
           <p>With your Community Member account, you can:</p>
           <ul>
-            <li>Access community-level Methods Lab tutorials</li>
+            <li>Access open California public health case studies</li>
             <li>Attend public webinars</li>
             <li>Receive white paper and resource announcements</li>
             <li>Get monthly event updates</li>
@@ -720,13 +750,13 @@ app.post('/api/membership/community', async (req, res) => {
           <p>Dear ${name.split(' ')[0]},</p>
           <p>Thank you for joining the CAPHE community! You now have access to:</p>
           <ul>
-            <li>Community-level Methods Lab tutorials</li>
+            <li>Open-access California public health case studies</li>
             <li>Public webinar invitations</li>
             <li>White paper and resource announcements</li>
             <li>Monthly event updates</li>
           </ul>
           <p>Check your inbox for a separate email to set up your account password and log in.</p>
-          <p>Explore our <a href="https://www.caphegroup.org/methods-lab">Methods Lab</a> to start learning health economics methods!</p>
+          <p>Explore our <a href="https://www.caphegroup.org/methods-lab">California Public Health Case Studies</a>!</p>
           <p>Best regards,<br>The CAPHE Team</p>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
           <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>
@@ -930,7 +960,7 @@ app.post('/api/admin/approve', verifyAdmin, async (req, res) => {
           <ul>
             <li>Peer Review Sessions - present your work and get feedback</li>
             <li>Working Groups - collaborate on research projects</li>
-            <li>Webinars and Methods Labs for professional members</li>
+            <li>Webinars and working groups for professional members</li>
           </ul>
           <p>We also host monthly meetings on the last Wednesday of each month from 11 am to 12 pm. You will find a "Join Call" button on your member landing page to access these sessions.</p>
           <p>If you have questions about getting connected to the working groups or anything else, feel free to reach out. We're happy to set up a time to chat and help you get started.</p>

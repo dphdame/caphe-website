@@ -3,826 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Geography: Proxy vs. Causal Mechanism | CAPHE</title>
+  <meta name="description" content="Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/geographic-variables">
+  <meta property="og:title" content="Geography: Proxy vs. Causal Mechanism | CAPHE">
+  <meta property="og:description" content="Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/geographic-variables">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Geographic Variables: Proxy or Mechanism? | CAPHE</title>
-  <meta name="description" content="Explore when geographic variation helps identify causal effects versus when it introduces bias. Learn to distinguish place-based treatment from place-based confounding.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/geographic-variables">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
-    }
-
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
-    }
-
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. DATA PANEL
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       7. DAG / EXPLANATION PANELS
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.treatment {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.confounder {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. DEFINITION CARD (KEY CONCEPT)
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       9. INTERACTIVE CONTROLS
-       ============================================ */
-    .toggle-section {
-      margin-bottom: var(--space-xl);
-    }
-
-    .toggle-controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
-      flex-wrap: wrap;
-    }
-
-    .toggle-label {
-      font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    .toggle-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .toggle-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .scenario-description {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-bottom: var(--space-lg);
-    }
-
-    .scenario-description h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-    }
-
-    .scenario-description p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    /* ============================================
-       10. COMPARISON GRID
-       ============================================ */
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .comparison-grid { grid-template-columns: 1fr; }
-    }
-
-    .comparison-box {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .comparison-box.treatment {
-      border-top: 4px solid var(--color-secondary);
-    }
-
-    .comparison-box.confounder {
-      border-top: 4px solid var(--color-accent);
-    }
-
-    .comparison-box h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .comparison-box.treatment h3 {
-      color: var(--color-secondary);
-    }
-
-    .comparison-box.confounder h3 {
-      color: var(--color-warning);
-    }
-
-    .example-list {
-      list-style: none;
-      margin-top: var(--space-md);
-    }
-
-    .example-list li {
-      padding: var(--space-sm) 0;
-      padding-left: var(--space-lg);
-      border-left: 2px solid var(--color-border-light);
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .example-list li strong {
-      color: var(--color-text);
-      display: block;
-      margin-bottom: var(--space-xs);
-    }
-
-    /* ============================================
-       11. WHEN-TO-USE SECTION
-       ============================================ */
-    .checklist-section {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .checklist-section h3 {
-      margin-bottom: var(--space-lg);
-    }
-
-    .checklist-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .checklist-grid { grid-template-columns: 1fr; }
-    }
-
-    .checklist-column h4 {
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .checklist-column.use h4 {
-      color: var(--color-success);
-    }
-
-    .checklist-column.avoid h4 {
-      color: var(--color-caution);
-    }
-
-    .checklist {
-      list-style: none;
-    }
-
-    .checklist li {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      padding: var(--space-sm) 0;
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .checklist li::before {
-      flex-shrink: 0;
-      font-weight: bold;
-    }
-
-    .checklist-column.use .checklist li::before {
-      content: "OK";
-      color: var(--color-success);
-    }
-
-    .checklist-column.avoid .checklist li::before {
-      content: "!!";
-      color: var(--color-caution);
-    }
-
-    /* ============================================
-       12. KEY INSIGHT PANEL
-       ============================================ */
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    /* ============================================
-       13. BRIDGING BOX
-       ============================================ */
-    .bridging-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-box p:first-child {
-      font-size: 1.05rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .bridging-box p:last-child {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    /* ============================================
-       14. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       15. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       16. UTILITIES
-       ============================================ */
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
     .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      background: #F8FAFC;
+    }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
     }
 
-    .hidden { display: none; }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Geographic Variables: Proxy or Mechanism?",
-  "description": "Explore when geographic variation helps identify causal effects versus when it introduces bias. Learn to distinguish place-based treatment from place-based confounding.",
+  "headline": "Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance",
+  "description": "Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -830,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -841,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "When should I use county fixed effects?",
+      "name": "Why did store distance show a negative single-factor R² of 4.1% if its unique R² gain after accounting for poverty is +0.003 pp (p = 0.827)?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Use fixed effects when geography is a confounder, for example when studying what happens after a county adopts a policy. Comparing the same county before and after blocks back-door paths from stable local characteristics. Avoid them when location is the treatment itself."
+        "text": "That pattern reflects spatial sorting across Santa Clara County's 408 tracts. Exactly 26 of the 27 tracts located more than 1.0 mile from a SNAP store are lower-poverty foothill areas (under 20% poverty). In a single-factor regression on the composite index, distance acts as a proxy for foothill affluence. Once poverty rate is included, distance adds +0.003 pp of unique R² gain (0.009% partial R², p = 0.827)."
       }
     },
     {
       "@type": "Question",
-      "name": "How is geography a treatment versus a confounder?",
+      "name": "What is the difference between semi-partial ΔR² (58.1 pp) and partial R² (60.6%), and what does the composite index measure?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Geography is the treatment when the question is the effect of living somewhere with feature X, such as cleaner air. It is a confounder when location proxies for wealth or demographics that drive both policy adoption and outcomes through a back-door path."
+        "text": "The outcome is a 0-1 composite index weighted 30% poverty, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle households, and 10% inverse density. Semi-partial ΔR² (58.06 pp, labeled Partial R² in the saved summary CSV) subtracts distance-only R² (4.11%) from full-model R² (62.17%). True partial R² divides that 58.06 pp gain by the 95.89% variance left unexplained by distance alone, giving 60.55% (60.6%)."
       }
     },
     {
       "@type": "Question",
-      "name": "Why can fixed effects absorb a real treatment effect?",
+      "name": "Why was only 1 of 408 Santa Clara County tracts flagged as a USDA food desert compared with 30 of 225 tracts (13.3%) in Fresno County?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "If the causal variation you want to study is the place-based difference itself, fixed effects remove all between-place variation, eliminating exactly the contrast that identifies the effect."
+        "text": "The USDA urban food-desert rule requires BOTH >=20% tract poverty AND >1.0 mile to a supermarket (>10 miles in rural tracts). Santa Clara County has 514 verified SNAP stores (mean distance 0.573 miles, 93.4% of tracts within 1.0 mile), so only Mountain View Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) crosses both lines. Fresno County spans wider rural and agricultural tracts (mean 1.45 miles, max 15.53 miles), where 30 of 225 tracts (13.3%) cross both thresholds."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -892,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -911,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -927,769 +529,453 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab - Advanced Methods</div>
-      <h1>Geographic Variables: Proxy or Mechanism?</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Geographic variables can serve as either the treatment of interest or a confounder, and the distinction governs whether fixed effects help or harm an analysis. When location itself is the treatment, such as living in an area with cleaner air or better hospital access, county fixed effects absorb the very effect being measured. When location instead proxies for wealth, demographics, or built environment along a back-door path, fixed effects block that path by comparing changes within units over time. There is no universally correct specification; the right choice depends on the causal question and model.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">County fixed effects can absorb confounding. But they can also absorb the treatment effect you want to measure. The question: Is geography the treatment or the confounder?</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Geography as Treatment</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Geography as Confounder</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">When to Use Fixed Effects</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare local poverty and SNAP rates with store distance across city, suburb, and rural census tracts.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When targeting food vans by distance to the nearest grocery store alone, a suburban team sends routes to car-owning foothill tracts while skipping low-pay renter areas near stores. Across <strong>408 Santa Clara County tracts,</strong> household poverty accounts for <strong>62.2%</strong> of the 5-part food index (a <strong>58.1 pp unique R&sup2; gain,</strong> vs. <strong>0.003 pp</strong> from distance, <em>p</em> = 0.827) because poverty and SNAP hold 55% of index weight and <strong>93.4% of tracts</strong> sit within 1 mile.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Distance maps flag foothills <strong>(4.1% of spread)</strong> where <strong>26 of 27 tracts</strong> past 1 mile have under 20% poverty.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Pairing poverty with trip miles separates urban outreach from Fresno <strong>(30 of 225 tracts, 13.3%).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Store Trips, Local Poverty &amp; Car Access Across Four California Areas</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare store distance, local poverty, car access, and composite index spread across four California areas.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Empirical comparison of store distance, poverty rate, SNAP use, car access, and composite index spread across four California areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Area &amp; Index Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Campus Renter Tract</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Pay Car Foothills</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Dense Suburb County</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rural &amp; Valley Counties</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Trip to Nearest SNAP Store
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">1.218 miles</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&gt;1.0 mi city line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">2.970 miles</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">low-density hills</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.573 mi mean</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.409 mi median</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Nevada 2.92 mi</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Fresno 1.45 mi</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Tract Poverty &amp; Pay Ratio
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">22.1% poverty</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&ge;20% USDA line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">3.7% poverty</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2,640 residents</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">532% FPL county mean pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Fresno 19.1% pov</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Nevada 10.5%</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                SNAP Use &amp; Car Access
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.3% SNAP | 4.8% no car</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">52 HH</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Low SNAP</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">High car ownership</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.5% SNAP | 93.4% &le;1 mi</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">381/408</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">30 of 225 Fresno tracts low-access</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                USDA Low-Access Pattern
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Only 1 of 408 tracts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.2% pop</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">26 of 27 &gt;1 mi tracts &lt;20% pov</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance alone R² = 4.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">minus</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Max 12.43 mi (Nev) / 15.53 mi (Fre)</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Unique R² Gain
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+58.1 pp ΔR² from poverty</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">60.6% partial</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 93%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+0.003 pp ΔR² from distance</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">0.009% partial</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 1%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Poverty slope 132x larger in index</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">13.3% Fresno USDA food deserts</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Standardized Index Slope
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.787 slope from poverty</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-0.006 slope from distance</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">62.2% full-model index R²</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Nevada median trip 1.98 miles</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Observed Tract &amp; County Data):</strong> We use observed U.S. Census ACS 5-Year tract estimates and USDA SNAP Retailer Locator coordinates across Santa Clara County (N = 408 tracts, 514 SNAP stores, 755 DEH permits), Fresno County (N = 225 tracts), and Nevada County (N = 26 tracts; county_rankings_ca_2023.csv). In Santa Clara County (regression_model_statistics.csv and regression_results_poverty_distance.csv, White HC3), the outcome is the 5-component Extended Vulnerability Index (0-1 scale: 30% poverty rate, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle share, 10% inverse density). Full-model R² = 62.17% (poverty alone R² = 62.17%, distance alone R² = 4.11%). Unique R² gain (semi-partial ΔR², labeled Partial R² in the saved CSV) is +58.06 pp for poverty and +0.0033 pp for distance; true partial R² is 60.55% for poverty and 0.0088% for distance. Poverty β_std = +0.787 (t = 12.51, p &lt; 0.0001) vs. distance β_std = -0.006 (t = -0.22, p = 0.827), VIF = 1.59.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Campus Renter Tract.</strong> Mountain View Tract 5116.08 (1 of 408 county tracts, 3,252 residents).. <strong>High-Pay Car Foothills.</strong> Saratoga / Los Altos Hills Tract 5073.02 (26 of 27 tracts &gt;1 mile from store).. <strong>Dense Suburb County.</strong> Santa Clara County baseline (N = 408 tracts, 514 SNAP stores / 755 permits).. <strong>Rural &amp; Valley Counties.</strong> Fresno County (N = 225 tracts) &amp; Nevada County (N = 26 tracts)..</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Composite Vulnerability Index Split (30% Poverty, 25% SNAP, 20% Distance, 15% No-Car, 10% Density; Santa Clara N = 408 Tracts). Ruler 1: Tract Poverty Rate (30% Index Weight): <strong>62.2% of Index Spread (+58.1 pp Unique R² Gain)</strong>. Tract poverty accounts for <strong>62.2% of the 5-part index spread</strong> (a <strong>+58.1 pp unique R&sup2; gain</strong> above distance, <strong>60.6% partial R&sup2;</strong>, and a <strong>+0.787 standardized slope</strong>) because poverty and SNAP vary widely across city tracts. Ruler 2: Store Trip Distance (Checked With Poverty): <strong>+0.003 pp Unique R² Gain (Flat -0.006 Slope, p = 0.827)</strong>. Store distance alone accounts for <strong>4.1% of index spread</strong> with a minus sign because <strong>26 of 27 tracts</strong> past 1 mile are lower-poverty foothills. Accounting for poverty leaves a <strong>+0.003 pp unique R&sup2; gain</strong> (<em>p</em> = 0.827).</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/food-security/food-desert-myth/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Food Desert Comparison Claim Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Statewide Food Access Comparison Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/transit-equity/hidden-mobility-deserts/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Statewide Mobility Desert Estimate Record &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Pairing Income and Trip Measures Across Suburban, Valley, and Rural Tracts</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We match the screening rule to what poverty and store distance measure in each California area.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix evaluating local context, index behavior, single-metric screening risk, and targeting rules across four areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Campus Renter Tract
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Pay Car Foothills
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Dense Suburb County
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rural &amp; Valley Counties
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Local Area &amp; Renter Context
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High-rent Mountain View tract near Shoreline Park with 95.2% car access.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Saratoga and Los Altos Hills tracts with large lots and no retail zoning.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Dense suburb county where 381 of 408 tracts sit within 1 mile of a SNAP store.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Fresno County and rural Nevada County.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What the Tract Measures Show
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Only 1 county tract meets both USDA cutoffs, with 5.3% SNAP use.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                26 of 27 Santa Clara tracts past 1 mile from a SNAP store have under 20% poverty.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Poverty accounts for 62.2% of the 5-part index spread while distance adds +0.003 pp ΔR².
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                In Fresno and Nevada County, long trips and poverty overlap.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk of Distance-Only Screening
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Relying on the 1-mile line alone flags 1 tract while skipping high-SNAP urban renter tracts.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Sending food vans to tracts past 1 mile without a poverty check puts 26 of 27 routes in rich hills.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Treating a composite index slope as a store-opening trial misreads an observational accounting split.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Applying dense suburban distance patterns to rural Sierra or valley tracts leaves out 12-to-15-mile trips.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best Targeting &amp; Screening Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check SNAP &amp; Cars Before Siting<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Check SNAP use and no-car homes alongside the 1.2-mile trip.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair Distance Maps With Poverty<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Filter >1-mile tract lists by poverty and no-car shares before routing vans.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Target CalFresh in High-Poverty Tracts<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use poverty and SNAP rates to target benefit outreach in dense urban tracts.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Route Vans &amp; EBT to Rural Gaps<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Target mobile pantries and online EBT delivery where >1-10 mi trips meet high poverty.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Composite Index Definition, Semi-Partial vs. Partial R² &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Composite Index Definition &amp; Regression Decomposition (Mode B, N = 408 Santa Clara Tracts):</strong> In regression_poverty_vs_distance.py (regression_results_poverty_distance.csv and regression_model_statistics.csv), the dependent variable is the 5-component Extended Vulnerability Index (0-1 scale, mean 0.1960, range 0.0988 to 0.4818; extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json), weighted 30% poverty rate (ACS S1701), 25% SNAP participation, 20% normalized distance to 514 SNAP stores, 15% no-vehicle households (ACS B25044), and 10% inverse population density. Because poverty and distance are components of this index, the OLS model (Index_0_1 = 0.1294 + 0.9920(Poverty_Rate, SE = 0.0793, t = 12.51, p < 0.0001, β_std = +0.787) - 0.0026(Distance_mi, SE = 0.0117, t = -0.22, p = 0.827, β_std = -0.006), White HC3, R² = 0.6217, F = 80.24, VIF = 1.59) is a single-year variance decomposition of the index, not a causal estimate of store openings. Poverty alone gives R² = 0.6217 (62.2%) and distance alone gives R² = 0.0411 (4.1%). The semi-partial ΔR² (R²_full - R²_reduced, labeled Partial R² in regression_model_statistics.csv) is 0.5806 (58.1 pp) for poverty and 0.000033 (0.003 pp) for distance; the true partial R² (ΔR² / (1 - R²_reduced)) is 0.6055 (60.6%) for poverty given distance and 0.000088 (0.009%) for distance given poverty. On the 0-100 index scale in PHASE6_FINAL_DELIVERABLE.md, the slopes are +0.7768 and -0.0173 (β_std ratio 0.7870 / 0.00594 = 132.5x).</p>
+          <p>&bull; <strong>Data Provenance:</strong> Exact results come from FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv, FoodSecurity/analysis/outputs/regression_model_statistics.csv, FoodSecurity/data/processed/extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json, FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv, FoodSecurity/FOOD_DESERT_LOCATION_DETAILS.md (L1-115), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Local Area &amp; Renter Context (Rural &amp; Valley Counties).</strong> Fresno County (30 of 225 low-access tracts) and rural Nevada County (2.92 mi mean trip). &middot; <strong>What the Tract Measures Show (Campus Renter Tract).</strong> Only 1 county tract meets both USDA cutoffs (1.218 mi and 22.1% poverty), with 5.3% SNAP use. &middot; <strong>What the Tract Measures Show (Rural &amp; Valley Counties).</strong> In Fresno (max 15.53 mi) and Nevada County (max 12.43 mi), long trips and poverty overlap. &middot; <strong>Best Targeting &amp; Screening Action (Campus Renter Tract).</strong> Check SNAP use (5.3%) and no-car homes (52 HH) alongside the 1.2-mile trip.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[3], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Spatial Proxies vs. Trip Distance (Mode B 408 Santa Clara &amp; 251 Rural/Valley Tracts)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Census Tract Poverty, SNAP &amp; Vehicle Access Estimates (N = 408 Santa Clara Tracts, N = 225 Fresno Tracts &amp; N = 26 Nevada County Tracts).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator Geo-Verified Store Coordinates (514 Santa Clara SNAP Stores) &amp; <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA ERS Food Access Research Atlas</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">What Single-Year Tract Maps Can and Cannot Tell a County Team</h3>
+            <p class="text-slate-800">A census-tract map summarizes where low-income households and grocery stores sit, but a single distance threshold can misclassify dense suburbs. In Santa Clara County (N = 408 tracts, 514 verified SNAP stores), 93.4% of tracts (381 of 408) sit within 1.0 mile of a SNAP store (mean 0.573 miles, median 0.409 miles). Of the 27 tracts beyond 1.0 mile, 26 are lower-poverty foothill areas (such as Tract 5073.02 at 2.97 miles and 3.7% poverty), while only 1 tract (Mountain View Tract 5116.08, 3,252 residents, 1.218 miles, 22.1% poverty) meets both USDA food-desert cutoffs.</p>
+            <p class="text-slate-800">Decomposing the county's 5-part vulnerability index (weighted 30% poverty, 25% SNAP, 20% store distance, 15% no-car share, and 10% density) shows that poverty accounts for 62.2% of index variance (+58.1 pp unique R² gain, 60.6% partial R²), whereas store distance adds +0.003 pp unique R² gain (p = 0.827) once poverty is included. Because this is an observational decomposition of a composite index in a store-dense county, it does not test the causal effect of building a store. Instead, it shows that suburban teams should pair poverty and SNAP rates with car access instead of screening by distance alone, while rural and valley counties with wider store gaps (such as Fresno County with 30 of 225 tracts at 13.3% USDA low-access up to 15.53 miles, and Nevada County averaging 2.92 miles up to 12.43 miles) require joint income-and-distance targeting.</p>
+          </div>
+          <p><strong>Mode B Composite-Index Decomposition &amp; County Comparisons:</strong> All regression figures (N = 408, R² = 62.17%, poverty-only R² = 62.17%, distance-only R² = 4.11%, semi-partial ΔR² = 58.06 pp vs. 0.0033 pp, true partial R² = 60.55% vs. 0.0088%, β_std = +0.7870 vs. -0.0059, p = 0.827, F = 80.24, VIF = 1.59) come from FoodSecurity/analysis/outputs/regression_model_statistics.csv and regression_results_poverty_distance.csv on the 5-component Extended Vulnerability Index (extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json). Rural and valley comparisons (Fresno County: 30 of 225 tracts = 13.3% food deserts, mean 1.45 mi, max 15.53 mi; Nevada County: 26 tracts, mean 2.92 mi, median 1.98 mi, max 12.43 mi) come from FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv. Companion TooEarlyToSay pages (including the article-reported 12% or 1,086 of 9,039 tracts statewide mobility-desert series flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md for incomplete transit agency coverage and coordinate-projection reconciliation) are excluded from empirical claims and policy recommendations on this page.</p>
+          <p><strong>Main Sources:</strong> We use <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau American Community Survey (ACS 5-Year Tract Estimates)</a> and <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator (Geo-Verified Store Coordinates)</a>. We also use <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/food-desert-myth/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">The Food Desert Myth: Evidence Beyond Proximity</a>.
+                <span>USDA low-income, low-access tract measures; the published zero-food-desert finding and 4.7x SNAP participation comparison are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Food Access Comparison Under Reconciliation</a>.
+                <span>Statewide comparison across 9,033 tracts (1.03 versus 1.78 miles to stores by tract composition); its populations and direction conflict with a related page and are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/transit-equity/hidden-mobility-deserts/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Mobility Deserts: Transit Proximity Under Review</a>.
+                <span>Article-reported 12% statewide mobility-desert rate across 9,039 tracts; the transit-stop inventory (64,060 raw versus about 24,000 unique records) is under reconciliation.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why did store distance show a negative single-factor R² of 4.1% if its unique R² gain after accounting for poverty is +0.003 pp (p = 0.827)?</dt>
+                <dd class="text-slate-700 mt-0.5">That pattern reflects spatial sorting across Santa Clara County's 408 tracts. Exactly 26 of the 27 tracts located more than 1.0 mile from a SNAP store are lower-poverty foothill areas (under 20% poverty). In a single-factor regression on the composite index, distance acts as a proxy for foothill affluence. Once poverty rate is included, distance adds +0.003 pp of unique R² gain (0.009% partial R², p = 0.827).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What is the difference between semi-partial ΔR² (58.1 pp) and partial R² (60.6%), and what does the composite index measure?</dt>
+                <dd class="text-slate-700 mt-0.5">The outcome is a 0-1 composite index weighted 30% poverty, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle households, and 10% inverse density. Semi-partial ΔR² (58.06 pp, labeled Partial R² in the saved summary CSV) subtracts distance-only R² (4.11%) from full-model R² (62.17%). True partial R² divides that 58.06 pp gain by the 95.89% variance left unexplained by distance alone, giving 60.55% (60.6%).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why was only 1 of 408 Santa Clara County tracts flagged as a USDA food desert compared with 30 of 225 tracts (13.3%) in Fresno County?</dt>
+                <dd class="text-slate-700 mt-0.5">The USDA urban food-desert rule requires BOTH >=20% tract poverty AND >1.0 mile to a supermarket (>10 miles in rural tracts). Santa Clara County has 514 verified SNAP stores (mean distance 0.573 miles, 93.4% of tracts within 1.0 mile), so only Mountain View Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) crosses both lines. Fresno County spans wider rural and agricultural tracts (mean 1.45 miles, max 15.53 miles), where 30 of 225 tracts (13.3%) cross both thresholds.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs</a></li>
+          <li class="my-2"><a href="/methods-lab/threat-measurement-instrumentation" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories</a></li>
+          <li class="my-2"><a href="/methods-lab/food-insecurity-diabetes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Untangling Food Insecurity & Diabetes Feedback</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            We observe that counties with stricter air quality regulations have lower asthma hospitalization rates. The correlation is strong. But should we include county fixed effects in our model? The answer depends on what question we're asking. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Air Quality Regulation vs Asthma Hospitalizations</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing air quality regulation strictness versus asthma hospitalization rates across California counties"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>Urban Counties</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Rural Counties</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>Overall Correlation</h4>
-              <div class="stat-item" style="text-align: center;">
-                <div class="stat-value" id="stat-overall-corr">--</div>
-                <div class="stat-label">Stricter rules, fewer hospitalizations</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>By County Type</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-urban-corr">--</div>
-                  <div class="stat-label">Within Urban</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-rural-corr">--</div>
-                  <div class="stat-label">Within Rural</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>Observation:</strong> The overall correlation is <span id="corr-comparison">strong</span>, but the within-group correlations tell a different story. What's driving the relationship?
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-box">
-          <p><strong>Two possible interpretations emerge.</strong></p>
-          <p>Does stricter regulation cause fewer hospitalizations? Or do urban counties happen to have both stricter rules AND other factors that reduce asthma?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: GEOGRAPHY AS TREATMENT
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Geography as Treatment</h2>
-          <p class="panel-intro">
-            Sometimes place-based variation IS the treatment effect you want to measure. In these cases, adding geographic fixed effects would remove the very thing you're studying.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/geographic-variables/assets/geographic-variables-treatment-dag.png"
-              alt="Causal diagram showing Geographic Location directly affecting Health Outcome through place-based treatment, with an arrow from Location to Health Outcome"
-              class="dag-image"
-            >
-            <p class="dag-caption">When location IS the treatment: Fixed effects would absorb the causal effect.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>When Geography Is the Treatment</h4>
-              <div class="pathway-list">
-                <div class="pathway-item treatment">
-                  <strong>Place-based policies</strong>
-                  <p>State Medicaid expansions, county health programs, or regional environmental regulations that vary by jurisdiction.</p>
-                </div>
-                <div class="pathway-item treatment">
-                  <strong>Local infrastructure</strong>
-                  <p>Proximity to hospitals, public transit access, or food desert status that directly affects health.</p>
-                </div>
-                <div class="pathway-item treatment">
-                  <strong>Neighborhood effects</strong>
-                  <p>Social cohesion, pollution exposure, or built environment features that operate at the local level.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The problem with fixed effects here:</strong> If you add county fixed effects when studying county-level policies, you absorb all between-county variation. Your treatment effect comes entirely from within-county changes over time.
-            </div>
-          </aside>
-        </div>
-
-        <div class="definition-card">
-          <h3>Place-Based Treatment</h3>
-          <p>A <strong>place-based treatment</strong> is an intervention or exposure that varies across geographic units and operates through the characteristics of that location. Examples include:</p>
-          <ul>
-            <li>State-level policy changes (Medicaid expansion, minimum wage)</li>
-            <li>County health department programs</li>
-            <li>Neighborhood walkability or food access</li>
-            <li>Local air or water quality</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">For these treatments, geographic variation is informative, not a nuisance to be removed.</p>
-        </div>
-
-        <div class="bridging-box">
-          <p><strong>Geography can also be something else entirely.</strong></p>
-          <p>What if location predicts both treatment AND outcome through a back-door path?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: GEOGRAPHY AS CONFOUNDER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Geography as Confounder</h2>
-          <p class="panel-intro">
-            Other times, geographic variation reflects unmeasured differences between places that affect both treatment and outcome. Here, fixed effects can block confounding paths.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/geographic-variables/assets/geographic-variables-confounder-dag.png"
-              alt="Causal diagram showing Geographic Location as a confounder affecting both Treatment and Health Outcome through separate paths"
-              class="dag-image"
-            >
-            <p class="dag-caption">When location is a confounder: Fixed effects can block the back-door path.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>When Geography Is a Confounder</h4>
-              <div class="pathway-list">
-                <div class="pathway-item confounder">
-                  <strong>Wealth and resources</strong>
-                  <p>Rich counties have both better healthcare access AND adopt certain policies earlier. Location proxies for wealth.</p>
-                </div>
-                <div class="pathway-item confounder">
-                  <strong>Political climate</strong>
-                  <p>Liberal areas might both expand social programs AND have healthier populations for other reasons.</p>
-                </div>
-                <div class="pathway-item confounder">
-                  <strong>Urbanicity bundle</strong>
-                  <p>Urban areas have stricter regulations AND more specialists, better jobs, and different demographics.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>Fixed effects help here:</strong> By comparing within the same county over time (or individuals within counties), you remove time-invariant confounders. The urban/rural difference is absorbed, letting you isolate the treatment effect.
-            </div>
-          </aside>
-        </div>
-
-        <div class="definition-card">
-          <h3>Geographic Confounding</h3>
-          <p><strong>Geographic confounding</strong> occurs when location predicts both treatment assignment and outcomes through unmeasured characteristics of that place:</p>
-          <ul>
-            <li>Counties that adopt programs differ systematically from those that don't</li>
-            <li>People who live in certain areas differ from those who live elsewhere</li>
-            <li>Regional factors affect both policy adoption and health</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">Fixed effects can control for these stable differences by comparing changes within units rather than differences between them.</p>
-        </div>
-
-        <div class="bridging-box">
-          <p><strong>How do you know which situation you're in?</strong></p>
-          <p>The answer depends on your research question and causal model.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: WHEN TO USE FIXED EFFECTS
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">When to Use Fixed Effects</h2>
-          <p class="panel-intro">
-            The decision to include geographic fixed effects should follow from your causal question, not from a default assumption. Here's a framework for deciding.
-          </p>
-        </div>
-
-        <div class="toggle-section">
-          <div class="toggle-controls">
-            <span class="toggle-label">Your research question:</span>
-            <button class="toggle-btn active" data-scenario="between">Effect of living in County A vs B</button>
-            <button class="toggle-btn" data-scenario="within">Effect of policy change within counties</button>
-          </div>
-
-          <div id="scenario-between" class="scenario-description">
-            <h4>Studying Between-Place Differences</h4>
-            <p>You want to know: "What is the effect of living in an area with feature X versus an area without it?" For example, does living in a county with better air quality improve health? Here, geographic variation IS the treatment. Fixed effects would remove what you're measuring.</p>
-          </div>
-
-          <div id="scenario-within" class="scenario-description" style="display: none;">
-            <h4>Studying Within-Place Changes</h4>
-            <p>You want to know: "When a county adopts policy X, what happens to outcomes?" For example, when a county tightens regulations, do hospitalizations fall? Here, geographic variation is a confounder. Fixed effects help by comparing the same county before and after.</p>
-          </div>
-        </div>
-
-        <div class="checklist-section">
-          <h3>Decision Framework</h3>
-          <div class="checklist-grid">
-            <div class="checklist-column use">
-              <h4>Use Geographic Fixed Effects When...</h4>
-              <ul class="checklist">
-                <li>Your treatment varies within locations over time</li>
-                <li>You have panel data with repeated observations</li>
-                <li>Location-level confounders are time-invariant</li>
-                <li>You want to isolate within-unit changes</li>
-                <li>Cross-sectional comparisons are implausible</li>
-              </ul>
-            </div>
-            <div class="checklist-column avoid">
-              <h4>Avoid Fixed Effects When...</h4>
-              <ul class="checklist">
-                <li>Geographic variation IS your treatment</li>
-                <li>You only have cross-sectional data</li>
-                <li>Treatment never varies within units</li>
-                <li>You want to generalize across locations</li>
-                <li>Time-varying confounders dominate</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="comparison-grid">
-          <div class="comparison-box treatment">
-            <h3>Example: Air Quality and Health</h3>
-            <ul class="example-list">
-              <li>
-                <strong>Without fixed effects:</strong>
-                "Counties with stricter regulations have 12% fewer asthma hospitalizations." But stricter counties differ in many ways.
-              </li>
-              <li>
-                <strong>With county fixed effects:</strong>
-                "When a county tightens regulations, hospitalizations fall 4%." Compares same county before/after. But requires within-county variation.
-              </li>
-              <li>
-                <strong>Which is right?</strong>
-                Depends on the question. "Should I move?" versus "Should we regulate?"
-              </li>
-            </ul>
-          </div>
-          <div class="comparison-box confounder">
-            <h3>Example: Hospital Access and Mortality</h3>
-            <ul class="example-list">
-              <li>
-                <strong>Without fixed effects:</strong>
-                "Counties with more hospitals have lower mortality." But wealthy counties have more hospitals AND healthier populations.
-              </li>
-              <li>
-                <strong>With county fixed effects:</strong>
-                "When a county gains a hospital, mortality falls 2%." Within-county comparison controls for wealth. But hospital openings are rare.
-              </li>
-              <li>
-                <strong>Which is right?</strong>
-                Fixed effects help here because you're not trying to measure the "effect of living in a hospital-rich area."
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="bridging-box">
-          <p><strong>The core insight: Your model should match your question.</strong></p>
-          <p>There's no universally "correct" specification. The right choice depends on the causal effect you're trying to identify.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            Geographic fixed effects are a tool, not a solution. Their value depends entirely on whether place-based variation is part of the treatment effect or part of the confounding structure.
-          </p>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Core Distinctions</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Geography as treatment:</strong> When location-based characteristics ARE the intervention (policy, environment, access), fixed effects absorb the effect you want to measure</div>
-            <div class="concept-item"><strong>Geography as confounder:</strong> When location predicts both treatment and outcome through back-door paths, fixed effects can block confounding</div>
-            <div class="concept-item"><strong>Between-unit variation:</strong> Compares different places; captures level differences but includes confounding</div>
-            <div class="concept-item"><strong>Within-unit variation:</strong> Compares same place over time; removes time-invariant confounding but requires temporal variation</div>
-            <div class="concept-item"><strong>Identification strategy:</strong> Your modeling choice should follow from your causal model, not from convention</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>"Control for geography" is not a universal solution.</strong> When place-based variation is the treatment, fixed effects destroy the signal. When geography is a confounder, fixed effects can help. The critical question is: Does your research question ask about the effect of being in a different place, or about the effect of something changing within places? Answer that first, then choose your specification. <strong>This is what economists mean when they say "let the question drive the model."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Evidence Credibility track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/confounding-assessment-checklist" style="color:#0041A5;font-weight:600;">Confounding Assessment Checklist</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/correlation-causation-interactive" style="color:#0041A5;font-weight:600;">Correlation ≠ Causation</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/identical-data-opposite-policies" style="color:#0041A5;font-weight:600;">Same Data, Opposite Conclusions</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> - California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateCountyData() {
-      const countyNames = [
-        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
-        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
-        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
-        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
-        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
-        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
-        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
-        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
-        'County BC', 'County BD', 'County BE', 'County BF'
-      ];
-
-      // More counties are urban vs rural
-      const urbanCounties = [
-        'County A', 'County G', 'County S', 'County U', 'County AD', 'County AH',
-        'County AK', 'County AL', 'County AO', 'County AQ', 'County BD',
-        'County AG', 'County AJ', 'County AM', 'County J', 'County O',
-        'County AP', 'County AW', 'County AV', 'County AX', 'County BE', 'County AE', 'County AB'
-      ];
-
-      const data = [];
-      let seed = 123;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        const name = countyNames[i];
-        const isUrban = urbanCounties.includes(name);
-
-        // Urban counties: higher regulation, lower hospitalizations, but with variation
-        // Rural counties: lower regulation, higher hospitalizations, but with variation
-        // The key: WITHIN each group, the correlation is weaker
-
-        let regulation, hospitalizations;
-
-        if (isUrban) {
-          // Urban: base higher regulation (60-90), lower hospitalizations (20-50)
-          regulation = 60 + rand() * 30;
-          // Within urban, regulation has small effect on hospitalizations
-          const baseHosp = 35;
-          const regulationEffect = -0.1 * (regulation - 75); // Small within-effect
-          hospitalizations = baseHosp + regulationEffect + (rand() - 0.5) * 20;
-        } else {
-          // Rural: base lower regulation (20-50), higher hospitalizations (50-80)
-          regulation = 20 + rand() * 30;
-          // Within rural, regulation has small effect on hospitalizations
-          const baseHosp = 65;
-          const regulationEffect = -0.1 * (regulation - 35); // Small within-effect
-          hospitalizations = baseHosp + regulationEffect + (rand() - 0.5) * 20;
-        }
-
-        // Clamp values
-        regulation = Math.max(15, Math.min(95, regulation));
-        hospitalizations = Math.max(15, Math.min(90, hospitalizations));
-
-        data.push({
-          name: name,
-          isUrban: isUrban,
-          regulation: Math.round(regulation),
-          hospitalizations: Math.round(hospitalizations * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    function correlation(data, xKey, yKey) {
-      const n = data.length;
-      if (n < 3) return 0;
-
-      const xVals = data.map(d => d[xKey]);
-      const yVals = data.map(d => d[yKey]);
-
-      const xMean = mean(xVals);
-      const yMean = mean(yVals);
-
-      let num = 0, denX = 0, denY = 0;
-      for (let i = 0; i < n; i++) {
-        const dx = xVals[i] - xMean;
-        const dy = yVals[i] - yMean;
-        num += dx * dy;
-        denX += dx * dx;
-        denY += dy * dy;
-      }
-
-      const den = Math.sqrt(denX * denY);
-      return den === 0 ? 0 : num / den;
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 10, xMax = 100;
-      const yMin = 10, yMax = 95;
-
-      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 20; y <= 90; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Trend line for overall data
-      const allX = countyData.map(d => d.regulation);
-      const allY = countyData.map(d => d.hospitalizations);
-      const n = countyData.length;
-      const xMean = mean(allX);
-      const yMean = mean(allY);
-
-      let num = 0, den = 0;
-      for (let i = 0; i < n; i++) {
-        num += (allX[i] - xMean) * (allY[i] - yMean);
-        den += (allX[i] - xMean) * (allX[i] - xMean);
-      }
-      const slope = num / den;
-      const intercept = yMean - slope * xMean;
-
-      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      trendLine.setAttribute('x1', xScale(15));
-      trendLine.setAttribute('y1', yScale(slope * 15 + intercept));
-      trendLine.setAttribute('x2', xScale(95));
-      trendLine.setAttribute('y2', yScale(slope * 95 + intercept));
-      trendLine.setAttribute('stroke', 'var(--color-primary)');
-      trendLine.setAttribute('stroke-width', '2');
-      trendLine.setAttribute('stroke-dasharray', '8,4');
-      trendLine.setAttribute('opacity', '0.6');
-      svg.appendChild(trendLine);
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.regulation));
-        circle.setAttribute('cy', yScale(d.hospitalizations));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.isUrban ? 'var(--color-secondary)' : 'var(--color-accent)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s, r 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => {
-          circle.setAttribute('r', 11);
-          showTooltip(e, d);
-        });
-        circle.addEventListener('mouseleave', () => {
-          circle.setAttribute('r', 8);
-          hideTooltip();
-        });
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 20; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Air Quality Regulation Strictness (index)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 20; y <= 90; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Asthma Hospitalizations (per 10,000)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">Type: ${data.isUrban ? 'Urban' : 'Rural'}</div>
-        <div class="metric">Regulation: ${data.regulation}</div>
-        <div class="metric">Hospitalizations: ${data.hospitalizations}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       6. SCENARIO TOGGLE (Panel 4)
-       ============================================ */
-    const toggleBtns = document.querySelectorAll('.toggle-btn');
-    toggleBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        toggleBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const scenario = btn.dataset.scenario;
-        document.getElementById('scenario-between').style.display = scenario === 'between' ? 'block' : 'none';
-        document.getElementById('scenario-within').style.display = scenario === 'within' ? 'block' : 'none';
-      });
-    });
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate correlations
-      const overallCorr = correlation(countyData, 'regulation', 'hospitalizations');
-      const urbanData = countyData.filter(d => d.isUrban);
-      const ruralData = countyData.filter(d => !d.isUrban);
-      const urbanCorr = correlation(urbanData, 'regulation', 'hospitalizations');
-      const ruralCorr = correlation(ruralData, 'regulation', 'hospitalizations');
-
-      document.getElementById('stat-overall-corr').textContent = overallCorr.toFixed(2);
-      document.getElementById('stat-urban-corr').textContent = urbanCorr.toFixed(2);
-      document.getElementById('stat-rural-corr').textContent = ruralCorr.toFixed(2);
-
-      // Update comparison text
-      const comparisonEl = document.getElementById('corr-comparison');
-      if (Math.abs(overallCorr) > 0.5 && Math.abs(urbanCorr) < 0.3 && Math.abs(ruralCorr) < 0.3) {
-        comparisonEl.textContent = 'strong overall, but weak within groups';
-      } else {
-        comparisonEl.textContent = 'different between and within groups';
-      }
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

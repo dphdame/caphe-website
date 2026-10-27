@@ -57,6 +57,29 @@ test('.html and trailing-slash variants single-hop 301 to canonical', async () =
   assert.deepEqual(await get('/methods-lab/').then(r => [r.status, r.location]), [301, '/methods-lab']);
 });
 
+test('consolidated Methods Lab slugs single-hop 301 to canonical partner modules', async () => {
+  const expected = {
+    '/methods-lab/counterfactual-basics': '/methods-lab/before-after-trap',
+    '/methods-lab/control-groups-not-enough': '/methods-lab/selection-into-treatment',
+    '/methods-lab/threat-maturation-trends': '/methods-lab/before-after-trap',
+    '/methods-lab/threat-history-events': '/methods-lab/before-after-trap',
+    '/methods-lab/threat-history-maturation': '/methods-lab/before-after-trap',
+    '/methods-lab/regression-tables-confounding': '/methods-lab/observational-to-experimental',
+    '/methods-lab/confounding-assessment-checklist': '/methods-lab/reverse-causation-feedback',
+    '/methods-lab/correlation-causation-interactive': '/methods-lab/collider-bias',
+    '/methods-lab/threat-confounding-selection': '/methods-lab/collider-bias',
+    '/methods-lab/why-it-works-isnt-enough': '/methods-lab/cost-effectiveness-ratio',
+    '/methods-lab/comparator-choice': '/methods-lab/cost-effectiveness-ratio',
+    '/methods-lab/decision-thresholds': '/methods-lab/cost-effectiveness-ratio',
+    '/methods-lab/comparing-two-programs': '/methods-lab/chw-health-outcomes',
+    '/methods-lab/cea-uncertain-effects': '/methods-lab/sensitivity-analysis-cea',
+  };
+  for (const [src, dest] of Object.entries(expected)) {
+    assert.deepEqual(await get(src).then(r => [r.status, r.location]), [301, dest], src);
+    assert.deepEqual(await get(`${src}/`).then(r => [r.status, r.location]), [301, dest], `${src}/`);
+  }
+});
+
 test('robots.txt disallows /api/ for the default user-agent', async () => {
   const r = await get('/robots.txt');
   assert.equal(r.status, 200);
@@ -64,3 +87,4 @@ test('robots.txt disallows /api/ for the default user-agent', async () => {
   const starGroup = r.body.split(/User-agent:/i)[1] || '';
   assert.match(starGroup, /Disallow:\s*\/api\//i, 'robots.txt * group must Disallow /api/');
 });
+

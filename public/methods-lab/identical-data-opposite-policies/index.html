@@ -3,840 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Nominal vs. Cost-Adjusted Medi-Cal Fees | CAPHE</title>
+  <meta name="description" content="See how California's uniform nominal Medi-Cal schedule interacts with CMS Practice Expense GPCI (1.506 in San Francisco vs 0.900 in Imperial) and ACS rents.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/identical-data-opposite-policies">
+  <meta property="og:title" content="Nominal vs. Cost-Adjusted Medi-Cal Fees | CAPHE">
+  <meta property="og:description" content="See how California's uniform nominal Medi-Cal schedule interacts with CMS Practice Expense GPCI (1.506 in San Francisco vs 0.900 in Imperial) and ACS rents.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/identical-data-opposite-policies">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>When Identical Data Leads to Opposite Policies | CAPHE</title>
-  <meta name="description" content="Two analysts look at the same data and reach opposite conclusions. Learn why 'Is the association real?' is the wrong question—and why economists ask 'Is the effect identified?' instead.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/identical-data-opposite-policies">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* Bridging question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
+      color: #fff;
       margin: 0;
     }
-
-    /* ============================================
-       7. ANALYST PANELS
-       ============================================ */
-    .analyst-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .analyst-container { grid-template-columns: 1fr; }
-    }
-
-    .analyst-profile {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .analyst-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-      padding-bottom: var(--space-md);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .analyst-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
+    .budget-bar-seg {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .analyst-avatar.expand {
-      background: var(--color-success);
-    }
-
-    .analyst-avatar.cut {
-      background: var(--color-warning);
-    }
-
-    .analyst-info h3 {
-      margin-bottom: var(--space-xs);
-    }
-
-    .analyst-title {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-
-    .analyst-reasoning {
-      margin-bottom: var(--space-lg);
-    }
-
-    .analyst-reasoning h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-    }
-
-    .reasoning-step {
-      display: flex;
-      gap: var(--space-md);
-      margin-bottom: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-    }
-
-    .step-number {
-      width: 28px;
-      height: 28px;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .step-content {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .recommendation-box {
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-
-    .recommendation-box.expand {
-      background: rgba(46, 125, 50, 0.1);
-      border: 2px solid var(--color-success);
-    }
-
-    .recommendation-box.cut {
-      background: rgba(245, 124, 0, 0.1);
-      border: 2px solid var(--color-warning);
-    }
-
-    .recommendation-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: var(--space-sm);
-    }
-
-    .recommendation-box.expand .recommendation-label {
-      color: var(--color-success);
-    }
-
-    .recommendation-box.cut .recommendation-label {
-      color: var(--color-warning);
-    }
-
-    .recommendation-text {
-      font-size: 1.25rem;
-      font-weight: 600;
-      font-family: var(--font-serif);
-    }
-
-    .recommendation-box.expand .recommendation-text {
-      color: var(--color-success);
-    }
-
-    .recommendation-box.cut .recommendation-text {
-      color: var(--color-warning);
-    }
-
-    /* Sidebar for analyst panels */
-    .assumption-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .assumption-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .assumption-card h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .assumption-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.9rem;
-      margin-bottom: var(--space-sm);
-      color: var(--color-text-secondary);
-    }
-
-    .assumption-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .assumption-check {
-      color: var(--color-success);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .assumption-question {
-      color: var(--color-warning);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. THE DIFFERENCE PANEL
-       ============================================ */
-    .difference-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .difference-container { grid-template-columns: 1fr; }
-    }
-
-    .comparison-column {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .comparison-column.expand {
-      border-top: 4px solid var(--color-success);
-    }
-
-    .comparison-column.cut {
-      border-top: 4px solid var(--color-warning);
-    }
-
-    .column-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-    }
-
-    .column-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: white;
-    }
-
-    .column-icon.expand {
-      background: var(--color-success);
-    }
-
-    .column-icon.cut {
-      background: var(--color-warning);
-    }
-
-    .belief-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .belief-item {
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .comparison-column.expand .belief-item {
-      border-left-color: var(--color-success);
-    }
-
-    .comparison-column.cut .belief-item {
-      border-left-color: var(--color-warning);
-    }
-
-    .belief-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-xs);
-    }
-
-    .belief-text {
-      font-size: 0.95rem;
-      color: var(--color-text);
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-top: var(--space-xl);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       9. KEY INSIGHT PANEL
-       ============================================ */
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: var(--space-xl);
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       10. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       11. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       12. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      white-space: nowrap;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      padding: 0 4px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .skip-link:focus {
-      top: 0;
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "When Identical Data Leads to Opposite Policies",
-  "description": "Two analysts look at the same data and reach opposite conclusions. Learn why 'Is the association real?' is the wrong question—and why economists ask 'Is the effect identified?' instead.",
+  "headline": "Uniform Statewide Medi-Cal Fee Schedules Deliver Unequal Clinic Purchasing Power Across Counties",
+  "description": "See how California's uniform nominal Medi-Cal schedule interacts with CMS Practice Expense GPCI (1.506 in San Francisco vs 0.900 in Imperial) and ACS rents.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -844,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -855,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How can the same data support opposite policy conclusions?",
+      "name": "How does the CAPHE 3-part composite of the CMS Practice Expense GPCI weight local pay and rent?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "When an effect is not identified, the same correlation is consistent with the program working or with high-capacity counties simply adopting it and performing better anyway. Each analyst's recommendation reflects a different untested assumption about which story is true."
+        "text": "Under the CMS CY 2026 Physician Fee Schedule Final Rule, three Practice Expense GPCI sub-components (19.15% local health staff wages from BLS OEWS, 10.22% office rent from Census ACS 2-bedroom gross rent, and 5.07% estimated purchased services) normalize across their 34.44% sum to 55.6% staff pay, 29.7% rent, and 14.7% estimated services. The overall Practice Expense GPCI is 1.506 in San Francisco vs. 0.900 in Imperial County."
       }
     },
     {
       "@type": "Question",
-      "name": "What does identification mean in causal inference?",
+      "name": "Why do the CMS Practice Expense GPCI and the Area Deprivation Index rank San Francisco and Imperial in opposite ways?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Identification is having a source of variation in treatment that lets you distinguish the treatment's effect from selection. Here it would require variation in CHW funding driven by something other than county capacity or political will."
+        "text": "The CMS Practice Expense GPCI tracks what a clinic pays to hire staff and rent space (1.506 in SF vs. 0.900 in Imperial). The Neighborhood Need Index tracks resident poverty and hardship (15th percentile in SF vs. 85th percentile in Imperial). High-cost cities squeeze clinic margins, while high-need rural counties face low family pay and doctor shortages."
       }
     },
     {
       "@type": "Question",
-      "name": "What kind of variation would identify the CHW program effect?",
+      "name": "How much does billing friction cut real Medicaid pay?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Variation unrelated to county capacity, such as a policy that randomly assigned CHW funding or a budget cutoff that affected otherwise-similar counties differently, would separate the program effect from selection."
+        "text": "Work by Dunn, Gottlieb, Shapiro, and Sonnenstuhl cited by MACPAC (January 2025) shows that Medicaid providers lose 17.6% of claim value to denials and billing hurdles. That is more than triple Medicare (4.7%) and seven times private plans (2.4%)."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -906,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -925,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -941,723 +529,436 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Design Essentials</div>
-      <h1>When Identical Data Leads to Opposite Policies</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Two analysts can view the same scatter plot of community health worker program intensity against preventable hospitalizations and reach opposite policy recommendations because correlation alone does not identify a causal effect. The disagreement turns on identification: whether the variation in program intensity reflects the program's impact or selection, since county capacity affects both program adoption and health outcomes. Without an exogenous source of variation, such as randomized funding or a budget cutoff affecting otherwise-similar counties, the causal effect of the program cannot be separated from the counties that would have done better regardless.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Two analysts examine the same scatter plot showing a positive correlation. One recommends expanding the program; the other recommends cutting it. How can the same data lead to opposite conclusions?</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Analyst A</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Analyst B</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">The Difference</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Uniform Statewide Medi-Cal Fee Schedules Deliver Unequal Clinic Purchasing Power Across Counties
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare local clinic costs with area need to match payment rates and staff grants.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When setting Medi-Cal clinic pay rates from one state list alone, a state agency sends funds to high-wage coastal cities or low-pay inland counties based on whether the rule tracks overhead or local poverty. Tying city clinic rates to the CMS Practice Expense GPCI backs coastal clinics where overhead runs <strong>50.6% above the US mean</strong> <strong>(1.506 index</strong> in San Francisco vs. <strong>0.900</strong> in Imperial County).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> One flat fee list leaves out cost and need gaps because San Francisco sits at the <strong>15th percentile</strong> of local need while Imperial County sits at the <strong>85th percentile.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Pairing cost rate boosts with loan grants and simpler billing (saving <strong>17.6%</strong> claim value) fits both.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Clinic Costs vs. Local Need Across Four Market Types</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare clinic cost scores, monthly rent share, and local need across four health markets.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Cross-market comparison of CMS Practice Expense GPCI, Census ACS monthly rent and pay, Local Need percentile, MACPAC billing loss, and Polsky NEJM visit gains.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Market &amp; Cost Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Cost City Market</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Rent Working Tract</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rural Foothills Market</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Need Farm Region</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Practice Expense GPCI
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">1.506</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+50.6% vs US base</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">1.380</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+38.0% coast metro</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 92%; background: #D97706;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">1.025</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+2.5% rural Sierra</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 68%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0.900</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-10.0% Imperial</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 60%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Income Spent on Monthly Rent
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">21.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,814</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">42.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,318</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">23.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,635</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">32.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,007</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Median Monthly Pay
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$13,306</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$5,507</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$7,075</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$3,103</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Local Need Index
+              </th>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">15th percentile</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Low need</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 18%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">45th percentile</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Rent strain</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 53%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">55th percentile</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Rural spread</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 65%; background: #D97706;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">85th percentile</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">High need</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Billing Friction Loss
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.6% Medicaid vs 2.4% Private</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.6% Medicaid vs 4.7% Medicare</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.6% Medicaid billing loss</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.6% Medicaid billing loss</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Visit Gain From Fee Bump
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+1.25 pp per 10% real bump</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">58.7% to 66.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+7.7 pp total</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">58.7% base visit rate</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">66.4% post-bump visit rate</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> We use observed CMS CY 2026 Practice Expense GPCI scores and a CAPHE 3-part normalization of three PE sub-components (19.15% staff wages, 10.22% office rent, and 5.07% estimated purchased services divided by their 34.44% sum = 55.6% pay, 29.7% rent, and 14.7% estimated services). We pair these with Census ACS 5-Year median gross rent (B25064) and household pay (B19013) across different census universes. We also include the Local Need Index (ADI US percentile) and published MACPAC (Jan 2025) and Polsky et al. (2015, NEJM) benchmarks.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>High-Cost City Market.</strong> San Francisco &amp; Bay Area (CMS Area 05 / Santa Clara ACS baseline).. <strong>High-Rent Working Tract.</strong> Marin County: San Rafael Canal area (Tract 1122.03).. <strong>Rural Foothills Market.</strong> Nevada County (Sierra Foothills rural area).. <strong>High-Need Farm Region.</strong> Central Valley &amp; Imperial County (Central Fresno Tract 2 &amp; Imperial)..</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Observed Federal &amp; State Benchmarks: CMS CY 2026 Practice Expense GPCI, Census ACS Gross Rent, Local Need Percentile &amp; MACPAC Billing Loss. Ruler 1: CMS Practice Expense GPCI (CY 2026): <strong>1.506 in SF (+50.6%) vs. 0.900 in Imperial (-10.0%)</strong>. A CAPHE 3-part composite re-weights CMS Practice Expense GPCI parts to <strong>55.6% staff pay, 29.7% office rent, and 14.7% estimated services</strong>. Under a flat state fee list, San Francisco clinics face <strong>1.67x higher costs (1.506 vs. 0.900)</strong> than Imperial County. Ruler 2: Local Need Index &amp; Renter Pay Strain: <strong>85th Percentile in Imperial vs. 15th in SF (5.7x Flip)</strong>. Tracking resident need flips the map. Imperial sits at the <strong>85th US need percentile</strong> and Central Fresno homes earn <strong>$3,103/mo (rent $1,007)</strong>. San Francisco sits at the <strong>15th percentile</strong> and Santa Clara homes earn <strong>$13,306/mo (rent $2,814)</strong>.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Matching Coastal Cost Boosts and Inland Staff Grants to Local Markets</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We show why clinic cost and local need point in opposite ways and how two tools fix both.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix comparing policy frames, market limits, single-rule risks, and two-tool policy fit across four areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Cost City Market
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Rent Working Tract
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rural Foothills Market
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Need Farm Region
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                The Main Policy Case
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A flat Medi-Cal dollar buys one-third less care in the Bay Area.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                In Marin's Canal area, families pay $2,318 rent and clinics pay high coast wages.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Nevada County has near-mean costs, but wide rural miles limit clinic patient volume.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Imperial and Central Fresno sit at the 85th need percentile, where low rent cannot draw doctors.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Market Constraint
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High private pay and +50.6% clinic costs crowd out solo practices.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High county pay covers up renter tracts where clinics pay coast wages to serve workers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Fixed clinic rent spread across small rural panels makes the 17.6% Medicaid billing loss hard to absorb.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Even when a flat Medi-Cal dollar goes further against $1,007 rent, few doctors open offices in border tracts.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk of Using One Metric Alone
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Setting pay boosts by local need alone leaves Bay Area clinics with +50.6% higher wage and rent bills.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using county mean pay leaves out high-rent worker tracts where 42.1% of pay goes to rent.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using city cost boosts without rural floors leaves foothill clinics with neither rate boosts nor hiring grants.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cutting inland Medi-Cal pay.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Two-Tool Policy Fit
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Tie Clinic Rates to Local Costs<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Link city Medi-Cal fee lists to the CMS Practice Expense GPCI.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Target Renter Tracts by Need<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pair Bay Area cost boosts with local outreach in high-rent tracts.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Cut 17.6% Billing Friction<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Simplify claims to save the 15.2 pp gap between Medicaid and private plans.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Send Staff Grants to High Need<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use 85th-percentile need ranks to fund loan pay and clinic grants in Fresno.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: CMS Practice Expense GPCI, MACPAC Billing Loss &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>CMS Practice Expense GPCI &amp; CAPHE 3-Part Composite (Mode B):</strong> Under the CMS CY 2026 Physician Fee Schedule Final Rule, three Practice Expense GPCI sub-components (19.15% employee wages from BLS OEWS, 10.22% office rent from Census ACS/HUD 2BR rent, and 5.07% estimated purchased services, summing to 34.44% of total MEI weight) normalize to a 3-part CAPHE composite of 55.6% staff pay, 29.7% office rent, and 14.7% estimated services. San Francisco PE GPCI is 1.506 (+50.6% above the US mean, ADI ~15th percentile) vs. Imperial County at 0.900 (-10.0%, ADI ~85th percentile).</p>
+          <p>&bull; <strong>Billing Loss &amp; Fee Bump Benchmarks (Mode B):</strong> Dunn, Gottlieb, Shapiro, &amp; Sonnenstuhl / MACPAC (Jan 2025) show that Medicaid providers lose 17.6% of claim value to billing hurdles, vs. 4.7% in Medicare and 2.4% in private plans. Polsky et al. (2015, *NEJM*) find that the Medicaid fee bump raised primary care visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Census ACS 5-Year (2019-2023) rent and pay numbers come from different census universes (B19013 all households vs. B25064 renter homes).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>The Main Policy Case (High-Cost City Market).</strong> With a 1.506 cost score and $2,814 rent, a flat Medi-Cal dollar buys one-third less care in the Bay Area. &middot; <strong>The Main Policy Case (High-Rent Working Tract).</strong> In Marin's Canal area, families pay $2,318 rent (42.1% of $5,507 pay) and clinics pay high coast wages. &middot; <strong>The Main Policy Case (Rural Foothills Market).</strong> Nevada County has near-mean costs (1.025, rent $1,635), but wide rural miles limit clinic patient volume. &middot; <strong>The Main Policy Case (High-Need Farm Region).</strong> Imperial and Central Fresno sit at the 85th need percentile ($3,103 pay), where low rent (0.900) cannot draw doctors. &middot; <strong>Main Market Constraint (High-Cost City Market).</strong> High private pay (2.4% billing loss vs. 17.6% in Medicaid) and +50.6% clinic costs crowd out solo practices. &middot; <strong>Main Market Constraint (High-Rent Working Tract).</strong> High county pay (15th need percentile) covers up renter tracts where clinics pay coast wages to serve workers. &middot; <strong>Risk of Using One Metric Alone (High-Need Farm Region).</strong> Cutting inland Medi-Cal pay because Imperial's cost score is 0.900 lowers clinic pay in 85th-percentile need areas.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Nominal vs. Real Indices (Mode B Official GPCI &amp; ACS Data)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Centers for Medicare &amp; Medicaid Services (CMS)</a>: CY 2026 Physician Fee Schedule Final Rule Practice Expense GPCI (with CAPHE 3-part cost shares: 55.6% clinical wages, 29.7% rent, 14.7% estimated services).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www.neighborhoodatlas.medicine.wisc.edu/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">University of Wisconsin School of Medicine and Public Health</a>: Area Deprivation Index (ADI) Neighborhood Atlas &amp; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">MACPAC (Jan 2025) &amp; Dunn et al.</a>: Medicaid Provider Billing Friction (17.6% claim value loss) &amp; <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), <em>NEJM</em>, 372(6), 537&ndash;545</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Polsky et al. (2015), NEJM, 372(6), 537-545</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 5-Year Estimates (Tables B19013 &amp; B25064)</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Matching Cost Rate Indexing and Need-Targeted Staff Grants to Local Markets</h3>
+            <p class="text-slate-800">In state budget hearings, coastal city health systems and inland rural groups show real federal data that rank counties in opposite ways. Coastal groups cite the CMS Practice Expense GPCI (where a CAPHE 3-part composite weights staff pay at 55.6% and office rent at 29.7%). San Francisco's Practice Expense GPCI sits at 1.506 (+50.6% above the US mean, with Santa Clara median rent at $2,814/month). Because the state pays one flat Medi-Cal fee list, coastal clinics face tight margins. Inland and border groups cite the Local Need Index (ADI) and Census ACS pay. Imperial County sits at the 85th US need percentile and Central Fresno homes earn $3,103/month ($1,007 rent), while San Francisco sits at the 15th percentile.</p>
+            <p class="text-slate-800">Health economics shows that these two rulers do not conflict. They track two separate market limits that need two separate tools. Polsky et al. (2015, NEJM) show that raising primary care fees lifts visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Dunn et al. / MACPAC (2025) show that 17.6% of Medicaid claim value is lost to billing hurdles (vs. 2.4% in private plans). Tying fee lists to clinic costs and cutting the 17.6% billing loss backs high-cost city clinics. Sending CalHealthCares loan pay and residency grants by local need builds doctor supply in inland counties.</p>
+          </div>
+          <p><strong>Mode B Observed Benchmarks:</strong> All CMS CY 2026 Practice Expense GPCI scores (1.506 San Francisco vs. 0.900 Imperial) and CAPHE 3-part normalized cost shares (55.6% pay, 29.7% rent, 14.7% estimated services from the 19.15%, 10.22%, and 5.07% MEI shares) are Mode B data. They pair with Area Deprivation Index percentiles (15th vs. 85th) and Census ACS 5-Year (2019-2023) rents ($2,814, $2,318, $1,635, $1,007) and monthly pay ($13,306, $5,507, $7,075, $3,103) across different census universes. MACPAC billing loss rates (17.6% Medicaid, 4.7% Medicare, 2.4% private) and Polsky et al. (58.7% to 66.4%, +7.7 pp) benchmarks come from the CMS CY 2026 Physician Fee Schedule Final Rule and Census ACS 5-Year tables.</p>
+          <p><strong>Main Sources:</strong> We cite <a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS CY 2026 Physician Fee Schedule Final Rule (Geographic Practice Cost Indices)</a> and <a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">MACPAC (Jan 2025) &amp; Dunn, Gottlieb, Shapiro, &amp; Sonnenstuhl on Medicaid Billing Friction</a>. We also use <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), NEJM, 372(6), 537-545</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates (Tables B19013 &amp; B25064)</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">How does the CAPHE 3-part composite of the CMS Practice Expense GPCI weight local pay and rent?</dt>
+                <dd class="text-slate-700 mt-0.5">Under the CMS CY 2026 Physician Fee Schedule Final Rule, three Practice Expense GPCI sub-components (19.15% local health staff wages from BLS OEWS, 10.22% office rent from Census ACS 2-bedroom gross rent, and 5.07% estimated purchased services) normalize across their 34.44% sum to 55.6% staff pay, 29.7% rent, and 14.7% estimated services. The overall Practice Expense GPCI is 1.506 in San Francisco vs. 0.900 in Imperial County.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why do the CMS Practice Expense GPCI and the Area Deprivation Index rank San Francisco and Imperial in opposite ways?</dt>
+                <dd class="text-slate-700 mt-0.5">The CMS Practice Expense GPCI tracks what a clinic pays to hire staff and rent space (1.506 in SF vs. 0.900 in Imperial). The Neighborhood Need Index tracks resident poverty and hardship (15th percentile in SF vs. 85th percentile in Imperial). High-cost cities squeeze clinic margins, while high-need rural counties face low family pay and doctor shortages.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How much does billing friction cut real Medicaid pay?</dt>
+                <dd class="text-slate-700 mt-0.5">Work by Dunn, Gottlieb, Shapiro, and Sonnenstuhl cited by MACPAC (January 2025) shows that Medicaid providers lose 17.6% of claim value to denials and billing hurdles. That is more than triple Medicare (4.7%) and seven times private plans (2.4%).</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs</a></li>
+          <li class="my-2"><a href="/methods-lab/measurement-error-claims" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Directory Registry Counts vs. Active Claims Billers</a></li>
+          <li class="my-2"><a href="/methods-lab/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Filtered-Group Shift in Active-Biller Subsets</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            California's Department of Public Health is evaluating a Community Health Worker (CHW) program. County-level data show a clear positive correlation: counties with more CHW hours have better health outcomes. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">CHW Program Intensity vs Preventable Hospitalizations</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing CHW program intensity versus preventable hospitalization rate across California counties"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-primary);"></span>
-                <span>Each dot = 1 California county</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>The Association</h4>
-              <div class="stat-item" style="text-align: left;">
-                <div class="stat-value" id="stat-correlation" style="font-size: 1.5rem;">--</div>
-                <div class="stat-label">Correlation (r)</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>County Summary</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-counties">58</div>
-                  <div class="stat-label">Counties</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-avg-chw">--</div>
-                  <div class="stat-label">Avg CHW Hours</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>What we observe:</strong> More CHW hours correlate with lower preventable hospitalization rates. The pattern is clear and statistically significant (p < 0.001).
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Two analysts will interpret this data. Both are competent professionals. Both will reach confident conclusions. Yet their recommendations will be opposites.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: ANALYST A
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Analyst A's Interpretation</h2>
-          <p class="panel-intro">
-            Analyst A approaches the data with a focus on statistical association. The question: Is the relationship between CHW programs and health outcomes real and meaningful?
-          </p>
-        </div>
-
-        <div class="analyst-container">
-          <div class="analyst-profile">
-            <div class="analyst-header">
-              <div class="analyst-avatar expand">A</div>
-              <div class="analyst-info">
-                <h3>Analyst A</h3>
-                <div class="analyst-title">Adjustment-Based Perspective</div>
-              </div>
-            </div>
-
-            <div class="analyst-reasoning">
-              <h4>Reasoning Process</h4>
-              <div class="reasoning-step">
-                <div class="step-number">1</div>
-                <div class="step-content">The correlation is strong (r = -0.72) and statistically significant. This is unlikely due to chance.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">2</div>
-                <div class="step-content">I control for observable confounders: income, insurance rates, urban/rural status. The association persists.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">3</div>
-                <div class="step-content">CHWs provide evidence-based services (care coordination, patient education) known to improve outcomes.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">4</div>
-                <div class="step-content">The dose-response relationship (more CHW hours = better outcomes) supports causality.</div>
-              </div>
-            </div>
-
-            <div class="recommendation-box expand">
-              <div class="recommendation-label">Recommendation</div>
-              <div class="recommendation-text">Expand CHW funding statewide</div>
-            </div>
-          </div>
-
-          <aside class="assumption-sidebar">
-            <div class="assumption-card">
-              <h4>Key Assumptions</h4>
-              <div class="assumption-item">
-                <span class="assumption-check">OK</span>
-                <span>Statistical association is real</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-check">OK</span>
-                <span>Observable confounders controlled</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-check">OK</span>
-                <span>Mechanism is plausible</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-question">?</span>
-                <span>No unmeasured confounders</span>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>Analyst A's logic:</strong> If the association is real and we've controlled for known confounders, then CHWs likely cause better outcomes. Expanding the program should help more counties.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Analyst B looks at the exact same data and controls for the same variables. But Analyst B asks a different question entirely.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: ANALYST B
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Analyst B's Interpretation</h2>
-          <p class="panel-intro">
-            Analyst B asks: Why do some counties have CHW programs while others don't? The answer to this question changes everything.
-          </p>
-        </div>
-
-        <div class="analyst-container">
-          <div class="analyst-profile">
-            <div class="analyst-header">
-              <div class="analyst-avatar cut">B</div>
-              <div class="analyst-info">
-                <h3>Analyst B</h3>
-                <div class="analyst-title">Design-Based Perspective</div>
-              </div>
-            </div>
-
-            <div class="analyst-reasoning">
-              <h4>Reasoning Process</h4>
-              <div class="reasoning-step">
-                <div class="step-number">1</div>
-                <div class="step-content">Which counties adopted CHW programs? Ones with grant-writing capacity, health department infrastructure, and political will.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">2</div>
-                <div class="step-content">These same factors also improve health outcomes directly, regardless of CHWs. They're unmeasured confounders.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">3</div>
-                <div class="step-content">The association may reflect "counties that have their act together" rather than CHW effectiveness.</div>
-              </div>
-              <div class="reasoning-step">
-                <div class="step-number">4</div>
-                <div class="step-content">Mandating CHW programs for struggling counties won't give them the underlying capacity that drives success.</div>
-              </div>
-            </div>
-
-            <div class="recommendation-box cut">
-              <div class="recommendation-label">Recommendation</div>
-              <div class="recommendation-text">Don't expand until effect is identified</div>
-            </div>
-          </div>
-
-          <aside class="assumption-sidebar">
-            <div class="assumption-card">
-              <h4>Key Concerns</h4>
-              <div class="assumption-item">
-                <span class="assumption-check">OK</span>
-                <span>Statistical association is real</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-check">OK</span>
-                <span>Observable confounders controlled</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-question">?</span>
-                <span>Treatment assignment is non-random</span>
-              </div>
-              <div class="assumption-item">
-                <span class="assumption-question">?</span>
-                <span>Selection factors affect outcomes</span>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>Analyst B's logic:</strong> The counties that chose CHW programs may have succeeded anyway. We can't separate the effect of CHWs from the effect of being a county that adopts CHWs.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Same data. Same statistical methods. Opposite conclusions. What explains the difference?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: THE DIFFERENCE
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">The Difference</h2>
-          <p class="panel-intro">
-            Both analysts agree on the data. They disagree on what the data can tell us. The difference lies in one word: <strong>identification</strong>.
-          </p>
-        </div>
-
-        <div class="difference-container">
-          <div class="comparison-column expand">
-            <div class="column-header">
-              <div class="column-icon expand">A</div>
-              <h3>Analyst A's Question</h3>
-            </div>
-            <div class="belief-list">
-              <div class="belief-item">
-                <div class="belief-label">Asks</div>
-                <div class="belief-text">"Is the association between CHWs and outcomes real?"</div>
-              </div>
-              <div class="belief-item">
-                <div class="belief-label">Assumes</div>
-                <div class="belief-text">"If we control for observable confounders, remaining association reflects causation."</div>
-              </div>
-              <div class="belief-item">
-                <div class="belief-label">Ignores</div>
-                <div class="belief-text">"Why did some counties get CHW programs and others didn't?"</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="comparison-column cut">
-            <div class="column-header">
-              <div class="column-icon cut">B</div>
-              <h3>Analyst B's Question</h3>
-            </div>
-            <div class="belief-list">
-              <div class="belief-item">
-                <div class="belief-label">Asks</div>
-                <div class="belief-text">"Is the variation in CHWs independent of factors that affect outcomes?"</div>
-              </div>
-              <div class="belief-item">
-                <div class="belief-label">Assumes</div>
-                <div class="belief-text">"Counties that adopted CHWs differ in ways we cannot fully measure."</div>
-              </div>
-              <div class="belief-item">
-                <div class="belief-label">Requires</div>
-                <div class="belief-text">"Find variation in CHW adoption that's unrelated to underlying county capacity."</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is Identification?</h3>
-          <p>A causal effect is <strong>identified</strong> when the variation in treatment (here, CHW program intensity) is independent of the factors that also affect outcomes.</p>
-          <p style="margin-top: var(--space-md);">In this case, identification would require:</p>
-          <ul>
-            <li>Variation in CHW programs driven by something other than county capacity or political will</li>
-            <li>For example: a policy that randomly assigned CHW funding, or a budget cutoff that affected otherwise-similar counties differently</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">Without identification, we can't distinguish:</p>
-          <ul>
-            <li>"CHWs caused better outcomes" from</li>
-            <li>"Counties that adopt CHWs would have better outcomes anyway"</li>
-          </ul>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Why does this distinction matter so much? Because policies based on unidentified effects may fail spectacularly when scaled.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            The question "Is the association real?" is necessary but insufficient for policy. The question "Is the effect identified?" determines whether we can act on that association.
-          </p>
-        </div>
-
-        <div class="dag-wrapper">
-          <img
-            src="/methods-lab/identical-data-opposite-policies/assets/identical-data-opposite-policies-dag.png"
-            alt="Causal diagram showing County Capacity affecting both CHW Program Adoption and Health Outcomes, with a dashed arrow from CHW Programs to Health Outcomes indicating unidentified causal effect"
-            class="dag-image"
-          >
-          <p class="dag-caption">County capacity affects both program adoption and health outcomes. The CHW effect cannot be separated from selection effects.</p>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Questions Economists Ask That Others Might Not</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Selection:</strong> Why did some units get treatment? Could those reasons also affect outcomes?</div>
-            <div class="concept-item"><strong>Counterfactual:</strong> What would have happened to treated units if they hadn't been treated?</div>
-            <div class="concept-item"><strong>Identification:</strong> Is there variation in treatment that's independent of outcome determinants?</div>
-            <div class="concept-item"><strong>External validity:</strong> Even if the effect is real here, will it work the same when scaled elsewhere?</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Statistical significance doesn't equal causal identification.</strong> An association can be real, robust, and replicated while still failing to identify a causal effect. The crucial question is whether treatment variation is independent of outcome determinants. Policy changes, randomization, and natural experiments can provide this independence. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Evidence Credibility track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-maturation-trends" style="color:#0041A5;font-weight:600;">Maturation Threat</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-history-events" style="color:#0041A5;font-weight:600;">History Threat</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-confounding-selection" style="color:#0041A5;font-weight:600;">Confounding vs. Selection Bias</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateCountyData() {
-      const countyNames = [
-        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
-        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
-        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
-        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
-        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
-        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
-        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
-        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
-        'County BC', 'County BD', 'County BE', 'County BF'
-      ];
-
-      const data = [];
-      let seed = 123;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // County capacity (unmeasured confounder) - higher = more capable
-        const capacity = rand() * 100;
-
-        // CHW hours driven by capacity (counties with capacity implement programs)
-        const baseCHW = capacity * 0.8 + (rand() - 0.5) * 30;
-        const chwHours = Math.max(0, Math.min(100, baseCHW));
-
-        // Preventable hospitalizations driven by capacity (and small CHW effect)
-        // Lower = better outcomes
-        const baseHosp = 100 - (capacity * 0.6);
-        const smallCHWEffect = -chwHours * 0.05; // Small true effect
-        const noise = (rand() - 0.5) * 20;
-        const hospRate = Math.max(15, Math.min(85, baseHosp + smallCHWEffect + noise));
-
-        data.push({
-          name: countyNames[i],
-          capacity: Math.round(capacity),
-          chwHours: Math.round(chwHours * 10) / 10,
-          hospRate: Math.round(hospRate * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    function calculateCorrelation(data, xKey, yKey) {
-      const n = data.length;
-      const xVals = data.map(d => d[xKey]);
-      const yVals = data.map(d => d[yKey]);
-
-      const xMean = mean(xVals);
-      const yMean = mean(yVals);
-
-      let numerator = 0;
-      let xDenom = 0;
-      let yDenom = 0;
-
-      for (let i = 0; i < n; i++) {
-        const xDiff = xVals[i] - xMean;
-        const yDiff = yVals[i] - yMean;
-        numerator += xDiff * yDiff;
-        xDenom += xDiff * xDiff;
-        yDenom += yDiff * yDiff;
-      }
-
-      return numerator / Math.sqrt(xDenom * yDenom);
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 10, yMax = 90;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 20; y <= 80; y += 15) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Trend line
-      const xVals = countyData.map(d => d.chwHours);
-      const yVals = countyData.map(d => d.hospRate);
-      const xMean = mean(xVals);
-      const yMean = mean(yVals);
-
-      let numerator = 0;
-      let denominator = 0;
-      for (let i = 0; i < countyData.length; i++) {
-        numerator += (xVals[i] - xMean) * (yVals[i] - yMean);
-        denominator += (xVals[i] - xMean) * (xVals[i] - xMean);
-      }
-      const slope = numerator / denominator;
-      const intercept = yMean - slope * xMean;
-
-      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      trendLine.setAttribute('x1', xScale(0));
-      trendLine.setAttribute('x2', xScale(100));
-      trendLine.setAttribute('y1', yScale(intercept));
-      trendLine.setAttribute('y2', yScale(slope * 100 + intercept));
-      trendLine.setAttribute('stroke', 'var(--color-primary)');
-      trendLine.setAttribute('stroke-width', '2');
-      trendLine.setAttribute('stroke-dasharray', '5,5');
-      trendLine.setAttribute('opacity', '0.5');
-      svg.appendChild(trendLine);
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.chwHours));
-        circle.setAttribute('cy', yScale(d.hospRate));
-        circle.setAttribute('r', 7);
-        circle.setAttribute('fill', 'var(--color-primary)');
-        circle.setAttribute('opacity', '0.7');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'CHW Program Intensity (hours per 1,000 residents)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 20; y <= 80; y += 15) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Preventable Hospitalization Rate (per 10,000)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">CHW Hours: ${data.chwHours}</div>
-        <div class="metric">Hosp. Rate: ${data.hospRate}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       6. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const correlation = calculateCorrelation(countyData, 'chwHours', 'hospRate');
-      const avgCHW = mean(countyData.map(d => d.chwHours));
-
-      document.getElementById('stat-correlation').textContent = correlation.toFixed(2);
-      document.getElementById('stat-avg-chw').textContent = Math.round(avgCHW);
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

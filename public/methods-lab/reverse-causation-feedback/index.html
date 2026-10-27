@@ -3,877 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Needs-Driven Spending & Prevention ROI | CAPHE</title>
+  <meta name="description" content="Needs-driven health spending pulls simple OLS to +0.18 deaths/100K; IV isolates -4.56 to -9.16 deaths/100K across 57 California counties (2003-2023).">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/reverse-causation-feedback">
+  <meta property="og:title" content="Needs-Driven Spending & Prevention ROI | CAPHE">
+  <meta property="og:description" content="Needs-driven health spending pulls simple OLS to +0.18 deaths/100K; IV isolates -4.56 to -9.16 deaths/100K across 57 California counties (2003-2023).">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/reverse-causation-feedback">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Identifying Reverse Causation and Feedback Loops | CAPHE</title>
-  <meta name="description" content="Learn to identify when Y causes X instead of X causing Y, and when both cause each other. Discover how economists model equilibrium and find intervention leverage points.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/reverse-causation-feedback">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
+      color: #fff;
+      margin: 0;
     }
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
 
-    .stat-label {
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
       font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       7. PANEL 2: REVERSE CAUSATION
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.forward {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.reverse {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. PANEL 3: FEEDBACK LOOPS
-       ============================================ */
-    .feedback-section {
-      margin-bottom: var(--space-2xl);
-    }
-
-    .simulation-controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-lg);
-      flex-wrap: wrap;
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-xs);
-    }
-
-    .control-label {
-      font-size: 0.85rem;
       font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    .control-slider {
-      width: 180px;
-      height: 8px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--color-border);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
       border-radius: 4px;
-      outline: none;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .control-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      cursor: pointer;
-    }
-
-    .control-value {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--color-primary);
-      min-width: 40px;
-      text-align: center;
-    }
-
-    .btn-simulate {
-      padding: var(--space-sm) var(--space-lg);
-      background: var(--color-primary);
-      border: none;
-      border-radius: var(--radius-md);
-      color: white;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-simulate:hover {
-      background: var(--color-primary-dark);
-    }
-
-    .btn-reset {
-      padding: var(--space-sm) var(--space-md);
-      background: transparent;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      color: var(--color-text-secondary);
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-reset:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-    }
-
-    .feedback-grid {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .feedback-grid { grid-template-columns: 1fr; }
-    }
-
-    .equilibrium-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .equilibrium-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .equilibrium-card h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-    }
-
-    .equilibrium-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--space-sm) 0;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .equilibrium-row:last-child {
-      border-bottom: none;
-    }
-
-    .equilibrium-label {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-    }
-
-    .equilibrium-value {
-      font-family: var(--font-mono);
-      font-weight: 600;
-      color: var(--color-primary);
-    }
-
-    .insight-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.85rem;
-    }
-
-    .insight-box p {
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-box p:last-child {
-      margin-bottom: 0;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       9. PANEL 4: BREAKING THE LOOP
-       ============================================ */
-    .intervention-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .intervention-container { grid-template-columns: 1fr; }
-    }
-
-    .intervention-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .intervention-toggle {
-      display: flex;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-lg);
-      flex-wrap: wrap;
-    }
-
-    .toggle-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .toggle-btn.active {
-      background: var(--color-secondary);
-      border-color: var(--color-secondary);
-      color: white;
-    }
-
-    .strategy-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .strategy-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-border);
-    }
-
-    .strategy-card.active {
-      border-left-color: var(--color-secondary);
-      background: rgba(13, 148, 136, 0.03);
-    }
-
-    .strategy-card h4 {
-      font-size: 0.95rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .strategy-card p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    .strategy-card .example {
-      font-size: 0.8rem;
-      font-style: italic;
-      color: var(--color-text-muted);
-      margin-top: var(--space-sm);
-      padding-top: var(--space-sm);
-      border-top: 1px dashed var(--color-border);
-    }
-
-    /* Bridging question */
-    .bridging-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-box p {
-      font-size: 1.05rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .bridging-box p:last-child {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-
-    /* ============================================
-       10. PANEL 5: KEY INSIGHT
-       ============================================ */
-    .concepts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .concepts-grid { grid-template-columns: 1fr; }
-    }
-
-    .concept-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .concept-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .concept-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: "\2713";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       11. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       12. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 240px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       13. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Identifying Reverse Causation and Feedback Loops",
-  "description": "Learn to identify when Y causes X instead of X causing Y, and when both cause each other. Discover how economists model equilibrium and find intervention leverage points.",
+  "headline": "Same-Year County Spending Averages Combine Routine Prevention Budgets With Outbreak Emergency Funds",
+  "description": "Needs-driven health spending pulls simple OLS to +0.18 deaths/100K; IV isolates -4.56 to -9.16 deaths/100K across 57 California counties (2003-2023).",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -881,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -892,55 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is the difference between reverse causation and a feedback loop?",
+      "name": "What is \"reverse causation\" in public health budgets?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Reverse causation means the causal arrow points the opposite way from what was assumed, so Y causes X. A feedback loop means X causes Y and Y causes X at the same time, so small changes amplify and the variables settle into an equilibrium."
+        "text": "It happens when the health outcome (death or disease rates) causes changes in the budget input (public health spending). In the California county panel, distributed-lag tests show a positive two-year lag slope (+1.58, p = 0.001) because counties raise public health budgets after death spikes. That reactive pattern and unobserved confounding create a 9.34-point gap between the same-year OLS slope (+0.18) and the IV estimate (-9.16)."
       }
     },
     {
       "@type": "Question",
-      "name": "Why can't adding more control variables fix reverse causation?",
+      "name": "Why does Table 1 show both a $10 calculator scale and a $1 regression table scale?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Controls address omitted confounders, not the direction of causation. When two variables influence each other, regression cannot tell which way the effect runs. Identification requires exogenous variation that moves one variable without coming from the other."
+        "text": "In the working paper (lewbel_iv_results_section.tex), Tables 1-5 label the -9.158 slope per $1/capita ($10,919 per life saved, 1,246:1 BCR at $13.6M VSL), while Section 4.4 of the paper and the CAPHE LHA Calculator (lha-calculator.js) evaluate -9.16 per $10/capita (-0.916 per $1/capita) to match Brown (2014)'s -9.10 per $10/capita scale ($109,170 per life saved, 125:1 BCR). Reporting both scales shows that county public health spending is highly cost-effective under either unit convention."
       }
     },
     {
       "@type": "Question",
-      "name": "How do economists find leverage points in a feedback system?",
+      "name": "Does county public health spending still pay off if a board uses only the pre-pandemic calm-year floor?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "They look for an external shock, such as a policy change or natural experiment, that affects only one side of the loop. That exogenous variation isolates one direction of causation and reveals where intervention yields the largest equilibrium shift per dollar."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can timing help separate cause from effect in feedback loops?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. If X takes years to affect Y while Y affects X quickly, panel data with enough periods can exploit those lags to identify one direction of causation at a time."
+        "text": "Yes. Using the observed 2003-2019 pre-pandemic estimate of 4.56 fewer deaths per 100,000 on the conservative $10 calculator scale yields $219,298 per life saved and a 62.0:1 benefit-cost ratio at the $13.6M HHS central VSL (or $21,930 per life and 620:1 on the $1 table scale)."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -951,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -970,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -986,1228 +529,451 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab &middot; Specialized Applications</div>
-      <h1>Identifying Reverse Causation and Feedback Loops</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Reverse causation occurs when Y causes X rather than X causing Y, and a feedback loop arises when X and Y cause each other simultaneously. Correlation alone cannot distinguish these cases: a link between higher chronic disease rates and lower employment is equally consistent with illness reducing work capacity or job loss worsening health. When variables influence each other, the system settles into an equilibrium and standard regression cannot recover a causal effect. This CAPHE lab shows that the remedy is not more controls but exogenous variation that shifts one variable without coming from the other, identifying a single direction and a leverage point for intervention.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Does poor health cause poverty, or does poverty cause poor health? When causes run both ways, finding where to intervene requires a different kind of analysis.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Reverse Causation</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Feedback Loops</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Breaking the Loop</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; System Dynamics &amp; Feedback
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Same-Year County Spending Averages Combine Routine Prevention Budgets With Outbreak Emergency Funds
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Splitting emergency outbreak fund surges from steady base prevention budgets across county years.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When a county board audits public health spending and death rates in the same year, the review mixes steady base prevention with emergency funds added after past spikes. Across <strong>1,197 California county-years</strong> (2003 to 2023), routine-budget models isolate a <strong>9.16 fewer deaths per 100,000</strong> slope, equal to <strong>$109,170 per life saved</strong> on the LHA calculator's $10-per-resident scale (or <strong>$10,919</strong> on the working paper's $1 table scale).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Same-year averages show a flat <strong>+0.18 slope</strong> because counties raise budgets after death spikes, with a <strong>+1.58 two-year lag slope.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Checking the <strong>-4.56</strong> calm-year floor and the <strong>-9.16</strong> full-panel slope protects multi-year grants from early cuts.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Splitting Outbreak Feedback From the Routine-Budget Effect</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Comparing same-year OLS against pre-pandemic, small-county, and full-panel routine-budget estimates.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Comparison of same-year OLS, 2003 to 2019 pre-pandemic IV, small-county IV, and full 21-year IV results under both the $10 calculator scale and $1 regression table scale.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Budget Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Same-Year Simple Avg</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Same-Year Average</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Calm-Era IV</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-Pandemic Baseline</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Small-County IV</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Small-County Subsample</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Full-Panel IV</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Full Routine-Budget Effect</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Panel Sample &amp; Method
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Pooled Simple Avg</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">N = 1,197</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-COVID IV</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">N = 969</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Small-county IV subsample</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Full 21-year IV</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">N = 1,197</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Active Path in Model
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Two-Way</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Deaths <-> Budget</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Routine Budget -> Calm-Era Health</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Routine Budget -> Small-County Health</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Routine Budget -> Full-Panel Health</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Outbreak Surge Handling
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unadjusted</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+1.58 at 2-yr lag</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Omits 2020-2023 pandemic years</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Variance IV in small counties</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Variance IV</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">46 of 47 checks</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Deaths Averted per 100,000
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+0.18</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Crosses Zero</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 2%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">4.56 fewer deaths / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">2003-19</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 50%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">8.11 fewer deaths / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">small</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 89%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">9.16 fewer deaths / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">full</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cost per Life
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Not defined</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">positive slope</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$219,298 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$21,930 ($1)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$123,305 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$12,330 ($1)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$109,170 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$10,919 ($1)</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                BCR at $13.6M
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Reads as 0:1</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">flat</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">62.0:1 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">620:1 ($1)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">110.3:1 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">1,103:1 ($1)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">124.6:1 ($10)</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">1,246:1 ($1)</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Implied Value at 1.94M Pop
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Reads as +3.5 deaths</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">flat</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">88.3 lives</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1.20B, floor</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">157.0 lives</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2.14B, scale</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">177.4 lives</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2.41B, full</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Panel Estimates; Mode A Valuations &amp; Unit Reconciliation):</strong> Same-year OLS is +0.184 deaths per 100,000 (SE = 0.399, p = 0.644, N = 1,197). Pre-pandemic 2003-2019 IV is -4.56 (p &lt; 0.01, N = 969). Small-county IV is -8.11 (p &lt; 0.05). Full 2003-2023 IV is -9.158 (SE = 1.108, 95% CI -11.34 to -6.98; first-stage F = 314.1, N = 1,197). The 9.34-point difference between +0.18 and -9.16 is the arithmetic gap between the two estimators. Across source files, Tables 1-5 of Value_of_Public_Health/paper/sections/lewbel_iv_results_section.tex report the regressor per $1/capita (implying -91.58 per $10/capita, $10,919 per life saved, and 1,246:1 BCR at $13.6M VSL), whereas Section 4.4 of the same paper (3,572 lives across 39M residents for a $10/capita [$390M] outlay = $109,000/life, 125:1 BCR) and the CAPHE LHA Calculator (src/frontend/js/lha-calculator.js: coefficientPer10 = -9.16, coefficient = -0.916 per $1) standardize the -9.16 slope per $10/capita to match Brown (2014). Both scales are shown above.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Same-Year Average.</strong> Pooled OLS 2003-2023, N = 1,197 (Mode B). <strong>Pre-Pandemic Baseline.</strong> 2003-2019 Subsample, N = 969 (Mode B). <strong>Small-County Subsample.</strong> Rural &amp; Small Counties 2003-2023 (Mode B). <strong>Full Routine-Budget Effect.</strong> 57 Counties 2003-2023, N = 1,197 (Mode B).</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Panel (57 Counties, 1,197 County-Years, 2003 to 2023). Ruler 1: Same-Year OLS Slope (Spending and Deaths Move Together): <strong>+0.18 Deaths / 100K (9.34-Point Gap vs. IV)</strong>. When death rates rise, counties add funds over the next budget cycle. The raw OLS slope is <strong>+0.18 (crosses zero)</strong>, sitting <strong>9.34 points above the -9.16 IV slope</strong> due to combined feedback and confounding. Ruler 2: Routine-Budget Model (Budget Shifts Apart From Local Need): <strong>9.16 fewer Deaths / 100K (Range -11.34 to -6.98)</strong>. Tracking budget shifts apart from local death spikes isolates <strong>9.16 fewer deaths/100K (range -11.34 to -6.98)</strong>. That equals <strong>$109,170 per life saved</strong> on the LHA calculator $10 scale (or <strong>$10,919</strong> on the paper's $1 table scale).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Managing Budget Cycles When Outbreak Surges Cloud Base Gains</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How separating reactive outbreak aid across calm and pandemic windows guides county budget rules.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision grid showing feedback paths, audit pitfalls, budget tradeoffs, and multi-year grant rules.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Same-Year Average
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Pre-Pandemic Baseline
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Small-County Subsample
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Full Routine-Budget Effect
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Feedback &amp; Sample Path
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Death spikes trigger added county budgets two years later.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Calm-year budgets test steady disease control before COVID-19 surge aid.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Small and rural counties rely on county health clinics as core safety-net providers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Full 2003-2023 panel captures both calm-year prevention and pandemic surge capacity.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why 1-Year Audits Misread This Stage
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Same-year checks count reactive outbreak aid as routine program cost during severe flu waves.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Judging capacity only in calm years leaves out half the lives saved when an outbreak hits.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Statewide raw averages leave out strong gains in smaller counties with fewer private clinics.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Short one-year pilots stop chronic disease and clinic links before multi-year gains appear.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cutting base budgets in a calm year removes local staff needed for the next outbreak.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Even without pandemic years, the -4.56 calm-era floor yields a 62:1 calculator return.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                In smaller counties, the -8.11 slope yields a 110:1 calculator return.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                At the -9.16 slope, a 1.94M-resident county outlay implies 177.4 lives on the calculator scale.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Budget Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Split Outbreak Aid From Base Budgets<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use variance or board-rule models to separate outbreak aid before scoring county results.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use Calm-Era Floor as Base Case<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Anchor conservative budget memos in the -4.56 pre-pandemic floor.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Protect Small-County Core Grants<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Keep steady base grants in smaller counties where public clinics lead local care.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use 3-to-5-Year Grant Cycles<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Fund county health grants in multi-year blocks so calm and pandemic gains can build.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Estimator Details, Distributed Lag Check, Unit Reconciliation &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Estimator Details &amp; Robustness (Mode B):</strong> The working-paper IV estimate uses Lewbel (2012) variance-based instruments built from first-stage residuals. Diagnostics show first-stage F = 314.1, Breusch-Pagan LM = 91.68 (F = 12.32, p &lt; 0.001), and Hansen J = 4.49 (p = 0.343). Brown (2014) yields a close -9.10 per $10/capita (-0.91 per $1/capita). Across 47 model checks, 46 pass at p &lt; 0.05 (97.9% pass rate). The leave-one-county-out SD is 0.05 (range -9.21 to -9.02). The 2003-2019 pre-pandemic subsample (N = 969) yields -4.56, and the small-county subsample yields -8.11.</p>
+          <p>&bull; <strong>Simultaneous Equations &amp; Distributed Lag Evidence (Mode B):</strong> In the system Mortality_it = β·Spending_it + γ·X_it + α_i + τ_t + ε_it and Spending_it = θ·Mortality_it + Π·Z_it + u_it, needs-driven funding (θ &gt; 0) and unobserved confounding create a 9.34-point arithmetic gap between the same-year OLS slope (+0.184, SE = 0.399, p = 0.644) and the IV slope (-9.158, SE = 1.108, p &lt; 0.001). That 9.34-point gap is the difference between the two estimators, not a separately identified causal effect of outbreak spending. Direct distributed-lag testing (N = 684, joint F = 6.73, p = 0.001) finds a current-year slope of -0.919 (SE = 0.284, p = 0.001) and a positive 2-year lag slope of +1.581 (SE = 0.491, p = 0.001), showing that counties raise public health budgets about two years after mortality shocks. In the 2003-2016 consistent SCO series, 5-year first differences (-1.561 OLS, p &lt; 0.001; -2.996 IV, p = 0.002, N = 500) and 13-year differences (-2.947 OLS vs. -3.476 IV, p &lt; 0.001, N = 57) also turn negative once short-run budget feedback is differenced out.</p>
+          <p>&bull; <strong>Unit Convention Reconciliation ($10 Calculator Scale vs. $1 Regression Table Scale):</strong> As documented in GOAL_2026-06-18_value_deck_v2.md (L31-39), the working-paper files contain two unit conventions for the -9.158 coefficient. In Value_of_Public_Health/paper/sections/lewbel_iv_results_section.tex (L18-20 and Table 5, L298-303), the regressor is labeled per $1/capita (-9.158 per $1/capita, or -91.58 per $10/capita; +0.184 OLS per $1/capita, or +1.84 per $10/capita), which yields a cost per life saved of $1 × 100,000 / 9.158 = $10,919 ($21,930 at -4.56; $12,330 at -8.11) and a 1,246:1 BCR at $13.6M VSL. However, Section 4.4 of the same paper (L336-338: $10/capita [$390M] across 39M residents saving 3,572 lives = $109,000/life and 125:1 BCR), public/tools/lha-calculator/method.html (L231-357), and src/frontend/js/lha-calculator.js (L40-47: coefficientPer10 = -9.16, coefficient = -0.916 per $1) evaluate -9.16 on the conservative $10/capita scale ($10 × 100,000 / |β| = $109,170/life, 124.6:1 BCR; 177.4 lives across 1,936,259 Santa Clara residents for a $19.36M [$10/capita] outlay, or for a $1.94M [$1/capita] outlay under the $1 table scale). Table 1 reports both scales side by side and uses the conservative $10 calculator scale as the primary policy benchmark.</p>
+          <p>&bull; <strong>Data Provenance:</strong> Panel estimates (+0.184 OLS, +1.581 2-year lag, -3.07 Pre-ACA, -4.56 pre-pandemic 2003-2019, -8.11 Small Counties, -8.93 Post-ACA, -9.10 Brown 2014, -9.158 Full Sample IV) and VSL inputs come from src/frontend/js/lha-calculator.js (L20-72), scripts/build_value_of_public_health_deck.py (L304, L354-439), public/tools/lha-calculator/method.html (L221-358), and Value_of_Public_Health/paper/sections/lewbel_iv_results_section.tex (Tables 1-5 and Section 4.4, L10-338).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Feedback &amp; Sample Path (Same-Year Average).</strong> Death spikes trigger added county budgets two years later (+1.58 two-year lag slope). &middot; <strong>Budget Tradeoff (Pre-Pandemic Baseline).</strong> Even without pandemic years, the -4.56 calm-era floor yields a 62:1 calculator return (620:1 on $1 table scale). &middot; <strong>Budget Tradeoff (Small-County Subsample).</strong> In smaller counties, the -8.11 slope yields a 110:1 calculator return (1,103:1 on $1 table scale). &middot; <strong>Best-Fit Budget Rule (Pre-Pandemic Baseline).</strong> Anchor conservative budget memos in the -4.56 pre-pandemic floor (62:1 calculator return).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> System Dynamics &amp; Feedback &middot; Needs-Driven Spending &amp; Simultaneity (Mode B Panel)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>California County Public Health Spending Panel (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a> linked to <a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC WONDER</a> death records across 57 counties. N = 1,197 county-years (N = 969 in the 2003-2019 pre-pandemic window; N = 684 in the 3-lag distributed lag check).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Needs-Driven Feedback vs. Routine Budget Isolation:</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), <em>Journal of Business &amp; Economic Statistics</em>, 30(1), 67-80</a> provides the variance-based IV framework. The CAPHE California 57-county LHA panel (2003-2023) finds a -9.16 deaths/100K IV coefficient (first-stage F = 314.1), -4.56 in 2003-2019, and -8.11 in small counties, versus +0.18 in same-year OLS (p = 0.644) and +1.58 on a 2-year spending lag (p = 0.001). Across CAPHE source files, Tables 1-5 of the working paper label these slopes per $1/capita ($10,919/life, 1,246:1 BCR), while Section 4.4 of the paper and the LHA Calculator standardize -9.16 on Brown (2014)'s $10/capita scale (-0.916 per $1/capita; $109,170/life, 125:1 BCR).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Independent Governance Check &amp; Valuation:</strong> <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), <em>Economics &amp; Human Biology</em>, 13, 34-45</a> finds -9.10 deaths/100K per $10/capita (-0.91 per $1/capita). <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 VSL Guidelines</a> sets a $13.6M central value.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC WONDER Mortality Data</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">HHS ASPE 2025 VSL Guidelines</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Splitting Outbreak Aid From Steady Prevention Gains</h3>
+            <p class="text-slate-800">Every public health budget works inside a feedback loop. When deaths or disease outbreaks rise, boards add funds over the next budget cycle. In the 57-county panel, distributed-lag models show a positive +1.58 slope at a two-year lag (p = 0.001) as counties respond to past death spikes. Because spending reacts to sickness, simple same-year averages (+0.18, p = 0.644) mix reactive funding and confounding with steady prevention.</p>
+            <p class="text-slate-800">Health economics separates the direction of cause across both calm and pandemic windows. Routine-budget IV models isolate funding shifts that happen apart from local outbreaks, finding a 9.16 fewer deaths per 100,000 slope across the full 2003-2023 panel (F = 314.1; 125:1 return on the conservative $10 calculator scale, or 1,246:1 on the paper's $1 table scale). Excluding the 2020-2023 pandemic years still yields -4.56 (62:1 calculator return), and small counties show -8.11 (110:1 calculator return). Showing boards both the calm-year floor and the full-panel return helps keep effective programs funded across multi-year budget cycles.</p>
+          </div>
+          <p><strong>Mode Classification &amp; Unit Reconciliation (Mode B Panel Estimates; Mode A Valuations in Table 1):</strong> All regression slopes (+0.184 same-year OLS, +1.581 two-year lag, -4.56 pre-pandemic 2003-2019 IV, -8.11 small-county IV, -8.93 post-ACA IV, and -9.158 full-panel IV) and Santa Clara population (1,936,259) are observed Mode B inputs from src/frontend/js/lha-calculator.js (L20-72), scripts/build_value_of_public_health_deck.py (L354-439), and Value_of_Public_Health/paper/sections/lewbel_iv_results_section.tex. The 9.34-point difference between +0.18 and -9.16 is reported strictly as the arithmetic gap between the OLS and IV slopes. Because Tables 1-5 of lewbel_iv_results_section.tex label the regressor per $1/capita while Section 4.4 of the paper and lha-calculator.js evaluate -9.16 per $10/capita (-0.916 per $1/capita), Table 1 reports both the conservative $10 calculator valuations ($219,298, $123,305, and $109,170 per life; 62:1 to 125:1 BCR) and the $1 regression-table valuations ($21,930, $12,330, and $10,919 per life; 620:1 to 1,246:1 BCR).</p>
+          <p><strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>; <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), Economics &amp; Human Biology, 13, 34-45</a>; <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>; <a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC WONDER Mortality Data</a>; and <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 VSL Guidelines</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What is "reverse causation" in public health budgets?</dt>
+                <dd class="text-slate-700 mt-0.5">It happens when the health outcome (death or disease rates) causes changes in the budget input (public health spending). In the California county panel, distributed-lag tests show a positive two-year lag slope (+1.58, p = 0.001) because counties raise public health budgets after death spikes. That reactive pattern and unobserved confounding create a 9.34-point gap between the same-year OLS slope (+0.18) and the IV estimate (-9.16).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does Table 1 show both a $10 calculator scale and a $1 regression table scale?</dt>
+                <dd class="text-slate-700 mt-0.5">In the working paper (lewbel_iv_results_section.tex), Tables 1-5 label the -9.158 slope per $1/capita ($10,919 per life saved, 1,246:1 BCR at $13.6M VSL), while Section 4.4 of the paper and the CAPHE LHA Calculator (lha-calculator.js) evaluate -9.16 per $10/capita (-0.916 per $1/capita) to match Brown (2014)'s -9.10 per $10/capita scale ($109,170 per life saved, 125:1 BCR). Reporting both scales shows that county public health spending is highly cost-effective under either unit convention.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Does county public health spending still pay off if a board uses only the pre-pandemic calm-year floor?</dt>
+                <dd class="text-slate-700 mt-0.5">Yes. Using the observed 2003-2019 pre-pandemic estimate of 4.56 fewer deaths per 100,000 on the conservative $10 calculator scale yields $219,298 per life saved and a 62.0:1 benefit-cost ratio at the $13.6M HHS central VSL (or $21,930 per life and 620:1 on the $1 table scale).</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/observational-to-experimental" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Observational OLS vs. Quasi-Experimental IV</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact vs. Multi-Year ROI</a></li>
+          <li class="my-2"><a href="/methods-lab/sensitivity-analysis-cea" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Sensitivity Analysis Across HHS VSL Tiers</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            Counties with higher chronic disease rates tend to have lower employment rates. At first glance, this suggests poor health leads to unemployment. But could it be the other way around? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Chronic Disease Rate vs Employment Rate</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing chronic disease rate versus employment rate across California counties"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>Rural Counties</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Urban Counties</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>Correlation</h4>
-              <div class="stat-item" style="margin-top: var(--space-sm);">
-                <div class="stat-value" id="stat-correlation">--</div>
-                <div class="stat-label">Disease vs. Employment</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>County Averages</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-avg-disease">--</div>
-                  <div class="stat-label">Disease Rate</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-avg-employment">--</div>
-                  <div class="stat-label">Employment</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>The pattern:</strong> Counties with 10% higher chronic disease rates have, on average, <span id="stat-slope">--</span>% lower employment. But which causes which?
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question -->
-        <div class="bridging-box">
-          <p><strong>A clear negative correlation.</strong></p>
-          <p>But does sickness cause job loss, or does job loss cause sickness?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: REVERSE CAUSATION
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">Reverse Causation</h2>
-          <p class="panel-intro">
-            We might assume X causes Y, but the causal arrow might actually point the other way. In health economics, this problem appears constantly: does healthcare improve outcomes, or do healthier people seek more care?
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/reverse-causation-feedback/assets/reverse-causation-dag.png"
-              alt="Diagram showing two possible causal directions: Disease causing Unemployment, or Unemployment causing Disease, with question marks on both arrows"
-              class="dag-image"
-            >
-            <p class="dag-caption">Two equally plausible stories from the same correlation.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Two Possible Stories</h4>
-              <div class="pathway-list">
-                <div class="pathway-item forward">
-                  <strong>Disease leads to unemployment</strong>
-                  <p>Chronic illness reduces work capacity. People with diabetes, heart disease, or depression may struggle to maintain employment.</p>
-                </div>
-                <div class="pathway-item reverse">
-                  <strong>Unemployment leads to disease</strong>
-                  <p>Job loss reduces income and insurance access. Stress, poor diet, and delayed care increase chronic disease risk.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The identification problem:</strong> Cross-sectional data showing correlation between X and Y cannot tell us whether X causes Y, Y causes X, or both influence each other. The same regression coefficient is consistent with either causal story.
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question -->
-        <div class="bridging-box">
-          <p><strong>Both directions are plausible.</strong></p>
-          <p>What if both are true at the same time?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: FEEDBACK LOOPS
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Feedback Loops</h2>
-          <p class="panel-intro">
-            When X causes Y and Y causes X simultaneously, you get a feedback loop. Small changes amplify over time. Economists call this an equilibrium system. Adjust the parameters below to see how loops behave.
-          </p>
-        </div>
-
-        <div class="feedback-section">
-          <div class="simulation-controls">
-            <div class="control-group">
-              <span class="control-label">Disease to Unemployment</span>
-              <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                <input type="range" id="slider-d-to-u" class="control-slider" min="0" max="100" value="40" aria-label="Adjust diabetes to unemployment effect">
-                <span class="control-value" id="value-d-to-u">0.40</span>
-              </div>
-            </div>
-            <div class="control-group">
-              <span class="control-label">Unemployment to Disease</span>
-              <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                <input type="range" id="slider-u-to-d" class="control-slider" min="0" max="100" value="30" aria-label="Adjust unemployment to diabetes effect">
-                <span class="control-value" id="value-u-to-d">0.30</span>
-              </div>
-            </div>
-            <button class="btn-simulate" id="btn-simulate">Run Simulation</button>
-            <button class="btn-reset" id="btn-reset">Reset</button>
-          </div>
-
-          <div class="feedback-grid">
-            <div class="chart-wrapper">
-              <svg id="feedback-chart" class="chart-svg" role="img" aria-label="Time series showing how disease and unemployment rates evolve in a feedback loop"></svg>
-            </div>
-
-            <aside class="equilibrium-sidebar">
-              <div class="equilibrium-card">
-                <h4>Loop Dynamics</h4>
-                <div class="equilibrium-row">
-                  <span class="equilibrium-label">Initial Disease</span>
-                  <span class="equilibrium-value" id="eq-init-disease">15%</span>
-                </div>
-                <div class="equilibrium-row">
-                  <span class="equilibrium-label">Initial Unemployment</span>
-                  <span class="equilibrium-value" id="eq-init-unemp">8%</span>
-                </div>
-                <div class="equilibrium-row" style="border-top: 2px solid var(--color-border); padding-top: var(--space-md);">
-                  <span class="equilibrium-label">Final Disease</span>
-                  <span class="equilibrium-value" id="eq-final-disease">--</span>
-                </div>
-                <div class="equilibrium-row">
-                  <span class="equilibrium-label">Final Unemployment</span>
-                  <span class="equilibrium-value" id="eq-final-unemp">--</span>
-                </div>
-              </div>
-
-              <div class="equilibrium-card">
-                <h4>Multiplier Effect</h4>
-                <div class="equilibrium-row">
-                  <span class="equilibrium-label">Loop strength</span>
-                  <span class="equilibrium-value" id="eq-multiplier">--</span>
-                </div>
-                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-sm);">
-                  Higher values mean small shocks amplify more.
-                </p>
-              </div>
-
-              <div class="insight-box">
-                <p><strong>What you're seeing:</strong></p>
-                <p id="feedback-insight">Adjust the sliders and run the simulation to see how feedback amplifies initial conditions.</p>
-              </div>
-            </aside>
-          </div>
-        </div>
-
-        <!-- Bridging question -->
-        <div class="bridging-box">
-          <p><strong>Feedback loops reach equilibrium.</strong></p>
-          <p>But where should we intervene to shift that equilibrium?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: BREAKING THE LOOP
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Breaking the Loop</h2>
-          <p class="panel-intro">
-            Economists look for "leverage points" where intervention can break feedback and shift equilibrium. The key is finding exogenous variation in one variable that doesn't come from the other.
-          </p>
-        </div>
-
-        <div class="intervention-container">
-          <div class="intervention-wrapper">
-            <div class="intervention-toggle">
-              <button class="toggle-btn active" data-strategy="none">No Intervention</button>
-              <button class="toggle-btn" data-strategy="health">Health Shock</button>
-              <button class="toggle-btn" data-strategy="jobs">Jobs Program</button>
-              <button class="toggle-btn" data-strategy="both">Both</button>
-            </div>
-            <svg id="intervention-chart" class="chart-svg" role="img" aria-label="Chart showing how different interventions affect the feedback loop equilibrium"></svg>
-          </div>
-
-          <aside class="strategy-sidebar">
-            <div class="strategy-card" data-strategy="health">
-              <h4>Target Health Directly</h4>
-              <p>Reduce disease through prevention, screening, or treatment programs that work regardless of employment status.</p>
-              <div class="example">Example: Expand Medicaid, fund community health workers, chronic disease management programs.</div>
-            </div>
-
-            <div class="strategy-card" data-strategy="jobs">
-              <h4>Target Employment Directly</h4>
-              <p>Create jobs or support wages in ways that don't depend on health status (at least initially).</p>
-              <div class="example">Example: Job training subsidies, minimum wage increases, public works programs.</div>
-            </div>
-
-            <div class="strategy-card" data-strategy="instrument">
-              <h4>Identification Strategy</h4>
-              <p>To measure one direction of causation, economists find shocks to X that don't directly affect Y except through X.</p>
-              <div class="example">Example: A factory closure affects employment (job shock) but doesn't directly cause disease except through job loss.</div>
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question -->
-        <div class="bridging-box">
-          <p><strong>Breaking feedback requires exogenous variation.</strong></p>
-          <p>What does this mean for how we evaluate health programs?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            These questions help identify when reverse causation or feedback loops threaten your analysis. They won't solve the identification problem, but they reveal where standard methods fail.
-          </p>
-        </div>
-
-        <div class="concepts-grid">
-          <div class="concept-card">
-            <h4>Could the outcome cause the exposure?</h4>
-            <p>Before assuming X causes Y, ask whether Y could plausibly cause X. In health economics, this is common: healthier people earn more (health to income) but higher income enables better health (income to health).</p>
-            <div class="concept-prompt">
-              What would it take to rule out reverse causation in your study?
-            </div>
-          </div>
-
-          <div class="concept-card">
-            <h4>What starts the loop?</h4>
-            <p>In feedback systems, initial conditions matter. An external shock that affects only one side of the loop can help identify causal effects. Policy changes and natural experiments provide this.</p>
-            <div class="concept-prompt">
-              What exogenous events affected your variables at different times?
-            </div>
-          </div>
-
-          <div class="concept-card">
-            <h4>Where are the leverage points?</h4>
-            <p>Even in feedback systems, some connections are stronger than others. Understanding loop structure helps identify where intervention yields the biggest equilibrium shift per dollar spent.</p>
-            <div class="concept-prompt">
-              Which link in the loop is most amenable to policy intervention?
-            </div>
-          </div>
-
-          <div class="concept-card">
-            <h4>What's the time structure?</h4>
-            <p>If X takes years to affect Y but Y affects X quickly, careful timing can help. Panel data with enough periods can exploit these lags to identify one direction at a time.</p>
-            <div class="concept-prompt">
-              How quickly does each causal path operate?
-            </div>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Reverse causation:</strong> when the presumed outcome actually causes the presumed exposure</div>
-            <div class="concept-item"><strong>Feedback loops:</strong> when two variables mutually cause each other, creating amplification</div>
-            <div class="concept-item"><strong>Equilibrium:</strong> the stable state where feedback effects balance out</div>
-            <div class="concept-item"><strong>Leverage points:</strong> places where intervention can shift the equilibrium most efficiently</div>
-            <div class="concept-item"><strong>Exogenous variation:</strong> changes in one variable that don't come from the feedback loop</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Correlation between X and Y doesn't tell us whether X causes Y, Y causes X, or both.</strong> When variables influence each other in feedback loops, standard regression can't identify causal effects. The solution isn't more controls. It's finding exogenous variation that affects one variable without coming from the feedback system itself. Natural experiments, policy discontinuities, and timing differences provide this. <strong>This is what economists mean by "finding an instrument."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Causal Pitfalls track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/measurement-error-claims" style="color:#0041A5;font-weight:600;">Measurement Error in Claims Data</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/collider-bias" style="color:#0041A5;font-weight:600;">Collider Bias</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/food-insecurity-diabetes" style="color:#0041A5;font-weight:600;">Case Study: Food Security & Diabetes</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateCountyData() {
-      const countyNames = [
-        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
-        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
-        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
-        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
-        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
-        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
-        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
-        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
-        'County BC', 'County BD', 'County BE', 'County BF'
-      ];
-
-      const data = [];
-      let seed = 123;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // Urban/rural split
-        const isUrban = rand() > 0.45;
-
-        // Base health and employment are correlated through feedback
-        // Simulate equilibrium from mutual causation
-        const baseHealth = 10 + rand() * 20; // 10-30% disease rate
-        const baseEmployment = 85 + rand() * 15; // 85-100% employment (so unemployment is 0-15%)
-
-        // Add feedback effects
-        const healthEffect = baseHealth * 0.3;
-        const employEffect = (100 - baseEmployment) * 0.4;
-
-        // Final values after loop reaches equilibrium
-        const diseaseRate = Math.min(40, Math.max(8, baseHealth + employEffect + (rand() - 0.5) * 8));
-        const employmentRate = Math.min(98, Math.max(75, baseEmployment - healthEffect + (rand() - 0.5) * 6));
-
-        data.push({
-          name: countyNames[i],
-          isUrban: isUrban,
-          diseaseRate: Math.round(diseaseRate * 10) / 10,
-          employmentRate: Math.round(employmentRate * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    function calculateCorrelation(data, xKey, yKey) {
-      const n = data.length;
-      const xArr = data.map(d => d[xKey]);
-      const yArr = data.map(d => d[yKey]);
-
-      const xMean = mean(xArr);
-      const yMean = mean(yArr);
-
-      let numerator = 0;
-      let xDenom = 0;
-      let yDenom = 0;
-
-      for (let i = 0; i < n; i++) {
-        const xDiff = xArr[i] - xMean;
-        const yDiff = yArr[i] - yMean;
-        numerator += xDiff * yDiff;
-        xDenom += xDiff * xDiff;
-        yDenom += yDiff * yDiff;
-      }
-
-      return numerator / Math.sqrt(xDenom * yDenom);
-    }
-
-    function calculateSlope(data, xKey, yKey) {
-      const n = data.length;
-      const xArr = data.map(d => d[xKey]);
-      const yArr = data.map(d => d[yKey]);
-
-      const xMean = mean(xArr);
-      const yMean = mean(yArr);
-
-      let numerator = 0;
-      let denominator = 0;
-
-      for (let i = 0; i < n; i++) {
-        const xDiff = xArr[i] - xMean;
-        numerator += xDiff * (yArr[i] - yMean);
-        denominator += xDiff * xDiff;
-      }
-
-      return numerator / denominator;
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let feedbackInitialized = false;
-    let interventionInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            } else {
-              renderScatterPlot();
-            }
-          }, 50);
-        }
-        if (panelNum === '3') {
-          setTimeout(() => {
-            if (!feedbackInitialized) {
-              renderFeedbackChart();
-              feedbackInitialized = true;
-            } else {
-              renderFeedbackChart();
-            }
-          }, 50);
-        }
-        if (panelNum === '4') {
-          setTimeout(() => {
-            if (!interventionInitialized) {
-              renderInterventionChart('none');
-              interventionInitialized = true;
-            } else {
-              renderInterventionChart(currentStrategy);
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 5, xMax = 45;
-      const yMin = 70, yMax = 100;
-
-      const xScale = (val) => margin.left + ((val - xMin) / (xMax - xMin)) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 75; y <= 95; y += 5) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Trend line
-      const slope = calculateSlope(countyData, 'diseaseRate', 'employmentRate');
-      const avgDisease = mean(countyData.map(d => d.diseaseRate));
-      const avgEmployment = mean(countyData.map(d => d.employmentRate));
-      const intercept = avgEmployment - slope * avgDisease;
-
-      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      trendLine.setAttribute('x1', xScale(xMin));
-      trendLine.setAttribute('y1', yScale(slope * xMin + intercept));
-      trendLine.setAttribute('x2', xScale(xMax));
-      trendLine.setAttribute('y2', yScale(slope * xMax + intercept));
-      trendLine.setAttribute('stroke', 'var(--color-primary)');
-      trendLine.setAttribute('stroke-width', '2');
-      trendLine.setAttribute('stroke-dasharray', '6,4');
-      trendLine.setAttribute('opacity', '0.6');
-      svg.appendChild(trendLine);
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.diseaseRate));
-        circle.setAttribute('cy', yScale(d.employmentRate));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.isUrban ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 10; x <= 40; x += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x + '%';
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Chronic Disease Rate (%)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 75; y <= 95; y += 5) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Employment Rate (%)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. FEEDBACK SIMULATION (Panel 3)
-       ============================================ */
-    let simulationData = [];
-    let dToU = 0.4;
-    let uToD = 0.3;
-
-    function runSimulation() {
-      const steps = 20;
-      let disease = 15;
-      let unemployment = 8;
-      simulationData = [{ step: 0, disease, unemployment }];
-
-      for (let i = 1; i <= steps; i++) {
-        // Apply feedback effects
-        const newDisease = Math.max(5, Math.min(50, disease + uToD * unemployment * 0.5 - 0.1 * disease));
-        const newUnemployment = Math.max(2, Math.min(30, unemployment + dToU * disease * 0.3 - 0.05 * unemployment));
-
-        disease = newDisease;
-        unemployment = newUnemployment;
-        simulationData.push({ step: i, disease, unemployment });
-      }
-
-      renderFeedbackChart();
-      updateEquilibriumStats();
-    }
-
-    function renderFeedbackChart() {
-      const svg = document.getElementById('feedback-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 40, right: 100, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      // If no simulation data, show initial state
-      if (simulationData.length === 0) {
-        simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
-      }
-
-      const xMin = 0, xMax = 20;
-      const yMin = 0, yMax = 50;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
-
-      // Grid lines
-      for (let y = 10; y <= 40; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Disease line
-      if (simulationData.length > 1) {
-        const diseasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        let d = `M ${xScale(0)} ${yScale(simulationData[0].disease)}`;
-        for (let i = 1; i < simulationData.length; i++) {
-          d += ` L ${xScale(simulationData[i].step)} ${yScale(simulationData[i].disease)}`;
-        }
-        diseasePath.setAttribute('d', d);
-        diseasePath.setAttribute('stroke', 'var(--color-accent)');
-        diseasePath.setAttribute('stroke-width', '3');
-        diseasePath.setAttribute('fill', 'none');
-        svg.appendChild(diseasePath);
-
-        // Unemployment line
-        const unempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        let u = `M ${xScale(0)} ${yScale(simulationData[0].unemployment)}`;
-        for (let i = 1; i < simulationData.length; i++) {
-          u += ` L ${xScale(simulationData[i].step)} ${yScale(simulationData[i].unemployment)}`;
-        }
-        unempPath.setAttribute('d', u);
-        unempPath.setAttribute('stroke', 'var(--color-secondary)');
-        unempPath.setAttribute('stroke-width', '3');
-        unempPath.setAttribute('fill', 'none');
-        svg.appendChild(unempPath);
-      }
-
-      // Points
-      simulationData.forEach((d, i) => {
-        const circleD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circleD.setAttribute('cx', xScale(d.step));
-        circleD.setAttribute('cy', yScale(d.disease));
-        circleD.setAttribute('r', i === 0 || i === simulationData.length - 1 ? 6 : 4);
-        circleD.setAttribute('fill', 'var(--color-accent)');
-        svg.appendChild(circleD);
-
-        const circleU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circleU.setAttribute('cx', xScale(d.step));
-        circleU.setAttribute('cy', yScale(d.unemployment));
-        circleU.setAttribute('r', i === 0 || i === simulationData.length - 1 ? 6 : 4);
-        circleU.setAttribute('fill', 'var(--color-secondary)');
-        svg.appendChild(circleU);
-      });
-
-      // Legend
-      const legendY = margin.top + 10;
-      const legendX = width - margin.right + 10;
-
-      const legendD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      legendD.setAttribute('cx', legendX);
-      legendD.setAttribute('cy', legendY);
-      legendD.setAttribute('r', 6);
-      legendD.setAttribute('fill', 'var(--color-accent)');
-      svg.appendChild(legendD);
-
-      const legendDText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      legendDText.setAttribute('x', legendX + 12);
-      legendDText.setAttribute('y', legendY + 4);
-      legendDText.setAttribute('font-size', '11');
-      legendDText.setAttribute('fill', 'var(--color-text)');
-      legendDText.textContent = 'Disease';
-      svg.appendChild(legendDText);
-
-      const legendU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      legendU.setAttribute('cx', legendX);
-      legendU.setAttribute('cy', legendY + 25);
-      legendU.setAttribute('r', 6);
-      legendU.setAttribute('fill', 'var(--color-secondary)');
-      svg.appendChild(legendU);
-
-      const legendUText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      legendUText.setAttribute('x', legendX + 12);
-      legendUText.setAttribute('y', legendY + 29);
-      legendUText.setAttribute('font-size', '11');
-      legendUText.setAttribute('fill', 'var(--color-text)');
-      legendUText.textContent = 'Unemployment';
-      svg.appendChild(legendUText);
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 20; x += 5) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', margin.left + plotWidth / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Time Steps';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 0; y <= 40; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Rate (%)';
-      svg.appendChild(yLabel);
-    }
-
-    function updateEquilibriumStats() {
-      const final = simulationData[simulationData.length - 1];
-      document.getElementById('eq-final-disease').textContent = final.disease.toFixed(1) + '%';
-      document.getElementById('eq-final-unemp').textContent = final.unemployment.toFixed(1) + '%';
-
-      const multiplier = 1 / (1 - dToU * uToD);
-      document.getElementById('eq-multiplier').textContent = multiplier.toFixed(2) + 'x';
-
-      const insightEl = document.getElementById('feedback-insight');
-      if (dToU * uToD > 0.5) {
-        insightEl.innerHTML = '<strong>Strong feedback!</strong> Small initial shocks amplify significantly. The loop has a multiplier of ' + multiplier.toFixed(1) + 'x.';
-      } else if (dToU * uToD > 0.2) {
-        insightEl.innerHTML = 'Moderate feedback. Changes propagate but eventually stabilize. Both variables settle at higher levels than where they started.';
-      } else {
-        insightEl.innerHTML = 'Weak feedback. The system stabilizes quickly without much amplification.';
-      }
-    }
-
-    // Slider handlers
-    document.getElementById('slider-d-to-u').addEventListener('input', (e) => {
-      dToU = e.target.value / 100;
-      document.getElementById('value-d-to-u').textContent = dToU.toFixed(2);
-    });
-
-    document.getElementById('slider-u-to-d').addEventListener('input', (e) => {
-      uToD = e.target.value / 100;
-      document.getElementById('value-u-to-d').textContent = uToD.toFixed(2);
-    });
-
-    document.getElementById('btn-simulate').addEventListener('click', runSimulation);
-
-    document.getElementById('btn-reset').addEventListener('click', () => {
-      simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
-      dToU = 0.4;
-      uToD = 0.3;
-      document.getElementById('slider-d-to-u').value = 40;
-      document.getElementById('slider-u-to-d').value = 30;
-      document.getElementById('value-d-to-u').textContent = '0.40';
-      document.getElementById('value-u-to-d').textContent = '0.30';
-      document.getElementById('eq-final-disease').textContent = '--';
-      document.getElementById('eq-final-unemp').textContent = '--';
-      document.getElementById('eq-multiplier').textContent = '--';
-      document.getElementById('feedback-insight').textContent = 'Adjust the sliders and run the simulation to see how feedback amplifies initial conditions.';
-      renderFeedbackChart();
-    });
-
-    /* ============================================
-       6. INTERVENTION CHART (Panel 4)
-       ============================================ */
-    let currentStrategy = 'none';
-
-    function renderInterventionChart(strategy) {
-      currentStrategy = strategy;
-      const svg = document.getElementById('intervention-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 40, right: 100, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      // Simulate with intervention
-      const steps = 25;
-      const interventionStep = 8;
-      let disease = 25;
-      let unemployment = 12;
-      const data = [{ step: 0, disease, unemployment }];
-
-      for (let i = 1; i <= steps; i++) {
-        // Apply feedback
-        let newDisease = disease + 0.3 * unemployment * 0.5 - 0.1 * disease;
-        let newUnemployment = unemployment + 0.4 * disease * 0.3 - 0.05 * unemployment;
-
-        // Apply intervention after step 8
-        if (i >= interventionStep) {
-          if (strategy === 'health' || strategy === 'both') {
-            newDisease -= 2; // Direct reduction in disease
-          }
-          if (strategy === 'jobs' || strategy === 'both') {
-            newUnemployment -= 1.5; // Direct reduction in unemployment
-          }
-        }
-
-        disease = Math.max(5, Math.min(50, newDisease));
-        unemployment = Math.max(2, Math.min(25, newUnemployment));
-        data.push({ step: i, disease, unemployment });
-      }
-
-      const xMin = 0, xMax = 25;
-      const yMin = 0, yMax = 40;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
-
-      // Intervention zone
-      if (strategy !== 'none') {
-        const zone = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        zone.setAttribute('x', xScale(interventionStep));
-        zone.setAttribute('y', margin.top);
-        zone.setAttribute('width', xScale(xMax) - xScale(interventionStep));
-        zone.setAttribute('height', plotHeight);
-        zone.setAttribute('fill', 'rgba(13, 148, 136, 0.08)');
-        svg.appendChild(zone);
-
-        const zoneLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        zoneLabel.setAttribute('x', xScale(interventionStep) + 5);
-        zoneLabel.setAttribute('y', margin.top + 18);
-        zoneLabel.setAttribute('font-size', '11');
-        zoneLabel.setAttribute('fill', 'var(--color-secondary)');
-        zoneLabel.textContent = 'Intervention';
-        svg.appendChild(zoneLabel);
-      }
-
-      // Grid lines
-      for (let y = 10; y <= 30; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Lines
-      const diseasePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      let d = `M ${xScale(0)} ${yScale(data[0].disease)}`;
-      for (let i = 1; i < data.length; i++) {
-        d += ` L ${xScale(data[i].step)} ${yScale(data[i].disease)}`;
-      }
-      diseasePath.setAttribute('d', d);
-      diseasePath.setAttribute('stroke', 'var(--color-accent)');
-      diseasePath.setAttribute('stroke-width', '3');
-      diseasePath.setAttribute('fill', 'none');
-      svg.appendChild(diseasePath);
-
-      const unempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      let u = `M ${xScale(0)} ${yScale(data[0].unemployment)}`;
-      for (let i = 1; i < data.length; i++) {
-        u += ` L ${xScale(data[i].step)} ${yScale(data[i].unemployment)}`;
-      }
-      unempPath.setAttribute('d', u);
-      unempPath.setAttribute('stroke', 'var(--color-secondary)');
-      unempPath.setAttribute('stroke-width', '3');
-      unempPath.setAttribute('fill', 'none');
-      svg.appendChild(unempPath);
-
-      // Endpoint markers
-      const finalD = data[data.length - 1];
-      const endD = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      endD.setAttribute('cx', xScale(finalD.step));
-      endD.setAttribute('cy', yScale(finalD.disease));
-      endD.setAttribute('r', 7);
-      endD.setAttribute('fill', 'var(--color-accent)');
-      svg.appendChild(endD);
-
-      const endU = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      endU.setAttribute('cx', xScale(finalD.step));
-      endU.setAttribute('cy', yScale(finalD.unemployment));
-      endU.setAttribute('r', 7);
-      endU.setAttribute('fill', 'var(--color-secondary)');
-      svg.appendChild(endU);
-
-      // Legend
-      const legendY = margin.top + 10;
-      const legendX = width - margin.right + 10;
-
-      const legendDot1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      legendDot1.setAttribute('cx', legendX);
-      legendDot1.setAttribute('cy', legendY);
-      legendDot1.setAttribute('r', 6);
-      legendDot1.setAttribute('fill', 'var(--color-accent)');
-      svg.appendChild(legendDot1);
-
-      const legendText1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      legendText1.setAttribute('x', legendX + 12);
-      legendText1.setAttribute('y', legendY + 4);
-      legendText1.setAttribute('font-size', '11');
-      legendText1.setAttribute('fill', 'var(--color-text)');
-      legendText1.textContent = 'Disease';
-      svg.appendChild(legendText1);
-
-      const legendDot2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      legendDot2.setAttribute('cx', legendX);
-      legendDot2.setAttribute('cy', legendY + 25);
-      legendDot2.setAttribute('r', 6);
-      legendDot2.setAttribute('fill', 'var(--color-secondary)');
-      svg.appendChild(legendDot2);
-
-      const legendText2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      legendText2.setAttribute('x', legendX + 12);
-      legendText2.setAttribute('y', legendY + 29);
-      legendText2.setAttribute('font-size', '11');
-      legendText2.setAttribute('fill', 'var(--color-text)');
-      legendText2.textContent = 'Unemployment';
-      svg.appendChild(legendText2);
-
-      // Axes
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 25; x += 5) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', margin.left + plotWidth / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Time Steps';
-      svg.appendChild(xLabel);
-
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 0; y <= 30; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Rate (%)';
-      svg.appendChild(yLabel);
-
-      // Update strategy card highlighting
-      document.querySelectorAll('.strategy-card').forEach(card => {
-        card.classList.remove('active');
-        if (strategy !== 'none' && (card.dataset.strategy === strategy || strategy === 'both')) {
-          card.classList.add('active');
-        }
-      });
-    }
-
-    // Intervention toggle handlers
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderInterventionChart(btn.dataset.strategy);
-      });
-    });
-
-    /* ============================================
-       7. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">Disease Rate: ${data.diseaseRate}%</div>
-        <div class="metric">Employment: ${data.employmentRate}%</div>
-        <div class="metric">${data.isUrban ? 'Urban' : 'Rural'} county</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       8. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate initial stats
-      const correlation = calculateCorrelation(countyData, 'diseaseRate', 'employmentRate');
-      const slope = calculateSlope(countyData, 'diseaseRate', 'employmentRate');
-      const avgDisease = mean(countyData.map(d => d.diseaseRate));
-      const avgEmployment = mean(countyData.map(d => d.employmentRate));
-
-      document.getElementById('stat-correlation').textContent = correlation.toFixed(2);
-      document.getElementById('stat-avg-disease').textContent = avgDisease.toFixed(0) + '%';
-      document.getElementById('stat-avg-employment').textContent = avgEmployment.toFixed(0) + '%';
-      document.getElementById('stat-slope').textContent = Math.abs(slope * 10).toFixed(1);
-
-      // Render initial charts
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Initialize simulation data
-      simulationData = [{ step: 0, disease: 15, unemployment: 8 }];
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          const activePanel = document.querySelector('.panel.active');
-          if (activePanel) {
-            if (activePanel.id === 'panel-1') renderScatterPlot();
-            if (activePanel.id === 'panel-3') renderFeedbackChart();
-            if (activePanel.id === 'panel-4') renderInterventionChart(currentStrategy);
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

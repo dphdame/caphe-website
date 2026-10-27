@@ -3,888 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Active-Only Subsample Selection Bias | CAPHE</title>
+  <meta name="description" content="A Medicaid fraud screen scores 0.724 AUC on 487,479 billers vs. 0.442 in the 2024 active subset; Top 1% precision rescales from 0.922% to 0.186%.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/collider-bias">
+  <meta property="og:title" content="Active-Only Subsample Selection Bias | CAPHE">
+  <meta property="og:description" content="A Medicaid fraud screen scores 0.724 AUC on 487,479 billers vs. 0.442 in the 2024 active subset; Top 1% precision rescales from 0.922% to 0.186%.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/collider-bias">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Collider Bias in Healthcare Databases | CAPHE</title>
-  <meta name="description" content="Controlling for hospitalization can create spurious associations that don't exist in the general population. Learn why conditioning on a common effect reverses, creates, or distorts relationships.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/collider-bias">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-danger: #C62828;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-value.positive { color: var(--color-success); }
-    .stat-value.negative { color: var(--color-danger); }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* Bridging question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
+      color: #fff;
       margin: 0;
     }
-
-    /* ============================================
-       7. TOGGLE CONTROLS
-       ============================================ */
-    .toggle-group {
-      display: flex;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
-    }
-
-    .toggle-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: var(--color-bg-alt);
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--color-primary-light);
-    }
-
-    .toggle-btn.active {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
-    }
-
-    /* ============================================
-       8. EXPLANATION PANELS
-       ============================================ */
-    .explanation-container {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .explanation-container { grid-template-columns: 1fr; }
-    }
-
-    .explanation-main {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: var(--space-xl);
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .step-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .step-item {
-      display: flex;
-      gap: var(--space-md);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-    }
-
-    .step-number {
-      width: 32px;
-      height: 32px;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50%;
+    .budget-bar-seg {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .step-content {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .step-content strong {
-      color: var(--color-text);
-    }
-
-    /* Sidebar cards */
-    .info-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .info-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .info-card h4 {
-      font-size: 0.9rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .info-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .info-card ul {
-      margin-left: var(--space-md);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .info-card li {
-      margin-bottom: var(--space-sm);
-    }
-
-    .warning-card {
-      background: rgba(198, 40, 40, 0.08);
-      border-left: 4px solid var(--color-danger);
-    }
-
-    .warning-card h4 {
-      color: var(--color-danger);
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-top: var(--space-xl);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-
-    .definition-card li {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-sm);
-    }
-
-    /* ============================================
-       9. HOSPITAL EXAMPLE PANEL
-       ============================================ */
-    .example-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .example-container { grid-template-columns: 1fr; }
-    }
-
-    .scenario-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .scenario-card.population {
-      border-top: 4px solid var(--color-secondary);
-    }
-
-    .scenario-card.hospital {
-      border-top: 4px solid var(--color-accent);
-    }
-
-    .scenario-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-    }
-
-    .scenario-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .scenario-icon.population {
-      background: var(--color-secondary);
-    }
-
-    .scenario-icon.hospital {
-      background: var(--color-accent);
-    }
-
-    .scenario-stats {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-lg);
-    }
-
-    .scenario-stat {
-      display: flex;
-      justify-content: space-between;
-      padding: var(--space-sm);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-sm);
-    }
-
-    .scenario-stat-label {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-    }
-
-    .scenario-stat-value {
-      font-size: 0.9rem;
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    .scenario-result {
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-
-    .scenario-result.none {
-      background: rgba(46, 125, 50, 0.1);
-      border: 2px solid var(--color-success);
-    }
-
-    .scenario-result.spurious {
-      background: rgba(198, 40, 40, 0.1);
-      border: 2px solid var(--color-danger);
-    }
-
-    .result-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: var(--space-xs);
-    }
-
-    .scenario-result.none .result-label {
-      color: var(--color-success);
-    }
-
-    .scenario-result.spurious .result-label {
-      color: var(--color-danger);
-    }
-
-    .result-text {
-      font-size: 1.1rem;
-      font-weight: 600;
-      font-family: var(--font-serif);
-    }
-
-    .scenario-result.none .result-text {
-      color: var(--color-success);
-    }
-
-    .scenario-result.spurious .result-text {
-      color: var(--color-danger);
-    }
-
-    /* ============================================
-       10. AVOIDING COLLIDERS PANEL
-       ============================================ */
-    .strategy-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    .strategy-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      border-top: 3px solid var(--color-border);
-    }
-
-    .strategy-card.good {
-      border-top-color: var(--color-success);
-    }
-
-    .strategy-card.caution {
-      border-top-color: var(--color-caution);
-    }
-
-    .strategy-card.avoid {
-      border-top-color: var(--color-danger);
-    }
-
-    .strategy-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--space-md);
-    }
-
-    .strategy-card.good .strategy-badge {
-      background: rgba(46, 125, 50, 0.15);
-      color: var(--color-success);
-    }
-
-    .strategy-card.caution .strategy-badge {
-      background: rgba(245, 127, 23, 0.15);
-      color: var(--color-caution);
-    }
-
-    .strategy-card.avoid .strategy-badge {
-      background: rgba(198, 40, 40, 0.15);
-      color: var(--color-danger);
-    }
-
-    .strategy-card h4 {
-      margin-bottom: var(--space-md);
-    }
-
-    .strategy-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       11. KEY INSIGHT PANEL
-       ============================================ */
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       12. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       13. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .person-id {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       14. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+      white-space: nowrap;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      padding: 0 4px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .skip-link:focus {
-      top: 0;
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Collider Bias in Healthcare Databases",
-  "description": "Controlling for hospitalization can create spurious associations that don't exist in the general population. Learn why conditioning on a common effect reverses, creates, or distorts relationships.",
+  "headline": "Active-Only Provider Subsets Omit Earlier-Exiting Sanctioned Billers in Modeled Risk Audits",
+  "description": "A Medicaid fraud screen scores 0.724 AUC on 487,479 billers vs. 0.442 in the 2024 active subset; Top 1% precision rescales from 0.922% to 0.186%.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -892,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -903,55 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is a collider in causal inference?",
+      "name": "What is a \"collider\" in a causal diagram, and how does it differ from a confounder?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A collider is a variable that two or more other variables point into on a causal diagram, meaning it is their common effect. Conditioning on a collider induces a spurious association between its causes."
+        "text": "A confounder is a shared CAUSE of both the treatment and the outcome (A &lt;- C -&gt; Y). Analysts control for it to remove bias. A collider is a shared EFFECT of two variables (A -&gt; C &lt;- Y). Filtering or controlling on a collider opens a false link between its causes."
       }
     },
     {
       "@type": "Question",
-      "name": "Why does conditioning on a collider create bias?",
+      "name": "How does the active-only subgroup score compare with the full-list score?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Selecting, stratifying, or adjusting on a collider opens a backdoor path between its causes. The resulting correlation is a statistical artifact of the selection, not a real causal relationship."
+        "text": "Across all 487,479 providers, the screen scores 0.724 AUC (95% CI 0.667 to 0.777). Because 90.5% of post-panel excluded providers stopped billing before 2024 (38.0th vs. 50.0th active-months percentile), reweighting controls by exit year shifts AUC to 0.653, and the 2024 active-biller subset (9 exclusions vs. 55,009 controls) shows an observed AUC of 0.442 (95% CI 0.212 to 0.664). That subgroup difference reflects sample restriction and the small 9-case sample instead of isolating a single cause."
       }
     },
     {
       "@type": "Question",
-      "name": "What is an example of collider bias in healthcare data?",
+      "name": "How should analysts report precision from a downsampled holdout?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Restricting an analysis to hospitalized patients can make two independent admission causes, such as hypertension and a respiratory illness, appear negatively correlated, because among the hospitalized one cause being absent makes the other more likely."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How do you avoid collider bias?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Draw the causal diagram before analysis, identify which variables are common effects, and do not condition on them. Choose adjustment sets that block confounding paths without opening collider paths."
+        "text": "Rescale it to the full-list base rate. The holdout here keeps every case and 20% of controls. Top 1% precision of 0.922% rescales to 0.186% across the full billing list (0.0195% base rate), or 9 caught cases among 4,844 flags."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -962,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -981,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -997,849 +529,454 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Specialized Applications</div>
-      <h1>Collider Bias in Healthcare Databases</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Collider bias arises when an analysis conditions on (filters, stratifies, or adjusts for) a variable that is a common effect of two others. Conditioning on such a variable opens a non-causal path between its causes and can create, reverse, or exaggerate an association that does not exist in the full population. In healthcare databases the classic collider is hospitalization: restricting analysis to hospitalized patients can make independent conditions appear correlated.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Controlling for hospitalization can create false associations between conditions that are actually unrelated. The solution is understanding why people end up in your database.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">Collider Explained</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Hospital Example</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Avoiding Colliders</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Key Insight</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; System Dynamics &amp; Feedback
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Active-Only Provider Subsets Omit Earlier-Exiting Sanctioned Billers in Modeled Risk Audits
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Comparing modeled full-list provider risk screens against active-biller subsets that drop providers who left early.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When an audit team tests a Medicaid billing risk model only on providers still active in the latest year, the check drops sanctioned billers who already left the program. Across <strong>487,479 Medicaid billing providers,</strong> the screening model flags sanctioned providers at <strong>9.5 times the random rate</strong> in the top 1% of alerts <strong>(9 caught cases</strong> across <strong>4,844 flags).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> In the subset of <strong>55,018 providers still billing in 2024</strong> <strong>(9</strong> exclusions), the screen falls below a coin-flip rank alongside shorter prior tenure <strong>(38.0th vs. 50.0th</strong> percentile), an observed subgroup difference instead of an isolated causal effect.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Calibrated alert rates across the full provider list set realistic caseload goals for audit staff.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Subset Results vs. Full-List Calibrated Results for One Fraud Screen</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Observed screening scores with Bayes base-rate rescaling of holdout precision across four test settings.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four test settings compared on group size, ranking score, holdout and full-list precision, flags and caught cases, lift, and caseload.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Screen Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Setting 1: Full List</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Full Unfiltered List, Top 1%</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Setting 2: Filtered</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Active-Biller Subset Only</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Setting 3: Caseload</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Top 5% Cutoff, Caseload Check</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Setting 4: Peer Check</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Peer-Group &amp; Matched Checks</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Test Group Size
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">95 | 487,384</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.0195% base rate</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">9 | 55,009</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">active in 2024</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">95 | 487,384</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.0195% base rate</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">204 | 487,384</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">230 vs. 1,150</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Risk Ranking Pattern
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0.724 rank score</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">full list</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0.442 rank score</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">active billers</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 44%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0.724 rank score</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">Top 5%</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">0.818 rank score</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">peer match</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 82%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Precision: Holdout vs. Full List
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.922% holdout</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.186% full list</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Not reported at a cutoff</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">9 cases, wide bounds</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.512% holdout</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.103% full list</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Not reported at a cutoff</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">in-panel</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Flags &amp; Caught Cases
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">4,844 flags | 9 caught</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">9.47%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">No cutoff scored</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">24,295 flags | 25 caught</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">26.32%</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">No cutoff scored</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Lift &amp; Audit Caseload
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">9.53x lift</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">29.0% of caseload</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Not scored</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.28x lift</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">145.6% of caseload</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Not scored</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Active Months Peer Percentile
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Months active kept</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">no filter</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0th vs. 50.0th</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.653 reweighted</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Months active kept</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">no filter</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0th vs. 50.0th</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">peer cells</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Observed Screening Results; Mode A Base-Rate Calibration):</strong> Each column states its own group size. The target is a formal LEIE financial fraud exclusion. Ranges are 95% CI bounds on AUC: full universe AUC = 0.724 (95% CI 0.667-0.777, 487,479 providers); active-only subset AUC = 0.442 (95% CI 0.212-0.664; 9 exclusions vs. 55,009 controls; exit-year reweighted AUC = 0.653). Holdout precision is rescaled to the 0.0195% full-population base rate.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Full Unfiltered List, Top 1%.</strong> N = 487,479 providers (95 exclusions + 487,384 controls); unit: billing NPI. <strong>Active-Biller Subset Only.</strong> N = 55,018 providers billing in 2024 (9 exclusions + 55,009 controls); unit: billing NPI. <strong>Top 5% Cutoff, Caseload Check.</strong> N = 487,479 providers; 16,688 national MFCU active cases; unit: billing NPI. <strong>Peer-Group &amp; Matched Checks.</strong> N = 204 exclusions vs. 487,384 controls (peer ranks); 230 vs. 1,150 (matched); unit: billing NPI.</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Calibration Applied to Observed Screening Results (Random Forest, 95 Post-Panel Exclusions vs. 487,384 Controls). Ruler 1: Active-Only &amp; Holdout Check: <strong>0.442 AUC Active-Only; 0.922% Top 1% Holdout Precision</strong>. In the subset of providers <strong>still billing in 2024</strong> (9 excluded vs. 55,009 controls), observed AUC is <strong>0.442</strong> (95% CI 0.212-0.664; exit-year reweighted AUC is <strong>0.653</strong>). Excluded providers sit at the <strong>38.0th</strong> vs. <strong>50.0th</strong> median peer percentile of active months. A holdout with <strong>97,476 controls</strong> (20%) shows <strong>0.922%</strong> Top 1% precision. Ruler 2: Full-List Base-Rate Calibrated Check: <strong>0.724 AUC; 0.186% Top 1% Precision at 0.0195% Base Rate</strong>. Across all <strong>487,479 providers</strong> (95 post-panel exclusions, a <strong>0.0195%</strong> base rate), the same model reaches <strong>0.724 AUC</strong> (95% CI 0.667-0.777). Rescaled to that base rate, the Top 1% cutoff gives <strong>4,844 flags</strong>, <strong>9 caught cases</strong>, <strong>0.186% precision</strong>, and <strong>9.53x lift</strong> over random choice.</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Medicaid Fraud Classifier Validation Guide &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/imbalanced-classifier-python/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Rare-Outcome Classifier Evaluation Workflow &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. How Filtering on a Shared Effect Shifts Screen Scores</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Why subset scores should be rescaled to the full billing list before setting audit cutoffs.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision grid showing the filter path, how it shifts accuracy and precision, the staffing impact, and the calibration rule.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Full Unfiltered List, Top 1%
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Active-Biller Subset Only
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Top 5% Cutoff, Caseload Check
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Peer-Group &amp; Matched Checks
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Filter Path in Each Setting
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Every billing provider stays in the list, so active months remain a model input.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Keeping only 2024 billers leaves 9 of 95 excluded providers after 90.5% exited before 2024.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The full list stays in place, while a wider cutoff sends more flags to staff.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Ranks are scored inside state and specialty peer cells, and matching reweights controls.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                How the Setting Shifts Scores
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Holdout precision is 4.96 times full-list precision due to 20% control sampling.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Ranks fall below a coin flip in the 9-case 2024 subset and recover when exit years are reweighted.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Full-list precision drops to 0.103% while flags rise to 24,295, or 145.6% of caseload.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Matched and balanced checks keep strong risk ranking on in-panel cases.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Staffing Impact for Audit Teams
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                At $23,719 per case, 4,844 Top 1% flags cost $114.9M to review and catch 9 cases.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                With only 9 excluded billers left in 2024, active-only claims scores have wide bounds.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A Top 5% cutoff exceeds the 16,688-case national caseload, so cutoffs need capacity checks.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Peer-group ranks keep normal state and specialty billing differences from triggering flags.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Calibration Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Rescale Precision to the Full List<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Adjust downsampled holdout precision to the 0.0195% full-list base rate before setting rules.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep All Providers in the Test Set<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Score the full provider list first and show active-only results as a separate subgroup check.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Match Cutoffs to Staff Caseload<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Compare total flags against the 16,688 active MFCU cases before picking a cutoff.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Rank Within Peer Cells<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Score billing features inside state and specialty cells and report matched checks.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Bayes Base-Rate Rescaling, Subgroup Selection Structure &amp; Data Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Target Definition:</strong> The positive class is a formal OIG LEIE exclusion under Specification A financial fraud statutes (1128(a)(1), 1128(a)(3), 1128(b)(1)). The prospective check scores the 95 providers excluded in 2025 or later against 487,384 non-excluded controls (487,479 total).</p>
+          <p>&bull; <strong>Bayes Base-Rate Rescaling (Mode A Calibration):</strong> The holdout keeps all 95 cases and 97,476 of 487,384 controls (20%). False positives scale by 1 / 0.20 = 5. In odds form, Odds_pop = Odds_holdout / 5. For Top 1%, 0.922% / 99.078% = 0.009306, and dividing by 5 gives 0.001861, or 0.186% precision. For Top 5%, 0.512% rescales to 0.103%. Lift equals precision divided by base rate: 0.1858% / 0.0195% = 9.53x, and 0.1029% / 0.0195% = 5.28x.</p>
+          <p>&bull; <strong>Observed Subgroup Difference &amp; Exit-Timing Sensitivity:</strong> In the empirical data, 90.5% of post-panel fraud providers stopped billing prior to 2024 (vs. 43.6% of controls), and excluded providers sit at the 38.0th vs. 50.0th median peer percentile of active months (Months Active SHAP correlation r = -0.9009). Reweighting controls to match the fraud exit-year distribution shifts prospective AUC from 0.724 to 0.653, and restricting to the 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls) yields an observed AUC of 0.442 (95% CI 0.212-0.664). These descriptive subgroup and reweighting comparisons document how conditioning on active 2024 billing alters the evaluation sample, but do not separately isolate early exit as the sole cause of the 0.442 subgroup score.</p>
+          <p>&bull; <strong>Caseload &amp; Cost:</strong> MFCU unit cost is $23,719 ($395.8M / 16,688 active cases, HHS-OIG FY 2024). Top 1% gives 4,844 × $23,719 = $114.9M and 4,844 / 16,688 = 29.0% of caseload. Top 5% gives 24,295 / 16,688 = 145.6%.</p>
+          <p>&bull; <strong>Data Provenance:</strong> Values come from Mcaid/05_fraud_detection/paper/output/results.json (prospective_auc, active_subset_auc, top1_prec_holdout, top1_prec_pop, top1_flags, top1_captured, top1_lift, top5_*, mfcu_*, shap_months_active_r, matched_sample_rf_auc, entropy_balanced_rf_auc), Mcaid/05_fraud_detection/paper/main.tex (L398-402: 90.5% vs. 43.6% pre-2024 exit, 0.653 exit-year reweighted AUC), output/tables/tab6_economics.tex (N = 487,479, 0.0195%), and output/tables/tab_a3_base_rates.tex (peer percentiles).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> System Dynamics &amp; Feedback &middot; Selection Skew &amp; Base-Rate Calibration (Mode A Calibration on Observed Screening Results)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Full Medicaid Billing Universe Evaluation (2018-2024):</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> claims cover 487,479 billing providers (95 post-panel fraud exclusions vs. 487,384 non-excluded controls). Linked to <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>, the full-list ranking score is 0.724 AUC (95% CI 0.667-0.777, 9.5x lift in Top 1%).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Observed Active-Only Subgroup Comparison &amp; Tenure Differences:</strong> In the subset of 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls), the observed ranking score is 0.442 AUC (95% CI 0.212-0.664). Sanctioned providers also show shorter observed billing tenure (38.0th vs. 50.0th median peer percentile of active months; 90.5% exited before 2024 vs. 43.6% of controls, with exit-year reweighted AUC = 0.653). Because the 2024 active subset contains only 9 excluded providers and a wide confidence interval, the subgroup difference does not isolate early exit as the sole cause of the lower score.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Population Base-Rate Calibration:</strong> Exact Bayes base-rate math rescales Top 1% precision from the 20%-control holdout (0.922%) to the full 487,479-provider billing list (0.186%, vs. 0.0195% random base rate).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.2307/2526310" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Berkson, J. (1946), "Limitations of the Application of Fourfold Table Analysis to Hospital Data", Biometrics Bulletin, 2(3), 47-53</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1038/s41467-020-19478-2" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Griffith, G. J., et al. (2020), "Collider bias undermines our understanding of COVID-19 disease risk and severity", Nature Communications, 11, 5749</a></li>
+              <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">OIG LEIE</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Limiting a File to "Providers Still Billing" Shifts Every Ratio</h3>
+            <p class="text-slate-800">Collider bias was first noted by Joseph Berkson in 1946 in hospital data. A related sample-selection shift appears in health claims when a team keeps only providers still billing in the latest year. In the linked Medicaid file, 90.5% of post-panel excluded billers stopped billing before 2024 (vs. 43.6% of controls), and reweighting controls by exit year shifts AUC from 0.724 to 0.653. In the subset of 55,018 providers still billing in 2024 (9 exclusions), the observed AUC is 0.442 (95% CI 0.212 to 0.664), reflecting both sample selection and the small number of remaining cases.</p>
+            <p class="text-slate-800">Downsampling shifts precision in a similar way. A holdout that keeps all 95 cases and 20% of controls reports 0.922% Top 1% precision. At the full-list base rate of 0.0195%, that same cutoff gives 0.186% precision, or 9 caught cases among 4,844 flags. Rescaling every subset score to the full billing list and checking the 16,688-case national MFCU caseload keeps agencies from sizing audit budgets on a filtered sample.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Calibration on Observed Screening Results):</strong> AUC scores (0.724 full list, 0.653 exit-year reweighted, and 0.442 active-only subgroup), holdout precision, flags, caught cases, lift, and peer percentiles are observed outputs in output/results.json, main.tex (L398-402), output/tables/tab6_economics.tex, and output/tables/tab_a3_base_rates.tex. Rescaling from holdout to full-list precision is a Mode A calibration using Bayes rule. It matches the full-population precision in output/results.json (0.1858%).</p>
+          <p><strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.2307/2526310" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Berkson, J. (1946), "Limitations of the Application of Fourfold Table Analysis to Hospital Data", Biometrics Bulletin, 2(3), 47-53</a>; <a href="https://doi.org/10.1038/s41467-020-19478-2" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Griffith, G. J., et al. (2020), "Collider bias undermines our understanding of COVID-19 disease risk and severity", Nature Communications, 11, 5749</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>; and HHS-OIG Medicaid Fraud Control Unit FY 2024 annual statistics.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Can a Classifier Find What Investigators Miss?</a>.
+                <span>Temporal validation and interpretable baselines for fraud screening; the article-reported classifier metrics are under reconciliation because sample sizes and base rates conflict.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/imbalanced-classifier-python/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Imbalanced Classification: An Article-Reported Example</a>.
+                <span>Instructional scikit-learn workflow for rare outcomes, including why a model that labels every case negative can score about 91% accuracy; dataset counts and metrics are article-reported.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What is a "collider" in a causal diagram, and how does it differ from a confounder?</dt>
+                <dd class="text-slate-700 mt-0.5">A confounder is a shared CAUSE of both the treatment and the outcome (A &lt;- C -&gt; Y). Analysts control for it to remove bias. A collider is a shared EFFECT of two variables (A -&gt; C &lt;- Y). Filtering or controlling on a collider opens a false link between its causes.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does the active-only subgroup score compare with the full-list score?</dt>
+                <dd class="text-slate-700 mt-0.5">Across all 487,479 providers, the screen scores 0.724 AUC (95% CI 0.667 to 0.777). Because 90.5% of post-panel excluded providers stopped billing before 2024 (38.0th vs. 50.0th active-months percentile), reweighting controls by exit year shifts AUC to 0.653, and the 2024 active-biller subset (9 exclusions vs. 55,009 controls) shows an observed AUC of 0.442 (95% CI 0.212 to 0.664). That subgroup difference reflects sample restriction and the small 9-case sample instead of isolating a single cause.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How should analysts report precision from a downsampled holdout?</dt>
+                <dd class="text-slate-700 mt-0.5">Rescale it to the full-list base rate. The holdout here keeps every case and 20% of controls. Top 1% precision of 0.922% rescales to 0.186% across the full billing list (0.0195% base rate), or 9 caught cases among 4,844 flags.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/classifying-causal-mechanisms" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Separating Mediators From Confounders</a></li>
+          <li class="my-2"><a href="/methods-lab/measurement-error-claims" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Directory Counts vs. Active Claims</a></li>
+          <li class="my-2"><a href="/methods-lab/selection-into-treatment" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Incentive Design & Program Take-Up Across Wage Tiers</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            A researcher studies whether high blood pressure (hypertension) is associated with respiratory illness. In the general population, these conditions are unrelated. But in hospital patient records, they appear strongly correlated. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Hypertension Severity vs Respiratory Illness</h3>
-            <div class="toggle-group">
-              <button class="toggle-btn active" id="toggle-population" aria-pressed="true">General Population</button>
-              <button class="toggle-btn" id="toggle-hospital" aria-pressed="false">Hospital Patients Only</button>
-            </div>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing hypertension severity versus respiratory illness severity"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>Not hospitalized</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Hospitalized</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>Correlation (r)</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-corr-pop">--</div>
-                  <div class="stat-label">Population</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value negative" id="stat-corr-hosp">--</div>
-                  <div class="stat-label">Hospital Only</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Sample Sizes</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-n-pop">--</div>
-                  <div class="stat-label">Total</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-n-hosp">--</div>
-                  <div class="stat-label">Hospitalized</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>The paradox:</strong> Two unrelated conditions appear negatively correlated when we only look at hospitalized patients. The more severe one condition, the less severe the other seems.
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Why does limiting to hospitalized patients create a correlation that doesn't exist in the population? The answer involves a concept called a "collider."</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: COLLIDER EXPLAINED
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">What Is a Collider?</h2>
-          <p class="panel-intro">
-            A collider is a variable that is caused by two other variables. Conditioning on a collider (selecting, stratifying, or adjusting for it) creates a spurious association between its causes, even when they're truly independent.
-          </p>
-        </div>
-
-        <div class="explanation-container">
-          <div class="explanation-main">
-            <div class="dag-wrapper" style="box-shadow: none; padding: 0; margin-bottom: var(--space-lg);">
-              <img
-                src="/methods-lab/collider-bias/assets/collider-bias-dag.png"
-                alt="Causal diagram showing Hypertension and Respiratory Illness both pointing to Hospitalization, with a dashed line between Hypertension and Respiratory Illness indicating spurious correlation when conditioning on hospitalization"
-                class="dag-image"
-              >
-              <p class="dag-caption">Hospitalization is a "collider" because two independent causes point into it. Conditioning on it opens a backdoor path.</p>
-            </div>
-
-            <div class="step-list">
-              <div class="step-item">
-                <div class="step-number">1</div>
-                <div class="step-content"><strong>Two independent causes:</strong> Hypertension and respiratory illness are separate conditions that each increase the chance of hospitalization, but they don't cause each other.</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">2</div>
-                <div class="step-content"><strong>Hospitalization is a common effect:</strong> People end up in the hospital database if they have severe hypertension OR severe respiratory problems (or both).</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">3</div>
-                <div class="step-content"><strong>Conditioning opens a path:</strong> Among hospitalized patients, knowing someone has mild hypertension tells you they probably have severe respiratory illness (otherwise why are they hospitalized?).</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">4</div>
-                <div class="step-content"><strong>The spurious correlation appears:</strong> This creates a negative association in the hospitalized sample that doesn't exist in the population.</div>
-              </div>
-            </div>
-          </div>
-
-          <aside class="info-sidebar">
-            <div class="info-card">
-              <h4>Why "Collider"?</h4>
-              <p>The name comes from the DAG structure: two arrows "collide" at hospitalization. This variable sits at the intersection of two causal pathways.</p>
-            </div>
-
-            <div class="info-card warning-card">
-              <h4>The Trap</h4>
-              <p>Researchers often control for hospitalization thinking it removes confounding. Instead, it can create bias where none existed, or reverse the direction of real effects.</p>
-            </div>
-
-            <div class="info-card">
-              <h4>Other Names</h4>
-              <ul>
-                <li>Berkson's bias (in case-control studies)</li>
-                <li>Selection bias</li>
-                <li>Conditioning on a common effect</li>
-                <li>Index event bias</li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-
-        <div class="definition-card">
-          <h3>The Collider Principle</h3>
-          <p>When you condition on a <strong>common effect</strong> of two variables, you create a statistical association between those variables, even if they were independent in the full population.</p>
-          <p style="margin-top: var(--space-md);">This happens because:</p>
-          <ul>
-            <li>Selection into your sample depends on having at least one of the causes</li>
-            <li>Knowing the value of one cause tells you something about the likely value of the other (among selected individuals)</li>
-            <li>The association is real in your data, but it doesn't exist in the population you want to generalize to</li>
-          </ul>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Let's see exactly how this works with a concrete hospital example, step by step.</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: HOSPITAL EXAMPLE
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Hospital Example: Why Selection Matters</h2>
-          <p class="panel-intro">
-            Imagine 1,000 people in the general population. Hypertension and respiratory illness are completely independent (correlation = 0). Each condition independently increases hospitalization risk. Watch what happens when we restrict to hospitalized patients only.
-          </p>
-        </div>
-
-        <div class="example-container">
-          <div class="scenario-card population">
-            <div class="scenario-header">
-              <div class="scenario-icon population">P</div>
-              <h3>General Population</h3>
-            </div>
-
-            <div class="scenario-stats">
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Sample size</span>
-                <span class="scenario-stat-value" id="pop-n">1,000</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Hypertension prevalence</span>
-                <span class="scenario-stat-value">30%</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Respiratory illness prevalence</span>
-                <span class="scenario-stat-value">20%</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Correlation (Hypertension, Respiratory)</span>
-                <span class="scenario-stat-value" id="pop-corr" style="color: var(--color-success);">r = 0.00</span>
-              </div>
-            </div>
-
-            <div class="scenario-result none">
-              <div class="result-label">Finding</div>
-              <div class="result-text">No Association</div>
-            </div>
-          </div>
-
-          <div class="scenario-card hospital">
-            <div class="scenario-header">
-              <div class="scenario-icon hospital">H</div>
-              <h3>Hospital Database</h3>
-            </div>
-
-            <div class="scenario-stats">
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Sample size</span>
-                <span class="scenario-stat-value" id="hosp-n">~180</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Hypertension prevalence</span>
-                <span class="scenario-stat-value">65%</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Respiratory illness prevalence</span>
-                <span class="scenario-stat-value">55%</span>
-              </div>
-              <div class="scenario-stat">
-                <span class="scenario-stat-label">Correlation (Hypertension, Respiratory)</span>
-                <span class="scenario-stat-value" id="hosp-corr" style="color: var(--color-danger);">r = -0.35</span>
-              </div>
-            </div>
-
-            <div class="scenario-result spurious">
-              <div class="result-label">Finding</div>
-              <div class="result-text">Spurious Negative Association</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="definition-card">
-          <h3>Why Does This Happen?</h3>
-          <p>Among hospitalized patients:</p>
-          <ul>
-            <li><strong>If someone has mild hypertension</strong> and they're still hospitalized, they probably have something else wrong (like severe respiratory illness)</li>
-            <li><strong>If someone has severe hypertension</strong>, that alone explains their hospitalization, so their respiratory status can be anything (including healthy)</li>
-            <li>This "explaining away" creates a negative correlation that exists only in the selected sample</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">The hospital selects people who are sick enough on at least one dimension. Among those selected, the two dimensions become negatively correlated.</p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How do we recognize collider bias in practice, and what can we do about it?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: AVOIDING COLLIDERS
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Recognizing and Avoiding Collider Bias</h2>
-          <p class="panel-intro">
-            Collider bias is subtle because the patterns look real in your data. The correlation is statistically significant. The challenge is recognizing that your sample selection created the pattern.
-          </p>
-        </div>
-
-        <div class="strategy-grid">
-          <div class="strategy-card good">
-            <span class="strategy-badge">Recommended</span>
-            <h4>Draw a DAG Before Analyzing</h4>
-            <p>Before controlling for any variable, ask: "Could this be caused by both my exposure and my outcome?" If arrows point INTO the variable from both, it's a collider. Don't condition on it.</p>
-          </div>
-
-          <div class="strategy-card good">
-            <span class="strategy-badge">Recommended</span>
-            <h4>Understand Your Selection Process</h4>
-            <p>Why are people in your database? Hospital records, insurance claims, and registry data all involve selection. If both exposure and outcome affect selection, you likely have collider bias.</p>
-          </div>
-
-          <div class="strategy-card caution">
-            <span class="strategy-badge">Use Carefully</span>
-            <h4>Sensitivity Analysis</h4>
-            <p>Test whether your results hold if you change the sample. If restricting to a subgroup reverses or magnifies the association, collider bias may be operating.</p>
-          </div>
-
-          <div class="strategy-card caution">
-            <span class="strategy-badge">Use Carefully</span>
-            <h4>Population-Based Data</h4>
-            <p>When possible, use samples that don't select on your outcome's causes. Population surveys, birth cohorts, and random samples avoid many selection problems.</p>
-          </div>
-
-          <div class="strategy-card avoid">
-            <span class="strategy-badge">Avoid</span>
-            <h4>Controlling for Consequences</h4>
-            <p>Never control for variables that happen after your exposure or outcome. Mediators and downstream consequences are especially dangerous sources of collider bias.</p>
-          </div>
-
-          <div class="strategy-card avoid">
-            <span class="strategy-badge">Avoid</span>
-            <h4>Case-Only Designs Without Caution</h4>
-            <p>Studying only hospitalized patients, only those with a diagnosis, or only those who survived an event restricts your sample based on a potential collider.</p>
-          </div>
-        </div>
-
-        <div class="explanation-container">
-          <div class="explanation-main">
-            <h3 style="margin-bottom: var(--space-md);">Common Colliders in Health Research</h3>
-            <div class="step-list">
-              <div class="step-item">
-                <div class="step-number">1</div>
-                <div class="step-content"><strong>Hospitalization:</strong> Many conditions lead to hospitalization. Studying only hospitalized patients can create false associations between unrelated conditions.</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">2</div>
-                <div class="step-content"><strong>Survival:</strong> Both exposure and outcome may affect survival. Studying survivors only can reverse the true relationship ("obesity paradox").</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">3</div>
-                <div class="step-content"><strong>Study enrollment:</strong> People who enroll in studies differ from those who don't. If enrollment depends on both exposure and outcome, bias follows.</div>
-              </div>
-              <div class="step-item">
-                <div class="step-number">4</div>
-                <div class="step-content"><strong>Loss to follow-up:</strong> If dropping out depends on both exposure and outcome status, your remaining sample is selected on a collider.</div>
-              </div>
-            </div>
-          </div>
-
-          <aside class="info-sidebar">
-            <div class="info-card">
-              <h4>The Key Question</h4>
-              <p>"Is the variable I'm conditioning on caused by both my exposure and my outcome (or causes of my outcome)?"</p>
-              <p style="margin-top: var(--space-sm);">If yes, conditioning on it will induce bias.</p>
-            </div>
-
-            <div class="info-card warning-card">
-              <h4>Confounding vs. Collider</h4>
-              <p>Confounders should be controlled. Colliders should NOT be controlled. Getting this backwards is a common source of bias in observational studies.</p>
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What's the key takeaway for researchers working with healthcare databases?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: KEY INSIGHT
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Key Insight</h2>
-          <p class="panel-intro">
-            The patterns in your database are real, but they may not exist in the population you care about. Understanding why people are in your data is as important as understanding what the data show.
-          </p>
-        </div>
-
-        <div class="dag-wrapper">
-          <img
-            src="/methods-lab/collider-bias/assets/collider-bias-dag.png"
-            alt="Causal diagram showing the collider structure where two independent causes both point to a common effect"
-            class="dag-image"
-          >
-          <p class="dag-caption">Conditioning on a collider opens a backdoor path between otherwise independent variables, creating spurious correlation.</p>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Questions Economists Ask About Healthcare Data</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Selection:</strong> Why are these people in my database? What determines who gets included?</div>
-            <div class="concept-item"><strong>Collider check:</strong> Is my sample restriction based on something caused by both my exposure and outcome?</div>
-            <div class="concept-item"><strong>DAG structure:</strong> Which variables are confounders (control for them) versus colliders (don't control)?</div>
-            <div class="concept-item"><strong>External validity:</strong> Even if the association is real in this sample, does it generalize to the population I want to inform?</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>Conditioning on a collider creates spurious correlation between otherwise independent variables.</strong> When your sample is selected based on a common effect of exposure and outcome, associations can appear, disappear, or reverse compared to the general population. Hospital databases, insurance claims, and survival analyses are especially vulnerable. Before analyzing, draw a DAG and ask: "Is my sample restriction a collider?" <strong>This is what economists mean by "selection bias from conditioning on a common effect."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Causal Pitfalls track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/food-insecurity-diabetes" style="color:#0041A5;font-weight:600;">Case Study: Food Security & Diabetes</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/classifying-causal-mechanisms" style="color:#0041A5;font-weight:600;">Classifying Causal Mechanisms</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/sensitivity-analysis-cea" style="color:#0041A5;font-weight:600;">Sensitivity Analysis</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual patient records.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generatePersonData() {
-      const data = [];
-      let seed = 42;
-
-      const rand = () => {
-        const x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-      };
-
-      // Generate 500 people
-      for (let i = 0; i < 500; i++) {
-        // Hypertension severity (0-100) - independent
-        const hypertension = rand() * 100;
-
-        // Respiratory illness severity (0-100) - INDEPENDENT of hypertension
-        const respiratory = rand() * 100;
-
-        // Hospitalization probability based on EITHER condition being severe
-        // This creates the collider structure
-        const hospProbFromHypertension = hypertension > 60 ? 0.4 + (hypertension - 60) * 0.01 : hypertension * 0.003;
-        const hospProbFromRespiratory = respiratory > 50 ? 0.3 + (respiratory - 50) * 0.012 : respiratory * 0.004;
-
-        // Combined probability (not independent, but additive)
-        const hospProb = Math.min(0.95, hospProbFromHypertension + hospProbFromRespiratory);
-
-        const hospitalized = rand() < hospProb;
-
-        data.push({
-          id: i + 1,
-          hypertension: Math.round(hypertension * 10) / 10,
-          respiratory: Math.round(respiratory * 10) / 10,
-          hospitalized: hospitalized
-        });
-      }
-
-      return data;
-    }
-
-    const personData = generatePersonData();
-    const hospitalizedData = personData.filter(d => d.hospitalized);
-    const nonHospitalizedData = personData.filter(d => !d.hospitalized);
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    function calculateCorrelation(data, xKey, yKey) {
-      if (data.length < 2) return 0;
-
-      const n = data.length;
-      const xVals = data.map(d => d[xKey]);
-      const yVals = data.map(d => d[yKey]);
-
-      const xMean = mean(xVals);
-      const yMean = mean(yVals);
-
-      let numerator = 0;
-      let xDenom = 0;
-      let yDenom = 0;
-
-      for (let i = 0; i < n; i++) {
-        const xDiff = xVals[i] - xMean;
-        const yDiff = yVals[i] - yMean;
-        numerator += xDiff * yDiff;
-        xDenom += xDiff * xDiff;
-        yDenom += yDiff * yDiff;
-      }
-
-      if (xDenom === 0 || yDenom === 0) return 0;
-      return numerator / Math.sqrt(xDenom * yDenom);
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let showHospitalOnly = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. TOGGLE BUTTONS
-       ============================================ */
-    const togglePopulation = document.getElementById('toggle-population');
-    const toggleHospital = document.getElementById('toggle-hospital');
-
-    togglePopulation.addEventListener('click', () => {
-      showHospitalOnly = false;
-      togglePopulation.classList.add('active');
-      togglePopulation.setAttribute('aria-pressed', 'true');
-      toggleHospital.classList.remove('active');
-      toggleHospital.setAttribute('aria-pressed', 'false');
-      renderScatterPlot();
-    });
-
-    toggleHospital.addEventListener('click', () => {
-      showHospitalOnly = true;
-      toggleHospital.classList.add('active');
-      toggleHospital.setAttribute('aria-pressed', 'true');
-      togglePopulation.classList.remove('active');
-      togglePopulation.setAttribute('aria-pressed', 'false');
-      renderScatterPlot();
-    });
-
-    /* ============================================
-       5. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 0, yMax = 100;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - (val / yMax) * plotHeight;
-
-      // Grid lines
-      for (let v = 20; v <= 80; v += 20) {
-        // Horizontal
-        const hLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        hLine.setAttribute('x1', margin.left);
-        hLine.setAttribute('x2', width - margin.right);
-        hLine.setAttribute('y1', yScale(v));
-        hLine.setAttribute('y2', yScale(v));
-        hLine.setAttribute('stroke', 'var(--color-border-light)');
-        hLine.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(hLine);
-
-        // Vertical
-        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        vLine.setAttribute('x1', xScale(v));
-        vLine.setAttribute('x2', xScale(v));
-        vLine.setAttribute('y1', margin.top);
-        vLine.setAttribute('y2', height - margin.bottom);
-        vLine.setAttribute('stroke', 'var(--color-border-light)');
-        vLine.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(vLine);
-      }
-
-      // Determine which data to show
-      const dataToShow = showHospitalOnly ? hospitalizedData : personData;
-
-      // Calculate trend line for displayed data
-      const xVals = dataToShow.map(d => d.hypertension);
-      const yVals = dataToShow.map(d => d.respiratory);
-      const xMean = mean(xVals);
-      const yMean = mean(yVals);
-
-      let numerator = 0;
-      let denominator = 0;
-      for (let i = 0; i < dataToShow.length; i++) {
-        numerator += (xVals[i] - xMean) * (yVals[i] - yMean);
-        denominator += (xVals[i] - xMean) * (xVals[i] - xMean);
-      }
-      const slope = denominator !== 0 ? numerator / denominator : 0;
-      const intercept = yMean - slope * xMean;
-
-      // Trend line
-      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      const trendY1 = intercept;
-      const trendY2 = slope * 100 + intercept;
-      trendLine.setAttribute('x1', xScale(0));
-      trendLine.setAttribute('x2', xScale(100));
-      trendLine.setAttribute('y1', yScale(Math.max(0, Math.min(100, trendY1))));
-      trendLine.setAttribute('y2', yScale(Math.max(0, Math.min(100, trendY2))));
-      trendLine.setAttribute('stroke', showHospitalOnly ? 'var(--color-danger)' : 'var(--color-text-muted)');
-      trendLine.setAttribute('stroke-width', '2');
-      trendLine.setAttribute('stroke-dasharray', '5,5');
-      trendLine.setAttribute('opacity', '0.7');
-      svg.appendChild(trendLine);
-
-      // Data points
-      if (showHospitalOnly) {
-        // Show only hospitalized
-        hospitalizedData.forEach(d => {
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', xScale(d.hypertension));
-          circle.setAttribute('cy', yScale(d.respiratory));
-          circle.setAttribute('r', 6);
-          circle.setAttribute('fill', 'var(--color-accent)');
-          circle.setAttribute('opacity', '0.8');
-          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-          circle.addEventListener('mouseleave', hideTooltip);
-
-          svg.appendChild(circle);
-        });
-      } else {
-        // Show all, with different colors
-        // Non-hospitalized first (so hospitalized are on top)
-        nonHospitalizedData.forEach(d => {
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', xScale(d.hypertension));
-          circle.setAttribute('cy', yScale(d.respiratory));
-          circle.setAttribute('r', 5);
-          circle.setAttribute('fill', 'var(--color-secondary)');
-          circle.setAttribute('opacity', '0.5');
-          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-          circle.addEventListener('mouseleave', hideTooltip);
-
-          svg.appendChild(circle);
-        });
-
-        hospitalizedData.forEach(d => {
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', xScale(d.hypertension));
-          circle.setAttribute('cy', yScale(d.respiratory));
-          circle.setAttribute('r', 6);
-          circle.setAttribute('fill', 'var(--color-accent)');
-          circle.setAttribute('opacity', '0.85');
-          circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-          circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-          circle.addEventListener('mouseleave', hideTooltip);
-
-          svg.appendChild(circle);
-        });
-      }
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Hypertension Severity (0-100)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 0; y <= 100; y += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Respiratory Illness Severity (0-100)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       6. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="person-id">Person ${data.id}</div>
-        <div class="metric">Hypertension: ${data.hypertension}</div>
-        <div class="metric">Respiratory: ${data.respiratory}</div>
-        <div class="metric">Hospitalized: ${data.hospitalized ? 'Yes' : 'No'}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const corrPop = calculateCorrelation(personData, 'hypertension', 'respiratory');
-      const corrHosp = calculateCorrelation(hospitalizedData, 'hypertension', 'respiratory');
-
-      document.getElementById('stat-corr-pop').textContent = corrPop.toFixed(2);
-      document.getElementById('stat-corr-hosp').textContent = corrHosp.toFixed(2);
-      document.getElementById('stat-n-pop').textContent = personData.length;
-      document.getElementById('stat-n-hosp').textContent = hospitalizedData.length;
-
-      // Update the example panel stats
-      document.getElementById('pop-n').textContent = personData.length;
-      document.getElementById('hosp-n').textContent = hospitalizedData.length;
-      document.getElementById('pop-corr').textContent = `r = ${corrPop.toFixed(2)}`;
-      document.getElementById('hosp-corr').textContent = `r = ${corrHosp.toFixed(2)}`;
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

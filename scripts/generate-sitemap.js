@@ -28,6 +28,7 @@ const EXCLUDE_PATTERNS = [
   /^auth-callback\.html$/,
   /^reset-password\.html$/,
   /^login\.html$/,            // noindex (PRD Cluster F)
+  /^tools\/pfl-simulator\//,  // noindex staging tool
   /^join\//,
   /^404\.html$/
 ];

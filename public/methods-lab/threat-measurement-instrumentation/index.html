@@ -3,829 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Instrumentation Shifts & Measurement | CAPHE</title>
+  <meta name="description" content="See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation">
+  <meta property="og:title" content="Instrumentation Shifts & Measurement | CAPHE">
+  <meta property="og:description" content="See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Threats from Measurement and Coding Changes | CAPHE</title>
-  <meta name="description" content="Learn how changes in measurement systems, diagnostic criteria, or reporting definitions can create artificial trends that look like real program effects.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-xl);
-      text-align: center;
-    }
-
-    .bar-chart-area {
-      position: relative;
-      height: 280px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 60px;
-      padding: 20px 60px 0 70px;
-      border-left: 2px solid var(--color-border);
-      border-bottom: 2px solid var(--color-border);
-      margin-bottom: 60px;
-    }
-
-    .bar-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-
-    .bar-pair {
-      display: flex;
-      gap: var(--space-sm);
-      align-items: flex-end;
-    }
-
-    .bar {
-      width: 55px;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-      transition: height 0.5s ease;
-      position: relative;
-    }
-
-    .bar-pre {
-      background: var(--color-secondary);
-    }
-
-    .bar-post {
-      background: var(--color-accent);
-    }
-
-    .bar-label {
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--color-text);
-      font-family: var(--font-mono);
-    }
-
-    .group-label {
-      position: absolute;
-      bottom: -45px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      text-align: center;
-      max-width: 130px;
-      white-space: nowrap;
-    }
-
-    .y-axis-label {
-      position: absolute;
-      left: -55px;
-      top: 50%;
-      transform: rotate(-90deg);
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      white-space: nowrap;
-    }
-
-    .comparison-group {
-      opacity: 0;
-      transform: translateX(-20px);
-      transition: all 0.4s ease;
-    }
-
-    .comparison-group.visible {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .chart-legend {
-      display: flex;
-      justify-content: center;
-      gap: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .legend-item {
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: var(--radius-sm);
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-value {
-      font-size: 2rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .toggle-section {
-      text-align: center;
-      margin-top: var(--space-xl);
-    }
-
-    .toggle-btn {
-      padding: var(--space-md) var(--space-xl);
-      background: var(--color-secondary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      background: #0B7C72;
-    }
-
-    /* Bridging Question */
-    .bridging-question {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-
-    .bridging-question p {
-      font-size: 1rem;
-      color: var(--color-text);
+      color: #fff;
       margin: 0;
     }
-
-    /* ============================================
-       7. PANEL 2: THE PROBLEM (DAG)
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
+    .budget-bar-seg {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
     }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
 
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
+    .bar-legend {
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .example-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .example-item {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      padding-left: var(--space-md);
-      border-left: 2px solid var(--color-border);
-    }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. DEFINITION CARD (KEY CONCEPT)
-       ============================================ */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-top: var(--space-sm);
-      padding-left: var(--space-lg);
-    }
-
-    .definition-card li {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-xs);
-    }
-
-    /* ============================================
-       9. PANEL 3: THE TEST
-       ============================================ */
-    .test-container {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .test-container { grid-template-columns: 1fr; }
-    }
-
-    .comparison-table {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .comparison-table h3 {
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: var(--space-md);
-      text-align: left;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    th {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    td {
-      font-size: 0.95rem;
-    }
-
-    .numeric {
-      text-align: right;
-      font-family: var(--font-mono);
-    }
-
-    .highlight-row {
-      background: rgba(249, 168, 37, 0.1);
-    }
-
-    .interpretation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .interpretation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .interpretation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      font-size: 0.95rem;
-    }
-
-    .interpretation-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .insight-box {
-      background: rgba(46, 125, 50, 0.1);
-      border-left: 4px solid var(--color-success);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       10. PANEL 4: QUESTIONS TO CONSIDER
-       ============================================ */
-    .questions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .questions-grid { grid-template-columns: 1fr; }
-    }
-
-    .question-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .question-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .question-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .question-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: "check";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       11. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       12. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    /* ============================================
-       13. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
 
-    .hidden { display: none; }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    .skip-link:focus {
-      top: 0;
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Threats from Measurement and Coding Changes",
-  "description": "Learn how changes in measurement systems, diagnostic criteria, or reporting definitions can create artificial trends that look like real program effects.",
+  "headline": "Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories",
+  "description": "See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -833,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -844,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What is an instrumentation threat to validity?",
+      "name": "Why did filtering from 6,613 broad spots to 514 SNAP stores keep 81.7% of top-need tracts (67 of 82) in the highest-vulnerability quintile?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "It is the risk that a change in measurement, such as new diagnostic criteria, reporting systems, or definitions, produces an apparent trend that is an artifact. The tutorial frames it as asking whether the ruler changed, not the thing being measured."
+        "text": "In the 5-component Extended Vulnerability Index, economic factors (30% poverty rate and 25% SNAP participation) hold 55% of the index weight while normalized store distance holds 20%. Even though mean distance doubled from 0.29 to 0.573 miles, 65.2% of tracts (266 of 408) stayed in the exact same quintile and 81.7% of Q5 tracts stayed in Q5."
       }
     },
     {
       "@type": "Question",
-      "name": "How can a new electronic health record create a false improvement?",
+      "name": "Why did the 2020 ACS 5-Year survey show a -4.94% dip in SNAP homes during COVID-19?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A better documentation system can capture and recode visits that were previously logged differently, so recorded diabetes care visits increase without any change in actual care. The tutorial's new EHR moved general check-ups into the diabetes care category."
+        "text": "The 2020 ACS 5-Year table averages 60 months from January 2016 to December 2020, so 80% of the sample came before COVID-19. Also, 2020 survey collection faced low response rates among low-pay homes. Monthly CDSS rolls tracked the real +56% to +71% jump right away."
       }
     },
     {
       "@type": "Question",
-      "name": "How can an instrumentation threat be detected?",
+      "name": "How did the County DEH health permit list check the store count and why was deduplication needed?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Comparing against a county that adopted the same measurement change but not the program isolates the artifact. In the tutorial, County B received the new EHR alone and showed nearly the same increase as the program county, pointing to measurement rather than the program."
+        "text": "Raw Santa Clara County DEH permit logs contain 8,555 rows because supermarkets hold separate permits for bakery, deli, and meat counters at the same address (1,220 duplicate rows, or 14.3%). Consolidating by address (7,335 unique sites) and classifying retail grocers (97.5% accuracy) yields 755 refined / 724 confirmed SNAP-eligible grocers, proving the 6,613 map count was inflated 8.76x by non-grocery spots."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -895,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -914,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -930,498 +529,454 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab &middot; Validity & Solutions</div>
-      <h1>Threats from Measurement and Coding Changes</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">An instrumentation threat appears when the way an outcome is measured changes at the same time as an intervention, so a shift in measurement is mistaken for real improvement. The tutorial poses the question of whether the ruler changed rather than the thing measured: a county launched a Diabetes Wellness Program in January 2023 while all clinics upgraded to a new electronic health record that documented visits more thoroughly. Because the new system recoded encounters previously logged as general check-ups, recorded diabetes care visits rose even where measurement, not care, had improved.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Did the ruler change, not the thing measured? When diagnostic criteria, reporting systems, or definitions change, trends can be artifacts.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">The Test</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">Questions to Consider</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare raw business map lists with verified SNAP store lists when mapping local food access.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        A county food team that switches its map from raw business listings to verified CalFresh EBT stores shifts local store counts even when zero stores opened or closed. Checking map lists against <strong>514 verified CalFresh EBT stores</strong> and <strong>755 county health permits</strong> keeps <strong>81.7% of top-need areas (67 of 82 tracts)</strong> in the same top tier.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Raw map queries return <strong>6,613 food spots</strong> (such as cafes that do not take CalFresh), so switching to verified grocers doubles mean trip distance by <strong>+97% (0.29 to 0.573 miles)</strong> with zero store closures.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Checking map feeds and 5-year census surveys against monthly permits and caseloads keeps grants aimed at real local gaps.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Four Data Rule Shifts That Look Like Big Policy or Market Shifts</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare four real data rule shifts across map tags, SNAP lists, permit records, and survey waves.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Comparison of old ruler vs. checked ruler, apparent metric jump, real local change, and rank stability across four California data feeds.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Data Check Step
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Shift 1: Map Tag</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Google Map Tags</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Shift 2: EBT Filter</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Broad Spots vs. SNAP EBT</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Shift 3: Permit List</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Raw vs. Deduplicated DEH</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Shift 4: Survey Wave</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">ACS 5-Yr vs. CDSS Rolls</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Ruler A
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">344 stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">1 old tag</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6,613 broad spots</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.29 mi</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">8,555 raw rows</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">987 old est</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">27,068 ACS 2020 HH</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-4.94% dip</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Ruler B
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6,613 stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">multi-tag pull</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">514 SNAP / 755 DEH</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.573 mi</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">7,335 sites</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">755 / 724 grocers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+56% to +71% CDSS CalFresh</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Apparent Shift From Ruler Change
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+1,822% Store Jump</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-92.2% Stores</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+97% Trip</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 92%; background: #D97706;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-14.3% Counter Duplicates</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-1,220</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 14%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-4.9% Survey vs. +71% Rolls</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 71%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Real Change on the Street
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 new stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">tag fix only</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 stores closed</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">EBT filter</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 grocers closed</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">merged depts</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5-yr wave watered down 2020</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cross-Check &amp; Rank Match
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">8.76x higher than 755 permits</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">81.7% top-tier steady</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">67/82</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">97.5% retail accuracy</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">477/489</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">ACS rose +17.15% in 2022-23</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Match Across Data Lists
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Google matched 42.1% of retail</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">65.2% same tier</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">98.0% in 1 tier</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Removed 35 chain cafes &amp; 3 bars</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">28,476 (2019) vs 28,880 (-1.4%)</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Observed Data Rule Shifts):</strong> Each column uses its own group base and is not pooled across columns. Shift 1 counts Santa Clara County food map spots (344 single-tag vs. 6,613 multi-tag). Shift 2 tracks distance for 408 Santa Clara census tracts (6,613 spots vs. 514 SNAP stores, checked against 755 refined / 724 confirmed DEH permits). Shift 3 tracks Santa Clara County DEH food permit deduplication (DEHDENOM_UPDATES_SUMMARY.md: 8,555 raw permit rows minus 1,220 multi-department duplicates = 7,335 unique sites, yielding 755 refined / 724 confirmed SNAP-eligible grocers vs. 987 under an older un-deduplicated keyword rule). Shift 4 compares ACS 5-year survey homes with CDSS monthly caseloads (PHASE6_FINAL_DELIVERABLE.md). In Shift 2 across N = 408 tracts (EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md), 266 of 408 tracts (65.2%) stay in the exact same quintile, 400 of 408 (98.0%) stay within ±1 quintile, and 67 of 82 Q5 tracts (81.7%) stay in Q5.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Google Map Tags.</strong> Base: SCC Store Spots.. <strong>Broad Spots vs. SNAP EBT.</strong> Base: 408 SCC Tracts.. <strong>Raw vs. Deduplicated DEH.</strong> Base: 8,555 SCC Permits.. <strong>ACS 5-Yr vs. CDSS Rolls.</strong> Base: Survey vs. Rolls..</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Store-List Check on 408 Santa Clara Tracts (Permit Deduplication &amp; Survey Window Checks in Table 1). Ruler 1: Broad Food Map List (6,613 Raw Spots): <strong>0.29 Miles Mean Trip (6,613 Spots)</strong>. Pulling broad food map tags returns <strong>6,613 spots</strong> (such as cafes, snack shops, and mini-marts that do not take CalFresh EBT). That shrinks mean tract distance to <strong>0.29 miles (0.25 mi median)</strong>. Ruler 2: SNAP EBT &amp; Health Permit List (514 EBT / 755 Permits): <strong>0.573 Miles (+97% Trip; 81.7% Top-Tier Steady)</strong>. Keeping only <strong>514 USDA SNAP EBT stores</strong> (checked at a <strong>97.5% accuracy</strong> against <strong>755 DEH permitted grocers</strong>) doubles mean distance to <strong>0.573 miles</strong>. Still, <strong>81.7% of top-need tracts (67/82)</strong> and <strong>98.0% within &pm;1 tier</strong> stay put.</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/methodology/ebt-verification-methodology/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">EBT Retailer Verification Method &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/transit-equity/data-quality-49-to-12/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Transit Stop Deduplication Claim Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/gtfs-validation-python/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">GTFS Feed Validation Workflow in Python &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. How to Check Data Feeds So Rule Shifts Do Not Misguide Grants</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We set clear check rules for map APIs, SNAP store lists, permit registries, and 5-year census waves.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix mapping each data rule shift to its cause, budget risk, and data check rule.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Google Map Tags
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Broad Spots vs. SNAP EBT
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Raw vs. Deduplicated DEH
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                ACS 5-Yr vs. CDSS Rolls
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why the Data Shift Happened
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Google retired one old store tag.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Map APIs do not check.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Raw health permit logs list separate deli, bakery.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The 2020 ACS 5-Year wave blended four pre-COVID years with 2020, creating a -4.94% dip.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk of Acting on the Raw Shift
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Comparing the 344-store run to the 6,613-store run looks like a +1,822% store boom with zero new stores.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Switching from broad map lists to SNAP stores doubles measured trip distance with zero store closures.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using un-deduplicated permit rows overstates store supply by 14% to 30%.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using 2020 ACS 5-Year tables alone makes CalFresh need look down when state rolls jumped +56% to +71%.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why Priority Ranks Held Steady
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Raw map pulls shift across software updates and should not serve as the base.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Poverty and SNAP hold 55% of index weight, so 81.7% of top-need tracts stayed put.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Merging counter permits by street address gives a clean 755-store denominator.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Once pre-2020 years rolled off, ACS counts rose +17.15% to match state rolls.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Data Check Rule for Teams
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check Map Pulls Against Permits<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Match map pulls against County DEH health permits.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use Verified SNAP EBT Lists<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Define food access using USDA SNAP EBT retailers.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Deduplicate Permit Addresses<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Merge bakery and deli counter rows at the same address before counting stores.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair 5-Yr ACS With Monthly Rolls<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use ACS 5-Year tables for tract rates, and track fast shocks with CDSS rolls.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Tier Shift Matrix, Permit Deduplication &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Column Denominators, Tier Shift Matrix &amp; Permit Deduplication (Mode B, N = 408 Santa Clara Tracts):</strong> Each column keeps its own base (store spots, 408 Santa Clara tracts, 8,555 Santa Clara DEH permit rows, and survey vs. state rolls). In EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md, the 5-component index weights poverty at 30%, SNAP at 25%, store distance at 20%, no-vehicle share at 15%, and density at 10%. Switching from 6,613 spots (0.29 mi mean) to 514 SNAP stores (0.573 mi mean) leaves 266 of 408 tracts (65.2%) in the exact same quintile, 400 of 408 (98.0%) within ±1 quintile (only 8 tracts or 2.0% shift by ±2 quintiles), and 67 of 82 Q5 tracts (81.7%) in Q5. In DEHDENOM_UPDATES_SUMMARY.md and STORE_COUNTS_FOR_ANALYSIS.md, consolidating 8,555 raw DEH permit records removes 1,220 multi-department duplicates (14.3%) to yield 7,335 unique facilities, 724 confirmed SNAP-eligible grocers (97.5% accuracy), and 755–766 refined grocers (vs. 987 under an older un-deduplicated keyword rule). Note that a separate companion TooEarlyToSay transit-stop article (49.0% on 24,421 stops across 8 agencies vs. 12.0% on 64,060 Cal-ITP stop rows across 9,039 state tracts in mobility_deserts_metadata.json and mobility_deserts_calitp_metadata.json) is flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md as incomplete and under reconciliation, so it is not used as a policy trigger here.</p>
+          <p>&bull; <strong>Data Provenance:</strong> Exact check tables come from FoodSecurity/EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md (L1-150), FoodSecurity/STORE_COUNTS_FOR_ANALYSIS.md (L1-120), FoodSecurity/DEHDENOM_UPDATES_SUMMARY.md (L1-135), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Why the Data Shift Happened (Google Map Tags).</strong> Google retired one old store tag, so a single-tag script pulled just 344 stores until multi-tag pulls found 6,613. &middot; <strong>Why the Data Shift Happened (Broad Spots vs. SNAP EBT).</strong> Map APIs do not check if a spot takes USDA CalFresh EBT cards or holds an active County DEH food permit. &middot; <strong>Why the Data Shift Happened (Raw vs. Deduplicated DEH).</strong> Raw health permit logs list separate deli, bakery, and meat counters inside one store as separate rows (1,220 duplicates). &middot; <strong>Risk of Acting on the Raw Shift (Raw vs. Deduplicated DEH).</strong> Using un-deduplicated permit rows (8,555 rows or 987 keyword matches) overstates store supply by 14% to 30%. &middot; <strong>Data Check Rule for Teams (Google Map Tags).</strong> Match map pulls against County DEH health permits (755 stores, 97.5% accuracy). &middot; <strong>Data Check Rule for Teams (Broad Spots vs. SNAP EBT).</strong> Define food access using USDA SNAP EBT retailers (514 stores in Santa Clara).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[4], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Instrumentation Shifts (Mode B Multi-Instrument Audit)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator (514 Verified EBT Retailers across 408 Santa Clara County Census Tracts).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Active Retail Food Facility Permit Registry (755 Permitted Grocers, 97.5% Concordance).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh Caseloads vs. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Rolling Windows</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 5-Year Estimates</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Checking Data Rules Protects Both Program Checks and Grant Siting</h3>
+            <p class="text-slate-800">Health teams often build dashboards from map APIs, store lists, permit logs, and rolling census surveys. Each source can change its own rule without notice. A map API drops a store tag (jumping from 344 to 6,613 spots). An EBT filter removes cafes (-92.2% store count, +97% distance). A permit registry lists bakery and deli counters inside one supermarket as separate rows (1,220 duplicates out of 8,555 rows, or 14.3%). Or a 5-year survey waters down a 1-year shock (-4.94% in 2020 ACS vs. +56% to +71% in state CalFresh rolls).</p>
+            <p class="text-slate-800">Teams should treat any sudden dashboard jump as a data-rule shift until checked against state or county rolls. Deduplicating county health permits by address (755 refined / 724 confirmed grocers at 97.5% accuracy), pairing 5-year census baselines (-1.4% gap vs. 2019 CalFresh admin rolls) with monthly caseloads, and checking rank stability (where 65.2% of tracts stay in the same quintile and 81.7% of top-need tracts stay in the highest-need tier) keeps county funds aimed at real local need.</p>
+          </div>
+          <p><strong>Mode B Multi-Ruler Audit:</strong> All store and permit counts (344 single-tag, 6,613 broad map spots, 514 SNAP-verified stores, 8,555 raw DEH rows, 7,335 consolidated sites, 1,220 or 14.3% department duplicates, 724 confirmed / 755 refined grocers, 97.5% classification accuracy, 42.1% Google coverage), trip distances (0.29 mi vs. 0.573 mi), tier shifts (266/408 = 65.2% same quintile, 400/408 = 98.0% within ±1 quintile, 67/82 = 81.7% Q5 stability), and ACS vs. CDSS counts (28,476 vs. 28,880 in 2019 = -1.4%; 27,068 in 2020 = -4.94%; +17.15% in 2022-23) come from verified FoodSecurity files on disk. Companion TooEarlyToSay pages (including the seven-county EBT correlation and the 49% to 12% transit-stop series flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md) remain under reconciliation and are excluded from grant-siting rules.</p>
+          <p><strong>Main Sources:</strong> We use <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator</a> and <a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Santa Clara County Department of Environmental Health (DEH) Retail Food Facility Registry</a>. We also use <a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Social Services (CDSS) CalFresh Data Tables</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/ebt-verification-methodology/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">The Retail Density Paradox: Why More Stores Mean Worse Data</a>.
+                <span>Proposed EBT acceptance verification across 7,023 California food retailers; seven-county counts, matching thresholds, and the r = -0.828 correlation are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/transit-equity/data-quality-49-to-12/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Transit Data Quality Under Reconciliation</a>.
+                <span>Article-reported shift from 49% to 12% of tracts classified as mobility deserts; the raw versus deduplicated stop counts behind it are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/gtfs-validation-python/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">GTFS Validation in Python: An Article-Reported Workflow</a>.
+                <span>Six-layer instructional GTFS validation workflow; the seven-county, 11-feed routing results are article-reported and the project scripts are not public.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why did filtering from 6,613 broad spots to 514 SNAP stores keep 81.7% of top-need tracts (67 of 82) in the highest-vulnerability quintile?</dt>
+                <dd class="text-slate-700 mt-0.5">In the 5-component Extended Vulnerability Index, economic factors (30% poverty rate and 25% SNAP participation) hold 55% of the index weight while normalized store distance holds 20%. Even though mean distance doubled from 0.29 to 0.573 miles, 65.2% of tracts (266 of 408) stayed in the exact same quintile and 81.7% of Q5 tracts stayed in Q5.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why did the 2020 ACS 5-Year survey show a -4.94% dip in SNAP homes during COVID-19?</dt>
+                <dd class="text-slate-700 mt-0.5">The 2020 ACS 5-Year table averages 60 months from January 2016 to December 2020, so 80% of the sample came before COVID-19. Also, 2020 survey collection faced low response rates among low-pay homes. Monthly CDSS rolls tracked the real +56% to +71% jump right away.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How did the County DEH health permit list check the store count and why was deduplication needed?</dt>
+                <dd class="text-slate-700 mt-0.5">Raw Santa Clara County DEH permit logs contain 8,555 rows because supermarkets hold separate permits for bakery, deli, and meat counters at the same address (1,220 duplicate rows, or 14.3%). Consolidating by address (7,335 unique sites) and classifying retail grocers (97.5% accuracy) yields 755 refined / 724 confirmed SNAP-eligible grocers, proving the 6,613 map count was inflated 8.76x by non-grocery spots.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/geographic-variables" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance</a></li>
+          <li class="my-2"><a href="/methods-lab/measurement-error-claims" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Directory inactive-listing NPIs vs. Active Billers</a></li>
+          <li class="my-2"><a href="/methods-lab/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            A county launched a Diabetes Wellness Program in January 2023. At the same time, all county clinics upgraded to a new electronic health record (EHR) system with better visit documentation. The chart shows diabetes care visits before and after the program launch. <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Diabetes Care Visits per 1,000 Enrollees</h3>
-            <div class="bar-chart-area">
-              <span class="y-axis-label">Visits per 1,000 enrollees</span>
-              <!-- Program County -->
-              <div class="bar-group" id="programGroup">
-                <div class="bar-pair">
-                  <div class="bar bar-pre" id="prog-pre" style="height: 0;">
-                    <span class="bar-label" id="prog-pre-label">0</span>
-                  </div>
-                  <div class="bar bar-post" id="prog-post" style="height: 0;">
-                    <span class="bar-label" id="prog-post-label">0</span>
-                  </div>
-                </div>
-                <span class="group-label">County A<br>(Program + New EHR)</span>
-              </div>
-              <!-- Comparison County (hidden initially) -->
-              <div class="bar-group comparison-group" id="comparisonGroup">
-                <div class="bar-pair">
-                  <div class="bar bar-pre" id="comp-pre" style="height: 0;">
-                    <span class="bar-label" id="comp-pre-label">0</span>
-                  </div>
-                  <div class="bar bar-post" id="comp-post" style="height: 0;">
-                    <span class="bar-label" id="comp-post-label">0</span>
-                  </div>
-                </div>
-                <span class="group-label">County B<br>(New EHR Only)</span>
-              </div>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item">
-                <div class="legend-color" style="background: var(--color-secondary);"></div>
-                <span>Before (2022)</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: var(--color-accent);"></div>
-                <span>After (2023)</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>Observed Increase</h4>
-              <div class="stat-value" id="stat-increase">--</div>
-              <div class="stat-label">County A visits increased after program launch</div>
-            </div>
-
-            <div class="observation-box" id="initialCallout">
-              <strong>Initial finding:</strong> Diabetes care visits increased by <span id="progIncrease">--</span> after the Wellness Program launched. Should we credit the program for this improvement?
-            </div>
-
-            <div class="observation-box" id="revealCallout" style="display: none; border-left-color: var(--color-warning);">
-              <strong>Wait:</strong> County B got the same EHR system but no Wellness Program. Their visits also increased by <span id="compIncrease">--</span>. Both counties show nearly identical increases.
-            </div>
-          </aside>
-        </div>
-
-        <div class="toggle-section">
-          <button class="toggle-btn" id="toggleComparison">Show Comparison County</button>
-        </div>
-
-        <!-- Bridging question to Panel 2 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> If both counties show the same increase, what's really driving the change?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: THE PROBLEM
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">The Problem</h2>
-          <p class="panel-intro">
-            When how we measure something changes at the same time as an intervention, we can mistake better measurement for real improvement. The new EHR system makes it easier to document visits, so visits that were previously recorded as general check-ups now get coded as diabetes care.
-          </p>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is an Instrumentation Threat?</h3>
-          <p>An <strong>instrumentation threat</strong> occurs when the measurement tool or process changes between observations. The change in recorded values reflects the measurement system, not the phenomenon being measured.</p>
-          <ul>
-            <li>A scale that's recalibrated between weigh-ins</li>
-            <li>Survey questions reworded between years</li>
-            <li>Diagnostic criteria updated during a study</li>
-            <li>Data entry procedures that become more thorough</li>
-          </ul>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/threat-measurement-instrumentation/assets/measurement-instrumentation-dag.png"
-              alt="Causal diagram showing how EHR System Change affects both the Wellness Program timing and Recorded Visit Counts, while actual care delivery may remain unchanged"
-              class="dag-image"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-            >
-            <div style="display: none; padding: 40px; text-align: center; background: var(--color-bg-alt); border-radius: var(--radius-md);">
-              <p style="color: var(--color-text-muted); font-size: 0.9rem;">
-                DAG image not yet generated.<br>
-                See <code>assets/antigravity-prompt.md</code> for generation instructions.
-              </p>
-            </div>
-            <p class="dag-caption">The measurement system change affects what we observe, regardless of whether actual care changed.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Common Measurement Changes</h4>
-              <div class="example-list">
-                <div class="example-item"><strong>EHR upgrades:</strong> Better documentation capture</div>
-                <div class="example-item"><strong>Billing code changes:</strong> New categories create new counts</div>
-                <div class="example-item"><strong>Staff training:</strong> More thorough data entry</div>
-                <div class="example-item"><strong>Definition changes:</strong> What "counts" as a visit changes</div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The trap:</strong> The actual care might not have changed at all. A scale that reads 10 pounds heavier after recalibration doesn't mean you gained weight overnight.
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question to Panel 3 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> How can we tell if the increase is real or just better recording?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: THE TEST
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">The Test</h2>
-          <p class="panel-intro">
-            A comparison group that experienced the same measurement change but not the intervention reveals what the measurement change alone would produce. If both groups show similar increases, the measurement system is the likely cause.
-          </p>
-        </div>
-
-        <div class="test-container">
-          <div class="comparison-table">
-            <h3>Comparing the Two Counties</h3>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>County</th>
-                    <th>Program?</th>
-                    <th>New EHR?</th>
-                    <th class="numeric">Before</th>
-                    <th class="numeric">After</th>
-                    <th class="numeric">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>County A</td>
-                    <td>Yes</td>
-                    <td>Yes</td>
-                    <td class="numeric" id="table-prog-pre">--</td>
-                    <td class="numeric" id="table-prog-post">--</td>
-                    <td class="numeric" id="table-prog-change">--</td>
-                  </tr>
-                  <tr>
-                    <td>County B</td>
-                    <td>No</td>
-                    <td>Yes</td>
-                    <td class="numeric" id="table-comp-pre">--</td>
-                    <td class="numeric" id="table-comp-post">--</td>
-                    <td class="numeric" id="table-comp-change">--</td>
-                  </tr>
-                  <tr class="highlight-row">
-                    <td colspan="3"><strong>Difference-in-Differences</strong></td>
-                    <td class="numeric">--</td>
-                    <td class="numeric">--</td>
-                    <td class="numeric" id="table-did">--</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <aside class="interpretation-sidebar">
-            <div class="interpretation-card">
-              <h4>Reading the Results</h4>
-              <p>If the Wellness Program had a real effect beyond the EHR change, County A should show a larger increase than County B. The difference-in-differences tells us how much of County A's increase we can attribute to the program itself.</p>
-            </div>
-
-            <div class="insight-box" id="did-insight">
-              <strong>What we find:</strong> The difference-in-differences is very small, suggesting the measurement change explains nearly all of the observed improvement.
-            </div>
-          </aside>
-        </div>
-
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>How to Detect Instrumentation Threats</h3>
-          <p>Ask these questions when evaluating any before-after comparison:</p>
-          <ul>
-            <li><strong>Did anything change about how we count or record the outcome?</strong> New systems, updated definitions, or training changes all matter.</li>
-            <li><strong>Can we find a comparison group with the same measurement change?</strong> If they show the same "improvement," the measurement is likely the cause.</li>
-            <li><strong>Does the timing align with system changes?</strong> Sudden jumps that coincide with administrative changes are suspicious.</li>
-          </ul>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What questions should we ask before trusting any before-after comparison?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: QUESTIONS TO CONSIDER
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Questions to Consider</h2>
-          <p class="panel-intro">
-            These questions help identify instrumentation threats that statistical adjustment cannot fix. They won't prove causation, but they reveal where the analysis is most vulnerable to measurement artifacts.
-          </p>
-        </div>
-
-        <div class="questions-grid">
-          <div class="question-card">
-            <h4>What changed in how we measure?</h4>
-            <p>Any change in data collection, coding systems, or definitions can create artificial trends. Even "improvements" in data quality can bias before-after comparisons.</p>
-            <div class="question-prompt">
-              Were there any administrative or system changes around the time of the intervention?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Can we find a comparison group?</h4>
-            <p>The ideal comparison experienced the same measurement change but not the program. If both groups show similar changes, the measurement system is the likely cause.</p>
-            <div class="question-prompt">
-              Is there another group, region, or time period with the same measurement change but without the intervention?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>How sudden is the change?</h4>
-            <p>Real program effects often build gradually. Sudden jumps that align perfectly with administrative changes suggest measurement artifacts.</p>
-            <div class="question-prompt">
-              Does the timing of the observed change match the intervention, or does it match a system update?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>What would null look like?</h4>
-            <p>If the program had no effect, what would we expect to see? With an EHR change, we'd expect some increase even without a program.</p>
-            <div class="question-prompt">
-              Can we estimate how much change the measurement system alone would produce?
-            </div>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Instrumentation threat:</strong> when the measurement tool changes between observations</div>
-            <div class="concept-item"><strong>Difference-in-differences:</strong> comparing changes across groups to isolate the intervention effect</div>
-            <div class="concept-item"><strong>Measurement artifact:</strong> an apparent change that reflects the measurement process, not reality</div>
-            <div class="concept-item"><strong>Comparison group selection:</strong> choosing a group that shares the measurement change but not the treatment</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>When measurement systems change alongside programs, observed trends may be artifacts.</strong> Better documentation, updated coding systems, and refined definitions can all create the appearance of improvement where none exists. The solution isn't better statistical adjustment. Instead, find a comparison group that experienced the same measurement change but not the intervention. If both groups show similar changes, the ruler changed, not the thing being measured. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Evidence Credibility track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/study-design-ladder" style="color:#0041A5;font-weight:600;">Study Design Hierarchy</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/p-hacking-multiple-testing" style="color:#0041A5;font-weight:600;">Detecting P-Hacking</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/regression-tables-confounding" style="color:#0041A5;font-weight:600;">Reading Regression Tables</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> &middot; California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> &middot; Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    let seed = 1104; // Lab 11 seed
-
-    // Program county: significant increase (measurement effect)
-    const progPre = Math.round(180 + seededRandom(seed++) * 30);   // ~180-210
-    const progPost = Math.round(305 + seededRandom(seed++) * 35);  // ~305-340
-
-    // Comparison county: nearly identical increase (same measurement effect, no program)
-    const compPre = Math.round(175 + seededRandom(seed++) * 30);   // ~175-205
-    const compPost = Math.round(300 + seededRandom(seed++) * 35);  // ~300-335
-
-    // Calculate increases
-    const progChange = progPost - progPre;
-    const compChange = compPost - compPre;
-    const progIncreasePercent = Math.round((progChange / progPre) * 100);
-    const compIncreasePercent = Math.round((compChange / compPre) * 100);
-    const didEffect = progChange - compChange;
-
-    /* ============================================
-       2. DOM UPDATES
-       ============================================ */
-    // Scale for bar heights (max ~400, chart height ~280)
-    const scale = 260 / 400;
-
-    function initBars() {
-      // Set bar heights with animation delay
-      setTimeout(() => {
-        document.getElementById('prog-pre').style.height = (progPre * scale) + 'px';
-        document.getElementById('prog-post').style.height = (progPost * scale) + 'px';
-        document.getElementById('prog-pre-label').textContent = progPre;
-        document.getElementById('prog-post-label').textContent = progPost;
-
-        document.getElementById('comp-pre').style.height = (compPre * scale) + 'px';
-        document.getElementById('comp-post').style.height = (compPost * scale) + 'px';
-        document.getElementById('comp-pre-label').textContent = compPre;
-        document.getElementById('comp-post-label').textContent = compPost;
-      }, 100);
-
-      // Update stats
-      document.getElementById('stat-increase').textContent = '+' + progIncreasePercent + '%';
-      document.getElementById('progIncrease').textContent = progIncreasePercent + '%';
-      document.getElementById('compIncrease').textContent = compIncreasePercent + '%';
-
-      // Update table
-      document.getElementById('table-prog-pre').textContent = progPre;
-      document.getElementById('table-prog-post').textContent = progPost;
-      document.getElementById('table-prog-change').textContent = '+' + progChange;
-      document.getElementById('table-comp-pre').textContent = compPre;
-      document.getElementById('table-comp-post').textContent = compPost;
-      document.getElementById('table-comp-change').textContent = '+' + compChange;
-      document.getElementById('table-did').textContent = (didEffect >= 0 ? '+' : '') + didEffect;
-
-      // Update DiD insight
-      const didInsight = document.getElementById('did-insight');
-      if (Math.abs(didEffect) <= 15) {
-        didInsight.innerHTML = '<strong>What we find:</strong> The difference-in-differences is only ' +
-          (didEffect >= 0 ? '+' : '') + didEffect +
-          ' visits per 1,000. This suggests the EHR change explains nearly all of the observed improvement in County A.';
-      } else {
-        didInsight.innerHTML = '<strong>What we find:</strong> The difference-in-differences is ' +
-          (didEffect >= 0 ? '+' : '') + didEffect +
-          ' visits per 1,000. This represents the estimated program effect after accounting for the measurement change.';
-      }
-    }
-
-    /* ============================================
-       3. TOGGLE COMPARISON
-       ============================================ */
-    let showingComparison = false;
-    const toggleBtn = document.getElementById('toggleComparison');
-    const compGroup = document.getElementById('comparisonGroup');
-    const initialCallout = document.getElementById('initialCallout');
-    const revealCallout = document.getElementById('revealCallout');
-
-    toggleBtn.addEventListener('click', () => {
-      showingComparison = !showingComparison;
-
-      if (showingComparison) {
-        compGroup.classList.add('visible');
-        toggleBtn.textContent = 'Hide Comparison County';
-        initialCallout.style.display = 'none';
-        revealCallout.style.display = 'block';
-      } else {
-        compGroup.classList.remove('visible');
-        toggleBtn.textContent = 'Show Comparison County';
-        initialCallout.style.display = 'block';
-        revealCallout.style.display = 'none';
-      }
-    });
-
-    /* ============================================
-       4. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById('panel-' + panelNum).classList.add('active');
-      });
-    });
-
-    /* ============================================
-       5. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      initBars();
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

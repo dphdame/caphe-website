@@ -3,603 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Regression to the Mean in County Health | CAPHE</title>
+  <meta name="description" content="Learn why targeting California rural counties after a single-year mortality spike confuses random small-population noise with program impact.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-regression-to-mean">
+  <meta property="og:title" content="Regression to the Mean in County Health | CAPHE">
+  <meta property="og:description" content="Learn why targeting California rural counties after a single-year mortality spike confuses random small-population noise with program impact.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/threat-regression-to-mean">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <title>Regression to the Mean in Health Outcomes | CAPHE</title>
-  <meta name="description" content="Learn why extreme performers naturally drift toward average. Explore regression to the mean as a threat to causal validity in health program evaluation.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/threat-regression-to-mean">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-caution: #F57F17;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
-      --color-bg-code: #F5F5F5;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
-      font-size: 16px;
-      line-height: 1.6;
-      color: var(--color-text);
-      background: var(--color-bg-alt);
-    }
-
-    h1, h2, h3 {
-      font-family: var(--font-serif);
-      color: var(--color-primary-dark);
-      line-height: 1.3;
-    }
-
-    h1 { font-size: 1.75rem; }
-    h2 { font-size: 1.4rem; }
-    h3 { font-size: 1.15rem; }
-
-    code, .mono { font-family: var(--font-mono); }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .header h1 {
-      color: white;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.85;
-      margin-bottom: var(--space-xs);
-    }
-
-    .subtitle {
+      font-family: var(--font-body);
       font-size: 1rem;
-      opacity: 0.9;
-      max-width: 650px;
-      margin: 0 auto;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow-sm);
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      flex-wrap: wrap;
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
     }
-
-    .panel-btn {
-      background: transparent;
-      border: 2px solid transparent;
-      padding: var(--space-sm) var(--space-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      border-radius: var(--radius-md);
-      transition: all 0.2s ease;
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
-      color: var(--color-primary);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    .panel-btn.active {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
-    }
-
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Panel Header */
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1rem;
-      color: var(--color-text-secondary);
-      max-width: 750px;
-    }
-
-    /* Chart Container */
-    .chart-container {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: var(--space-xl);
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    @media (max-width: 850px) {
-      .chart-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-wrapper svg {
+    .col-header-banner {
       width: 100%;
-      height: 320px;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .budget-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
+    }
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
+    }
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    /* Stats Sidebar */
-    .stats-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-      border-left: 4px solid var(--color-primary);
-    }
-
-    .stat-card.highlight {
-      border-left-color: var(--color-secondary);
-    }
-
-    .stat-card.warning {
-      border-left-color: var(--color-accent);
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--color-primary-dark);
-      font-family: var(--font-mono);
-    }
-
-    .stat-note {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
-      margin-top: var(--space-xs);
-    }
-
-    /* Controls */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-    }
-
-    .toggle-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-btn:hover {
-      border-color: var(--color-primary-light);
-    }
-
-    .toggle-btn.active {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
-    }
-
-    /* Explanation Container */
-    .explanation-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .definition-card p {
-      margin-bottom: var(--space-sm);
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      color: var(--color-text-secondary);
-    }
-
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-    }
-
-    /* Analogy Box */
-    .analogy-box {
-      background: #FFF8E1;
-      border: 1px solid #FFE082;
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-
-    .analogy-box h4 {
-      color: #F57F17;
-      margin-bottom: var(--space-sm);
-      font-family: var(--font-sans);
-    }
-
-    /* Key Insight */
-    .key-insight {
-      background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(13,148,136,0.02) 100%);
-      border-left: 4px solid var(--color-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin-top: var(--space-lg);
-    }
-
-    .key-insight h4 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-sm);
-      font-family: var(--font-sans);
-    }
-
-    /* Chart Legend */
-    .chart-legend {
-      display: flex;
-      gap: var(--space-lg);
-      justify-content: center;
-      margin-top: var(--space-md);
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .legend-dot.program {
-      background: var(--color-secondary);
-    }
-
-    .legend-dot.program.baseline {
-      background: var(--color-secondary);
-      opacity: 0.6;
-    }
-
-    .legend-dot.program.after {
-      background: var(--color-secondary);
-      opacity: 1;
-    }
-
-    .legend-dot.comparison {
-      background: var(--color-accent);
-    }
-
-    .legend-dot.comparison.baseline {
-      background: var(--color-accent);
-      opacity: 0.6;
-    }
-
-    .legend-dot.comparison.after {
-      background: var(--color-accent);
-      opacity: 1;
-    }
-
-    /* DAG Container */
-    .dag-container {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      box-shadow: var(--shadow-md);
-      text-align: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      margin-top: var(--space-md);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      font-style: italic;
-    }
-
-    /* Solutions Grid */
-    .solutions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--space-lg);
-      margin-top: var(--space-xl);
-    }
-
-    .solution-card {
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      padding: var(--space-lg);
-      border-top: 4px solid var(--color-secondary);
-    }
-
-    .solution-card h4 {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      margin-bottom: var(--space-sm);
-      color: var(--color-text);
-    }
-
-    .solution-card p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Questions List */
-    .questions-list {
-      list-style: none;
-      margin-top: var(--space-lg);
-    }
-
-    .questions-list li {
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-sm);
-      border-left: 3px solid var(--color-primary);
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Bridging Question */
-    .bridging-question {
-      margin-top: var(--space-xl);
-      padding: var(--space-lg);
-      background: linear-gradient(135deg, rgba(0,65,165,0.05) 0%, rgba(0,65,165,0.02) 100%);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-primary-light);
-    }
-
-    .bridging-question p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Cross Reference */
-    .cross-ref {
-      margin-top: var(--space-lg);
-      padding: var(--space-md);
-      background: var(--color-bg-alt);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      text-align: center;
-    }
-
-    .cross-ref a {
-      color: var(--color-primary);
-      font-weight: 500;
-    }
-
-    /* Tooltip */
-    .tooltip {
-      position: fixed;
-      background: var(--color-text);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 250px;
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    /* Footer */
-    .footer {
-      background: var(--color-text);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      opacity: 0.9;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    /* Utility */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
 
-    .hidden {
-      display: none;
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
     }
-    .skip-link:focus {
-      top: 0;
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Regression to the Mean in Health Outcomes",
-  "description": "Learn why extreme performers naturally drift toward average. Explore regression to the mean as a threat to causal validity in health program evaluation.",
+  "headline": "Multi-Year Pooled Baselines Separate Persistent Rural Mortality From Projected Small-County Bounce-Back",
+  "description": "Learn why targeting California rural counties after a single-year mortality spike confuses random small-population noise with program impact.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -607,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -618,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Why do the worst-performing units improve even without an intervention?",
+      "name": "Why do small rural counties sit at the top and bottom of one-year death rankings?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Any measurement combines true performance and random variation, so units selected for extreme values were partly there by chance and tend to move toward the average on remeasurement. The tutorial's untreated comparison clinics improved about as much as the program clinics."
+        "text": "Death rates are scaled per 100,000 residents. One death in Alpine County (1,204 residents) moves the rate by 83.06 per 100,000. One death in Los Angeles County (9.72 million residents) moves the rate by 0.01 per 100,000."
       }
     },
     {
       "@type": "Question",
-      "name": "How does targeting extreme baseline values create a false program effect?",
+      "name": "How does regression to the mean skew pre-post reviews of one-time grants?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Selecting the most extreme cases guarantees they will likely improve on their own, so the apparent gain reflects regression to the mean rather than the program. The tutorial calls this a mathematical certainty, not evidence of effectiveness."
+        "text": "When counties get grants because they had a top-decile death spike in Year 1, that peak includes random upward noise. In Year 2, the random error averages zero and creates a modeled -20.3 per 100,000 bounce-back even with zero program effect."
       }
     },
     {
       "@type": "Question",
-      "name": "What designs handle regression to the mean?",
+      "name": "What does the 57-county panel show for public health funding in small counties?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The tutorial describes three approaches, including using a comparison group of equally extreme but untreated units, so that the program effect is measured against the natural regression those units would also show."
+        "text": "Across 21 years (2003 to 2023), the published IV panel model links every $10 per person in local public health funding to 8.11 fewer deaths per 100,000 in small counties, compared with 9.16 statewide."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -669,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -688,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -704,452 +529,435 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Design Essentials</div>
-      <h1>Regression to the Mean in Health Outcomes</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Regression to the mean is the statistical tendency for extreme measurements to move closer to the average on remeasurement, which creates the illusion that an intervention targeting extreme cases worked. The tutorial selects the 10 clinics with the highest emergency department visit rates in 2019, averaging 142 visits per 1,000, then a quality improvement program runs and rates fall to 118 by 2021. Yet comparison clinics that received no program fell to 116 over the same period, nearly identical, showing the drop was largely a mathematical certainty of selecting on extreme baseline values.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">"The worst-performing hospitals improved after our intervention!" But extreme values naturally regress toward the average. This lab demonstrates why targeting based on extreme baseline values creates the illusion of program effectiveness.</p>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Multi-Year Pooled Baselines Separate Persistent Rural Mortality From Projected Small-County Bounce-Back
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Separating lasting county health gains from modeled regression to the mean after a one-year spike.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When targeting multi-year rural health grants to whichever small counties had the highest one-year death rate, funding chases brief one-year spikes instead of lasting need. Across <strong>21 years of California county records (2003 to 2023),</strong> steady public health funding averts <strong>8.11 deaths per 100,000 residents per $10 per person</strong> in small rural counties and <strong>9.16 statewide.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Ranking small counties on one year of data overstates next-year gains through modeled regression to the mean. Just <strong>1 death in Alpine County (1,204 residents)</strong> swings the rate by <strong>83.1 per 100,000</strong> and accounts for <strong>71%</strong> of a <strong>-28.4 per 100,000</strong> bounce-back.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Funding rural grants on 3-to-5-year pooled averages sends dollars to lasting local need.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
     </div>
-  </header>
 
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <ul>
-      <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-      <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
-      <li><button class="panel-btn" data-panel="3" aria-pressed="false">Design Solutions</button></li>
-      <li><button class="panel-btn" data-panel="4" aria-pressed="false">Questions to Consider</button></li>
-    </ul>
-  </nav>
-
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-      <!-- Panel 1: The Data -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            Health officials identified the 10 clinics with the highest emergency department visit rates in 2019 and launched a quality improvement program. By 2021, their rates dropped dramatically. The program appears successful. But what happened to equally poor-performing clinics that received no intervention? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="controls">
-          <button class="toggle-btn active" id="toggle-program">Show Program Clinics Only</button>
-          <button class="toggle-btn" id="toggle-both">Show Comparison Group</button>
-        </div>
-
-        <div class="chart-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">ED Visits per 1,000 Before and After Program</h3>
-            <svg id="regression-chart" aria-label="Bar chart showing clinic ED rates before and after intervention"></svg>
-            <div class="chart-legend" id="legend-comparison" style="display: none;">
-              <div class="legend-item"><span class="legend-dot program baseline"></span><span>Program (2019)</span></div>
-              <div class="legend-item"><span class="legend-dot program after"></span><span>Program (2021)</span></div>
-              <div class="legend-item"><span class="legend-dot comparison baseline"></span><span>Comparison (2019)</span></div>
-              <div class="legend-item"><span class="legend-dot comparison after"></span><span>Comparison (2021)</span></div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <div class="stat-label">Program Clinics Baseline</div>
-              <div class="stat-value" id="program-baseline">142</div>
-              <div class="stat-note">ED visits per 1,000 (2019)</div>
-            </div>
-            <div class="stat-card highlight">
-              <div class="stat-label">Program Clinics After</div>
-              <div class="stat-value" id="program-after">118</div>
-              <div class="stat-note">ED visits per 1,000 (2021)</div>
-            </div>
-            <div class="stat-card warning" id="comparison-stats" style="display: none;">
-              <div class="stat-label">Comparison Clinics After</div>
-              <div class="stat-value" id="comparison-after">116</div>
-              <div class="stat-note">Same improvement, no program!</div>
-            </div>
-          </aside>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Both groups improved by about the same amount. Why would clinics that received no intervention show the same improvement as those in the program?</p>
-        </div>
-      </section>
-
-      <!-- Panel 2: The Problem -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">The Problem</h2>
-          <p class="panel-intro">
-            When you select the most extreme cases for intervention, they will likely improve whether you do anything or not. This is a mathematical certainty, not evidence of program effectiveness.
-          </p>
-        </div>
-
-        <div class="definition-card">
-          <h3>What Is Regression to the Mean?</h3>
-          <p>Any measurement has two components: <strong>true performance</strong> and <strong>random variation</strong> (luck, timing, measurement error, seasonal factors).</p>
-          <p>When you select the worst performers, you're selecting groups where bad luck made them look worse than their true average. On the next measurement, their luck is likely to be more typical, so they appear to improve.</p>
-          <p><strong>The same logic applies to the best performers:</strong> They'll likely look worse on the next measurement, even without any negative intervention.</p>
-        </div>
-
-        <div class="dag-container">
-          <img
-            src="/methods-lab/threat-regression-to-mean/assets/threat-regression-to-mean-dag.png"
-            alt="Diagram showing how extreme baseline selection leads to apparent improvement through regression to the mean, not program effects"
-            class="dag-image"
-          >
-          <p class="dag-caption">Extreme values naturally drift toward average due to random variation in measurements.</p>
-        </div>
-
-        <div class="analogy-box">
-          <h4>A Simple Analogy</h4>
-          <p>Imagine flipping coins and selecting people who got 8 or more heads out of 10 flips. If they flip again, most will get closer to 5 heads. This happens because extreme results are rare and unlikely to repeat, not because anything changed about their coin-flipping ability.</p>
-        </div>
-
-        <div class="key-insight">
-          <h4>What This Means for Program Evaluation</h4>
-          <p><strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When you select extreme performers for intervention, any observed improvement conflates true program effects with regression to the mean.</p>
-          <p style="margin-top: var(--space-sm);">Without a comparison group of equally extreme non-participants, you cannot separate regression from real program effects. This is what economists mean by "identification."</p>
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> If regression to the mean is unavoidable when selecting extreme cases, how can we design studies that still allow us to identify real program effects?</p>
-        </div>
-      </section>
-
-      <!-- Panel 3: Design Solutions -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Design Solutions</h2>
-          <p class="panel-intro">
-            Regression to the mean is a selection problem, not a data analysis problem. The solution lies in study design, not statistical adjustment after the fact.
-          </p>
-        </div>
-
-        <div class="explanation-container">
-          <h3 style="margin-bottom: var(--space-lg);">Three Approaches to Handle Regression Effects</h3>
-
-          <div class="solutions-grid">
-            <div class="solution-card">
-              <h4>Randomized Assignment</h4>
-              <p>From the pool of worst performers, randomly assign half to the program and half to a control group. Both groups will regress toward the mean, so any difference reflects the true program effect.</p>
-            </div>
-
-            <div class="solution-card">
-              <h4>Matched Comparison</h4>
-              <p>Identify clinics with similar extreme baseline values but that did not receive the intervention. Compare their trajectories. Both groups experience regression, isolating the program's added value.</p>
-            </div>
-
-            <div class="solution-card">
-              <h4>Regression Discontinuity</h4>
-              <p>If the program uses a sharp eligibility cutoff (e.g., "worst 10%"), compare clinics just above and just below that threshold. Similar clinics, different treatment status.</p>
-            </div>
-          </div>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <h4>The Economist's Perspective</h4>
-            <p>These design solutions all work by finding a valid comparison. The comparison group must experience the same regression effects as the treatment group but not receive the intervention. When this condition holds, the difference between groups reflects the true causal effect.</p>
-          </div>
-        </div>
-
-        <div class="cross-ref">
-          For more on study designs that address selection problems, see <a href="/methods-lab/study-design-ladder">Lab 4: Study Design Ladder</a>.
-        </div>
-
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What questions should we ask when evaluating a program that targeted extreme performers?</p>
-        </div>
-      </section>
-
-      <!-- Panel 4: Questions to Consider -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">Questions to Consider</h2>
-          <p class="panel-intro">
-            These questions help identify regression-to-the-mean threats that statistical adjustment cannot fix. They won't prove causation, but they'll reveal where the analysis is most vulnerable to bias.
-          </p>
-        </div>
-
-        <div class="explanation-container">
-          <ul class="questions-list">
-            <li><strong>Selection criterion:</strong> Were participants selected because they had extreme values at baseline? If so, expect regression regardless of program effects.</li>
-            <li><strong>Comparison group:</strong> Is there a comparison group with similarly extreme baseline values that did not receive the intervention? Without one, you cannot distinguish regression from treatment effects.</li>
-            <li><strong>Random variation:</strong> How much of the baseline measure reflects true performance versus temporary factors (staffing changes, seasonal illness, measurement timing)?</li>
-            <li><strong>Effect magnitude:</strong> Is the observed improvement larger than what regression alone would predict? Comparison group data answers this directly.</li>
-            <li><strong>Multiple measurements:</strong> Were multiple baseline measurements averaged before selecting participants? This reduces the random component and limits regression effects.</li>
-          </ul>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <h4>Key Takeaway</h4>
-            <p><strong>Regression to the mean is not a statistical nuisance to control for. It is a fundamental threat that requires design solutions.</strong></p>
-            <p style="margin-top: var(--space-sm);">When programs target extreme performers, apparent success is often illusory. The solution is not better adjustment. The solution is finding comparison groups that experience the same regression effects. This is what economists mean by "identification."</p>
-          </div>
-        </div>
-      </section>
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Rate Swings, Shrinkage Weights &amp; Panel Effects Across 4 County Groups</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Observed county headcounts and 21-year panel estimates paired with modeled one-year rate swings and shrinkage weights.
+      </p>
     </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-history-solutions" style="color:#0041A5;font-weight:600;">Difference-in-Differences</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/parallel-trends-power" style="color:#0041A5;font-weight:600;">Understanding the Limits of Parallel Trends Tests</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/threat-maturation-solutions" style="color:#0041A5;font-weight:600;">Interrupted Time Series</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 compares four California county size groups on single-death rate swings, shrinkage weights, and 21-year health effects.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Swing &amp; Panel Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Observed Pop < 10K</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Frontier Rural Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Observed Pop 15K-25K</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Small Rural Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Small Stratum Panel</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Small-County 21-Yr Pool</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Full 57-County Panel</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Full 57-County Pool</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                County Resident Count
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">1,204 (Alpine) to 8,700 (Modoc)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">16,060 (Trinity) to 22,280 (Colusa)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">< 100,000 rural group</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">39,538,223</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">57 counties</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Rate Swing From 1 Death
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">11.49 to 83.06 per 100K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">4.49 to 6.23 per 100K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">1.00 to 6.23 per 100K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.01 (LA) to 0.05 (SCC)</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                1-Year Typical Rate Swing*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±92.9 to ±249.6 per 100K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±57.9 to ±68.3 per 100K</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±27.4 per 100K</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">pooled</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±1.38 per 100K</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">state pool</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Shrinkage Weight to Mean (B_i)*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">89.0% pulled</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">0.89</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 89%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">68.0% pulled</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">0.68</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 68%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">24.0% pulled</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">21-yr</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 24%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">6.0% pulled</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">weighted</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 6%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Deaths Averted per $10/Person
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Unpowered in 1-yr cut</span>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Noise swamps 1-yr cut</span>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-8.11 / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">21-yr pool</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 89%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-9.16 / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">±1.11 margin</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Drop-One-County Shift
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">High 1-yr outlier swing</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">High 1-yr rank churn</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±0.052 shift</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">57 checks</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±0.052 shift</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">46 of 47</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Frontier and small rural rate swings and shrinkage weights are Mode A calculations on California DOF county headcounts. The small-county (-8.11, p &lt; 0.05) and full-panel (-9.16, SE = 1.11, p &lt; 0.001) results come from the 57-county, 21-year CAPHE LHA panel (N = 1,197 county-years, Lewbel 2012 IV). In the Full 57-County column, &plusmn;1.38 per 100K is the Mode A 1-year Poisson rate SD at 750 per 100,000 across 39,538,223 residents. The &plusmn;1.11 per 100K margin in the effect row is the panel SE of the -9.16 coefficient.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Frontier Rural Group.</strong> Alpine (1,204) to Modoc (8,700). <strong>Small Rural Group.</strong> Trinity (16,060) to Colusa (22,280). <strong>Small-County 21-Yr Pool.</strong> 21-Year Pooled Subsample. <strong>Full 57-County Pool.</strong> 39.5M Pop (2003 to 2023).</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Rate Noise &amp; Shrinkage on DOF County Headcounts; Source Estimates From the 57-County, 21-Year LHA Panel (2003-2023, N = 1,197). Ruler 1: Mode A Split of a 1-Year Drop After a Top-Decile Spike: <strong>-28.4 / 100K (71% Noise)</strong>. Small rural counties have small headcounts (Trinity 16,060; Mariposa 17,131; Colusa 22,280). Mode A 1-year binomial standard errors on the county rate reach <strong>&plusmn;57.9 to &plusmn;68.3 per 100,000</strong>. Picking counties right after a 90th-percentile spike builds in <strong>-20.3 per 100,000</strong> of automatic bounce-back. Ruler 2: Observed 21-Year Panel Source Estimates: <strong>-8.11 Small | -9.16 Full Panel</strong>. Observed source estimates come from the 57-county, 21-year panel (2003 to 2023, <strong>N = 1,197</strong> county-years). The model finds <strong>8.11 fewer deaths per 100,000</strong> per $10/person in small counties and <strong>-9.16</strong> statewide (&plusmn;1.11 margin). These figures are published panel results, not Mode A projections.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Small-County Context, Grant Tradeoffs &amp; Policy Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How state grant teams and rural health leads avoid shifting grants on one-year random swings.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares small-county rate swings, pooled baselines, grant tradeoffs, and funding rules.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Frontier Rural Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Small Rural Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Small-County 21-Yr Pool
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Full 57-County Pool
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Local County Context
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                One crash or flu cluster shifts the rate by 11 to 83 per 100K.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Small rural counties record 120 to 170 total deaths per year.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Small counties pooled across 21 budget years rely on public health staff as the main care net.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                All 57 county health departments are tracked across 21 years.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What Multi-Year Pools Add
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pooled baselines keep tiny counties from flipping between top-spike and top-drop ranks each year.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                A multi-year mean sets the base rate, so a +60/100K one-year jump is weighed against history.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pooling years spots the -8.11 effect that one-year noise swamps.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Raw cross-county averages mix long-run illness load with outbreak grants.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Tying base grants to 1-year death ranks destabilizes rural staff after a normal bounce-back.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cutting a rural program after 2 or 3 extra deaths in one year disrupts clinic teams.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Small counties gain nearly the same life-saving return as the state over time.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                State grant rules can pair per-person funds with a fixed base floor for small counties.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Funding Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use 5-Year Means &amp; Shrinkage<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pull 1-year frontier rates by 0.89 toward regional medians before ranking counties for grants.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Compare Multi-Year Rural Pools<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Score small rural grants on 3-to-5-year pooled rates matched against rural peers.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Anchor Rural Cases to -8.11<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use the 21-year small-county estimate in board briefs.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Fund Core Staff Over 1-Year Spikes<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use the full-panel -9.16 estimate for multi-year base budgets.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Rate Noise Formula &amp; Drop-One-County Check</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Small-County Noise Math (Mode A on DOF Populations):</strong> At a base death rate of &mu; = 750 per 100,000 (0.0075), the 1-year Poisson SD per 100,000 is &sigma; = 100,000 &times; &radic;(0.0075 / N_pop). That equals &plusmn;249.6 per 100,000 in Alpine (N = 1,204), &plusmn;92.9 in Modoc (N = 8,700), and &plusmn;68.3 in Trinity (N = 16,060).</p>
+          <p>&bull; <strong>Drop-One-County Check (Observed Source Estimates):</strong> Across all 57 counties over 2003 to 2023 (N = 1,197), dropping one county at a time yields a slope SD of just <strong>0.052</strong>. Rural outliers do not skew the <strong>-9.16</strong> panel result (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>).</p>
+          <p>&bull; <strong>Panel Model Source:</strong> The -8.11 (small-county group) and -9.16 (full 57-county panel) estimates come from the CAPHE LHA panel using <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel (2012)</a> instruments over 2003 to 2023 (N = 1,197 county-years). They are reported here as published source estimates.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Local County Context (Frontier Rural Group).</strong> In frontier counties (1,204 to 8,700 residents), one crash or flu cluster shifts the rate by 11 to 83 per 100K. &middot; <strong>Local County Context (Small Rural Group).</strong> Small rural counties (16,060 to 22,280 residents) record 120 to 170 total deaths per year. &middot; <strong>What Multi-Year Pools Add (Small-County 21-Yr Pool).</strong> Pooling years spots the -8.11 effect that one-year noise (±58 to ±250) swamps. &middot; <strong>Best-Fit Funding Rule (Small-County 21-Yr Pool).</strong> Use the 21-year small-county estimate (8.11 fewer deaths/100K per $10/person) in board briefs. &middot; <strong>Best-Fit Funding Rule (Full 57-County Pool).</strong> Use the full-panel -9.16 estimate ($109,000/life saved, 125:1 return) for multi-year base budgets.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Small-County Swings &amp; Pooled Means (Mode A on Observed County Populations)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>California 21-Year County Public Health Panel (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC WONDER</a> (57 counties, N = 1,197 county-years; -8.11 deaths/100K per $10/capita in small rural counties and -9.16 statewide).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Small-County Headcounts &amp; One-Year Swings:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance E-1 Population Estimates</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH County Health Status Profiles</a>. In Alpine County (1,204 residents), 1 death shifts the rate by 83.1 per 100,000, and 71.5% of a -28.4 per 100,000 post-spike drop is bounce-back to the multi-year mean.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Pooled Means &amp; Grant Targeting Method:</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a> (3-to-5-year pooled baselines and Empirical Bayes shrinkage weights).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Public Health (CDPH) Vital Statistics Death Statistical Master Files (2003-2023)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1002/hec.2953" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown (2014, Health Economics)</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Why Base Funding Beats Chasing One-Year Spikes</h3>
+            <p class="text-slate-800">Regression to the mean is a common hurdle in county grant design. Suppose an agency ranks California's 58 counties on one year of death data and sends short-term grants to the top tenth. Small rural counties under 25,000 residents top the list when a few random deaths swing their rate per 100,000 by 50 to 250 points. Next year, the rate drops back toward its long-run mean (-28.4 per 100,000) even without a program effect.</p>
+            <p class="text-slate-800">Health economics fixes this funding problem in two steps. First, for grant targeting, Empirical Bayes shrinkage and 3-to-5-year pooled means pull noisy small-county rates toward regional norms. Second, for impact review, 21-year panel models across all 57 counties (N = 1,197 county-years) show that steady public health funding in small counties averts 8.11 deaths per 100,000 per $10/person, close to the statewide 9.16 result.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A on County Headcounts + Observed Panel Estimates):</strong> County resident counts (Alpine 1,204 to Los Angeles 9,721,138), the small-county IV estimate (-8.11), the full-panel IV estimate (-9.16, SE = 1.11, N = 1,197), and the drop-one-county SD (0.052) are observed values in the CAPHE LHA corpus. One-year Poisson noise SDs, the bounce-back share, and shrinkage weights (B_i) are Mode A calculations on those county headcounts.</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>, <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics Death Statistical Master Files (2003-2023)</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller's Office County Financial Transactions Reports</a>, and <a href="https://doi.org/10.1002/hec.2953" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014, Health Economics)</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why do small rural counties sit at the top and bottom of one-year death rankings?</dt>
+                <dd class="text-slate-700 mt-0.5">Death rates are scaled per 100,000 residents. One death in Alpine County (1,204 residents) moves the rate by 83.06 per 100,000. One death in Los Angeles County (9.72 million residents) moves the rate by 0.01 per 100,000.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does regression to the mean skew pre-post reviews of one-time grants?</dt>
+                <dd class="text-slate-700 mt-0.5">When counties get grants because they had a top-decile death spike in Year 1, that peak includes random upward noise. In Year 2, the random error averages zero and creates a modeled -20.3 per 100,000 bounce-back even with zero program effect.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What does the 57-county panel show for public health funding in small counties?</dt>
+                <dd class="text-slate-700 mt-0.5">Across 21 years (2003 to 2023), the published IV panel model links every $10 per person in local public health funding to 8.11 fewer deaths per 100,000 in small counties, compared with 9.16 statewide.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/p-hacking-multiple-testing" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multiple Testing & Small-Group Swings</a></li>
+          <li class="my-2"><a href="/methods-lab/observational-to-experimental" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">From Simple Avg (+0.18) to 21-Year Budget Model (-9.16)</a></li>
+          <li class="my-2"><a href="/methods-lab/before-after-trap" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating Pre-Post Changes vs. Base Trends</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual clinic-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* 1. SYNTHETIC DATA GENERATION */
-    let seed = 42;
-    function seededRandom() {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    const trueAverage = 100;
-    const clinics = [];
-
-    // Generate 50 clinics with true rates and observed 2019 rates
-    for (let i = 0; i < 50; i++) {
-      const trueRate = 80 + seededRandom() * 40; // True rates: 80-120
-      const noise2019 = (seededRandom() - 0.5) * 60; // Random variation +/- 30
-      const noise2021 = (seededRandom() - 0.5) * 60;
-      clinics.push({
-        id: i + 1,
-        trueRate: trueRate,
-        rate2019: trueRate + noise2019,
-        rate2021: trueRate + noise2021
-      });
-    }
-
-    // Sort by 2019 rate (worst first) and select top 10 for program
-    clinics.sort((a, b) => b.rate2019 - a.rate2019);
-    const programClinics = clinics.slice(0, 10).map(c => ({ ...c, program: true }));
-    const comparisonClinics = clinics.slice(10, 20).map(c => ({ ...c, program: false }));
-
-    // Calculate averages
-    const programBaseline = programClinics.reduce((a, b) => a + b.rate2019, 0) / 10;
-    const programAfter = programClinics.reduce((a, b) => a + b.rate2021, 0) / 10;
-    const comparisonBaseline = comparisonClinics.reduce((a, b) => a + b.rate2019, 0) / 10;
-    const comparisonAfter = comparisonClinics.reduce((a, b) => a + b.rate2021, 0) / 10;
-
-    /* 2. STATE */
-    let showComparison = false;
-    let chartInitialized = false;
-
-    /* 3. CHART RENDERING */
-    function renderChart() {
-      const svg = document.getElementById('regression-chart');
-      const container = svg.parentElement;
-      const width = container.clientWidth || 500;
-      const height = 320;
-      const margin = { top: 40, right: 30, bottom: 60, left: 60 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      svg.innerHTML = '';
-
-      const yMin = 80;
-      const yMax = 160;
-      const yScale = (v) => margin.top + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let i = 0; i <= 4; i++) {
-        const y = yMin + (i / 4) * (yMax - yMin);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', '#E0E0E0');
-        svg.appendChild(line);
-
-        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        label.setAttribute('x', margin.left - 8);
-        label.setAttribute('y', yScale(y) + 4);
-        label.setAttribute('text-anchor', 'end');
-        label.setAttribute('fill', '#595959');
-        label.setAttribute('font-size', '11');
-        label.textContent = y.toFixed(0);
-        svg.appendChild(label);
-      }
-
-      // Y-axis label
-      const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yAxisLabel.setAttribute('x', -(margin.top + plotHeight / 2));
-      yAxisLabel.setAttribute('y', 15);
-      yAxisLabel.setAttribute('transform', 'rotate(-90)');
-      yAxisLabel.setAttribute('text-anchor', 'middle');
-      yAxisLabel.setAttribute('fill', '#424242');
-      yAxisLabel.setAttribute('font-size', '12');
-      yAxisLabel.textContent = 'ED Visits per 1,000';
-      svg.appendChild(yAxisLabel);
-
-      // Bar chart data
-      const groups = showComparison
-        ? ['Program (2019)', 'Program (2021)', 'Comparison (2019)', 'Comparison (2021)']
-        : ['Baseline (2019)', 'After Program (2021)'];
-      const values = showComparison
-        ? [programBaseline, programAfter, comparisonBaseline, comparisonAfter]
-        : [programBaseline, programAfter];
-      const colors = showComparison
-        ? ['#0D9488', '#0D9488', '#F9A825', '#F9A825']
-        : ['#0D9488', '#0D9488'];
-      const opacities = showComparison ? [0.6, 1, 0.6, 1] : [0.6, 1];
-
-      const barWidth = plotWidth / (groups.length * 1.5);
-      const barGap = barWidth * 0.5;
-
-      groups.forEach((label, i) => {
-        const x = margin.left + (i + 0.5) * (barWidth + barGap);
-        const barHeight = yScale(yMin) - yScale(values[i]);
-
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', yScale(values[i]));
-        rect.setAttribute('width', barWidth);
-        rect.setAttribute('height', barHeight);
-        rect.setAttribute('fill', colors[i]);
-        rect.setAttribute('opacity', opacities[i]);
-        rect.setAttribute('rx', '4');
-        svg.appendChild(rect);
-
-        // Value label
-        const valLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        valLabel.setAttribute('x', x + barWidth / 2);
-        valLabel.setAttribute('y', yScale(values[i]) - 8);
-        valLabel.setAttribute('text-anchor', 'middle');
-        valLabel.setAttribute('fill', '#424242');
-        valLabel.setAttribute('font-size', '13');
-        valLabel.setAttribute('font-weight', '600');
-        valLabel.textContent = values[i].toFixed(0);
-        svg.appendChild(valLabel);
-
-        // X-axis label
-        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        xLabel.setAttribute('x', x + barWidth / 2);
-        xLabel.setAttribute('y', height - 25);
-        xLabel.setAttribute('text-anchor', 'middle');
-        xLabel.setAttribute('fill', '#424242');
-        xLabel.setAttribute('font-size', '11');
-        xLabel.textContent = label;
-        svg.appendChild(xLabel);
-      });
-
-      // Update legend and stats visibility
-      document.getElementById('legend-comparison').style.display = showComparison ? 'flex' : 'none';
-      document.getElementById('comparison-stats').style.display = showComparison ? 'block' : 'none';
-
-      // Update stat card values
-      document.getElementById('program-baseline').textContent = programBaseline.toFixed(0);
-      document.getElementById('program-after').textContent = programAfter.toFixed(0);
-      document.getElementById('comparison-after').textContent = comparisonAfter.toFixed(0);
-
-      chartInitialized = true;
-    }
-
-    /* 4. TOGGLE CONTROLS */
-    document.getElementById('toggle-program').addEventListener('click', () => {
-      showComparison = false;
-      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('toggle-program').classList.add('active');
-      renderChart();
-    });
-
-    document.getElementById('toggle-both').addEventListener('click', () => {
-      showComparison = true;
-      document.querySelectorAll('.controls .toggle-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('toggle-both').classList.add('active');
-      renderChart();
-    });
-
-    /* 5. PANEL NAVIGATION */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    function showPanel(panelNum) {
-      panelBtns.forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      const activeBtn = document.querySelector(`.panel-btn[data-panel="${panelNum}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-        activeBtn.setAttribute('aria-pressed', 'true');
-      }
-
-      panels.forEach(p => p.classList.remove('active'));
-      document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-      // Re-render chart when panel 1 becomes visible
-      if (panelNum === '1') {
-        setTimeout(() => {
-          if (chartInitialized) {
-            renderChart();
-          }
-        }, 50);
-      }
-    }
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-        showPanel(panelNum);
-      });
-    });
-
-    /* 6. INITIALIZATION */
-    document.addEventListener('DOMContentLoaded', () => {
-      renderChart();
-
-      // Debounced resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          const activePanel = document.querySelector('.panel.active');
-          if (activePanel && activePanel.id === 'panel-1') {
-            renderChart();
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

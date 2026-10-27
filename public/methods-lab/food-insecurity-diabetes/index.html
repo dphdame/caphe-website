@@ -3,827 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>Housing Costs, Food Budgets & Diabetes Risk | CAPHE</title>
+  <meta name="description" content="See why high rent and household poverty explain neighborhood food strain and diabetes risk far better than grocery store distance across California.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/food-insecurity-diabetes">
+  <meta property="og:title" content="Housing Costs, Food Budgets & Diabetes Risk | CAPHE">
+  <meta property="og:description" content="See why high rent and household poverty explain neighborhood food strain and diabetes risk far better than grocery store distance across California.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/food-insecurity-diabetes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Case Study: Food Security and Diabetes | CAPHE</title>
-  <meta name="description" content="Does hunger cause diabetes complications, or does illness cause poverty? Explore bidirectional causation and unmeasured confounding through interactive data visualization.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/food-insecurity-diabetes">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-      margin-bottom: var(--space-lg);
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
+    .col-header-banner {
       width: 100%;
-      height: 420px;
-    }
-
-    .legend {
-      display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-    }
-
-    .legend-item {
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      overflow: hidden;
     }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       7. PANEL 2: THE PROBLEM (DAG)
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.causal {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.confounding {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* Definition Card (KEY CONCEPT) */
-    .definition-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      padding-top: var(--space-2xl);
-      box-shadow: var(--shadow-md);
-      margin-bottom: var(--space-xl);
-      border-left: 4px solid var(--color-warning);
-      position: relative;
-    }
-    .definition-card::before {
-      content: "KEY CONCEPT";
-      position: absolute;
-      top: calc(-0.75rem);
-      left: var(--space-lg);
-      background: var(--color-warning);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: var(--radius-sm);
-    }
-    .definition-card h3 {
-      margin-bottom: var(--space-md);
-    }
-    .definition-card ul {
-      margin-left: var(--space-lg);
-      margin-top: var(--space-sm);
-    }
-    .definition-card li {
-      margin-bottom: var(--space-xs);
-    }
-
-    /* Bridging Question */
-    .bridging-question {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-lg);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      margin-top: var(--space-xl);
-    }
-    .bridging-question p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-    .bridging-question strong {
-      color: var(--color-text);
-    }
-
-    /* ============================================
-       8. PANEL 3: SEEING THE CONFOUNDER
-       ============================================ */
-    .stratified-section {
-      margin-bottom: var(--space-2xl);
-    }
-
-    .filter-controls {
+    .budget-bar-seg {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
       flex-wrap: wrap;
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .filter-label {
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--color-text-secondary);
-      margin-right: var(--space-sm);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .filter-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .filter-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .stratified-grid {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .stratified-grid { grid-template-columns: 1fr; }
-    }
-
-    .comparison-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .comparison-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-md);
-    }
-
-    .comparison-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-      padding-bottom: var(--space-xs);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      padding: var(--space-xs) 0;
-    }
-
-    .comparison-label {
-      color: var(--color-text-secondary);
-    }
-
-    .comparison-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    .comparison-row.difference {
-      margin-top: var(--space-xs);
-      padding-top: var(--space-sm);
-      border-top: 1px dashed var(--color-border);
-    }
-
-    .comparison-row.difference .comparison-value {
-      color: var(--color-primary);
-    }
-
-    .insight-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.85rem;
-    }
-
-    .insight-box p {
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-box p:last-child {
-      margin-bottom: 0;
-      color: var(--color-text-secondary);
-    }
-
-    /* Unmeasured section */
-    .unmeasured-section {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .unmeasured-section h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-intro {
-      font-size: 1.05rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-lg);
-      max-width: 700px;
-    }
-
-    .unmeasured-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .unmeasured-grid { grid-template-columns: 1fr; }
-    }
-
-    .unmeasured-image {
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius-md);
-    }
-
-    .unmeasured-explanation h4 {
-      color: var(--color-accent);
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-explanation p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       9. PANEL 5: QUESTIONS TO CONSIDER
-       ============================================ */
-    .questions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .questions-grid { grid-template-columns: 1fr; }
-    }
-
-    .question-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .question-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .question-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .question-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: ">";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       10. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       11. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       12. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Case Study: Food Security and Diabetes",
-  "description": "Does hunger cause diabetes complications, or does illness cause poverty? Explore bidirectional causation and unmeasured confounding through interactive data visualization.",
+  "headline": "High Rent and Household Poverty Explain Neighborhood Diabetes Risk Better Than Store Distance",
+  "description": "See why high rent and household poverty explain neighborhood food strain and diabetes risk far better than grocery store distance across California.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -831,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -842,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Does food insecurity cause diabetes hospitalizations or the reverse?",
+      "name": "Is this information more useful at the census tract level or the county and clinic level?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Cross-sectional data cannot distinguish the directions. Food insecurity can impair diet and medication timing and raise hospitalizations, but chronic illness can also reduce income and increase food insecurity, so both arrows are plausible simultaneously."
+        "text": "Both levels serve clear roles. Census tract data (poverty R² = 62.2% vs. store distance R² = 1.8%) shows county health teams which areas need mobile food vans and bilingual CHW teams. Home post-rent budget math shows clinics and aid offices how to screen patients. Working families squeezed by high rent can then get CalFresh rent deductions and tailored meals."
       }
     },
     {
       "@type": "Question",
-      "name": "What is the confounder in the food insecurity and diabetes case?",
+      "name": "How does high rent create nutrition and diabetes risk in families earning above 200% FPL?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "County-level poverty is a shared cause: poorer counties have both worse food access and fewer healthcare resources, less preventive care, and lower medication adherence, all of which independently raise hospitalizations."
+        "text": "In high-rent areas like Marin County's Canal District, median monthly rent ($2,318) takes 42.1% of median monthly home pay ($5,507, or 220% FPL). Subtracting rent lifts the $973 monthly family food plan from 17.7% of pre-rent pay to 30.5% of post-rent pay. That squeeze happens even when gross pay sits above the standard 200% FPL CalFresh line."
       }
     },
     {
       "@type": "Question",
-      "name": "Can statistical adjustment fix unmeasured confounding here?",
+      "name": "What programs best address co-occurring food strain and diabetes in high-cost counties?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Adjustment can only control for variables that are measured. Resolving the problem requires finding variation in food access that is independent of the confounder, typically through study design rather than regression controls."
+        "text": "Pairing post-rent clinic screens with CalFresh rent deductions, fresh food vouchers, and CalAIM tailored meals eases the monthly budget squeeze. Families no longer have to choose between rent, healthy food, and diabetes care."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -893,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -912,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -928,954 +529,495 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Validity & Solutions</div>
-      <h1>Case Study: Food Security and Diabetes</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">The observed link between county food insecurity rates and diabetes hospitalizations illustrates two distinct identification problems. Bidirectional causation means hunger can worsen glucose control while illness can deepen poverty, and cross-sectional snapshots cannot tell the directions apart. Unmeasured confounding adds a second problem: poor counties have both less food access and fewer healthcare resources, so the correlation reflects shared causes rather than a clean effect. Statistical adjustment cannot resolve either issue; credible answers require study designs that supply variation in food access independent of these confounders.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Counties with higher food insecurity rates show higher diabetes hospitalization rates. But does hunger cause diabetes complications, or does illness cause poverty? This case reveals both bidirectional causation and unmeasured confounding.</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">The Problem</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">Seeing the Confounder</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">What We Can't Measure</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">Questions to Consider</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; System Dynamics &amp; Feedback
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        High Rent and Household Poverty Explain Neighborhood Diabetes Risk Better Than Store Distance
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        How modeled post-rent food budgets, local poverty, and care hurdles compare across four California areas.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When screening clinic diabetes patients with gross pay alone, intake forms leave out working renter homes where high rent crowds out food cash.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> In Marin County's high-rent Canal area, median pay sits above federal food aid cutoffs.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Yet monthly rent takes over two-fifths of pay.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> In our modeled area-median benchmark, paying rent shifts a family food plan from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Across state tracts, poverty accounts for <strong>62.2%</strong> of food risk versus <strong>1.8%</strong> for store distance.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Pairing post-rent clinic screens with CalFresh and tailored meals fits both rent strain and schooling or health hurdles.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[4]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Monthly Pay, Rent Share, and Food Budgets by Area Type</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Monthly pay, rent share, post-rent food share, and care hurdles across four state areas.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four California area types compared by monthly pay, rent share, pre-rent and post-rent food share, cash left, and care hurdles.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Monthly Budget Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Archetype 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Rent Working Area</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Archetype 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Low-Income City Core</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Archetype 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Income Suburb</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Archetype 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rural Town Area</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Median Monthly Home Income
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$5,507</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">220% FPL</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$3,103</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">124% FPL</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$14,083</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">563% FPL</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$6,740</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">270% FPL</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Income Spent on Monthly Rent
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">42.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,318</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">32.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,007</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">22.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$3,104</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">23.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,580</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Pre-Rent Share of Income for Food<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.7%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">31.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">14.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 plan</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Post-Rent Share of Income for Food<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">30.5%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+12.8 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 66%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">46.4%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+15.0 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">8.9%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+2.0 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 19%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">18.9%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+4.5 pp</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 41%; background: #F59E0B;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Monthly Income Left After Rent and Food<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2,216</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$1,123</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$10,006</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$4,187</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Food &amp; Diabetes Hurdle
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Rent squeeze above 200% FPL line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Low pay and high disability rate</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Low local risk</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">full cash buffer</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Long rural trip to full grocery</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> Table 1 shows modeled area-median post-rent food shares (Mode A benchmark). It subtracts ACS 2019–2023 Table B25064 renter gross rent from Table B19013 all-household income. Then it divides the $973 monthly USDA Thrifty Food Plan for a family of four by the cash left. Tract regression results cover N = 408 Santa Clara County tracts (disability OR = 1.76 [1.63, 1.89]; no high school diploma OR = 2.47 [2.35, 2.61]) and N = 9,033 state tracts (poverty R&sup2; = 62.2%, &beta; = 0.789 vs. store distance R&sup2; = 1.8%, &beta; = 0.056).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>High-Rent Working Area.</strong> Marin County: San Rafael Canal District (Census Tract 1122.03). <strong>Low-Income City Core.</strong> Fresno County: West Fresno (Census Tract 2). <strong>High-Income Suburb.</strong> Santa Clara County: Suburban San Jose (Census Tract 5119.15). <strong>Rural Town Area.</strong> Nevada County: Western Sierra Foothills (Census Tract 7.01).</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Post-Rent Home Budget Benchmark + State Tract Variance Check. Ruler 1: Gross Income Screen &amp; Store Distance View: <strong>17.7% Gross | R² = 1.8% Dist.</strong>. Before rent is paid, median monthly home pay in Marin's Canal area (<strong>$5,507</strong>, or 220% FPL) sits above the 200% FPL CalFresh line. Across <strong>9,033 state tracts</strong> (<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FARA</a>), store distance explains just <strong>1.8%</strong> of food risk. Ruler 2: Post-Rent Budget &amp; Neighborhood Poverty View: <strong>30.5% Post-Rent | R² = 62.2% Pov.</strong>. Subtracting the <strong>$2,318</strong> median rent (<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Census ACS</a>) lifts the modeled post-rent food share to <strong>30.5%</strong> in Marin. It reaches <strong>46.4%</strong> in West Fresno after $1,007 rent. Across 9,033 tracts, poverty explains <strong>62.2%</strong> of risk (<a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC PLACES</a> / ACS).</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/food-security/extended-vulnerability-index/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Neighborhood Vulnerability Index Claim Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/food-security/diverging-trajectories/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Neighborhood SNAP Trajectory Claim Record &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Local Context, Screen Gaps &amp; County Action Plan</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        What standard pay screens leave out in each area and how county teams can act.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Guide comparing renter share, CalFresh use, screen gaps, outreach sites, and county actions across four area types.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Rent Working Area
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Low-Income City Core
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Income Suburb
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rural Town Area
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Renter Share &amp; CalFresh Use
+              </th>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                96.5% Renters | 19.3% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-rose-800 border-l border-slate-200">
+                78.4% Renters | 44.9% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                25.6% Renters | 5.7% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                44.7% Renters | 7.3% SNAP.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What Standard Screens Leave Out
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Gross pay leaves out the $2,318 rent squeeze.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Store maps leave out deep poverty and health hurdles.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                County means leave out small pockets of poor renters.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Ten-mile store maps tag car-owning homes as high risk.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Where to Place Outreach
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Safety-net clinics and local school sign-up sites.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Local CHW teams and community diabetes clinics.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Patient clinic intake screens instead of tract grants.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Low-income rural seniors and homes without cars.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best County &amp; Clinic Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Post-Rent Screen + Rent Deduction<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use CalFresh rent deductions and clinic fresh food vouchers.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">CalFresh + CHW Diabetes Help<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pair full CalFresh aid with CHW medicine and food help.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Clinic Tailored Meal Plan<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Link Medi-Cal patients with diabetes to tailored meals.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Online EBT &amp; Mobile Van<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Waive online EBT delivery fees and send mobile food vans.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Statewide &amp; County Multivariate Regression Parameters (Mode B)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>State 9,033-Tract Variance Split (Mode B):</strong> Across N = 9,033 California census tracts (<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FARA</a> + <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ACS</a>), the poverty rate alone accounts for <strong>R&sup2; = 62.2%</strong> of food risk variance (standardized &beta; = 0.789, t = 121.97, p &lt; 0.0001). Distance to the nearest store alone accounts for just <strong>R&sup2; = 1.8%</strong> (standardized &beta; = 0.056, t = 8.64 in the joint model; joint R&sup2; = 62.5%).</p>
+          <p>&bull; <strong>Santa Clara County 408-Tract Odds Ratios (Mode B):</strong> In tract models across Santa Clara County (N = 408 tracts), lacking a high school diploma shows <strong>OR = 2.47 (95% CI: 2.35, 2.61, p &lt; 0.001)</strong>. Disability prevalence shows <strong>OR = 1.76 (95% CI: 1.63, 1.89, p = 0.004)</strong>. Jobless rate shows <strong>OR = 1.24 (95% CI: 1.13, 1.35)</strong>.</p>
+          <p>&bull; <strong>Store Count Rule Check:</strong> Counting all 26,645 SNAP stores in the state flags 462 food desert tracts (5.1% of 9,033 tracts; 1.86M residents). Counting only 4,383 full grocery stores flags 497 tracts (+35 net tracts).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">How Counties and Clinics Act on Home and Tract Data</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Matching clinic intake, census tract maps, and health plan contracts to clear local actions.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="How Counties and Clinics Act on Home and Tract Data">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Action 1 · Clinic &amp; Aid Intake (Home Level)</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Screen for Post-Rent Pay &amp; Rent Deductions</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">17.7% Pre-Rent -> 30.5% Post-Rent Food Share</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Ask about monthly rent at clinic intake so working families above 200% FPL get CalFresh rent deductions and food vouchers.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Action 2 · Local Placement (Tract Level)</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Place Mobile Vans &amp; CHWs by Poverty Rate</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">62.2% Poverty Share vs. 1.8% Distance</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Place mobile food vans and bilingual CHW teams in high-poverty tracts instead of using one-mile store distance maps.</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Action 3 · Health Plan Contracts (System Level)</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Pair Tailored Meals With Disability Care</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">1.76x & 2.47x Higher Odds</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Contract with Medi-Cal plans to bring tailored meals and home CHW visits to patients with diabetes and a disability.</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Action Guide Calculations, Tract Regressions &amp; Eligibility Rules</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Action 1 Post-Rent Home Math (Marin County Canal Tract 1122.03):</strong> Subtracting the ACS B25064 renter gross rent (<strong>$2,318/month</strong>) from the ACS B19013 all-household median income (<strong>$5,507/month</strong>, 220% FPL) leaves <strong>$3,189/month</strong>. That puts the <strong>$973/month</strong> USDA Thrifty Food Plan at <strong>30.5%</strong> of post-rent pay (+12.8 points above its 17.7% pre-rent share).</p>
+          <p>&bull; <strong>Action 2 State Tract Variance Split (N = 9,033 Tracts):</strong> In state tract models across USDA FARA and ACS S1701, the poverty rate has a standardized beta of <strong>0.789</strong> (explaining <strong>R&sup2; = 62.2%</strong> of variance). Store distance has a standardized beta of <strong>0.056</strong> (explaining <strong>R&sup2; = 1.8%</strong> of variance).</p>
+          <p>&bull; <strong>Action 3 County Tract Odds Ratios (N = 408 Santa Clara Tracts):</strong> Tract models linking ACS S1810/B15003 and CDC PLACES give <strong>OR = 2.47, p &lt; 0.001 (95% CI: 2.35, 2.61)</strong> for adults without a high school diploma and <strong>OR = 1.76, p = 0.004 (95% CI: 1.63, 1.89)</strong> for disability.</p>
+        </div>
+      </details>
+    </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[4], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> System Dynamics &amp; Feedback &middot; Flagship Case Study</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019-2023 5-Year Estimates</a>: Tables B19013 (all-household median income) and B25064 (renter median gross rent). Covers Marin Tract 1122.03, Fresno Tract 2, Santa Clara Tract 5119.15, and Nevada County Tract 7.01.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service Thrifty Food Plan</a>: $973 per month reference food budget for a family of four.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service Food Access Research Atlas (FARA)</a>: State 9,033-tract poverty (R² = 62.2%) vs. store distance (R² = 1.8%) study.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC PLACES Local Data for Better Health</a>: Tract health, disability (OR = 1.76), and schooling (OR = 2.47) benchmarks across 408 Santa Clara tracts.</li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">How Counties Combine Clinic Screening With Tract-Level Outreach</h3>
+            <p class="text-slate-800">Public health teams often see a strong link between local food strain and adult diabetes rates. Acting on that link takes two clear steps. First, help clinic patients pay for healthy food and insulin after rent is paid. Second, place CHW outreach in the tracts where poverty and disability cluster.</p>
+            <p class="text-slate-800">In California, high rent and low pay matter far more than miles to a grocery store. Across 9,033 tracts, poverty accounts for 34 times more food risk than store distance (62.2% vs. 1.8%). Meanwhile, high coastal rent ($2,318 per month in Marin's Canal area) lifts the post-rent food share to 30.5% even at 220% FPL. Counties get the best results when clinics screen for post-rent cash strain, claim CalFresh rent deductions, and send tailored meals and CHW teams to high-poverty tracts.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Modeled Area-Median Post-Rent Benchmark &amp; Multi-Level Synthesis):</strong> Monthly food shares in Table 1 are modeled area-median benchmarks. They subtract the ACS B25064 renter median gross rent from the ACS B19013 all-household median income. Then they divide the $973 USDA Thrifty Food Plan basket by the cash left. Because the two medians come from different census universes (all households vs. renter households), this benchmark is not an observed four-person renter budget. Fresno Tract 2 values match food-affordability-tradeoffs (B19013 = $37,238; B25064 = $1,007). Tract R&sup2; splits and odds ratios across N = 9,033 state tracts and N = 408 Santa Clara tracts are observed regression results (Mode B).</p>
+          <p><strong>Primary Data Sources:</strong> Sources include <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019-2023 5-Year Estimates</a> (Tables B19013, B25064, S1701, S1810), the <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA Food and Nutrition Service Thrifty Food Plan ($973/mo family of four)</a>, the <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA Economic Research Service Food Access Research Atlas (FARA)</a>, and <a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC PLACES Local Data for Better Health</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/extended-vulnerability-index/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Neighborhood Vulnerability Index: Results Under Review</a>.
+                <span>Composite tract index method for 408 Santa Clara tracts; the reported SNAP association (r = 0.83) and quintile comparisons are under reconciliation and not publicly reproduced.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/diverging-trajectories/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">The Widening Gap: Why Some Neighborhoods Are Falling Behind</a>.
+                <span>Tract-level SNAP participation trajectories from 2019 to 2023; the 48% deteriorating versus 20% improving split is under reconciliation because its tract counts conflict.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Is this information more useful at the census tract level or the county and clinic level?</dt>
+                <dd class="text-slate-700 mt-0.5">Both levels serve clear roles. Census tract data (poverty R² = 62.2% vs. store distance R² = 1.8%) shows county health teams which areas need mobile food vans and bilingual CHW teams. Home post-rent budget math shows clinics and aid offices how to screen patients. Working families squeezed by high rent can then get CalFresh rent deductions and tailored meals.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does high rent create nutrition and diabetes risk in families earning above 200% FPL?</dt>
+                <dd class="text-slate-700 mt-0.5">In high-rent areas like Marin County's Canal District, median monthly rent ($2,318) takes 42.1% of median monthly home pay ($5,507, or 220% FPL). Subtracting rent lifts the $973 monthly family food plan from 17.7% of pre-rent pay to 30.5% of post-rent pay. That squeeze happens even when gross pay sits above the standard 200% FPL CalFresh line.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What programs best address co-occurring food strain and diabetes in high-cost counties?</dt>
+                <dd class="text-slate-700 mt-0.5">Pairing post-rent clinic screens with CalFresh rent deductions, fresh food vouchers, and CalAIM tailored meals eases the monthly budget squeeze. Families no longer have to choose between rent, healthy food, and diabetes care.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Gross FPL vs. Post-Rent Food Affordability Rulers</a></li>
+          <li class="my-2"><a href="/methods-lab/geographic-variables" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">When Is Geography a Proxy vs. Mechanism?</a></li>
+          <li class="my-2"><a href="/methods-lab/classifying-causal-mechanisms" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Confounders, Mediators & Colliders in Policy Models</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">The Data</h2>
-          <p class="panel-intro">
-            Each dot represents a California county. Counties with higher food insecurity rates tend to have higher diabetes hospitalization rates. Is this evidence that food insecurity worsens diabetes outcomes? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Food Insecurity Rate vs Diabetes Hospitalizations</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing food insecurity rate versus diabetes hospitalization rate across California counties"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>Low Poverty</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>High Poverty</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>County Breakdown</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-high-poverty-count">--</div>
-                  <div class="stat-label">High Poverty</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-low-poverty-count">--</div>
-                  <div class="stat-label">Low Poverty</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Correlation</h4>
-              <div class="stat-item" style="text-align: center;">
-                <div class="stat-value" id="stat-correlation">--</div>
-                <div class="stat-label">Food Insecurity vs Hospitalization</div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>What we see:</strong> A clear positive relationship between food insecurity and diabetes hospitalization rates. Counties with the highest food insecurity have hospitalization rates <span id="stat-difference">--</span>x higher than those with the lowest.
-            </div>
-          </aside>
-        </div>
-
-        <!-- Bridging question to Panel 2 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> The correlation is clear. But can we conclude that food insecurity causes worse diabetes outcomes?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: THE PROBLEM
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">The Problem</h2>
-          <p class="panel-intro">
-            Counties with high food insecurity also tend to have high poverty rates. That's not a coincidence. Poverty limits access to food. But poverty also restricts access to healthcare, medications, and disease management resources. And here is the deeper problem: illness itself can cause poverty, creating a vicious cycle.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/food-insecurity-diabetes/assets/food-diabetes-dag-confounding.png"
-              alt="Causal diagram showing Poverty affecting both Food Insecurity and Diabetes Hospitalization, with a dashed arrow from Food Insecurity to Diabetes Hospitalization indicating uncertain causal effect"
-              class="dag-image"
-            >
-            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to know about.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Two Possible Explanations</h4>
-              <div class="pathway-list">
-                <div class="pathway-item causal">
-                  <strong>Food insecurity worsens diabetes</strong>
-                  <p>Without reliable food access, people with diabetes can't maintain consistent diets, afford healthy options, or time meals with medications—leading to poor glucose control and hospitalizations.</p>
-                </div>
-                <div class="pathway-item confounding">
-                  <strong>Poverty drives both</strong>
-                  <p>Poor counties have less food access AND fewer healthcare resources, less preventive care, lower medication adherence, and more barriers to managing chronic disease—all increasing hospitalizations.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The confounding problem:</strong> If "Poverty" causes both food insecurity and diabetes hospitalization, then the association we see between food insecurity and hospitalization is confounded. We can't tell how much of the difference is due to food insecurity itself.
-            </div>
-          </aside>
-        </div>
-
-        <!-- KEY CONCEPT: Bidirectional Causation -->
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>Bidirectional Causation</h3>
-          <p><strong>Bidirectional causation</strong> occurs when:</p>
-          <ul>
-            <li>X causes Y (food insecurity may worsen diabetes)</li>
-            <li>Y causes X (diabetes complications may cause job loss, medical debt, and poverty)</li>
-          </ul>
-          <p style="margin-top: var(--space-md);">With cross-sectional data, we cannot distinguish these directions. We see both X and Y at the same moment in time.</p>
-        </div>
-
-        <!-- Bridging question to Panel 3 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> Can we isolate the food insecurity effect by comparing counties with similar poverty levels?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: SEEING THE CONFOUNDER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">Seeing the Confounder</h2>
-          <p class="panel-intro">
-            If poverty drives both food insecurity and hospitalization, then comparing counties within the same poverty level should show a weaker relationship. Use the filters below to stratify the data.
-          </p>
-        </div>
-
-        <!-- Stratification section -->
-        <div class="stratified-section">
-          <div class="filter-controls">
-            <span class="filter-label">Filter by Poverty Level:</span>
-            <button class="filter-btn active" data-filter="all">All Counties</button>
-            <button class="filter-btn" data-filter="low">Low Poverty</button>
-            <button class="filter-btn" data-filter="medium">Medium Poverty</button>
-            <button class="filter-btn" data-filter="high">High Poverty</button>
-          </div>
-
-          <div class="stratified-grid">
-            <div class="chart-wrapper">
-              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing food insecurity effect within poverty levels"></svg>
-            </div>
-
-            <aside class="comparison-sidebar">
-              <div class="comparison-card">
-                <h4>Overall Relationship</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">Correlation:</span>
-                  <span class="comparison-value" id="overall-correlation">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Slope:</span>
-                  <span class="comparison-value" id="overall-slope">--</span>
-                </div>
-              </div>
-
-              <div class="comparison-card">
-                <h4>Within This Stratum</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">Correlation:</span>
-                  <span class="comparison-value" id="stratum-correlation">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Slope:</span>
-                  <span class="comparison-value" id="stratum-slope">--</span>
-                </div>
-                <div class="comparison-row difference">
-                  <span class="comparison-label">Change:</span>
-                  <span class="comparison-value" id="stratum-change">--</span>
-                </div>
-              </div>
-
-              <div class="insight-box">
-                <p><strong>What's happening?</strong></p>
-                <p id="stratification-insight">Select a poverty level to see how the relationship changes when comparing similar counties.</p>
-              </div>
-            </aside>
-          </div>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> The effect shrinks when we account for poverty. But what about factors we couldn't measure?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: WHAT WE CAN'T MEASURE
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">What We Can't Measure</h2>
-          <p class="panel-intro">
-            Stratification helped with what we measured. But some factors that influence both food insecurity and diabetes hospitalization don't appear in any dataset. And the direction of causation itself remains uncertain.
-          </p>
-        </div>
-
-        <div class="unmeasured-section">
-          <div class="unmeasured-grid">
-            <img
-              src="/methods-lab/food-insecurity-diabetes/assets/food-diabetes-unmeasured-dag.png"
-              alt="Causal diagram showing both measured (Poverty) and unmeasured (Health Literacy, Transportation Access) confounders affecting food insecurity and diabetes hospitalization"
-              class="unmeasured-image"
-            >
-            <div class="unmeasured-explanation">
-              <h4>Health Literacy & Transportation Access</h4>
-              <p>
-                Counties with low health literacy may have populations who struggle both to navigate food assistance programs AND to manage complex chronic diseases—creating a spurious link between food insecurity and hospitalization.
-              </p>
-              <p>
-                Similarly, limited transportation affects both grocery store access (driving food insecurity) AND access to outpatient diabetes care (driving hospitalizations).
-              </p>
-              <p>
-                These aren't in any standard dataset. We can't stratify by them. We can't adjust for them. Yet they could be driving both the "exposure" and the "outcome."
-              </p>
-              <p>
-                <strong>This is the problem of unmeasured confounding.</strong> No matter how carefully we adjust for what we can see, there may be hidden factors we can't account for.
-              </p>
-            </div>
-          </div>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <strong>The implication:</strong> Even if we had perfect data on poverty, we still couldn't be sure the remaining food insecurity effect is causal. Unmeasured confounding can't be fixed by collecting more of the same type of data. It requires a different approach entirely.
-          </div>
-        </div>
-
-        <!-- KEY CONCEPT: Unmeasured Confounding -->
-        <div class="definition-card" style="margin-top: var(--space-xl);">
-          <h3>Unmeasured Confounding</h3>
-          <p><strong>Unmeasured confounding</strong> occurs when a variable that affects both treatment and outcome is not observed in the data. Unlike measured confounders (which we can adjust for), unmeasured confounders remain invisible threats to causal claims.</p>
-          <p style="margin-top: var(--space-md);">Statistical methods cannot solve this problem. The solution requires finding variation in treatment that is independent of the confounder, often through study design rather than statistical adjustment.</p>
-        </div>
-
-        <!-- Bridging question to Panel 5 -->
-        <div class="bridging-question">
-          <p><strong>Next:</strong> What questions should we ask to identify these hidden threats?</p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: QUESTIONS TO CONSIDER
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">Questions to Consider</h2>
-          <p class="panel-intro">
-            These questions help identify confounding threats that statistical adjustment cannot fix. They won't prove causation, but they'll reveal where the analysis is most vulnerable to bias.
-          </p>
-        </div>
-
-        <div class="questions-grid">
-          <div class="question-card">
-            <h4>What else differs between these counties?</h4>
-            <p>Counties with high food insecurity might differ from other counties in many ways beyond just food access.</p>
-            <div class="question-prompt">
-              What other characteristics might explain why some counties have both high food insecurity AND high diabetes hospitalization?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Is this a fair comparison?</h4>
-            <p>Cross-sectional data shows us a snapshot, not a story. We're comparing different counties at one point in time.</p>
-            <div class="question-prompt">
-              Are food-insecure counties truly comparable to food-secure counties? What would make them more comparable?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Which came first?</h4>
-            <p>In this data, we see food insecurity and hospitalization rates at the same time. We don't know the sequence.</p>
-            <div class="question-prompt">
-              Did food insecurity lead to higher hospitalizations, or do counties with more hospitalizations have sicker populations who then face food insecurity?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>What study design would help?</h4>
-            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
-            <div class="question-prompt">
-              What kind of study would give you more confidence that food insecurity actually causes diabetes hospitalization?
-            </div>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Confounding:</strong> when a third variable affects both treatment and outcome</div>
-            <div class="concept-item"><strong>Bidirectional causation:</strong> when X may cause Y and Y may also cause X</div>
-            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we can't adjust for</div>
-            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
-            <div class="concept-item"><strong>Identification:</strong> finding treatment variation that is independent of confounders</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both treatment and outcomes, the solution isn't better adjustment—it's finding sources of treatment variation that operate independently of unmeasured confounders. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Causal Pitfalls track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/classifying-causal-mechanisms" style="color:#0041A5;font-weight:600;">Classifying Causal Mechanisms</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/sensitivity-analysis-cea" style="color:#0041A5;font-weight:600;">Sensitivity Analysis</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/cea-uncertain-effects" style="color:#0041A5;font-weight:600;">CEA Under Uncertainty</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> · California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> · Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function generateCountyData() {
-      const countyNames = [
-        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
-        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
-        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
-        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
-        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
-        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
-        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
-        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
-        'County BC', 'County BD', 'County BE', 'County BF'
-      ];
-
-      const data = [];
-      let seed = 123;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // Poverty rate (confounder) - percentage of population below poverty line
-        const povertyRate = 5 + rand() * 25; // 5% to 30%
-
-        // High poverty indicator (for coloring)
-        const highPoverty = povertyRate > 15;
-
-        // Food insecurity depends strongly on poverty + some noise
-        const baseFoodInsecurity = 5 + (povertyRate * 0.6);
-        const foodInsecurityNoise = (rand() - 0.5) * 6;
-        const foodInsecurity = Math.min(25, Math.max(3, baseFoodInsecurity + foodInsecurityNoise));
-
-        // Diabetes hospitalization depends on poverty (direct effect) + small food insecurity effect + noise
-        const baseHospitalization = 50 + (povertyRate * 4); // Poverty drives hospitalization
-        const foodEffect = foodInsecurity * 1.5; // Small true effect of food insecurity
-        const hospNoise = (rand() - 0.5) * 40;
-        const diabetesHospitalization = Math.min(250, Math.max(40, baseHospitalization + foodEffect + hospNoise));
-
-        data.push({
-          name: countyNames[i],
-          povertyRate: Math.round(povertyRate * 10) / 10,
-          highPoverty: highPoverty,
-          foodInsecurity: Math.round(foodInsecurity * 10) / 10,
-          diabetesHospitalization: Math.round(diabetesHospitalization)
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    function correlation(xArr, yArr) {
-      if (xArr.length < 3) return 0;
-      const n = xArr.length;
-      const xMean = mean(xArr);
-      const yMean = mean(yArr);
-
-      let numerator = 0;
-      let xSumSq = 0;
-      let ySumSq = 0;
-
-      for (let i = 0; i < n; i++) {
-        const xDiff = xArr[i] - xMean;
-        const yDiff = yArr[i] - yMean;
-        numerator += xDiff * yDiff;
-        xSumSq += xDiff * xDiff;
-        ySumSq += yDiff * yDiff;
-      }
-
-      const denominator = Math.sqrt(xSumSq * ySumSq);
-      return denominator === 0 ? 0 : numerator / denominator;
-    }
-
-    function linearRegression(xArr, yArr) {
-      if (xArr.length < 2) return { slope: 0, intercept: 0 };
-      const n = xArr.length;
-      const xMean = mean(xArr);
-      const yMean = mean(yArr);
-
-      let numerator = 0;
-      let denominator = 0;
-
-      for (let i = 0; i < n; i++) {
-        numerator += (xArr[i] - xMean) * (yArr[i] - yMean);
-        denominator += (xArr[i] - xMean) * (xArr[i] - xMean);
-      }
-
-      const slope = denominator === 0 ? 0 : numerator / denominator;
-      const intercept = yMean - slope * xMean;
-
-      return { slope, intercept };
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let stratifiedInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-        if (panelNum === '3') {
-          setTimeout(() => {
-            if (!stratifiedInitialized) {
-              renderStratifiedChart('all');
-              stratifiedInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 28;
-      const yMin = 30, yMax = 260;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 50; y <= 250; y += 50) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Trend line
-      const xVals = countyData.map(d => d.foodInsecurity);
-      const yVals = countyData.map(d => d.diabetesHospitalization);
-      const reg = linearRegression(xVals, yVals);
-
-      const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      trendLine.setAttribute('x1', xScale(3));
-      trendLine.setAttribute('x2', xScale(25));
-      trendLine.setAttribute('y1', yScale(reg.intercept + reg.slope * 3));
-      trendLine.setAttribute('y2', yScale(reg.intercept + reg.slope * 25));
-      trendLine.setAttribute('stroke', 'var(--color-primary)');
-      trendLine.setAttribute('stroke-width', '2');
-      trendLine.setAttribute('stroke-dasharray', '6,4');
-      trendLine.setAttribute('opacity', '0.6');
-      svg.appendChild(trendLine);
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.foodInsecurity));
-        circle.setAttribute('cy', yScale(d.diabetesHospitalization));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.highPoverty ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 25; x += 5) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x + '%';
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Food Insecurity Rate (%)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 50; y <= 250; y += 50) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Diabetes Hospitalization Rate (per 100k)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. STRATIFIED CHART (Panel 3)
-       ============================================ */
-    let currentFilter = 'all';
-
-    function renderStratifiedChart(filter) {
-      currentFilter = filter;
-      const svg = document.getElementById('stratified-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 28;
-      const yMin = 30, yMax = 260;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.povertyRate <= 10;
-        if (filter === 'medium') return d.povertyRate > 10 && d.povertyRate <= 20;
-        if (filter === 'high') return d.povertyRate > 20;
-        return true;
-      };
-
-      // Background shading for filter region (based on poverty rate, shown via X distribution)
-      if (filter !== 'all') {
-        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        shade.setAttribute('x', margin.left);
-        shade.setAttribute('y', margin.top);
-        shade.setAttribute('width', plotWidth);
-        shade.setAttribute('height', plotHeight);
-        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.03)');
-        svg.appendChild(shade);
-      }
-
-      // Grid lines
-      for (let y = 50; y <= 250; y += 50) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Trend line for filtered data
-      const filteredData = countyData.filter(inFilter);
-      if (filteredData.length >= 2) {
-        const xVals = filteredData.map(d => d.foodInsecurity);
-        const yVals = filteredData.map(d => d.diabetesHospitalization);
-        const reg = linearRegression(xVals, yVals);
-
-        const minX = Math.min(...xVals);
-        const maxX = Math.max(...xVals);
-
-        const trendLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        trendLine.setAttribute('x1', xScale(minX));
-        trendLine.setAttribute('x2', xScale(maxX));
-        trendLine.setAttribute('y1', yScale(reg.intercept + reg.slope * minX));
-        trendLine.setAttribute('y2', yScale(reg.intercept + reg.slope * maxX));
-        trendLine.setAttribute('stroke', 'var(--color-primary)');
-        trendLine.setAttribute('stroke-width', '2');
-        trendLine.setAttribute('stroke-dasharray', '6,4');
-        trendLine.setAttribute('opacity', '0.7');
-        svg.appendChild(trendLine);
-      }
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.foodInsecurity));
-        circle.setAttribute('cy', yScale(d.diabetesHospitalization));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.highPoverty ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 25; x += 5) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x + '%';
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Food Insecurity Rate (%)';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 50; y <= 250; y += 50) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y;
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Diabetes Hospitalization Rate (per 100k)';
-      svg.appendChild(yLabel);
-
-      updateComparisonStats(filter);
-    }
-
-    function updateComparisonStats(filter) {
-      // Overall stats
-      const allX = countyData.map(d => d.foodInsecurity);
-      const allY = countyData.map(d => d.diabetesHospitalization);
-      const overallCorr = correlation(allX, allY);
-      const overallReg = linearRegression(allX, allY);
-
-      document.getElementById('overall-correlation').textContent = overallCorr.toFixed(2);
-      document.getElementById('overall-slope').textContent = overallReg.slope.toFixed(1) + ' per %';
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.povertyRate <= 10;
-        if (filter === 'medium') return d.povertyRate > 10 && d.povertyRate <= 20;
-        if (filter === 'high') return d.povertyRate > 20;
-        return true;
-      };
-
-      const filteredData = countyData.filter(inFilter);
-      const insightEl = document.getElementById('stratification-insight');
-
-      if (filteredData.length >= 3) {
-        const filteredX = filteredData.map(d => d.foodInsecurity);
-        const filteredY = filteredData.map(d => d.diabetesHospitalization);
-        const stratumCorr = correlation(filteredX, filteredY);
-        const stratumReg = linearRegression(filteredX, filteredY);
-
-        document.getElementById('stratum-correlation').textContent = stratumCorr.toFixed(2);
-        document.getElementById('stratum-slope').textContent = stratumReg.slope.toFixed(1) + ' per %';
-
-        const corrChange = ((stratumCorr - overallCorr) / overallCorr * 100).toFixed(0);
-        document.getElementById('stratum-change').textContent = corrChange + '%';
-
-        if (filter === 'all') {
-          insightEl.textContent = 'Select a poverty level to see how the relationship changes when comparing similar counties.';
-        } else {
-          const povertyLabel = filter.charAt(0).toUpperCase() + filter.slice(1);
-          if (Math.abs(stratumCorr) < Math.abs(overallCorr) * 0.7) {
-            insightEl.innerHTML = '<strong>The relationship weakens substantially.</strong> Within ' + povertyLabel + ' Poverty counties, the correlation drops to ' + stratumCorr.toFixed(2) + '. Poverty explains much of what we saw overall.';
-          } else {
-            insightEl.innerHTML = 'Within ' + povertyLabel + ' Poverty counties, the correlation is ' + stratumCorr.toFixed(2) + ' (' + Math.abs(corrChange) + '% ' + (corrChange < 0 ? 'weaker' : 'stronger') + ' than overall).';
-          }
-        }
-      } else {
-        document.getElementById('stratum-correlation').textContent = 'N/A';
-        document.getElementById('stratum-slope').textContent = '--';
-        document.getElementById('stratum-change').textContent = '--';
-        insightEl.textContent = 'Not enough counties in this stratum for meaningful statistics.';
-      }
-    }
-
-    // Filter button handlers
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderStratifiedChart(btn.dataset.filter);
-      });
-    });
-
-    /* ============================================
-       6. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">Food Insecurity: ${data.foodInsecurity}%</div>
-        <div class="metric">Diabetes Hosp: ${data.diabetesHospitalization} per 100k</div>
-        <div class="metric">Poverty Rate: ${data.povertyRate}%</div>
-        <div class="metric">${data.highPoverty ? 'High Poverty' : 'Low Poverty'}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const highPovertyCounties = countyData.filter(d => d.highPoverty);
-      const lowPovertyCounties = countyData.filter(d => !d.highPoverty);
-
-      document.getElementById('stat-high-poverty-count').textContent = highPovertyCounties.length;
-      document.getElementById('stat-low-poverty-count').textContent = lowPovertyCounties.length;
-
-      // Calculate correlation
-      const xVals = countyData.map(d => d.foodInsecurity);
-      const yVals = countyData.map(d => d.diabetesHospitalization);
-      const corr = correlation(xVals, yVals);
-      document.getElementById('stat-correlation').textContent = 'r = ' + corr.toFixed(2);
-
-      // Calculate high vs low ratio
-      const sortedByFI = [...countyData].sort((a, b) => a.foodInsecurity - b.foodInsecurity);
-      const lowFICounties = sortedByFI.slice(0, 15);
-      const highFICounties = sortedByFI.slice(-15);
-      const lowFIAvg = mean(lowFICounties.map(d => d.diabetesHospitalization));
-      const highFIAvg = mean(highFICounties.map(d => d.diabetesHospitalization));
-      const ratio = (highFIAvg / lowFIAvg).toFixed(1);
-      document.getElementById('stat-difference').textContent = ratio;
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-          if (document.getElementById('panel-3').classList.contains('active')) {
-            renderStratifiedChart(currentFilter);
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

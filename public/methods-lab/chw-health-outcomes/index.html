@@ -3,800 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/src/frontend/css/style.css?v=12">
+  <title>CHW Program Impact & Medi-Cal ROI | CAPHE Case Studies</title>
+  <meta name="description" content="Compare 4 California CHW program models across flat Medi-Cal visit pay ($31.74), 58-county worker wages, hospital savings, and added healthy years.">
+  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/chw-health-outcomes">
+  <meta property="og:title" content="CHW Program Impact & Medi-Cal ROI | CAPHE Case Studies">
+  <meta property="og:description" content="Compare 4 California CHW program models across flat Medi-Cal visit pay ($31.74), 58-county worker wages, hospital savings, and added healthy years.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/methods-lab/chw-health-outcomes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Access Control for Community Labs -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/methods-lab/assets/lab-access-control.js"></script>
-  <title>Community Health Workers and Health Outcomes | CAPHE</title>
-  <meta name="description" content="Explore whether community health worker programs improve health outcomes or if other factors explain the relationship. Learn to identify confounding in observational data.">
-  <link rel="canonical" href="https://www.caphegroup.org/methods-lab/chw-health-outcomes">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       1. RESET & BASE
-       ============================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ============================================
-       2. CSS CUSTOM PROPERTIES
-       ============================================ */
     :root {
-      /* Colors - CAPHE Brand */
       --color-primary: #0041A5;
       --color-primary-light: #1565C0;
       --color-primary-dark: #003080;
       --color-secondary: #0D9488;
       --color-accent: #F9A825;
-      --color-accent-light: #FFC107;
-      --color-success: #2E7D32;
-      --color-warning: #F57C00;
-      --color-bg: #FFFFFF;
-      --color-bg-alt: #FAFAF8;
-      --color-bg-panel: #FFFFFF;
       --color-text: #1C1C1C;
-      --color-text-secondary: #424242;
+      --color-text-secondary: #334155;
       --color-text-muted: #595959;
-      --color-border: #E0E0E0;
-      --color-border-light: #EEEEEE;
-
-      /* Typography */
-      --font-serif: 'Georgia', 'Times New Roman', serif;
-      --font-sans: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* Spacing */
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
-
-      /* Shadows & Radii */
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
       --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     }
-
-    /* ============================================
-       3. TYPOGRAPHY
-       ============================================ */
-    html { font-size: 16px; scroll-behavior: smooth; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-sans);
+      font-family: var(--font-body);
       font-size: 1rem;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--color-text);
-      background: var(--color-bg-alt);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
     }
-
     h1, h2, h3, h4 {
-      font-family: var(--font-serif);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--color-primary-dark);
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
     }
-
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1rem; }
-
-    p { margin-bottom: var(--space-md); }
-    p:last-child { margin-bottom: 0; }
-
-    a { color: var(--color-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    strong { font-weight: 600; }
-
-    /* ============================================
-       4. LAYOUT
-       ============================================ */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg);
-    }
-
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-      color: white;
-      padding: var(--space-2xl) 0;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 2.25rem;
-      margin-bottom: var(--space-sm);
-    }
-
-    .eyebrow {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      opacity: 0.9;
-      margin-bottom: var(--space-sm);
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.95;
-      max-width: 700px;
-      margin-bottom: var(--space-lg);
-    }
-
-    .policy-question {
-      background: rgba(255,255,255,0.15);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md) var(--space-lg);
-      max-width: 650px;
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-
-    /* Panel Navigation */
-    .panel-nav {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .panel-nav ul {
-      list-style: none;
-      display: flex;
-      gap: var(--space-xs);
-      padding: var(--space-sm) 0;
-      overflow-x: auto;
-    }
-
-    .panel-btn {
-      padding: var(--space-sm) var(--space-lg);
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .panel-btn:hover {
-      background: var(--color-bg-alt);
+    th {
+      font-family: var(--font-body);
       color: var(--color-text);
     }
-
-    .panel-btn.active,
-    .panel-btn[aria-pressed="true"] {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
+    p, td, dd, li {
+      text-wrap: pretty;
     }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
 
-    /* Main Content */
-    .main {
-      padding: var(--space-xl) 0 var(--space-2xl);
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
     }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
-    /* ============================================
-       5. PANELS
-       ============================================ */
-    .panel {
-      display: none;
-      animation: fadeIn 0.3s ease;
+    /* Option C Visual Components */
+    .ruler-svg-frame {
+      margin: 0.65rem 0 0.65rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #F8FAFC;
     }
-
-    .panel.active {
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: block;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .panel-header {
-      margin-bottom: var(--space-xl);
-    }
-
-    .panel-header h2 {
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
       display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      margin-bottom: var(--space-md);
-    }
-
-    .panel-number {
-      display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      background: var(--color-primary);
-      color: white;
-      border-radius: 50%;
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      font-weight: 600;
+      overflow: hidden;
     }
-
-    .panel-intro {
-      font-size: 1.1rem;
-      color: var(--color-text-secondary);
-      max-width: 800px;
-    }
-
-    /* ============================================
-       6. PANEL 1: THE DATA
-       ============================================ */
-    .data-container {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .data-container { grid-template-columns: 1fr; }
-    }
-
-    .chart-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .chart-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: var(--space-lg);
-      text-align: center;
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 420px;
-    }
-
-    .legend {
+    .budget-bar-track {
+      height: 22px;
+      background: #E2E8F0;
+      border-top: 1px solid #CBD5E1;
+      overflow: hidden;
       display: flex;
-      gap: var(--space-lg);
-      margin-top: var(--space-md);
-      font-size: 0.85rem;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .legend-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-    }
-
-    .stats-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .stat-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .stat-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-md);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--color-primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xs);
-    }
-
-    .observation-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    .observation-box strong {
-      color: var(--color-primary-dark);
-    }
-
-    /* ============================================
-       7. PANEL 2: THE PROBLEM (DAG)
-       ============================================ */
-    .problem-container {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .problem-container { grid-template-columns: 1fr; }
-    }
-
-    .dag-wrapper {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .dag-image {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    .dag-caption {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      text-align: center;
-      margin-top: var(--space-md);
-      font-style: italic;
-    }
-
-    .explanation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .explanation-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-    }
-
-    .explanation-card h4 {
-      color: var(--color-primary);
-      margin-bottom: var(--space-md);
-      padding-bottom: var(--space-sm);
-      border-bottom: 2px solid var(--color-border-light);
-    }
-
-    .pathway-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .pathway-item {
-      padding-left: var(--space-md);
-      border-left: 3px solid var(--color-border);
-    }
-
-    .pathway-item.causal {
-      border-left-color: var(--color-secondary);
-    }
-
-    .pathway-item.confounding {
-      border-left-color: var(--color-accent);
-    }
-
-    .pathway-item strong {
-      display: block;
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-
-    .pathway-item p {
-      font-size: 0.85rem;
-      color: var(--color-text-secondary);
+      color: #fff;
       margin: 0;
     }
-
-    .key-insight {
-      background: rgba(0, 65, 165, 0.05);
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       8. PANEL 3: SEEING THE CONFOUNDER
-       ============================================ */
-    .stratified-section {
-      margin-bottom: var(--space-2xl);
-    }
-
-    .filter-controls {
+    .budget-bar-seg {
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0 4px;
+    }
+    .budget-bar-seg[data-pct]::after {
+      content: attr(data-pct);
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
+    .seg-food { background: #F59E0B; color: #1C1C1C; }
+    .seg-rest { background: #0F766E; color: #fff; }
+    .seg-gross { background: #475569; color: #fff; }
+    .seg-primary { background: #0041A5; color: #fff; }
+
+    .bar-legend {
+      display: flex;
       flex-wrap: wrap;
-      padding: var(--space-md);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-lg);
+      gap: 0.375rem 0.625rem;
+      margin-bottom: 0.55rem;
     }
-
-    .filter-label {
+    .bar-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: var(--color-text-secondary);
-      margin-right: var(--space-sm);
+      color: #1E293B;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      line-height: 1.3;
     }
-
-    .filter-btn {
-      padding: var(--space-sm) var(--space-md);
-      background: white;
-      border: 2px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn:hover {
-      border-color: var(--color-primary-light);
-      color: var(--color-primary);
-    }
-
-    .filter-btn.active {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: white;
-    }
-
-    .stratified-grid {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: var(--space-xl);
-    }
-
-    @media (max-width: 900px) {
-      .stratified-grid { grid-template-columns: 1fr; }
-    }
-
-    .comparison-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-    }
-
-    .comparison-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-md);
-    }
-
-    .comparison-card h4 {
-      font-size: 0.85rem;
-      color: var(--color-primary);
-      margin-bottom: var(--space-sm);
-      padding-bottom: var(--space-xs);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .comparison-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      padding: var(--space-xs) 0;
-    }
-
-    .comparison-label {
-      color: var(--color-text-secondary);
-    }
-
-    .comparison-value {
-      font-weight: 600;
-      font-family: var(--font-mono);
-    }
-
-    .comparison-row.difference {
-      margin-top: var(--space-xs);
-      padding-top: var(--space-sm);
-      border-top: 1px dashed var(--color-border);
-    }
-
-    .comparison-row.difference .comparison-value {
-      color: var(--color-primary);
-    }
-
-    .insight-box {
-      background: rgba(249, 168, 37, 0.1);
-      border-left: 4px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      font-size: 0.85rem;
-    }
-
-    .insight-box p {
-      margin-bottom: var(--space-sm);
-    }
-
-    .insight-box p:last-child {
-      margin-bottom: 0;
-      color: var(--color-text-secondary);
-    }
-
-    /* Unmeasured section */
-    .unmeasured-section {
-      background: var(--color-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-xl);
-    }
-
-    .unmeasured-section h3 {
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-intro {
-      font-size: 1.05rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-lg);
-      max-width: 700px;
-    }
-
-    .unmeasured-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-xl);
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .unmeasured-grid { grid-template-columns: 1fr; }
-    }
-
-    .unmeasured-image {
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius-md);
-    }
-
-    .unmeasured-explanation h4 {
-      color: var(--color-accent);
-      margin-bottom: var(--space-md);
-    }
-
-    .unmeasured-explanation p {
-      font-size: 0.95rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* ============================================
-       9. PANEL 4: QUESTIONS TO CONSIDER
-       ============================================ */
-    .questions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-lg);
-      margin-bottom: var(--space-xl);
-    }
-
-    @media (max-width: 768px) {
-      .questions-grid { grid-template-columns: 1fr; }
-    }
-
-    .question-card {
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-secondary);
-    }
-
-    .question-card h4 {
-      font-size: 1rem;
-      color: var(--color-text);
-      margin-bottom: var(--space-sm);
-    }
-
-    .question-card p {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .question-prompt {
-      font-size: 0.85rem;
-      font-style: italic;
-      color: var(--color-primary);
-      padding: var(--space-sm);
-      background: rgba(0, 65, 165, 0.05);
-      border-radius: var(--radius-sm);
-    }
-
-    .concepts-box {
-      background: rgba(13, 148, 136, 0.08);
-      border: 2px solid var(--color-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-      margin-bottom: var(--space-xl);
-    }
-
-    .concepts-box h3 {
-      color: var(--color-secondary);
-      margin-bottom: var(--space-md);
-    }
-
-    .concept-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-
-    .concept-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-      font-size: 0.95rem;
-    }
-
-    .concept-item::before {
-      content: "✓";
-      color: var(--color-secondary);
-      font-weight: bold;
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
       flex-shrink: 0;
     }
 
-    .takeaway-box {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: var(--space-xl);
-    }
-
-    .takeaway-box h4 {
-      color: white;
-      margin-bottom: var(--space-md);
-      font-size: 1.1rem;
-    }
-
-    .takeaway-box p {
-      font-size: 1rem;
-      line-height: 1.7;
-      opacity: 0.95;
-    }
-
-    /* ============================================
-       10. FOOTER
-       ============================================ */
-    .footer {
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-xl) 0;
-      text-align: center;
-    }
-
-    .footer a {
-      color: var(--color-accent);
-    }
-
-    .footer p {
-      margin-bottom: var(--space-sm);
-      font-size: 0.9rem;
-    }
-
-    /* ============================================
-       11. TOOLTIP
-       ============================================ */
-    .tooltip {
-      position: fixed;
-      background: var(--color-primary-dark);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      max-width: 220px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .tooltip.hidden {
-      display: none;
-    }
-
-    .tooltip .county-name {
-      font-weight: 600;
-      margin-bottom: var(--space-xs);
-    }
-
-    .tooltip .metric {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-
-    /* ============================================
-       12. UTILITIES
-       ============================================ */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
       overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+      display: flex;
+      margin-top: 6px;
     }
-  .skip-link {
-      position: absolute;
-      top: -40px;
-      left: 0;
-      background: var(--color-primary);
-      color: white;
-      padding: var(--space-sm) var(--space-md);
-      z-index: 100;
-      text-decoration: none;
-      border-radius: 0 0 var(--radius-sm) 0;
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
     }
-    .skip-link:focus {
-      top: 0;
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
     }
-  @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
     }
   </style>
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": [
     "Article",
     "LearningResource"
   ],
-  "headline": "Community Health Workers and Health Outcomes",
-  "description": "Explore whether community health worker programs improve health outcomes or if other factors explain the relationship. Learn to identify confounding in observational data.",
+  "headline": "Per-Visit Medi-Cal Rates Cover Only a Small Fraction of County Living-Wage CHW Salaries",
+  "description": "Compare 4 California CHW program models across flat Medi-Cal visit pay ($31.74), 58-county worker wages, hospital savings, and added healthy years.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -804,7 +431,7 @@
   },
   "publisher": {
     "@type": "Organization",
-    "name": "California Association of Public Health Economics",
+    "name": "California Association of Public Health Economists",
     "url": "https://www.caphegroup.org",
     "logo": {
       "@type": "ImageObject",
@@ -815,47 +442,48 @@
   "educationalLevel": "Professional",
   "isPartOf": {
     "@type": "CollectionPage",
-    "name": "CAPHE Methods Lab",
+    "name": "California Public Health Case Studies",
     "url": "https://www.caphegroup.org/methods-lab"
   }
 }
-</script>
-<!-- geo:faq:start -->
-<script type="application/ld+json">
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Do community health worker programs actually improve health outcomes?",
+      "name": "Under which circumstances is each of the four CHW models best?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "CHWs plausibly help by connecting patients to care, providing education, and improving follow-up, but cross-sectional county data showing better outcomes where CHW programs exist cannot separate that effect from the wealth and resources that fund the programs in the first place."
+        "text": "Hospital teams (55 high-need patients) work best when a health plan or county hospital needs fast Year-1 ER and bed savings. They save $107,006 at Medi-Cal rates or $291,171 at full bed cost. Clinic teams (75 patients) work best for clinics that can bill set 30-minute visits ($46,561/yr, or 45.9% of pay) while saving $182,333 in hospital costs. Local Promotora outreach (150 adults across 10 high-need ZIP codes) works best for public health teams reaching families who delay clinic care. It brings the largest health gain (+8.18 QALYs, worth $818,000) at a net cost of $7,771 per QALY."
       }
     },
     {
       "@type": "Question",
-      "name": "What is confounding in the context of CHW programs?",
+      "name": "Why is same-year hospital and emergency cost offset too narrow to evaluate neighborhood promotora prevention?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Confounding occurs when a third factor, such as county wealth or healthcare infrastructure, influences both whether a CHW program exists and the health outcomes measured. The observed CHW advantage then partly or wholly reflects that shared cause rather than the program itself."
+        "text": "Local Promotoras reach families early, before blood sugar or high blood pressure leads to an ER trip. Counting only Year-1 hospital bills captures $34,900 in bed savings. Yet it leaves out 38 early checks per year and 8.18 added healthy years (QALYs) across 150 adults. Valuing health gains at $100,000 per QALY shows $852,900 in yearly value (8.66:1). The net cost is $7,771 per QALY gained, which is 92% below the $100,000 benchmark."
       }
     },
     {
       "@type": "Question",
-      "name": "Why doesn't statistical adjustment fully solve the problem?",
+      "name": "Does Medi-Cal adjust its CHW pay rate for high-cost California counties?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Stratifying by measured resources shrinks the estimated CHW advantage, but unmeasured confounders like community social cohesion are absent from any dataset and cannot be adjusted away. Credible causal evidence requires variation in CHW presence that is independent of these hidden factors, what economists call identification."
+        "text": "No. Under DHCS SPA 22-0001, Medi-Cal pays a flat state rate of $31.74 per 30-minute health education unit across all 58 counties. Individual units pay $26.66. Full-time CHW pay runs from $92,684 in rural counties to $103,719 statewide and $122,102 in Bay Area counties. As a result, field visit billing covers only 6% to 11% of yearly worker pay."
       }
     }
   ]
 }
-</script>
-<!-- geo:faq:end -->
+  </script>
+  <!-- geo:faq:end -->
 </head>
-<body>
+<body class="antialiased">
+
   <!-- Top Bar -->
   <div class="nav-top-bar">
     <div class="container">
@@ -866,16 +494,16 @@
   </div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Site Navigation">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="/assets/images/logo-icon.png" alt="CAPHE">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
         <div class="nav-logo-text">CAPHE</div>
       </a>
       <div class="nav-links">
         <a href="/about" class="nav-link">About</a>
         <div class="nav-dropdown">
-          <a href="/programs" class="nav-link">Programs ▾</a>
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
           <div class="nav-dropdown-menu">
             <a href="/programs#webinars">Webinars</a>
             <a href="/programs#workshops">Workshops</a>
@@ -885,9 +513,9 @@
           </div>
         </div>
         <div class="nav-dropdown">
-          <a href="/resources" class="nav-link active">Resources ▾</a>
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Methods Lab</a>
+            <a href="/methods-lab">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -901,862 +529,566 @@
   </nav>
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header -->
-  <header class="header" role="banner">
-    <div class="container">
-      <div class="eyebrow">CAPHE Methods Lab · Causal Inference</div>
-      <h1>Community Health Workers and Health Outcomes</h1>
-        <!-- geo:answer:start -->
-        <div class="answer-block" style="background:#f5f7fa;border-left:4px solid #1a4480;padding:1rem 1.25rem;margin:0 0 1.5rem;border-radius:6px;">
-          <p style="margin:0;font-weight:600;color:#1c1c1c;">Counties with community health worker (CHW) programs tend to show better diabetes control, but the correlation does not by itself establish that CHWs cause the improvement. Wealthier counties have the resources both to fund CHW programs and to support better clinics, more providers, and healthier food access, so community resources can drive treatment presence and health outcomes simultaneously. Stratifying by measured resource level shrinks the apparent CHW advantage, yet unmeasured factors such as social cohesion may still bias the comparison, illustrating the limits of statistical adjustment in observational data.</p>
-          <p style="margin:.5rem 0 0;font-size:.85rem;color:#595959;">Last reviewed: June 2026</p>
-        </div>
-        <!-- geo:answer:end -->
-      <p class="subtitle">Counties with community health worker programs show better diabetes control. But is that because CHWs help, or because wealthier counties have both CHWs and better outcomes?</p>
-    </div>
-  </header>
 
-  <!-- Panel Navigation -->
-  <nav class="panel-nav" role="navigation" aria-label="Module panels">
-    <div class="container">
-      <ul>
-        <li><button class="panel-btn active" data-panel="1" aria-pressed="true">1. The Data</button></li>
-        <li><button class="panel-btn" data-panel="2" aria-pressed="false">2. The Problem</button></li>
-        <li><button class="panel-btn" data-panel="3" aria-pressed="false">3. Seeing the Confounder</button></li>
-        <li><button class="panel-btn" data-panel="4" aria-pressed="false">4. What We Can't Measure</button></li>
-        <li><button class="panel-btn" data-panel="5" aria-pressed="false">5. Questions to Consider</button></li>
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Per-Visit Medi-Cal Rates Cover Only a Small Fraction of County Living-Wage CHW Salaries
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        How flat Medi-Cal visit pay compares with county worker pay, modeled care savings, and added healthy years.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When sizing a county Community Health Worker team, relying only on Medi-Cal visit billing leaves an 89% to 94% pay gap for field outreach.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Across all 58 state counties, one full-time CHW costs <strong>$92,684 to $122,102</strong> per year.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Yet Medi-Cal pays a flat <strong>$31.74</strong> per 30-minute visit.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> In our four-model comparison, visit fees cover just <strong>6% to 11%</strong> of field pay.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Adding modeled hospital savings and two-year health gains brings <strong>$407,006 to $852,900</strong> in yearly value per worker.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[4]</a></sup> Splitting hospital, clinic, and local outreach tracks helps county teams blend health plan funds, bed savings, and grants.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[4]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Costs, Hospital Savings &amp; Health Gains Across 4 Program Models</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        One full-time worker serves a distinct group in each model. Use the 58-county lookup below for local numbers.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four state CHW models compared by people served, worker pay, visit fees, Year-1 hospital savings, healthy years, and total value.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Program Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Scenario 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Hospital Care (Medi-Cal View)</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Scenario 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Hospital Care (Hospital View)</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Scenario 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Clinic Chronic Care</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Scenario 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Neighborhood Outreach</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Who This Model Serves
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">55 Medi-Cal patients</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">55 hospital patients</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">75 clinic patients</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">150 local adults</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Annual Worker Cost
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$103,719</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$103,719</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$101,369</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$98,469</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Annual Per-Visit Medi-Cal Pay<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6.5% to 9.8%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$6,775 to $10,162</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6.5% to 9.8%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$6,775 to $10,162</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">45.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$46,561</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">3.4% to 6.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$3,388 to $6,348</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Year-1 Hospital Savings<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$107,006</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">27 ER, 11.6 stays</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$291,171</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">27 ER, 11.6 stays</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$182,333</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">23 ER, 7.9 stays</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$34,900</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">6.6 ER, 1.1 stays</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Added Healthy Years<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+3.00 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$300,000</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+3.00 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$300,000</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+4.09 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$409,000</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+8.18 QALYs</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$818,000</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Total Annual Value<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$407,006</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">3.92:1 return</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 48%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$591,171</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">5.70:1 return</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 69%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$591,333</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">5.83:1 return</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 69%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">$852,900</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">8.66:1 return</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> Unit is 1 full-time worker. <strong>Row 1 (Base Use):</strong> Scenarios 1 and 2 serve patients with 2.23 ER visits and 0.70 hospital stays per year. Scenario 3 serves clinic patients with diabetes or asthma. They average 1.40 ER visits and 0.35 stays per year. Scenario 4 reaches 150 adults in the 10 highest-need ZIP codes (60% non-English homes). <strong>Row 2 (58-County Pay):</strong> 2024 BLS county pay runs from $92,684 to $122,102 per year. Local outreach pay runs from $87,434 to $116,852. Scenario 3 shows Year 2+ ongoing clinic cost. <strong>Row 3 (* Visit Pay):</strong> DHCS SPA 22-0001 pays a flat $31.74 per 30-minute visit. Scenarios 1, 2, and 4 use field visits. Scenario 3 uses set clinic visits. <strong>Row 4 (* Hospital Savings):</strong> Uses Kangovi et al. (2020) trial cuts. Scenario 1 uses Medi-Cal plan rates. Scenarios 2 to 4 use 2024 HCAI full bed costs. Net Year-1 cash is +$3,287 in Scenario 1, +$187,452 in Scenario 2, and +$80,964 in Scenario 3. Scenario 4 has a -$63,569 net outlay, or $7,771 per QALY. <strong>Rows 5 &amp; 6 (* Health &amp; Total Value):</strong> Added healthy years (QALYs, at 0.0545 per adult over 2 years, 3% discount rate) are valued at $100,000 per QALY (Neumann et al., 2014). Scenario 4 also adds 38 early checks per year.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. When Each Model Works Best &amp; How to Fund It</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How each CHW model fits a clear health goal and a steady county funding mix.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Guide comparing when each CHW model works best, main value, key limits, and how counties pay for it.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Guide
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Hospital Care (Medi-Cal View)
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Hospital Care (Hospital View)
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Clinic Chronic Care
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Neighborhood Outreach
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                When This Model Works Best
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cutting Year-1 Medi-Cal claims for frequent care users.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Freeing hospital beds and cutting unpaid care costs.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Bringing steady clinic visit fees for diabetes and asthma.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Growing early health checks in high-need ZIP codes.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Value Beyond Hospital Bills
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Links patients to a doctor right after a stay.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Opens full ER bays and beds for sick patients.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Keeps blood sugar and asthma in check with set visits.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Reaches families who skip clinics due to language or fear.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Key Operational Limit
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Field trips cannot bill enough visits to pay full wages.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Small 55-patient loads reach fewer total county adults.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Needs patients who already see a regular clinic doctor.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Health gains build over two years past Year-1 bills.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                How to Pay for This Model
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Monthly Health Plan Contract<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pair visit fees with monthly CalAIM care plan pay.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">County Hospital Savings Pool<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Fund roles from hospital budgets as beds open up.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Clinic Visit Pay + Quality Bonus<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Blend set 30-minute visit fees with care bonuses.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Public Health Grant + Hospital Credit<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Blend Year-1 bed credits with public health grants.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: 58-County Worker Pay, Hospital Rates &amp; Health Value (QALY) Math</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Flat Medi-Cal Pay vs. Local Worker Costs:</strong> Under <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a>, Medi-Cal pays a flat $31.74 per 30-minute health education visit across all 58 counties. Individual units pay $26.66. Local worker costs come from 2024 <a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Bureau of Labor Statistics QCEW</a> county wages. Pay averages $54,000 base or $103,719 loaded statewide. Across 58 counties, total cost runs from $92,684 to $122,102. That sum includes 35% fringe, $19,000 lead support, $4,000 training, and 10% office cost.</p>
+          <p>&bull; <strong>Medi-Cal Rates vs. Full Hospital Costs:</strong> Medi-Cal plan rates are $600 per ER visit, $7,000 per hospital stay, and $6,000 per readmission. Those numbers match DHCS fee tables. Full hospital costs are $2,100 per ER visit, $18,500 per stay, and $15,000 per readmission. Those numbers come from <a href="https://hcai.ca.gov/data/healthcare-utilization/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California HCAI</a> and <a href="https://hcup-us.ahrq.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">AHRQ HCUP</a> cost files.</p>
+          <p>&bull; <strong>Why Year-1 Hospital Bills Leave Out Scenario 4 Value (150 Adults in 10 High-Need ZIP Codes):</strong> Official 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI)</a> log 279,905 avoidable stays in the state. The rate is 902.5 per 100,000 adults in PQI 90 and 715.3 in PQI 92. In high-need ZIP codes, 60% of adults speak a language other than English at home. Also, 14% of immigrant adults skip public aid out of fear. They face 2.4x higher odds of late care (Wolstein et al., 2022, JAMA Network Open). Reaching 150 adults stops 6.6 ER visits and 1.10 stays in Year 1 ($34,900 saved). It also adds 38 checks and brings <strong>8.18 quality-adjusted life years (QALYs)</strong>. That equals 0.0545 QALYs per adult over 2 years at a 3% discount rate. Each QALY is valued at $100,000 (<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann et al., 2014, NEJM</a>). After subtracting $34,900 in bed savings, Scenario 4 costs <strong>$7,771 per QALY gained</strong> ($63,569 / 8.18 QALYs). It brings <strong>$852,900/yr</strong> in total value (8.66:1).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- INTERACTIVE 58-COUNTY CHW BENCHMARK & SENSITIVITY CALCULATOR -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">58-County Lookup &amp; Impact Check</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Pick a county, a program model, and a health impact level below.
+      </p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" role="region" aria-label="58-County Lookup &amp; Impact Check">
+      <!-- UNIFIED 3-DROPDOWN CONTROL BAR -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3.5 mb-4">
+        <div>
+          <label for="chwCountySelect" class="block text-xs font-bold text-slate-800 mb-1">1. County</label>
+          <select id="chwCountySelect" class="w-full px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0041A5]">
+            <option value="STATEWIDE">California Statewide (All 58 Counties)</option><option value="Alameda">Alameda</option><option value="Alpine">Alpine</option><option value="Amador">Amador</option><option value="Butte">Butte</option><option value="Calaveras">Calaveras</option><option value="Colusa">Colusa</option><option value="Contra Costa">Contra Costa</option><option value="Del Norte">Del Norte</option><option value="El Dorado">El Dorado</option><option value="Fresno">Fresno</option><option value="Glenn">Glenn</option><option value="Humboldt">Humboldt</option><option value="Imperial">Imperial</option><option value="Inyo">Inyo</option><option value="Kern">Kern</option><option value="Kings">Kings</option><option value="Lake">Lake</option><option value="Lassen">Lassen</option><option value="Los Angeles">Los Angeles</option><option value="Madera">Madera</option><option value="Marin">Marin</option><option value="Mariposa">Mariposa</option><option value="Mendocino">Mendocino</option><option value="Merced">Merced</option><option value="Modoc">Modoc</option><option value="Mono">Mono</option><option value="Monterey">Monterey</option><option value="Napa">Napa</option><option value="Nevada">Nevada</option><option value="Orange">Orange</option><option value="Placer">Placer</option><option value="Plumas">Plumas</option><option value="Riverside">Riverside</option><option value="Sacramento">Sacramento</option><option value="San Benito">San Benito</option><option value="San Bernardino">San Bernardino</option><option value="San Diego">San Diego</option><option value="San Francisco">San Francisco</option><option value="San Joaquin">San Joaquin</option><option value="San Luis Obispo">San Luis Obispo</option><option value="San Mateo">San Mateo</option><option value="Santa Barbara">Santa Barbara</option><option value="Santa Clara">Santa Clara</option><option value="Santa Cruz">Santa Cruz</option><option value="Shasta">Shasta</option><option value="Sierra">Sierra</option><option value="Siskiyou">Siskiyou</option><option value="Solano">Solano</option><option value="Sonoma">Sonoma</option><option value="Stanislaus">Stanislaus</option><option value="Sutter">Sutter</option><option value="Tehama">Tehama</option><option value="Trinity">Trinity</option><option value="Tulare">Tulare</option><option value="Tuolumne">Tuolumne</option><option value="Ventura">Ventura</option><option value="Yolo">Yolo</option><option value="Yuba">Yuba</option>
+          </select>
+        </div>
+        <div>
+          <label for="chwScenarioSelect" class="block text-xs font-bold text-slate-800 mb-1">2. Program Model</label>
+          <select id="chwScenarioSelect" class="w-full px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0041A5]">
+            <option value="1">Scenario 1: Hospital Care (Medi-Cal View)</option>
+            <option value="2">Scenario 2: Hospital Care (Hospital View)</option>
+            <option value="3">Scenario 3: Clinic Chronic Care (75 Patients)</option>
+            <option value="4">Scenario 4: Neighborhood Outreach (150 Adults)</option>
+          </select>
+        </div>
+        <div>
+          <label for="chwSensSelect" class="block text-xs font-bold text-slate-800 mb-1">3. Health Impact Level</label>
+          <select id="chwSensSelect" class="w-full px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0041A5]">
+            <option value="1.0" selected>100% Trial Result (Expected)</option>
+            <option value="0.5">50% Half Impact (Conservative)</option>
+            <option value="1.25">125% Higher Impact (Focused)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
+          <span class="block text-xs font-bold text-slate-700">Annual Worker Cost</span>
+          <span id="chwWageStat" class="block font-mono text-base sm:text-lg font-bold text-slate-950 mt-0.5">$103,719 / yr</span>
+          <span id="chwWageSub" class="block text-xs text-slate-600 mt-1 leading-snug">$54,000 base &middot; 6.5% to 9.8% from visits</span>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
+          <span class="block text-xs font-bold text-slate-700">Year-1 Hospital Savings*</span>
+          <span id="chwOffsetStat" class="block font-mono text-base sm:text-lg font-bold text-[#003080] mt-0.5">$107,006 / yr</span>
+          <span id="chwOffsetSub" class="block text-xs text-slate-600 mt-1 leading-snug">27.0 ER visits, 11.6 stays avoided</span>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
+          <span class="block text-xs font-bold text-slate-700">Added Healthy Years*</span>
+          <span id="chwQalyStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-800 mt-0.5">+3.00 QALYs</span>
+          <span id="chwQalySub" class="block text-xs text-slate-600 mt-1 leading-snug">$300,000 health value</span>
+        </div>
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5">
+          <span class="block text-xs font-bold text-emerald-950">Total Annual Value*</span>
+          <span id="chwTotalStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5">$407,006 / yr (3.92:1)</span>
+          <span id="chwTotalSub" class="block text-xs text-slate-800 mt-1 leading-snug">+$3,287 Year-1 cash + $300,000 health</span>
+        </div>
+      </div>
+      <script>
+        (function() {
+          const counties = {"STATEWIDE":{"name":"California Statewide (All 58 Counties)","pqi90_count":279905,"pqi90_rate":902.5,"pqi91_count":58063,"pqi91_rate":187.2,"pqi92_count":221844,"pqi92_rate":715.3,"pqi93_count":70901,"pqi93_rate":228.6,"adult_pop_2024":31012717,"allind_weekly_wage_2024":1772,"hc_weekly_wage_2024":1258,"medi_cal_adults_2026":8744615,"medi_cal_total_2026":13267227,"wage_index_state100":100,"chw_base_salary":54000,"chw_loaded_cost":103719,"chw_hourly_wage":25.96,"chw_ongoing_cost":101369,"chw_promotora_cost":98469,"ffs_share_low_pct":6.5,"ffs_share_high_pct":9.8,"scen4_avoided_ed":6.6,"scen4_avoided_ip":1.1,"scen4_gross_societal_offset":34900,"scen4_gross_medical_offset":10600},"Alameda":{"name":"Alameda","pqi90_count":9436,"pqi90_rate":708.2,"pqi91_count":1723,"pqi91_rate":129.3,"pqi92_count":7713,"pqi92_rate":578.9,"pqi93_count":2195,"pqi93_rate":164.7,"adult_pop_2024":1332423,"allind_weekly_wage_2024":1885,"hc_weekly_wage_2024":1476,"medi_cal_adults_2026":320736,"medi_cal_total_2026":450532,"wage_index_state100":106.4,"chw_base_salary":55200,"chw_loaded_cost":105926,"chw_hourly_wage":26.54,"chw_ongoing_cost":103576,"chw_promotora_cost":100676,"ffs_share_low_pct":6.4,"ffs_share_high_pct":9.6,"scen4_avoided_ed":5.3,"scen4_avoided_ip":0.89,"scen4_gross_societal_offset":28200,"scen4_gross_medical_offset":8600},"Alpine":{"name":"Alpine","pqi90_count":0,"pqi90_rate":0,"pqi91_count":0,"pqi91_rate":0,"pqi92_count":0,"pqi92_rate":0,"pqi93_count":0,"pqi93_rate":0,"adult_pop_2024":928,"allind_weekly_wage_2024":932,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":200,"medi_cal_total_2026":303,"wage_index_state100":52.6,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.6,"scen4_avoided_ip":1.1,"scen4_gross_societal_offset":34900,"scen4_gross_medical_offset":10600},"Amador":{"name":"Amador","pqi90_count":353,"pqi90_rate":995.5,"pqi91_count":71,"pqi91_rate":200.2,"pqi92_count":282,"pqi92_rate":795.3,"pqi93_count":88,"pqi93_rate":248.2,"adult_pop_2024":35460,"allind_weekly_wage_2024":1127,"hc_weekly_wage_2024":1278,"medi_cal_adults_2026":5856,"medi_cal_total_2026":8978,"wage_index_state100":63.6,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.3,"scen4_avoided_ip":1.22,"scen4_gross_societal_offset":38800,"scen4_gross_medical_offset":11800},"Butte":{"name":"Butte","pqi90_count":2628,"pqi90_rate":1579.6,"pqi91_count":470,"pqi91_rate":282.5,"pqi92_count":2158,"pqi92_rate":1297.1,"pqi93_count":610,"pqi93_rate":366.7,"adult_pop_2024":166368,"allind_weekly_wage_2024":1106,"hc_weekly_wage_2024":1106,"medi_cal_adults_2026":56020,"medi_cal_total_2026":82159,"wage_index_state100":62.4,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":12,"scen4_avoided_ip":1.99,"scen4_gross_societal_offset":63300,"scen4_gross_medical_offset":19200},"Calaveras":{"name":"Calaveras","pqi90_count":455,"pqi90_rate":1185.6,"pqi91_count":150,"pqi91_rate":390.9,"pqi92_count":305,"pqi92_rate":794.7,"pqi93_count":64,"pqi93_rate":166.8,"adult_pop_2024":38377,"allind_weekly_wage_2024":1112,"hc_weekly_wage_2024":965,"medi_cal_adults_2026":8673,"medi_cal_total_2026":13059,"wage_index_state100":62.8,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.3,"scen4_avoided_ip":1.22,"scen4_gross_societal_offset":38800,"scen4_gross_medical_offset":11800},"Colusa":{"name":"Colusa","pqi90_count":194,"pqi90_rate":1195.5,"pqi91_count":47,"pqi91_rate":289.6,"pqi92_count":147,"pqi92_rate":905.8,"pqi93_count":43,"pqi93_rate":265,"adult_pop_2024":16228,"allind_weekly_wage_2024":1160,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":5812,"medi_cal_total_2026":9874,"wage_index_state100":65.5,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":8.4,"scen4_avoided_ip":1.39,"scen4_gross_societal_offset":44200,"scen4_gross_medical_offset":13400},"Contra Costa":{"name":"Contra Costa","pqi90_count":7675,"pqi90_rate":833.2,"pqi91_count":1468,"pqi91_rate":159.4,"pqi92_count":6207,"pqi92_rate":673.8,"pqi93_count":1719,"pqi93_rate":186.6,"adult_pop_2024":921132,"allind_weekly_wage_2024":1658,"hc_weekly_wage_2024":1515,"medi_cal_adults_2026":208059,"medi_cal_total_2026":309017,"wage_index_state100":93.6,"chw_base_salary":52800,"chw_loaded_cost":101511,"chw_hourly_wage":25.38,"chw_ongoing_cost":99161,"chw_promotora_cost":96261,"ffs_share_low_pct":6.7,"ffs_share_high_pct":10,"scen4_avoided_ed":6.2,"scen4_avoided_ip":1.04,"scen4_gross_societal_offset":32900,"scen4_gross_medical_offset":10000},"Del Norte":{"name":"Del Norte","pqi90_count":234,"pqi90_rate":1088.2,"pqi91_count":54,"pqi91_rate":251.1,"pqi92_count":180,"pqi92_rate":837.1,"pqi93_count":56,"pqi93_rate":260.4,"adult_pop_2024":21503,"allind_weekly_wage_2024":1035,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":7815,"medi_cal_total_2026":11800,"wage_index_state100":58.4,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.7,"scen4_avoided_ip":1.29,"scen4_gross_societal_offset":40800,"scen4_gross_medical_offset":12400},"El Dorado":{"name":"El Dorado","pqi90_count":1304,"pqi90_rate":835.5,"pqi91_count":362,"pqi91_rate":231.9,"pqi92_count":942,"pqi92_rate":603.5,"pqi93_count":223,"pqi93_rate":142.9,"adult_pop_2024":156079,"allind_weekly_wage_2024":1274,"hc_weekly_wage_2024":1266,"medi_cal_adults_2026":25406,"medi_cal_total_2026":37762,"wage_index_state100":71.9,"chw_base_salary":48700,"chw_loaded_cost":93971,"chw_hourly_wage":23.41,"chw_ongoing_cost":91621,"chw_promotora_cost":88721,"ffs_share_low_pct":7.2,"ffs_share_high_pct":10.8,"scen4_avoided_ed":5.6,"scen4_avoided_ip":0.93,"scen4_gross_societal_offset":29400,"scen4_gross_medical_offset":8900},"Fresno":{"name":"Fresno","pqi90_count":9707,"pqi90_rate":1301.4,"pqi91_count":2068,"pqi91_rate":277.3,"pqi92_count":7640,"pqi92_rate":1024.3,"pqi93_count":2603,"pqi93_rate":349,"adult_pop_2024":745865,"allind_weekly_wage_2024":1114,"hc_weekly_wage_2024":1127,"medi_cal_adults_2026":291783,"medi_cal_total_2026":490918,"wage_index_state100":62.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":9.5,"scen4_avoided_ip":1.58,"scen4_gross_societal_offset":50000,"scen4_gross_medical_offset":15200},"Glenn":{"name":"Glenn","pqi90_count":286,"pqi90_rate":1368.2,"pqi91_count":75,"pqi91_rate":358.8,"pqi92_count":211,"pqi92_rate":1009.4,"pqi93_count":62,"pqi93_rate":296.6,"adult_pop_2024":20903,"allind_weekly_wage_2024":1040,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":7815,"medi_cal_total_2026":12769,"wage_index_state100":58.7,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":9.3,"scen4_avoided_ip":1.55,"scen4_gross_societal_offset":49200,"scen4_gross_medical_offset":15000},"Humboldt":{"name":"Humboldt","pqi90_count":954,"pqi90_rate":880.9,"pqi91_count":210,"pqi91_rate":193.9,"pqi92_count":744,"pqi92_rate":687,"pqi93_count":226,"pqi93_rate":208.7,"adult_pop_2024":108302,"allind_weekly_wage_2024":1062,"hc_weekly_wage_2024":976,"medi_cal_adults_2026":37907,"medi_cal_total_2026":54309,"wage_index_state100":59.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.3,"scen4_avoided_ip":1.06,"scen4_gross_societal_offset":33500,"scen4_gross_medical_offset":10200},"Imperial":{"name":"Imperial","pqi90_count":1156,"pqi90_rate":882,"pqi91_count":345,"pqi91_rate":263.2,"pqi92_count":811,"pqi92_rate":618.8,"pqi93_count":298,"pqi93_rate":227.4,"adult_pop_2024":131069,"allind_weekly_wage_2024":1051,"hc_weekly_wage_2024":654,"medi_cal_adults_2026":60005,"medi_cal_total_2026":94639,"wage_index_state100":59.3,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":5.7,"scen4_avoided_ip":0.95,"scen4_gross_societal_offset":30200,"scen4_gross_medical_offset":9200},"Inyo":{"name":"Inyo","pqi90_count":101,"pqi90_rate":679.3,"pqi91_count":32,"pqi91_rate":215.2,"pqi92_count":69,"pqi92_rate":464.1,"pqi93_count":17,"pqi93_rate":114.3,"adult_pop_2024":14869,"allind_weekly_wage_2024":1174,"hc_weekly_wage_2024":1099,"medi_cal_adults_2026":3159,"medi_cal_total_2026":4881,"wage_index_state100":66.3,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":4.3,"scen4_avoided_ip":0.71,"scen4_gross_societal_offset":22600,"scen4_gross_medical_offset":6900},"Kern":{"name":"Kern","pqi90_count":6515,"pqi90_rate":979.3,"pqi91_count":1345,"pqi91_rate":202.2,"pqi92_count":5170,"pqi92_rate":777.1,"pqi93_count":1985,"pqi93_rate":298.4,"adult_pop_2024":665289,"allind_weekly_wage_2024":1155,"hc_weekly_wage_2024":1056,"medi_cal_adults_2026":271322,"medi_cal_total_2026":462807,"wage_index_state100":65.2,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.2,"scen4_avoided_ip":1.2,"scen4_gross_societal_offset":37900,"scen4_gross_medical_offset":11500},"Kings":{"name":"Kings","pqi90_count":892,"pqi90_rate":781,"pqi91_count":170,"pqi91_rate":148.8,"pqi92_count":722,"pqi92_rate":632.2,"pqi93_count":279,"pqi93_rate":244.3,"adult_pop_2024":114209,"allind_weekly_wage_2024":1084,"hc_weekly_wage_2024":913,"medi_cal_adults_2026":37715,"medi_cal_total_2026":64546,"wage_index_state100":61.2,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":5.8,"scen4_avoided_ip":0.97,"scen4_gross_societal_offset":30800,"scen4_gross_medical_offset":9400},"Lake":{"name":"Lake","pqi90_count":662,"pqi90_rate":1250.5,"pqi91_count":143,"pqi91_rate":270.1,"pqi92_count":519,"pqi92_rate":980.4,"pqi93_count":153,"pqi93_rate":289,"adult_pop_2024":52937,"allind_weekly_wage_2024":1036,"hc_weekly_wage_2024":925,"medi_cal_adults_2026":21533,"medi_cal_total_2026":32442,"wage_index_state100":58.5,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":9,"scen4_avoided_ip":1.51,"scen4_gross_societal_offset":47800,"scen4_gross_medical_offset":14500},"Lassen":{"name":"Lassen","pqi90_count":162,"pqi90_rate":704.7,"pqi91_count":68,"pqi91_rate":295.8,"pqi92_count":94,"pqi92_rate":408.9,"pqi93_count":20,"pqi93_rate":87,"adult_pop_2024":22990,"allind_weekly_wage_2024":1146,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":5126,"medi_cal_total_2026":8251,"wage_index_state100":64.7,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":3.8,"scen4_avoided_ip":0.63,"scen4_gross_societal_offset":20000,"scen4_gross_medical_offset":6100},"Los Angeles":{"name":"Los Angeles","pqi90_count":74983,"pqi90_rate":959.8,"pqi91_count":14822,"pqi91_rate":189.7,"pqi92_count":60162,"pqi92_rate":770.1,"pqi93_count":19050,"pqi93_rate":243.8,"adult_pop_2024":7812233,"allind_weekly_wage_2024":1607,"hc_weekly_wage_2024":1102,"medi_cal_adults_2026":2562333,"medi_cal_total_2026":3676898,"wage_index_state100":90.7,"chw_base_salary":52200,"chw_loaded_cost":100408,"chw_hourly_wage":25.1,"chw_ongoing_cost":98058,"chw_promotora_cost":95158,"ffs_share_low_pct":6.7,"ffs_share_high_pct":10.1,"scen4_avoided_ed":7.1,"scen4_avoided_ip":1.18,"scen4_gross_societal_offset":37600,"scen4_gross_medical_offset":11400},"Madera":{"name":"Madera","pqi90_count":1277,"pqi90_rate":1051.2,"pqi91_count":307,"pqi91_rate":252.7,"pqi92_count":970,"pqi92_rate":798.5,"pqi93_count":358,"pqi93_rate":294.7,"adult_pop_2024":121480,"allind_weekly_wage_2024":1078,"hc_weekly_wage_2024":1284,"medi_cal_adults_2026":44536,"medi_cal_total_2026":76972,"wage_index_state100":60.8,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.4,"scen4_avoided_ip":1.23,"scen4_gross_societal_offset":39000,"scen4_gross_medical_offset":11800},"Marin":{"name":"Marin","pqi90_count":1203,"pqi90_rate":576.8,"pqi91_count":297,"pqi91_rate":142.4,"pqi92_count":906,"pqi92_rate":434.4,"pqi93_count":195,"pqi93_rate":93.5,"adult_pop_2024":208562,"allind_weekly_wage_2024":1799,"hc_weekly_wage_2024":1603,"medi_cal_adults_2026":35096,"medi_cal_total_2026":50137,"wage_index_state100":101.5,"chw_base_salary":54300,"chw_loaded_cost":104270,"chw_hourly_wage":26.11,"chw_ongoing_cost":101920,"chw_promotora_cost":99020,"ffs_share_low_pct":6.5,"ffs_share_high_pct":9.7,"scen4_avoided_ed":4,"scen4_avoided_ip":0.67,"scen4_gross_societal_offset":21200,"scen4_gross_medical_offset":6400},"Mariposa":{"name":"Mariposa","pqi90_count":148,"pqi90_rate":1049.1,"pqi91_count":42,"pqi91_rate":297.7,"pqi92_count":106,"pqi92_rate":751.4,"pqi93_count":23,"pqi93_rate":163,"adult_pop_2024":14107,"allind_weekly_wage_2024":1008,"hc_weekly_wage_2024":641,"medi_cal_adults_2026":3697,"medi_cal_total_2026":5477,"wage_index_state100":56.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.9,"scen4_avoided_ip":1.16,"scen4_gross_societal_offset":36700,"scen4_gross_medical_offset":11100},"Mendocino":{"name":"Mendocino","pqi90_count":679,"pqi90_rate":958.4,"pqi91_count":167,"pqi91_rate":235.7,"pqi92_count":512,"pqi92_rate":722.7,"pqi93_count":166,"pqi93_rate":234.3,"adult_pop_2024":70848,"allind_weekly_wage_2024":1037,"hc_weekly_wage_2024":1026,"medi_cal_adults_2026":25834,"medi_cal_total_2026":38903,"wage_index_state100":58.5,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.7,"scen4_avoided_ip":1.11,"scen4_gross_societal_offset":35300,"scen4_gross_medical_offset":10700},"Merced":{"name":"Merced","pqi90_count":2455,"pqi90_rate":1146,"pqi91_count":473,"pqi91_rate":220.8,"pqi92_count":1982,"pqi92_rate":925.2,"pqi93_count":724,"pqi93_rate":338,"adult_pop_2024":214218,"allind_weekly_wage_2024":1057,"hc_weekly_wage_2024":981,"medi_cal_adults_2026":82367,"medi_cal_total_2026":141772,"wage_index_state100":59.7,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":8.5,"scen4_avoided_ip":1.42,"scen4_gross_societal_offset":45100,"scen4_gross_medical_offset":13700},"Modoc":{"name":"Modoc","pqi90_count":87,"pqi90_rate":1256.9,"pqi91_count":45,"pqi91_rate":650.1,"pqi92_count":42,"pqi92_rate":606.8,"pqi93_count":9,"pqi93_rate":130,"adult_pop_2024":6922,"allind_weekly_wage_2024":980,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":2169,"medi_cal_total_2026":3361,"wage_index_state100":55.3,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":5.6,"scen4_avoided_ip":0.93,"scen4_gross_societal_offset":29600,"scen4_gross_medical_offset":9000},"Mono":{"name":"Mono","pqi90_count":32,"pqi90_rate":298.4,"pqi91_count":10,"pqi91_rate":93.2,"pqi92_count":22,"pqi92_rate":205.1,"pqi93_count":15,"pqi93_rate":139.9,"adult_pop_2024":10725,"allind_weekly_wage_2024":1010,"hc_weekly_wage_2024":1458,"medi_cal_adults_2026":2153,"medi_cal_total_2026":3322,"wage_index_state100":57,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":1.9,"scen4_avoided_ip":0.32,"scen4_gross_societal_offset":10000,"scen4_gross_medical_offset":3000},"Monterey":{"name":"Monterey","pqi90_count":3252,"pqi90_rate":996.2,"pqi91_count":838,"pqi91_rate":256.7,"pqi92_count":2414,"pqi92_rate":739.5,"pqi93_count":800,"pqi93_rate":245.1,"adult_pop_2024":326450,"allind_weekly_wage_2024":1180,"hc_weekly_wage_2024":1337,"medi_cal_adults_2026":109301,"medi_cal_total_2026":181664,"wage_index_state100":66.6,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.8,"scen4_avoided_ip":1.14,"scen4_gross_societal_offset":36100,"scen4_gross_medical_offset":11000},"Napa":{"name":"Napa","pqi90_count":782,"pqi90_rate":723.3,"pqi91_count":172,"pqi91_rate":159.1,"pqi92_count":610,"pqi92_rate":564.2,"pqi93_count":209,"pqi93_rate":193.3,"adult_pop_2024":108121,"allind_weekly_wage_2024":1363,"hc_weekly_wage_2024":1298,"medi_cal_adults_2026":22414,"medi_cal_total_2026":34425,"wage_index_state100":76.9,"chw_base_salary":49600,"chw_loaded_cost":95626,"chw_hourly_wage":23.85,"chw_ongoing_cost":93276,"chw_promotora_cost":90376,"ffs_share_low_pct":7.1,"ffs_share_high_pct":10.6,"scen4_avoided_ed":5.2,"scen4_avoided_ip":0.87,"scen4_gross_societal_offset":27500,"scen4_gross_medical_offset":8400},"Nevada":{"name":"Nevada","pqi90_count":663,"pqi90_rate":778.8,"pqi91_count":179,"pqi91_rate":210.3,"pqi92_count":484,"pqi92_rate":568.5,"pqi93_count":162,"pqi93_rate":190.3,"adult_pop_2024":85129,"allind_weekly_wage_2024":1206,"hc_weekly_wage_2024":1134,"medi_cal_adults_2026":19409,"medi_cal_total_2026":28137,"wage_index_state100":68.1,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":5.2,"scen4_avoided_ip":0.87,"scen4_gross_societal_offset":27700,"scen4_gross_medical_offset":8400},"Orange":{"name":"Orange","pqi90_count":17277,"pqi90_rate":683.6,"pqi91_count":4050,"pqi91_rate":160.2,"pqi92_count":13227,"pqi92_rate":523.3,"pqi93_count":4659,"pqi93_rate":184.3,"adult_pop_2024":2527530,"allind_weekly_wage_2024":1565,"hc_weekly_wage_2024":1243,"medi_cal_adults_2026":598946,"medi_cal_total_2026":868135,"wage_index_state100":88.3,"chw_base_salary":51800,"chw_loaded_cost":99672,"chw_hourly_wage":24.9,"chw_ongoing_cost":97322,"chw_promotora_cost":94422,"ffs_share_low_pct":6.8,"ffs_share_high_pct":10.2,"scen4_avoided_ed":4.8,"scen4_avoided_ip":0.8,"scen4_gross_societal_offset":25500,"scen4_gross_medical_offset":7800},"Placer":{"name":"Placer","pqi90_count":2545,"pqi90_rate":745.6,"pqi91_count":653,"pqi91_rate":191.3,"pqi92_count":1892,"pqi92_rate":554.3,"pqi93_count":529,"pqi93_rate":155,"adult_pop_2024":341342,"allind_weekly_wage_2024":1400,"hc_weekly_wage_2024":1751,"medi_cal_adults_2026":49277,"medi_cal_total_2026":78165,"wage_index_state100":79,"chw_base_salary":50000,"chw_loaded_cost":96362,"chw_hourly_wage":24.04,"chw_ongoing_cost":94012,"chw_promotora_cost":91112,"ffs_share_low_pct":7,"ffs_share_high_pct":10.5,"scen4_avoided_ed":5.1,"scen4_avoided_ip":0.85,"scen4_gross_societal_offset":27000,"scen4_gross_medical_offset":8200},"Plumas":{"name":"Plumas","pqi90_count":106,"pqi90_rate":674.4,"pqi91_count":47,"pqi91_rate":299,"pqi92_count":59,"pqi92_rate":375.4,"pqi93_count":16,"pqi93_rate":101.8,"adult_pop_2024":15717,"allind_weekly_wage_2024":1151,"hc_weekly_wage_2024":738,"medi_cal_adults_2026":3552,"medi_cal_total_2026":5260,"wage_index_state100":65,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":3.5,"scen4_avoided_ip":0.58,"scen4_gross_societal_offset":18300,"scen4_gross_medical_offset":5600},"Riverside":{"name":"Riverside","pqi90_count":18219,"pqi90_rate":939.9,"pqi91_count":3957,"pqi91_rate":204.1,"pqi92_count":14262,"pqi92_rate":735.8,"pqi93_count":5071,"pqi93_rate":261.6,"adult_pop_2024":1938337,"allind_weekly_wage_2024":1149,"hc_weekly_wage_2024":1038,"medi_cal_adults_2026":553550,"medi_cal_total_2026":901279,"wage_index_state100":64.8,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.8,"scen4_avoided_ip":1.13,"scen4_gross_societal_offset":35900,"scen4_gross_medical_offset":10900},"Sacramento":{"name":"Sacramento","pqi90_count":13745,"pqi90_rate":1098.8,"pqi91_count":2351,"pqi91_rate":187.9,"pqi92_count":11394,"pqi92_rate":910.8,"pqi93_count":3069,"pqi93_rate":245.3,"adult_pop_2024":1250922,"allind_weekly_wage_2024":1541,"hc_weekly_wage_2024":1352,"medi_cal_adults_2026":373666,"medi_cal_total_2026":583016,"wage_index_state100":87,"chw_base_salary":51500,"chw_loaded_cost":99121,"chw_hourly_wage":24.76,"chw_ongoing_cost":96771,"chw_promotora_cost":93871,"ffs_share_low_pct":6.8,"ffs_share_high_pct":10.3,"scen4_avoided_ed":8.4,"scen4_avoided_ip":1.4,"scen4_gross_societal_offset":44400,"scen4_gross_medical_offset":13500},"San Benito":{"name":"San Benito","pqi90_count":383,"pqi90_rate":734.8,"pqi91_count":96,"pqi91_rate":184.2,"pqi92_count":287,"pqi92_rate":550.6,"pqi93_count":113,"pqi93_rate":216.8,"adult_pop_2024":52121,"allind_weekly_wage_2024":1154,"hc_weekly_wage_2024":841,"medi_cal_adults_2026":12136,"medi_cal_total_2026":20299,"wage_index_state100":65.1,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":5.1,"scen4_avoided_ip":0.85,"scen4_gross_societal_offset":26900,"scen4_gross_medical_offset":8200},"San Bernardino":{"name":"San Bernardino","pqi90_count":18782,"pqi90_rate":1128,"pqi91_count":3729,"pqi91_rate":223.9,"pqi92_count":15053,"pqi92_rate":904,"pqi93_count":5342,"pqi93_rate":320.8,"adult_pop_2024":1665133,"allind_weekly_wage_2024":1199,"hc_weekly_wage_2024":1160,"medi_cal_adults_2026":549907,"medi_cal_total_2026":893084,"wage_index_state100":67.7,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":8.3,"scen4_avoided_ip":1.39,"scen4_gross_societal_offset":44100,"scen4_gross_medical_offset":13400},"San Diego":{"name":"San Diego","pqi90_count":22829,"pqi90_rate":868.9,"pqi91_count":4779,"pqi91_rate":181.9,"pqi92_count":18050,"pqi92_rate":687,"pqi93_count":5783,"pqi93_rate":220.1,"adult_pop_2024":2627206,"allind_weekly_wage_2024":1593,"hc_weekly_wage_2024":1286,"medi_cal_adults_2026":566544,"medi_cal_total_2026":856435,"wage_index_state100":89.9,"chw_base_salary":52100,"chw_loaded_cost":100224,"chw_hourly_wage":25.05,"chw_ongoing_cost":97874,"chw_promotora_cost":94974,"ffs_share_low_pct":6.8,"ffs_share_high_pct":10.1,"scen4_avoided_ed":6.3,"scen4_avoided_ip":1.06,"scen4_gross_societal_offset":33500,"scen4_gross_medical_offset":10200},"San Francisco":{"name":"San Francisco","pqi90_count":5440,"pqi90_rate":760,"pqi91_count":952,"pqi91_rate":133,"pqi92_count":4488,"pqi92_rate":627,"pqi93_count":1123,"pqi93_rate":156.9,"adult_pop_2024":715769,"allind_weekly_wage_2024":3348,"hc_weekly_wage_2024":1360,"medi_cal_adults_2026":182247,"medi_cal_total_2026":230879,"wage_index_state100":188.9,"chw_base_salary":64000,"chw_loaded_cost":122102,"chw_hourly_wage":30.77,"chw_ongoing_cost":119752,"chw_promotora_cost":116852,"ffs_share_low_pct":5.5,"ffs_share_high_pct":8.3,"scen4_avoided_ed":5.8,"scen4_avoided_ip":0.96,"scen4_gross_societal_offset":30600,"scen4_gross_medical_offset":9300},"San Joaquin":{"name":"San Joaquin","pqi90_count":6293,"pqi90_rate":1032.8,"pqi91_count":1088,"pqi91_rate":178.6,"pqi92_count":5205,"pqi92_rate":854.2,"pqi93_count":1632,"pqi93_rate":267.8,"adult_pop_2024":609323,"allind_weekly_wage_2024":1217,"hc_weekly_wage_2024":1195,"medi_cal_adults_2026":179558,"medi_cal_total_2026":297359,"wage_index_state100":68.7,"chw_base_salary":48100,"chw_loaded_cost":92868,"chw_hourly_wage":23.13,"chw_ongoing_cost":90518,"chw_promotora_cost":87618,"ffs_share_low_pct":7.3,"ffs_share_high_pct":10.9,"scen4_avoided_ed":7.9,"scen4_avoided_ip":1.31,"scen4_gross_societal_offset":41700,"scen4_gross_medical_offset":12700},"San Luis Obispo":{"name":"San Luis Obispo","pqi90_count":1530,"pqi90_rate":655,"pqi91_count":416,"pqi91_rate":178.1,"pqi92_count":1114,"pqi92_rate":476.9,"pqi93_count":331,"pqi93_rate":141.7,"adult_pop_2024":233591,"allind_weekly_wage_2024":1179,"hc_weekly_wage_2024":1177,"medi_cal_adults_2026":39513,"medi_cal_total_2026":61507,"wage_index_state100":66.5,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":4.4,"scen4_avoided_ip":0.73,"scen4_gross_societal_offset":23300,"scen4_gross_medical_offset":7100},"San Mateo":{"name":"San Mateo","pqi90_count":3428,"pqi90_rate":568.8,"pqi91_count":714,"pqi91_rate":118.5,"pqi92_count":2714,"pqi92_rate":450.3,"pqi93_count":723,"pqi93_rate":120,"adult_pop_2024":602707,"allind_weekly_wage_2024":3778,"hc_weekly_wage_2024":1782,"medi_cal_adults_2026":103568,"medi_cal_total_2026":148334,"wage_index_state100":213.2,"chw_base_salary":64000,"chw_loaded_cost":122102,"chw_hourly_wage":30.77,"chw_ongoing_cost":119752,"chw_promotora_cost":116852,"ffs_share_low_pct":5.5,"ffs_share_high_pct":8.3,"scen4_avoided_ed":4.2,"scen4_avoided_ip":0.69,"scen4_gross_societal_offset":22000,"scen4_gross_medical_offset":6700},"Santa Barbara":{"name":"Santa Barbara","pqi90_count":2081,"pqi90_rate":601.6,"pqi91_count":506,"pqi91_rate":146.3,"pqi92_count":1575,"pqi92_rate":455.3,"pqi93_count":560,"pqi93_rate":161.9,"adult_pop_2024":345934,"allind_weekly_wage_2024":1340,"hc_weekly_wage_2024":1339,"medi_cal_adults_2026":99425,"medi_cal_total_2026":165660,"wage_index_state100":75.6,"chw_base_salary":49400,"chw_loaded_cost":95258,"chw_hourly_wage":23.75,"chw_ongoing_cost":92908,"chw_promotora_cost":90008,"ffs_share_low_pct":7.1,"ffs_share_high_pct":10.7,"scen4_avoided_ed":4.2,"scen4_avoided_ip":0.7,"scen4_gross_societal_offset":22200,"scen4_gross_medical_offset":6700},"Santa Clara":{"name":"Santa Clara","pqi90_count":10607,"pqi90_rate":683.2,"pqi91_count":2317,"pqi91_rate":149.2,"pqi92_count":8290,"pqi92_rate":534,"pqi93_count":2418,"pqi93_rate":155.7,"adult_pop_2024":1552491,"allind_weekly_wage_2024":3789,"hc_weekly_wage_2024":1669,"medi_cal_adults_2026":288075,"medi_cal_total_2026":411722,"wage_index_state100":213.8,"chw_base_salary":59000,"chw_loaded_cost":112915,"chw_hourly_wage":28.37,"chw_ongoing_cost":110565,"chw_promotora_cost":107665,"ffs_share_low_pct":6,"ffs_share_high_pct":9,"scen4_avoided_ed":4.9,"scen4_avoided_ip":0.82,"scen4_gross_societal_offset":26100,"scen4_gross_medical_offset":7900},"Santa Cruz":{"name":"Santa Cruz","pqi90_count":1509,"pqi90_rate":697.9,"pqi91_count":367,"pqi91_rate":169.7,"pqi92_count":1142,"pqi92_rate":528.2,"pqi93_count":441,"pqi93_rate":204,"adult_pop_2024":216210,"allind_weekly_wage_2024":1300,"hc_weekly_wage_2024":1424,"medi_cal_adults_2026":49715,"medi_cal_total_2026":72721,"wage_index_state100":73.4,"chw_base_salary":49000,"chw_loaded_cost":94523,"chw_hourly_wage":23.56,"chw_ongoing_cost":92173,"chw_promotora_cost":89273,"ffs_share_low_pct":7.2,"ffs_share_high_pct":10.8,"scen4_avoided_ed":4.9,"scen4_avoided_ip":0.81,"scen4_gross_societal_offset":25800,"scen4_gross_medical_offset":7800},"Shasta":{"name":"Shasta","pqi90_count":1930,"pqi90_rate":1352.8,"pqi91_count":374,"pqi91_rate":262.2,"pqi92_count":1556,"pqi92_rate":1090.7,"pqi93_count":460,"pqi93_rate":322.4,"adult_pop_2024":142665,"allind_weekly_wage_2024":1141,"hc_weekly_wage_2024":1105,"medi_cal_adults_2026":40816,"medi_cal_total_2026":63855,"wage_index_state100":64.4,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":10.1,"scen4_avoided_ip":1.68,"scen4_gross_societal_offset":53200,"scen4_gross_medical_offset":16200},"Sierra":{"name":"Sierra","pqi90_count":0,"pqi90_rate":0,"pqi91_count":2,"pqi91_rate":75.7,"pqi92_count":0,"pqi92_rate":0,"pqi93_count":1,"pqi93_rate":37.9,"adult_pop_2024":2642,"allind_weekly_wage_2024":972,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":499,"medi_cal_total_2026":728,"wage_index_state100":54.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6.6,"scen4_avoided_ip":1.1,"scen4_gross_societal_offset":34900,"scen4_gross_medical_offset":10600},"Siskiyou":{"name":"Siskiyou","pqi90_count":341,"pqi90_rate":994.6,"pqi91_count":118,"pqi91_rate":344.2,"pqi92_count":223,"pqi92_rate":650.4,"pqi93_count":91,"pqi93_rate":265.4,"adult_pop_2024":34284,"allind_weekly_wage_2024":1033,"hc_weekly_wage_2024":1093,"medi_cal_adults_2026":12141,"medi_cal_total_2026":17956,"wage_index_state100":58.3,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":6,"scen4_avoided_ip":1,"scen4_gross_societal_offset":31700,"scen4_gross_medical_offset":9600},"Solano":{"name":"Solano","pqi90_count":2908,"pqi90_rate":813.2,"pqi91_count":586,"pqi91_rate":163.9,"pqi92_count":2322,"pqi92_rate":649.4,"pqi93_count":720,"pqi93_rate":201.4,"adult_pop_2024":357585,"allind_weekly_wage_2024":1373,"hc_weekly_wage_2024":1529,"medi_cal_adults_2026":88374,"medi_cal_total_2026":135004,"wage_index_state100":77.5,"chw_base_salary":49700,"chw_loaded_cost":95810,"chw_hourly_wage":23.89,"chw_ongoing_cost":93460,"chw_promotora_cost":90560,"ffs_share_low_pct":7.1,"ffs_share_high_pct":10.6,"scen4_avoided_ed":6,"scen4_avoided_ip":1,"scen4_gross_societal_offset":31700,"scen4_gross_medical_offset":9600},"Sonoma":{"name":"Sonoma","pqi90_count":3109,"pqi90_rate":785.2,"pqi91_count":630,"pqi91_rate":159.1,"pqi92_count":2479,"pqi92_rate":626.1,"pqi93_count":713,"pqi93_rate":180.1,"adult_pop_2024":395970,"allind_weekly_wage_2024":1373,"hc_weekly_wage_2024":1456,"medi_cal_adults_2026":84337,"medi_cal_total_2026":128550,"wage_index_state100":77.5,"chw_base_salary":49700,"chw_loaded_cost":95810,"chw_hourly_wage":23.89,"chw_ongoing_cost":93460,"chw_promotora_cost":90560,"ffs_share_low_pct":7.1,"ffs_share_high_pct":10.6,"scen4_avoided_ed":5.8,"scen4_avoided_ip":0.96,"scen4_gross_societal_offset":30500,"scen4_gross_medical_offset":9300},"Stanislaus":{"name":"Stanislaus","pqi90_count":4992,"pqi90_rate":1210.9,"pqi91_count":1027,"pqi91_rate":249.1,"pqi92_count":3965,"pqi92_rate":961.8,"pqi93_count":1316,"pqi93_rate":319.2,"adult_pop_2024":412240,"allind_weekly_wage_2024":1227,"hc_weekly_wage_2024":1470,"medi_cal_adults_2026":148228,"medi_cal_total_2026":238893,"wage_index_state100":69.2,"chw_base_salary":48200,"chw_loaded_cost":93051,"chw_hourly_wage":23.17,"chw_ongoing_cost":90701,"chw_promotora_cost":87801,"ffs_share_low_pct":7.3,"ffs_share_high_pct":10.9,"scen4_avoided_ed":8.9,"scen4_avoided_ip":1.48,"scen4_gross_societal_offset":46900,"scen4_gross_medical_offset":14300},"Sutter":{"name":"Sutter","pqi90_count":991,"pqi90_rate":1332.2,"pqi91_count":191,"pqi91_rate":256.8,"pqi92_count":800,"pqi92_rate":1075.5,"pqi93_count":219,"pqi93_rate":294.4,"adult_pop_2024":74387,"allind_weekly_wage_2024":1061,"hc_weekly_wage_2024":1093,"medi_cal_adults_2026":27646,"medi_cal_total_2026":43950,"wage_index_state100":59.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":9.9,"scen4_avoided_ip":1.65,"scen4_gross_societal_offset":52500,"scen4_gross_medical_offset":15900},"Tehama":{"name":"Tehama","pqi90_count":592,"pqi90_rate":1207.2,"pqi91_count":100,"pqi91_rate":203.9,"pqi92_count":492,"pqi92_rate":1003.3,"pqi93_count":157,"pqi93_rate":320.2,"adult_pop_2024":49038,"allind_weekly_wage_2024":1099,"hc_weekly_wage_2024":929,"medi_cal_adults_2026":17471,"medi_cal_total_2026":28235,"wage_index_state100":62,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":9.3,"scen4_avoided_ip":1.54,"scen4_gross_societal_offset":49000,"scen4_gross_medical_offset":14900},"Trinity":{"name":"Trinity","pqi90_count":81,"pqi90_rate":625.1,"pqi91_count":33,"pqi91_rate":254.7,"pqi92_count":48,"pqi92_rate":370.4,"pqi93_count":13,"pqi93_rate":100.3,"adult_pop_2024":12958,"allind_weekly_wage_2024":1080,"hc_weekly_wage_2024":981,"medi_cal_adults_2026":3476,"medi_cal_total_2026":5022,"wage_index_state100":60.9,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":3.4,"scen4_avoided_ip":0.57,"scen4_gross_societal_offset":18100,"scen4_gross_medical_offset":5500},"Tulare":{"name":"Tulare","pqi90_count":3632,"pqi90_rate":1057.5,"pqi91_count":898,"pqi91_rate":261.5,"pqi92_count":2734,"pqi92_rate":796,"pqi93_count":1082,"pqi93_rate":315,"adult_pop_2024":343465,"allind_weekly_wage_2024":1020,"hc_weekly_wage_2024":902,"medi_cal_adults_2026":165553,"medi_cal_total_2026":273752,"wage_index_state100":57.6,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":7.3,"scen4_avoided_ip":1.22,"scen4_gross_societal_offset":38800,"scen4_gross_medical_offset":11800},"Tuolumne":{"name":"Tuolumne","pqi90_count":513,"pqi90_rate":1148.7,"pqi91_count":123,"pqi91_rate":275.4,"pqi92_count":390,"pqi92_rate":873.2,"pqi93_count":111,"pqi93_rate":248.5,"adult_pop_2024":44661,"allind_weekly_wage_2024":1129,"hc_weekly_wage_2024":1290,"medi_cal_adults_2026":9782,"medi_cal_total_2026":14372,"wage_index_state100":63.7,"chw_base_salary":48000,"chw_loaded_cost":92684,"chw_hourly_wage":23.08,"chw_ongoing_cost":90334,"chw_promotora_cost":87434,"ffs_share_low_pct":7.3,"ffs_share_high_pct":11,"scen4_avoided_ed":8.1,"scen4_avoided_ip":1.34,"scen4_gross_societal_offset":42600,"scen4_gross_medical_offset":12900},"Ventura":{"name":"Ventura","pqi90_count":5644,"pqi90_rate":856.4,"pqi91_count":1476,"pqi91_rate":224,"pqi92_count":4168,"pqi92_rate":632.5,"pqi93_count":1355,"pqi93_rate":205.6,"adult_pop_2024":659010,"allind_weekly_wage_2024":1356,"hc_weekly_wage_2024":1112,"medi_cal_adults_2026":153008,"medi_cal_total_2026":239511,"wage_index_state100":76.5,"chw_base_salary":49600,"chw_loaded_cost":95626,"chw_hourly_wage":23.85,"chw_ongoing_cost":93276,"chw_promotora_cost":90376,"ffs_share_low_pct":7.1,"ffs_share_high_pct":10.6,"scen4_avoided_ed":5.8,"scen4_avoided_ip":0.97,"scen4_gross_societal_offset":30900,"scen4_gross_medical_offset":9400},"Yolo":{"name":"Yolo","pqi90_count":1195,"pqi90_rate":656.7,"pqi91_count":190,"pqi91_rate":104.4,"pqi92_count":1005,"pqi92_rate":552.3,"pqi93_count":278,"pqi93_rate":152.8,"adult_pop_2024":181959,"allind_weekly_wage_2024":1474,"hc_weekly_wage_2024":1159,"medi_cal_adults_2026":36451,"medi_cal_total_2026":55872,"wage_index_state100":83.2,"chw_base_salary":50800,"chw_loaded_cost":97833,"chw_hourly_wage":24.42,"chw_ongoing_cost":95483,"chw_promotora_cost":92583,"ffs_share_low_pct":6.9,"ffs_share_high_pct":10.4,"scen4_avoided_ed":5.1,"scen4_avoided_ip":0.85,"scen4_gross_societal_offset":26900,"scen4_gross_medical_offset":8200},"Yuba":{"name":"Yuba","pqi90_count":922,"pqi90_rate":1445.3,"pqi91_count":140,"pqi91_rate":219.5,"pqi92_count":782,"pqi92_rate":1225.8,"pqi93_count":223,"pqi93_rate":349.6,"adult_pop_2024":63794,"allind_weekly_wage_2024":1287,"hc_weekly_wage_2024":0,"medi_cal_adults_2026":22903,"medi_cal_total_2026":37558,"wage_index_state100":72.6,"chw_base_salary":48800,"chw_loaded_cost":94155,"chw_hourly_wage":23.46,"chw_ongoing_cost":91805,"chw_promotora_cost":88905,"ffs_share_low_pct":7.2,"ffs_share_high_pct":10.8,"scen4_avoided_ed":11.3,"scen4_avoided_ip":1.89,"scen4_gross_societal_offset":59800,"scen4_gross_medical_offset":18200}};
+          const sel = document.getElementById('chwCountySelect');
+          const scenSel = document.getElementById('chwScenarioSelect');
+          const sensSel = document.getElementById('chwSensSelect');
+          const wageStat = document.getElementById('chwWageStat');
+          const wageSub = document.getElementById('chwWageSub');
+          const offsetStat = document.getElementById('chwOffsetStat');
+          const offsetSub = document.getElementById('chwOffsetSub');
+          const qalyStat = document.getElementById('chwQalyStat');
+          const qalySub = document.getElementById('chwQalySub');
+          const totalStat = document.getElementById('chwTotalStat');
+          const totalSub = document.getElementById('chwTotalSub');
+          const fmt = (n) => '$' + Math.round(Math.abs(n)).toLocaleString('en-US');
+          const fmtSigned = (n) => (n >= 0 ? '+' : '-') + fmt(n);
+          function update() {
+            const c = counties[sel.value] || counties.STATEWIDE;
+            const curScen = Number(scenSel.value) || 1;
+            const curMult = Number(sensSel.value) || 1.0;
+            let loaded = c.chw_loaded_cost;
+            let gross = 0;
+            let qalys = 0;
+            let eventsText = '';
+            let visitPct = c.ffs_share_low_pct + '% to ' + c.ffs_share_high_pct + '% from visits';
+            if (curScen === 1) {
+              loaded = c.chw_loaded_cost;
+              gross = Math.round(107006 * curMult);
+              qalys = 3.00 * curMult;
+              eventsText = (27.0 * curMult).toFixed(1) + ' ER visits, ' + (11.55 * curMult).toFixed(1) + ' stays avoided';
+            } else if (curScen === 2) {
+              loaded = c.chw_loaded_cost;
+              gross = Math.round(291171 * curMult);
+              qalys = 3.00 * curMult;
+              eventsText = (27.0 * curMult).toFixed(1) + ' ER visits, ' + (11.55 * curMult).toFixed(1) + ' stays avoided';
+            } else if (curScen === 3) {
+              loaded = c.chw_ongoing_cost;
+              gross = Math.round(182333 * curMult);
+              qalys = 4.09 * curMult;
+              eventsText = (23.1 * curMult).toFixed(1) + ' ER visits, ' + (7.88 * curMult).toFixed(1) + ' stays avoided';
+              visitPct = ((46561 / loaded) * 100).toFixed(1) + '% from clinic visits';
+            } else {
+              loaded = c.chw_promotora_cost;
+              gross = Math.round(c.scen4_gross_societal_offset * curMult);
+              qalys = 8.18 * curMult;
+              eventsText = (c.scen4_avoided_ed * curMult).toFixed(1) + ' ER visits, ' + (c.scen4_avoided_ip * curMult).toFixed(1) + ' stays avoided';
+            }
+            const net = gross - loaded;
+            const qalyVal = Math.round(qalys * 100000);
+            const totalVal = gross + qalyVal;
+            const totalRatio = (totalVal / loaded).toFixed(2) + ':1';
+            wageStat.textContent = fmt(loaded) + ' / yr';
+            wageSub.textContent = fmt(c.chw_base_salary) + ' base · ' + visitPct;
+            offsetStat.textContent = fmt(gross) + ' / yr';
+            offsetSub.textContent = eventsText;
+            qalyStat.textContent = '+' + qalys.toFixed(2) + ' QALYs';
+            qalySub.textContent = fmt(qalyVal) + ' health value' + (curScen === 4 ? ' + 38 screenings' : '');
+            totalStat.textContent = fmt(totalVal) + ' / yr (' + totalRatio + ')';
+            if (curScen === 4) {
+              const netOutlay = Math.max(0, loaded - gross);
+              const icer = netOutlay > 0 ? fmt(Math.round(netOutlay / qalys)) + ' / QALY' : 'Pays for itself';
+              const perRes = Math.round(Math.abs(net) / 150);
+              totalSub.textContent = icer + ' · $' + perRes + ' net cost / adult';
+            } else {
+              totalSub.textContent = fmtSigned(net) + ' Year-1 cash + ' + fmt(qalyVal) + ' health';
+            }
+          }
+          sel.addEventListener('change', update);
+          scenSel.addEventListener('change', update);
+          sensSel.addEventListener('change', update);
+        })();
+      </script>
+    </div>
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Flagship Case Study</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS State Plan Amendment (SPA) 22-0001</a>: Medi-Cal Community Health Worker Benefit fee schedule. It pays $31.74 per 30-minute health education unit and $26.66 per individual unit.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Bureau of Labor Statistics (BLS) QCEW (2024)</a> &amp; <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California HCAI Prevention Quality Indicators (2024)</a>: 58-county loaded pay ($92,684 to $122,102/yr) and 279,905 avoidable hospital stays.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi et al. (2020), Health Affairs</a> &amp; <a href="https://hcai.ca.gov/data/healthcare-utilization/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">HCAI / AHRQ HCUP Hospital Cost Benchmarks</a>: Trial cuts (-22% ER visits, -30% hospital stays, -23% readmissions).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Neumann, Cohen &amp; Weinstein (2014), NEJM</a> &amp; <a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">UCSF Healthforce Center</a>: Standard $100,000 per QALY value and CHW job stay benchmarks.</li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">HCAI Prevention Quality Indicators (PQI) dataset</a></li>
+              <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">UCSF Healthforce Center</a></li>
+            </ol>
+          </div>
+          <div class="pb-3 border-b border-slate-200/80 space-y-2">
+            <h3 class="text-sm font-bold text-slate-900">Matching Each CHW Model to the Right Group, Goal &amp; Budget</h3>
+            <p class="text-slate-800">Local health leaders face two plain questions. First, how do counties pay a living wage ($92,684 to $122,102/yr) when Medi-Cal pays a flat $31.74 per 30-minute visit? Second, how should each model be judged? Judging every CHW team only by Year-1 bed bills favors small hospital teams. It shortchanges local outreach.</p>
+            <p class="text-slate-800">Weighing both Year-1 bed savings and two-year healthy years (QALYs) shows where each model fits best. Hospital teams serving 55 sick patients fit best when health plans and hospitals need fast ER and bed savings ($107,006 to $291,171/yr). Clinic teams serving 75 patients fit best when clinics bill for set visits ($46,561/yr, or 45.9% of pay) while cutting hospital bills ($182,333/yr). Local Promotora outreach across 150 adults in the 10 highest-need ZIP codes fits best for health agencies reaching families who delay care. It adds 8.18 healthy years ($818,000 value) plus $34,900 in bed savings. Total value reaches $852,900 (8.66:1) at $7,771 per QALY.</p>
+          </div>
+          <p><strong>Mode Classification (Mode A Policy &amp; Fiscal Model on Observed 58-County Baselines):</strong> This flagship study pairs state Medi-Cal fee rules, 2024 HCAI county stay counts, 2026 DHCS plan counts, and 2024 BLS QCEW county pay with trial effect sizes and two-year health weights. The unit of study is 1.0 FTE Community Health Worker across four annual caseloads. Those are 55 hospital patients, 75 clinic patients, or 150 adults across the 10 highest-need ZIP codes in a county.</p>
+          <p><strong>Statutory Fee Schedule Provenance (Zero Regional Adjustment):</strong> California <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Department of Health Care Services (DHCS) State Plan Amendment 22-0001</a> sets flat state CHW rates for CPT 98960-98962. It pays $26.66 per 30-minute individual unit and $31.74 per 30-minute group education unit (modifier U2). There is no county wage adjustment. Visit counts, avoided stays, QALY gains, and net county balances are modeled.</p>
+          <p><strong>58-County HCAI Avoidable Hospital Stay &amp; BLS QCEW Wage Provenance:</strong> County stay rates come from the 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI) dataset</a>. It covers N = 31,012,717 state adults with 279,905 avoidable stays (902.5 per 100,000 in PQI 90) and 221,844 chronic stays (715.3 per 100,000 in PQI 92). County wage tiers come from 2024 <a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. BLS Quarterly Census of Employment and Wages (QCEW)</a> county pay. They are scaled to Santa Clara County Public Health FY 2026-27 wage rules ($59,000 base or $112,915 loaded in clinic; $54,000 base or $103,719 loaded statewide).</p>
+          <p><strong>Trial Effect Sizes, Care Avoidance &amp; QALY Utility Parameters:</strong> Hospital cuts (-22% ER visits, -30% hospital stays, -23% 30-day readmissions) come from the IMPaCT trial (<a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi et al., 2020, Health Affairs</a>). Two-year QALY gains equal 0.0545 QALYs per adult at a 3% discount rate (chronic disease 0.025, mental health 0.040, social needs 0.020). They are valued at $100,000 per QALY (<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann, Cohen &amp; Weinstein, 2014, N Engl J Med</a>; Stansert Katzen et al., 2025, Lancet Primary Care). Care delay rates in immigrant areas (13.7% skip rate; OR = 2.39 for late care) come from Wolstein et al. (2022, JAMA Network Open). Staff turnover rates come from <a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">UCSF Healthforce Center</a> surveys (N = 210).</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Under which circumstances is each of the four CHW models best?</dt>
+                <dd class="text-slate-700 mt-0.5">Hospital teams (55 high-need patients) work best when a health plan or county hospital needs fast Year-1 ER and bed savings. They save $107,006 at Medi-Cal rates or $291,171 at full bed cost. Clinic teams (75 patients) work best for clinics that can bill set 30-minute visits ($46,561/yr, or 45.9% of pay) while saving $182,333 in hospital costs. Local Promotora outreach (150 adults across 10 high-need ZIP codes) works best for public health teams reaching families who delay clinic care. It brings the largest health gain (+8.18 QALYs, worth $818,000) at a net cost of $7,771 per QALY.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why is same-year hospital and emergency cost offset too narrow to evaluate neighborhood promotora prevention?</dt>
+                <dd class="text-slate-700 mt-0.5">Local Promotoras reach families early, before blood sugar or high blood pressure leads to an ER trip. Counting only Year-1 hospital bills captures $34,900 in bed savings. Yet it leaves out 38 early checks per year and 8.18 added healthy years (QALYs) across 150 adults. Valuing health gains at $100,000 per QALY shows $852,900 in yearly value (8.66:1). The net cost is $7,771 per QALY gained, which is 92% below the $100,000 benchmark.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Does Medi-Cal adjust its CHW pay rate for high-cost California counties?</dt>
+                <dd class="text-slate-700 mt-0.5">No. Under DHCS SPA 22-0001, Medi-Cal pays a flat state rate of $31.74 per 30-minute health education unit across all 58 counties. Individual units pay $26.66. Full-time CHW pay runs from $92,684 in rural counties to $103,719 statewide and $122,102 in Bay Area counties. As a result, field visit billing covers only 6% to 11% of yearly worker pay.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/methods-lab/cost-effectiveness-ratio" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Cost-Effectiveness Ratios & Net Monetary Benefit</a></li>
+          <li class="my-2"><a href="/methods-lab/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact vs. Long-Run ROI</a></li>
+          <li class="my-2"><a href="/methods-lab/sensitivity-analysis-cea" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Sensitivity Analysis Across Valuation Tiers</a></li>
       </ul>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main id="main-content" class="main" role="main" id="main-content">
-    <div class="container">
-
-      <!-- ==========================================
-           PANEL 1: THE DATA
-           ========================================== -->
-      <section id="panel-1" class="panel active" aria-labelledby="panel-1-heading">
-        <div class="panel-header">
-          <h2 id="panel-1-heading">
-            <span class="panel-number">1</span>
-            The Data
-          </h2>
-          <p class="panel-intro">
-            Each dot represents a California county. Counties with CHW programs tend to have better diabetes control rates. Is this evidence that CHW programs work? <em style="opacity: 0.7;">(Data are simulated for illustration.)</em>
-          </p>
-        </div>
-
-        <div class="data-container">
-          <div class="chart-wrapper">
-            <h3 class="chart-title">Community Resources vs Diabetes Control</h3>
-            <svg id="scatter-chart" class="chart-svg" role="img" aria-label="Scatter plot showing community resources versus diabetes control rate across California counties"></svg>
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-secondary);"></span>
-                <span>No CHW Program</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-dot" style="background: var(--color-accent);"></span>
-                <span>Has CHW Program</span>
-              </div>
-            </div>
-          </div>
-
-          <aside class="stats-sidebar">
-            <div class="stat-card">
-              <h4>County Breakdown</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-chw-count">--</div>
-                  <div class="stat-label">With CHW</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-no-chw-count">--</div>
-                  <div class="stat-label">Without CHW</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <h4>Average Diabetes Control</h4>
-              <div class="stat-grid">
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-chw-avg">--</div>
-                  <div class="stat-label">With CHW</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value" id="stat-no-chw-avg">--</div>
-                  <div class="stat-label">Without CHW</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="observation-box">
-              <strong>What we see:</strong> Counties with CHW programs have diabetes control rates about <span id="stat-difference">--</span> percentage points higher on average.
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 2: THE PROBLEM
-           ========================================== -->
-      <section id="panel-2" class="panel" aria-labelledby="panel-2-heading">
-        <div class="panel-header">
-          <h2 id="panel-2-heading">
-            <span class="panel-number">2</span>
-            The Problem
-          </h2>
-          <p class="panel-intro">
-            Counties with CHW programs also tend to be wealthier with more healthcare resources. That's not a coincidence—it takes resources to fund CHW programs. But those same resources also improve health outcomes directly.
-          </p>
-        </div>
-
-        <div class="problem-container">
-          <div class="dag-wrapper">
-            <img
-              src="/methods-lab/chw-health-outcomes/assets/chw-dag-confounding.png"
-              alt="Causal diagram showing Community Resources affecting both CHW Program adoption and Health Outcomes, with a dashed arrow from CHW Program to Health Outcomes indicating uncertain causal effect"
-              class="dag-image"
-            >
-            <p class="dag-caption">Arrows show potential causal relationships. The dashed arrow is what we want to know about.</p>
-          </div>
-
-          <aside class="explanation-sidebar">
-            <div class="explanation-card">
-              <h4>Two Possible Explanations</h4>
-              <div class="pathway-list">
-                <div class="pathway-item causal">
-                  <strong>CHWs actually help</strong>
-                  <p>Community health workers connect patients to care, provide education, and improve follow-up—leading to better outcomes.</p>
-                </div>
-                <div class="pathway-item confounding">
-                  <strong>Resources drive both</strong>
-                  <p>Wealthy counties have money for CHW programs AND for better clinics, more doctors, and healthier food access—all of which improve outcomes.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="key-insight">
-              <strong>The confounding problem:</strong> If "Community Resources" causes both CHW presence and health outcomes, then the association we see between CHWs and outcomes is confounded. We can't tell how much of the difference is due to CHWs themselves.
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 3: SEEING THE CONFOUNDER
-           ========================================== -->
-      <section id="panel-3" class="panel" aria-labelledby="panel-3-heading">
-        <div class="panel-header">
-          <h2 id="panel-3-heading">
-            <span class="panel-number">3</span>
-            Seeing the Confounder
-          </h2>
-          <p class="panel-intro">
-            If community resources drive both CHW presence and health outcomes, then comparing counties within the same resource level should show a smaller CHW advantage. Use the filters below to stratify the data.
-          </p>
-        </div>
-
-        <!-- Stratification section -->
-        <div class="stratified-section">
-          <div class="filter-controls">
-            <span class="filter-label">Filter by Resource Level:</span>
-            <button class="filter-btn active" data-filter="all">All Counties</button>
-            <button class="filter-btn" data-filter="low">Low (0–33)</button>
-            <button class="filter-btn" data-filter="medium">Medium (34–66)</button>
-            <button class="filter-btn" data-filter="high">High (67–100)</button>
-          </div>
-
-          <div class="stratified-grid">
-            <div class="chart-wrapper">
-              <svg id="stratified-chart" class="chart-svg" role="img" aria-label="Stratified scatter plot showing CHW effect within resource levels"></svg>
-            </div>
-
-            <aside class="comparison-sidebar">
-              <div class="comparison-card">
-                <h4>Overall Comparison</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">With CHW:</span>
-                  <span class="comparison-value" id="overall-chw">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Without CHW:</span>
-                  <span class="comparison-value" id="overall-no-chw">--</span>
-                </div>
-                <div class="comparison-row difference">
-                  <span class="comparison-label">Difference:</span>
-                  <span class="comparison-value" id="overall-diff">--</span>
-                </div>
-              </div>
-
-              <div class="comparison-card">
-                <h4>Within This Stratum</h4>
-                <div class="comparison-row">
-                  <span class="comparison-label">With CHW:</span>
-                  <span class="comparison-value" id="stratum-chw">--</span>
-                </div>
-                <div class="comparison-row">
-                  <span class="comparison-label">Without CHW:</span>
-                  <span class="comparison-value" id="stratum-no-chw">--</span>
-                </div>
-                <div class="comparison-row difference">
-                  <span class="comparison-label">Difference:</span>
-                  <span class="comparison-value" id="stratum-diff">--</span>
-                </div>
-              </div>
-
-              <div class="insight-box">
-                <p><strong>What's happening?</strong></p>
-                <p id="stratification-insight">Select a resource level to see how the CHW advantage changes when comparing similar counties.</p>
-              </div>
-            </aside>
-          </div>
-        </div>
-
-        <!-- Bridging question to Panel 4 -->
-        <div class="bridging-box" style="background: rgba(249, 168, 37, 0.1); border-left: 4px solid var(--color-accent); padding: var(--space-lg); border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-top: var(--space-xl);">
-          <p style="font-size: 1.05rem; color: var(--color-text); margin-bottom: var(--space-sm);">
-            <strong>The effect shrinks when we account for Community Resources.</strong>
-          </p>
-          <p style="font-size: 0.95rem; color: var(--color-text-secondary); margin: 0;">
-            But what about factors we couldn't measure?
-          </p>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 4: WHAT WE CAN'T MEASURE
-           ========================================== -->
-      <section id="panel-4" class="panel" aria-labelledby="panel-4-heading">
-        <div class="panel-header">
-          <h2 id="panel-4-heading">
-            <span class="panel-number">4</span>
-            What We Can't Measure
-          </h2>
-          <p class="panel-intro">
-            Stratification helped with what we measured. But some factors that influence both CHW presence and health outcomes don't appear in any dataset.
-          </p>
-        </div>
-
-        <div class="unmeasured-section">
-          <div class="unmeasured-grid">
-            <img
-              src="/methods-lab/chw-health-outcomes/assets/unmeasured-confounder-dag.png"
-              alt="Causal diagram showing both measured (Community Resources) and unmeasured (Community Trust) confounders affecting CHW programs and health outcomes"
-              class="unmeasured-image"
-            >
-            <div class="unmeasured-explanation">
-              <h4>Community Trust & Social Cohesion</h4>
-              <p>
-                Counties with strong social bonds might both embrace CHW programs more readily AND see better health outcomes through informal support networks.
-              </p>
-              <p>
-                This isn't in any dataset. We can't stratify by it. We can't adjust for it. Yet it could be driving both the "treatment" and the "outcome."
-              </p>
-              <p>
-                <strong>This is the problem of unmeasured confounding.</strong> No matter how carefully we adjust for what we can see, there may be hidden factors we can't account for.
-              </p>
-            </div>
-          </div>
-
-          <div class="key-insight" style="margin-top: var(--space-xl);">
-            <strong>The implication:</strong> Even if we had perfect data on community resources, we still couldn't be sure the remaining CHW effect is causal. Unmeasured confounding can't be fixed by collecting more of the same type of data—it requires a different approach entirely.
-          </div>
-        </div>
-      </section>
-
-      <!-- ==========================================
-           PANEL 5: QUESTIONS TO CONSIDER
-           ========================================== -->
-      <section id="panel-5" class="panel" aria-labelledby="panel-5-heading">
-        <div class="panel-header">
-          <h2 id="panel-5-heading">
-            <span class="panel-number">5</span>
-            Questions to Consider
-          </h2>
-          <p class="panel-intro">
-            These questions help identify confounding threats that statistical adjustment cannot fix. They won't prove causation—but they'll reveal where the analysis is most vulnerable to bias.
-          </p>
-        </div>
-
-        <div class="questions-grid">
-          <div class="question-card">
-            <h4>What else differs between these counties?</h4>
-            <p>Counties with CHW programs might differ from other counties in many ways beyond just having CHWs.</p>
-            <div class="question-prompt">
-              What other characteristics might explain why some counties have both CHW programs AND better health outcomes?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Is this a fair comparison?</h4>
-            <p>Cross-sectional data shows us a snapshot, not a story. We're comparing different counties at one point in time.</p>
-            <div class="question-prompt">
-              Are counties with CHW programs truly comparable to counties without them? What would make them more comparable?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>Which came first?</h4>
-            <p>In this data, we see outcomes and CHW presence at the same time. We don't know the sequence.</p>
-            <div class="question-prompt">
-              Did CHW programs lead to better outcomes, or do counties with better outcomes attract resources including CHWs?
-            </div>
-          </div>
-
-          <div class="question-card">
-            <h4>What study design would help?</h4>
-            <p>This observational data has limitations. A different approach might give stronger evidence.</p>
-            <div class="question-prompt">
-              What kind of study would give you more confidence that CHW programs actually cause better outcomes?
-            </div>
-          </div>
-        </div>
-
-        <div class="concepts-box">
-          <h3>Concepts Demonstrated in This Lab</h3>
-          <div class="concept-list">
-            <div class="concept-item"><strong>Confounding:</strong> when a third variable affects both treatment and outcome</div>
-            <div class="concept-item"><strong>Selection bias:</strong> systematic differences between groups being compared</div>
-            <div class="concept-item"><strong>Unmeasured confounding:</strong> hidden factors we can't adjust for</div>
-            <div class="concept-item"><strong>Cross-sectional data:</strong> a single snapshot in time, not a before/after comparison</div>
-          </div>
-        </div>
-
-        <div class="takeaway-box">
-          <h4>Key Takeaway</h4>
-          <p>
-            <strong>No amount of statistical adjustment can fix a flawed comparison.</strong> When unmeasured factors drive both treatment and outcomes, the solution isn't better adjustment—it's finding sources of treatment variation that operate independently of unmeasured confounders. Policy changes, eligibility cutoffs, and timing differences can provide this. <strong>This is what economists mean by "identification."</strong>
-          </p>
-        </div>
-      </section>
-
-    </div>
-  
-<!-- related:start -->
-        <section class="related-lessons" aria-label="Related lessons" style="margin:2.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid #e0e0e0;">
-          <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.5rem;">Related lessons</h2>
-          <p style="color:#595959;margin:0 0 0.6rem;">Keep exploring the Program Impact track:</p>
-          <ul style="list-style:none;padding:0;margin:0;">
-<li style="margin:0.4rem 0;"><a href="/methods-lab/medicaid-expansion" style="color:#0041A5;font-weight:600;">Case Study: Medicaid Expansion</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/counterfactual-basics" style="color:#0041A5;font-weight:600;">What Is a Counterfactual?</a></li>
-<li style="margin:0.4rem 0;"><a href="/methods-lab/before-after-trap" style="color:#0041A5;font-weight:600;">The Before-After Trap</a></li>
-          </ul>
-          <p style="margin:0.8rem 0 0;"><a href="/methods-lab" style="color:#0041A5;font-weight:600;">Browse all Methods Lab lessons →</a></p>
-        </section>
-<!-- related:end -->
+      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
 
   </main>
 
-  <!-- Footer -->
-  <!-- geo:citations:start -->
-        <section class="references" aria-label="References" style="margin:2rem 0;padding-top:1rem;border-top:1px solid #eee;">
-          <h2>References</h2>
-          <ul style="line-height:1.6;">
-            <li>Hernán MA, Robins JM. Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC; 2020. <a href="https://miguelhernan.org/whatifbook" target="_blank" rel="noopener">miguelhernan.org</a></li>
-            <li>Cunningham S. Causal Inference: The Mixtape. New Haven: Yale University Press; 2021. <a href="https://mixtape.scunning.com/" target="_blank" rel="noopener">mixtape.scunning.com</a></li>
-            <li>Imbens GW, Rubin DB. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press; 2015. <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB" target="_blank" rel="noopener">cambridge.org</a></li>
-            <li>Pearl J, Mackenzie D. The Book of Why: The New Science of Cause and Effect. Basic Books; 2018. <a href="http://bayes.cs.ucla.edu/WHY/" target="_blank" rel="noopener">bayes.cs.ucla.edu</a></li>
-          </ul>
-        </section>
-        <!-- geo:citations:end -->
-        <footer class="footer" role="contentinfo">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <p><strong>CAPHE</strong> - California Public Health Economists</p>
-      <p><a href="https://www.caphegroup.org">caphegroup.org</a> - Methods Lab</p>
-      <p style="font-size: 0.85rem; opacity: 0.7; margin-top: var(--space-md);">
-        Data shown are synthetic and for illustration only. Not based on actual county-level statistics.
-      </p>
-      <p style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--space-sm);">
-        Methods Lab by Victoria Cholette. &copy; 2026 California Public Health Economists. Educational use permitted with attribution.
-      </p>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/methods-lab">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
     </div>
   </footer>
-
-  <!-- Tooltip -->
-  <div class="tooltip hidden" id="tooltip" role="tooltip" aria-hidden="true"></div>
-
-  <script>
-    /* ============================================
-       1. SYNTHETIC DATA GENERATION
-       ============================================ */
-    function seededRandom(seed) {
-      const x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
-
-    function generateCountyData() {
-      const countyNames = [
-        'County A', 'County B', 'County C', 'County D', 'County E', 'County F', 'County G',
-        'County H', 'County I', 'County J', 'County K', 'County L', 'County M', 'County N',
-        'County O', 'County P', 'County Q', 'County R', 'County S', 'County T', 'County U', 'County V',
-        'County W', 'County X', 'County Y', 'County Z', 'County AA', 'County AB', 'County AC', 'County AD',
-        'County AE', 'County AF', 'County AG', 'County AH', 'County AI', 'County AJ',
-        'County AK', 'County AL', 'County AM', 'County AN', 'County AO',
-        'County AP', 'County AQ', 'County AR', 'County AS', 'County AT', 'County AU',
-        'County AV', 'County AW', 'County AX', 'County AY', 'County AZ', 'County BA', 'County BB',
-        'County BC', 'County BD', 'County BE', 'County BF'
-      ];
-
-      const data = [];
-      let seed = 42;
-
-      for (let i = 0; i < 58; i++) {
-        const rand = () => {
-          const x = Math.sin(seed++) * 10000;
-          return x - Math.floor(x);
-        };
-
-        // Community resources (confounder) - higher = more resources
-        const resources = rand() * 100;
-
-        // CHW presence is more likely in resource-rich counties
-        const hasCHW = resources > 60 ? (rand() > 0.3) : (rand() > 0.8);
-
-        // Diabetes control depends on resources (and a small true CHW effect)
-        const baseControl = 35 + (resources * 0.35);
-        const chwEffect = hasCHW ? 3 : 0; // Small true effect
-        const noise = (rand() - 0.5) * 15;
-        const diabetesControl = Math.min(85, Math.max(30, baseControl + chwEffect + noise));
-
-        data.push({
-          name: countyNames[i],
-          resources: Math.round(resources),
-          hasCHW: hasCHW,
-          diabetesControl: Math.round(diabetesControl * 10) / 10
-        });
-      }
-
-      return data;
-    }
-
-    const countyData = generateCountyData();
-
-    /* ============================================
-       2. HELPER FUNCTIONS
-       ============================================ */
-    function mean(arr) {
-      if (arr.length === 0) return 0;
-      return arr.reduce((a, b) => a + b, 0) / arr.length;
-    }
-
-    /* ============================================
-       3. PANEL NAVIGATION
-       ============================================ */
-    const panelBtns = document.querySelectorAll('.panel-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    let scatterInitialized = false;
-    let stratifiedInitialized = false;
-
-    panelBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const panelNum = btn.dataset.panel;
-
-        // Update button states
-        panelBtns.forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-
-        // Update panel visibility
-        panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${panelNum}`).classList.add('active');
-
-        // Render charts when panel becomes visible
-        if (panelNum === '1') {
-          setTimeout(() => {
-            if (!scatterInitialized) {
-              renderScatterPlot();
-              scatterInitialized = true;
-            }
-          }, 50);
-        }
-        if (panelNum === '3') {
-          setTimeout(() => {
-            if (!stratifiedInitialized) {
-              renderStratifiedChart('all');
-              stratifiedInitialized = true;
-            }
-          }, 50);
-        }
-      });
-    });
-
-    /* ============================================
-       4. SCATTER PLOT (Panel 1)
-       ============================================ */
-    function renderScatterPlot() {
-      const svg = document.getElementById('scatter-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 25, yMax = 90;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      // Grid lines
-      for (let y = 30; y <= 85; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.resources));
-        circle.setAttribute('cy', yScale(d.diabetesControl));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.hasCHW ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', '0.8');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.2s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Community Resources Index';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 30; y <= 85; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Diabetes Control Rate (%)';
-      svg.appendChild(yLabel);
-    }
-
-    /* ============================================
-       5. STRATIFIED CHART (Panel 3)
-       ============================================ */
-    let currentFilter = 'all';
-
-    function renderStratifiedChart(filter) {
-      currentFilter = filter;
-      const svg = document.getElementById('stratified-chart');
-      if (!svg) return;
-
-      const width = svg.clientWidth || 700;
-      const height = svg.clientHeight || 420;
-      const margin = { top: 30, right: 30, bottom: 60, left: 70 };
-      const plotWidth = width - margin.left - margin.right;
-      const plotHeight = height - margin.top - margin.bottom;
-
-      svg.innerHTML = '';
-
-      const xMin = 0, xMax = 100;
-      const yMin = 25, yMax = 90;
-
-      const xScale = (val) => margin.left + (val / xMax) * plotWidth;
-      const yScale = (val) => margin.top + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.resources <= 33;
-        if (filter === 'medium') return d.resources > 33 && d.resources <= 66;
-        if (filter === 'high') return d.resources > 66;
-        return true;
-      };
-
-      // Background shading for filter region
-      if (filter !== 'all') {
-        const shade = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        let x1, x2;
-        if (filter === 'low') { x1 = 0; x2 = 33; }
-        if (filter === 'medium') { x1 = 33; x2 = 66; }
-        if (filter === 'high') { x1 = 66; x2 = 100; }
-        shade.setAttribute('x', xScale(x1));
-        shade.setAttribute('y', margin.top);
-        shade.setAttribute('width', xScale(x2) - xScale(x1));
-        shade.setAttribute('height', plotHeight);
-        shade.setAttribute('fill', 'rgba(0, 65, 165, 0.05)');
-        svg.appendChild(shade);
-      }
-
-      // Grid lines
-      for (let y = 30; y <= 85; y += 10) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('x2', width - margin.right);
-        line.setAttribute('y1', yScale(y));
-        line.setAttribute('y2', yScale(y));
-        line.setAttribute('stroke', 'var(--color-border-light)');
-        line.setAttribute('stroke-dasharray', '3,3');
-        svg.appendChild(line);
-      }
-
-      // Data points
-      countyData.forEach(d => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xScale(d.resources));
-        circle.setAttribute('cy', yScale(d.diabetesControl));
-        circle.setAttribute('r', 8);
-        circle.setAttribute('fill', d.hasCHW ? 'var(--color-accent)' : 'var(--color-secondary)');
-        circle.setAttribute('opacity', inFilter(d) ? '0.8' : '0.1');
-        circle.setAttribute('style', 'cursor: pointer; transition: opacity 0.3s;');
-
-        circle.addEventListener('mouseenter', (e) => showTooltip(e, d));
-        circle.addEventListener('mouseleave', hideTooltip);
-
-        svg.appendChild(circle);
-      });
-
-      // X-axis
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('x2', width - margin.right);
-      xAxis.setAttribute('y1', height - margin.bottom);
-      xAxis.setAttribute('y2', height - margin.bottom);
-      xAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(xAxis);
-
-      for (let x = 0; x <= 100; x += 20) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', xScale(x));
-        tick.setAttribute('y', height - margin.bottom + 20);
-        tick.setAttribute('text-anchor', 'middle');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = x;
-        svg.appendChild(tick);
-      }
-
-      const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      xLabel.setAttribute('x', width / 2);
-      xLabel.setAttribute('y', height - 10);
-      xLabel.setAttribute('text-anchor', 'middle');
-      xLabel.setAttribute('font-size', '12');
-      xLabel.setAttribute('fill', 'var(--color-text)');
-      xLabel.textContent = 'Community Resources Index';
-      svg.appendChild(xLabel);
-
-      // Y-axis
-      const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      yAxis.setAttribute('x1', margin.left);
-      yAxis.setAttribute('x2', margin.left);
-      yAxis.setAttribute('y1', margin.top);
-      yAxis.setAttribute('y2', height - margin.bottom);
-      yAxis.setAttribute('stroke', 'var(--color-border)');
-      svg.appendChild(yAxis);
-
-      for (let y = 30; y <= 85; y += 10) {
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        tick.setAttribute('x', margin.left - 8);
-        tick.setAttribute('y', yScale(y) + 4);
-        tick.setAttribute('text-anchor', 'end');
-        tick.setAttribute('font-size', '11');
-        tick.setAttribute('fill', 'var(--color-text-muted)');
-        tick.textContent = y + '%';
-        svg.appendChild(tick);
-      }
-
-      const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      yLabel.setAttribute('x', 18);
-      yLabel.setAttribute('y', height / 2);
-      yLabel.setAttribute('text-anchor', 'middle');
-      yLabel.setAttribute('font-size', '12');
-      yLabel.setAttribute('fill', 'var(--color-text)');
-      yLabel.setAttribute('transform', `rotate(-90, 18, ${height / 2})`);
-      yLabel.textContent = 'Diabetes Control Rate (%)';
-      svg.appendChild(yLabel);
-
-      updateComparisonStats(filter);
-    }
-
-    function updateComparisonStats(filter) {
-      const chwAll = countyData.filter(d => d.hasCHW);
-      const noChwAll = countyData.filter(d => !d.hasCHW);
-
-      const overallChwMean = mean(chwAll.map(d => d.diabetesControl));
-      const overallNoChwMean = mean(noChwAll.map(d => d.diabetesControl));
-      const overallDiff = overallChwMean - overallNoChwMean;
-
-      document.getElementById('overall-chw').textContent = overallChwMean.toFixed(1) + '%';
-      document.getElementById('overall-no-chw').textContent = overallNoChwMean.toFixed(1) + '%';
-      document.getElementById('overall-diff').textContent = '+' + overallDiff.toFixed(1) + ' pts';
-
-      const inFilter = (d) => {
-        if (filter === 'all') return true;
-        if (filter === 'low') return d.resources <= 33;
-        if (filter === 'medium') return d.resources > 33 && d.resources <= 66;
-        if (filter === 'high') return d.resources > 66;
-        return true;
-      };
-
-      const chwFiltered = countyData.filter(d => d.hasCHW && inFilter(d));
-      const noChwFiltered = countyData.filter(d => !d.hasCHW && inFilter(d));
-
-      const insightEl = document.getElementById('stratification-insight');
-
-      if (chwFiltered.length > 0 && noChwFiltered.length > 0) {
-        const stratumChwMean = mean(chwFiltered.map(d => d.diabetesControl));
-        const stratumNoChwMean = mean(noChwFiltered.map(d => d.diabetesControl));
-        const stratumDiff = stratumChwMean - stratumNoChwMean;
-
-        document.getElementById('stratum-chw').textContent = stratumChwMean.toFixed(1) + '%';
-        document.getElementById('stratum-no-chw').textContent = stratumNoChwMean.toFixed(1) + '%';
-        document.getElementById('stratum-diff').textContent = (stratumDiff >= 0 ? '+' : '') + stratumDiff.toFixed(1) + ' pts';
-
-        if (filter === 'all') {
-          insightEl.textContent = 'Select a resource level to see how the CHW advantage changes when comparing similar counties.';
-        } else {
-          const reduction = ((overallDiff - stratumDiff) / overallDiff * 100).toFixed(0);
-          if (stratumDiff <= 4) {
-            insightEl.innerHTML = '<strong>The advantage shrinks significantly.</strong> Within ' + filter + '-resource counties, the CHW difference is only ' + stratumDiff.toFixed(1) + ' points. Community resources explain much of what we saw overall.';
-          } else {
-            insightEl.innerHTML = 'Within ' + filter + '-resource counties, the CHW difference is ' + stratumDiff.toFixed(1) + ' points (' + reduction + '% smaller than the overall ' + overallDiff.toFixed(1) + ').';
-          }
-        }
-      } else {
-        document.getElementById('stratum-chw').textContent = 'N/A';
-        document.getElementById('stratum-no-chw').textContent = 'N/A';
-        document.getElementById('stratum-diff').textContent = '--';
-        insightEl.textContent = 'Not enough counties in this stratum for both groups.';
-      }
-    }
-
-    // Filter button handlers
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderStratifiedChart(btn.dataset.filter);
-      });
-    });
-
-    /* ============================================
-       6. TOOLTIP
-       ============================================ */
-    function showTooltip(event, data) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = `
-        <div class="county-name">${data.name} County</div>
-        <div class="metric">Resources: ${data.resources}</div>
-        <div class="metric">Diabetes Control: ${data.diabetesControl}%</div>
-        <div class="metric">${data.hasCHW ? '✓ Has CHW Program' : 'No CHW Program'}</div>
-      `;
-
-      const rect = event.target.getBoundingClientRect();
-      tooltip.style.left = rect.left + rect.width / 2 + 'px';
-      tooltip.style.top = rect.top - 10 + 'px';
-      tooltip.style.transform = 'translate(-50%, -100%)';
-      tooltip.classList.remove('hidden');
-      tooltip.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.classList.add('hidden');
-      tooltip.setAttribute('aria-hidden', 'true');
-    }
-
-    /* ============================================
-       7. INITIALIZATION
-       ============================================ */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Calculate stats
-      const chwCounties = countyData.filter(d => d.hasCHW);
-      const noChwCounties = countyData.filter(d => !d.hasCHW);
-
-      const chwAvg = mean(chwCounties.map(d => d.diabetesControl));
-      const noChwAvg = mean(noChwCounties.map(d => d.diabetesControl));
-      const diff = chwAvg - noChwAvg;
-
-      document.getElementById('stat-chw-count').textContent = chwCounties.length;
-      document.getElementById('stat-no-chw-count').textContent = noChwCounties.length;
-      document.getElementById('stat-chw-avg').textContent = Math.round(chwAvg) + '%';
-      document.getElementById('stat-no-chw-avg').textContent = Math.round(noChwAvg) + '%';
-      document.getElementById('stat-difference').textContent = Math.round(diff);
-
-      // Render initial chart
-      renderScatterPlot();
-      scatterInitialized = true;
-
-      // Resize handler
-      let resizeTimeout;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          if (document.getElementById('panel-1').classList.contains('active')) {
-            renderScatterPlot();
-          }
-          if (document.getElementById('panel-3').classList.contains('active')) {
-            renderStratifiedChart(currentFilter);
-          }
-        }, 250);
-      });
-    });
-  </script>
   <script src="/src/frontend/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Post Planner</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+
+            /* Site colors (matching idea-router) */
+            --site-tets: #3b82f6;
+            --site-caphe: #10b981;
+            --site-bwb: #f59e0b;
+            --site-unstoppable: #ec4899;
+            --site-personal: #8b5cf6;
+
+            /* Platform colors */
+            --platform-linkedin: #0077b5;
+            --platform-bluesky: #00a3e0;
+            --platform-reddit: #ff4500;
+
+            /* Status colors */
+            --status-draft: #64748b;
+            --status-ready: #22c55e;
+            --status-scheduled: #eab308;
+            --status-posted: #8b5cf6;
+
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--site-caphe), var(--site-tets));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        h1 span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--bg-tertiary);
+        }
+
+        button:focus-visible,
+        .filter-pill:focus-visible,
+        .site-option:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible,
+        .post-card:focus-visible,
+        .scheduled-post:focus-visible,
+        .calendar-day:focus-visible {
+            outline: 2px solid var(--site-caphe);
+            outline-offset: 2px;
+        }
+
+        .modal-close:focus-visible {
+            outline: 2px solid var(--text-primary);
+            outline-offset: 2px;
+        }
+
+        button.primary {
+            background: var(--site-caphe);
+            border-color: var(--site-caphe);
+        }
+
+        button.primary:hover {
+            background: #059669;
+        }
+
+        button.small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .filter-pill {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--text-muted);
+        }
+
+        .filter-pill.active {
+            border-color: currentColor;
+            background: currentColor;
+            color: white;
+        }
+
+        .filter-pill.active span {
+            color: white;
+        }
+
+        .filter-pill[data-site="all"].active { background: var(--text-muted); border-color: var(--text-muted); }
+        .filter-pill[data-site="tets"] { color: var(--site-tets); }
+        .filter-pill[data-site="caphe"] { color: var(--site-caphe); }
+        .filter-pill[data-site="bwb"] { color: var(--site-bwb); }
+        .filter-pill[data-site="unstoppable"] { color: var(--site-unstoppable); }
+        .filter-pill[data-site="personal"] { color: var(--site-personal); }
+
+        .filter-pill[data-platform="linkedin"] { color: var(--platform-linkedin); }
+        .filter-pill[data-platform="bluesky"] { color: var(--platform-bluesky); }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.875rem;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--border);
+        }
+
+        .stat-card[data-site="tets"] { border-left-color: var(--site-tets); }
+        .stat-card[data-site="caphe"] { border-left-color: var(--site-caphe); }
+        .stat-card[data-site="bwb"] { border-left-color: var(--site-bwb); }
+        .stat-card[data-site="unstoppable"] { border-left-color: var(--site-unstoppable); }
+        .stat-card[data-site="personal"] { border-left-color: var(--site-personal); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-platforms {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .stat-platform-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-platform-dot.linkedin { background: var(--platform-linkedin); }
+        .stat-platform-dot.bluesky { background: var(--platform-bluesky); }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-card[data-site="tets"] .stat-value { color: var(--site-tets); }
+        .stat-card[data-site="caphe"] .stat-value { color: var(--site-caphe); }
+        .stat-card[data-site="bwb"] .stat-value { color: var(--site-bwb); }
+        .stat-card[data-site="unstoppable"] .stat-value { color: var(--site-unstoppable); }
+        .stat-card[data-site="personal"] .stat-value { color: var(--site-personal); }
+
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        /* Post Queue */
+        .post-queue {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: calc(100vh - 320px);
+            overflow-y: auto;
+        }
+
+        .post-card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid var(--border);
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .post-card:hover {
+            background: #3d4f66;
+        }
+
+        .post-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .post-card.filtered-out {
+            display: none;
+        }
+
+        .post-card[data-site="tets"] { border-left-color: var(--site-tets); }
+        .post-card[data-site="caphe"] { border-left-color: var(--site-caphe); }
+        .post-card[data-site="bwb"] { border-left-color: var(--site-bwb); }
+        .post-card[data-site="unstoppable"] { border-left-color: var(--site-unstoppable); }
+        .post-card[data-site="personal"] { border-left-color: var(--site-personal); }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .post-badges {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .site-badge {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .site-badge[data-site="tets"] { background: rgba(59, 130, 246, 0.2); color: var(--site-tets); }
+        .site-badge[data-site="caphe"] { background: rgba(16, 185, 129, 0.2); color: var(--site-caphe); }
+        .site-badge[data-site="bwb"] { background: rgba(245, 158, 11, 0.2); color: var(--site-bwb); }
+        .site-badge[data-site="unstoppable"] { background: rgba(236, 72, 153, 0.2); color: var(--site-unstoppable); }
+        .site-badge[data-site="personal"] { background: rgba(139, 92, 246, 0.2); color: var(--site-personal); }
+
+        .platform-badge {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .platform-badge.linkedin { background: rgba(0, 119, 181, 0.2); color: var(--platform-linkedin); }
+        .platform-badge.bluesky { background: rgba(0, 163, 224, 0.2); color: var(--platform-bluesky); }
+
+        .post-status {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-draft { background: rgba(100, 116, 139, 0.2); color: var(--status-draft); }
+        .status-ready { background: rgba(34, 197, 94, 0.2); color: var(--status-ready); }
+        .status-scheduled { background: rgba(234, 179, 8, 0.2); color: var(--status-scheduled); }
+        .status-posted { background: rgba(139, 92, 246, 0.2); color: var(--status-posted); }
+
+        .post-text {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .post-meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.375rem;
+        }
+
+        .post-meta-item svg {
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .post-meta-item a {
+            color: var(--site-tets);
+            text-decoration: none;
+        }
+
+        .post-meta-item a:hover {
+            text-decoration: underline;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Calendar */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .calendar-nav button {
+            padding: 0.375rem 0.625rem;
+        }
+
+        .current-week {
+            font-weight: 600;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .calendar-header {
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            background: var(--bg-secondary);
+            min-height: 140px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day.today {
+            background: var(--bg-tertiary);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.5;
+        }
+
+        .calendar-day.drop-target {
+            background: rgba(16, 185, 129, 0.1);
+            outline: 2px dashed var(--site-caphe);
+            outline-offset: -2px;
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-number {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .day-number.today {
+            background: var(--site-caphe);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-count {
+            font-size: 0.625rem;
+            color: var(--text-muted);
+        }
+
+        .day-posts {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            overflow-y: auto;
+        }
+
+        .scheduled-post {
+            font-size: 0.625rem;
+            padding: 0.25rem 0.375rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scheduled-post:hover {
+            opacity: 0.8;
+            transform: scale(1.02);
+        }
+
+        .scheduled-post[data-site="tets"] { background: var(--site-tets); color: white; }
+        .scheduled-post[data-site="caphe"] { background: var(--site-caphe); color: white; }
+        .scheduled-post[data-site="bwb"] { background: var(--site-bwb); color: white; }
+        .scheduled-post[data-site="unstoppable"] { background: var(--site-unstoppable); color: white; }
+        .scheduled-post[data-site="personal"] { background: var(--site-personal); color: white; }
+
+        .scheduled-post .platform-icon {
+            font-size: 0.5rem;
+            opacity: 0.8;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .legend-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-title {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot[data-site="tets"] { background: var(--site-tets); }
+        .legend-dot[data-site="caphe"] { background: var(--site-caphe); }
+        .legend-dot[data-site="bwb"] { background: var(--site-bwb); }
+        .legend-dot[data-site="unstoppable"] { background: var(--site-unstoppable); }
+        .legend-dot[data-site="personal"] { background: var(--site-personal); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .modal-actions-left {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .modal-actions-right {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Form Elements */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* Site Selector */
+        .site-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .site-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .site-option:hover {
+            border-color: var(--border);
+        }
+
+        .site-option.selected {
+            border-color: currentColor;
+        }
+
+        .site-option input {
+            display: none;
+        }
+
+        .site-option[data-site="tets"] { color: var(--site-tets); }
+        .site-option[data-site="caphe"] { color: var(--site-caphe); }
+        .site-option[data-site="bwb"] { color: var(--site-bwb); }
+        .site-option[data-site="unstoppable"] { color: var(--site-unstoppable); }
+        .site-option[data-site="personal"] { color: var(--site-personal); }
+
+        .site-option .site-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            background: currentColor;
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .char-count.warning { color: var(--warning); }
+        .char-count.danger { color: var(--danger); }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--site-tets); }
+
+        /* Export Modal */
+        .export-content {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Preview box */
+        .preview-box {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .preview-box h4 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .preview-text {
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">S</div>
+                <h1>Social Post Planner <span>Multi-Site Content Planning</span></h1>
+            </div>
+            <div class="header-actions">
+                <button onclick="showExportModal()" aria-label="Export posts">
+                    <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Export
+                </button>
+                <button class="primary" onclick="showNewPostModal()" aria-label="Create new post">
+                    <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    New Post
+                </button>
+            </div>
+        </header>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Site:</span>
+                <div class="filter-pills" id="site-filters">
+                    <button class="filter-pill active" data-site="all" onclick="filterBySite('all')">All</button>
+                    <button class="filter-pill" data-site="caphe" onclick="filterBySite('caphe')">CAPHE</button>
+                    <button class="filter-pill" data-site="tets" onclick="filterBySite('tets')">TETS</button>
+                    <button class="filter-pill" data-site="bwb" onclick="filterBySite('bwb')">BWB</button>
+                    <button class="filter-pill" data-site="unstoppable" onclick="filterBySite('unstoppable')">Unstoppable</button>
+                    <button class="filter-pill" data-site="personal" onclick="filterBySite('personal')">Personal</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Platform:</span>
+                <div class="filter-pills" id="platform-filters">
+                    <button class="filter-pill active" data-platform="all" onclick="filterByPlatform('all')">All</button>
+                    <button class="filter-pill" data-platform="linkedin" onclick="filterByPlatform('linkedin')">LinkedIn</button>
+                    <button class="filter-pill" data-platform="bluesky" onclick="filterByPlatform('bluesky')">Bluesky</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card" data-site="total">
+                <div class="stat-header">
+                    <span class="stat-label">Total Queued</span>
+                </div>
+                <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card" data-site="caphe">
+                <div class="stat-header">
+                    <span class="stat-label">CAPHE</span>
+                    <div class="stat-platforms">
+                        <div class="stat-platform-dot linkedin" title="LinkedIn"></div>
+                        <div class="stat-platform-dot bluesky" title="Bluesky"></div>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-caphe">0</div>
+            </div>
+            <div class="stat-card" data-site="tets">
+                <div class="stat-header">
+                    <span class="stat-label">TooEarlyToSay</span>
+                    <div class="stat-platforms">
+                        <div class="stat-platform-dot bluesky" title="Bluesky"></div>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-tets">0</div>
+            </div>
+            <div class="stat-card" data-site="bwb">
+                <div class="stat-header">
+                    <span class="stat-label">BeatWritersBlock</span>
+                    <div class="stat-platforms">
+                        <div class="stat-platform-dot bluesky" title="Bluesky"></div>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-bwb">0</div>
+            </div>
+            <div class="stat-card" data-site="unstoppable">
+                <div class="stat-header">
+                    <span class="stat-label">Unstoppable</span>
+                    <div class="stat-platforms">
+                        <div class="stat-platform-dot bluesky" title="Bluesky"></div>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-unstoppable">0</div>
+            </div>
+            <div class="stat-card" data-site="personal">
+                <div class="stat-header">
+                    <span class="stat-label">Personal</span>
+                    <div class="stat-platforms">
+                        <div class="stat-platform-dot linkedin" title="LinkedIn"></div>
+                        <div class="stat-platform-dot bluesky" title="Bluesky"></div>
+                    </div>
+                </div>
+                <div class="stat-value" id="stat-personal">0</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Post Queue -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Post Queue</span>
+                    <span id="queue-count" style="font-size: 0.75rem; color: var(--text-muted);">0 posts</span>
+                </div>
+                <div class="card-body">
+                    <div class="post-queue" id="post-queue">
+                        <!-- Posts will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="card">
+                <div class="calendar-controls">
+                    <div class="calendar-nav">
+                        <button onclick="previousWeek()" aria-label="Previous week">
+                            <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <span class="current-week" id="current-week">Jan 20 - Jan 26, 2026</span>
+                        <button onclick="nextWeek()" aria-label="Next week">
+                            <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <button onclick="goToToday()" aria-label="Go to current week">Today</button>
+                </div>
+
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar will be rendered here -->
+                </div>
+
+                <div class="legend">
+                    <div class="legend-section">
+                        <span class="legend-title">Sites:</span>
+                        <div class="legend-items">
+                            <div class="legend-item"><div class="legend-dot" data-site="caphe"></div>CAPHE</div>
+                            <div class="legend-item"><div class="legend-dot" data-site="tets"></div>TETS</div>
+                            <div class="legend-item"><div class="legend-dot" data-site="bwb"></div>BWB</div>
+                            <div class="legend-item"><div class="legend-dot" data-site="unstoppable"></div>Unstoppable</div>
+                            <div class="legend-item"><div class="legend-dot" data-site="personal"></div>Personal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Post Modal -->
+    <div class="modal-overlay" id="new-post-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Create New Post</span>
+                <button class="modal-close" onclick="closeModal('new-post-modal')" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Site / Brand</label>
+                        <div class="site-selector" id="site-selector">
+                            <div class="site-option" data-site="caphe" onclick="selectSite('caphe')">
+                                <input type="radio" name="site" value="caphe">
+                                <div class="site-dot"></div>
+                                <span>CAPHE</span>
+                            </div>
+                            <div class="site-option" data-site="tets" onclick="selectSite('tets')">
+                                <input type="radio" name="site" value="tets">
+                                <div class="site-dot"></div>
+                                <span>TETS</span>
+                            </div>
+                            <div class="site-option" data-site="bwb" onclick="selectSite('bwb')">
+                                <input type="radio" name="site" value="bwb">
+                                <div class="site-dot"></div>
+                                <span>BWB</span>
+                            </div>
+                            <div class="site-option" data-site="unstoppable" onclick="selectSite('unstoppable')">
+                                <input type="radio" name="site" value="unstoppable">
+                                <div class="site-dot"></div>
+                                <span>Unstoppable</span>
+                            </div>
+                            <div class="site-option" data-site="personal" onclick="selectSite('personal')">
+                                <input type="radio" name="site" value="personal">
+                                <div class="site-dot"></div>
+                                <span>Personal</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Platforms</label>
+                        <div class="checkbox-group" id="platform-checkboxes">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="platform-linkedin">
+                                <label for="platform-linkedin">LinkedIn</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="platform-bluesky" checked>
+                                <label for="platform-bluesky">Bluesky</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Inspiration URL (optional)</label>
+                    <input type="url" id="post-url" placeholder="https://example.com/article-that-inspired-this">
+                </div>
+
+                <div class="form-group">
+                    <label>Rationale / Notes</label>
+                    <textarea id="post-rationale" rows="2" placeholder="Why this post? What's the angle? Context for future you..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Post Text</label>
+                    <textarea id="post-text" placeholder="Write your post here..." oninput="updateCharCount()"></textarea>
+                    <div class="char-count" id="char-count">0 / 300 characters (Bluesky limit)</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Link to Include</label>
+                        <input type="text" id="post-link" placeholder="caphegroup.org/methods-lab">
+                    </div>
+                    <div class="form-group">
+                        <label>Schedule Date (optional)</label>
+                        <input type="date" id="post-date">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Image/Art</label>
+                    <select id="post-image-type">
+                        <option value="none">No image (text only)</option>
+                        <option value="webinar">Webinar announcement template</option>
+                        <option value="methods-lab">Methods Lab template</option>
+                        <option value="thought-leadership">Thought leadership / quote template</option>
+                        <option value="recruitment">Recruitment template</option>
+                        <option value="launch">Launch announcement template</option>
+                        <option value="custom">Custom (describe below)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="custom-image-group" style="display: none;">
+                    <label>Custom Image Description</label>
+                    <textarea id="post-image-prompt" rows="2" placeholder="Describe the image needed or paste Antigravity prompt..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div class="modal-actions-left">
+                    <button onclick="closeModal('new-post-modal')">Cancel</button>
+                </div>
+                <div class="modal-actions-right">
+                    <button onclick="savePost('draft')">Save as Draft</button>
+                    <button class="primary" onclick="savePost('ready')">Save as Ready</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div class="modal-overlay" id="edit-post-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Edit Post</span>
+                <button class="modal-close" onclick="closeModal('edit-post-modal')" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body" id="edit-modal-body">
+                <!-- Will be populated dynamically -->
+            </div>
+            <div class="modal-actions">
+                <div class="modal-actions-left">
+                    <button style="color: var(--danger);" onclick="deletePost()">Delete</button>
+                </div>
+                <div class="modal-actions-right">
+                    <button onclick="closeModal('edit-post-modal')">Cancel</button>
+                    <button onclick="unschedulePost()">Unschedule</button>
+                    <button class="primary" onclick="updatePost()">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="export-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Export Posts</span>
+                <button class="modal-close" onclick="closeModal('export-modal')" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Format</label>
+                    <select id="export-format" onchange="updateExport()">
+                        <option value="csv">CSV (for spreadsheets)</option>
+                        <option value="json">JSON (for developers)</option>
+                        <option value="markdown">Markdown (for docs)</option>
+                    </select>
+                </div>
+                <div class="export-content" id="export-content">
+                    <!-- Content will appear here -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div class="modal-actions-left"></div>
+                <div class="modal-actions-right">
+                    <button onclick="closeModal('export-modal')">Close</button>
+                    <button onclick="downloadExport()">Download</button>
+                    <button class="primary" onclick="copyExport()">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal-overlay" id="schedule-modal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <span class="modal-title">Schedule Post</span>
+                <button class="modal-close" onclick="closeModal('schedule-modal')" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="schedule-date">Select Date</label>
+                    <input type="date" id="schedule-date">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div class="modal-actions-left">
+                    <button onclick="closeModal('schedule-modal')">Cancel</button>
+                </div>
+                <div class="modal-actions-right">
+                    <button class="primary" onclick="confirmSchedule()">Schedule</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Site configuration
+        const SITES = {
+            caphe: {
+                name: 'CAPHE',
+                fullName: 'caphegroup.org',
+                platforms: ['linkedin', 'bluesky'],
+                blueskyHandle: '@caphegroup.org'
+            },
+            tets: {
+                name: 'TooEarlyToSay',
+                fullName: 'tooearlytosay.com',
+                platforms: ['bluesky'],
+                blueskyHandle: '@tooearlytosay.com'
+            },
+            bwb: {
+                name: 'BeatWritersBlock',
+                fullName: 'beatwritersblock.com',
+                platforms: ['bluesky'],
+                blueskyHandle: '@beatwritersblock.com'
+            },
+            unstoppable: {
+                name: 'Unstoppable Ink',
+                fullName: 'unstoppable.ink',
+                platforms: ['bluesky'],
+                blueskyHandle: '@unstoppable.ink'
+            },
+            personal: {
+                name: 'Victoria Cholette',
+                fullName: 'vcholette',
+                platforms: ['linkedin', 'bluesky'],
+                blueskyHandle: '@vcholette.bsky.social'
+            }
+        };
+
+        // State
+        let posts = [];
+        let currentWeekStart = new Date();
+        let selectedSite = null;
+        let editingPostId = null;
+        let schedulingPostId = null;
+        let activeFilters = { site: 'all', platform: 'all' };
+
+        // Status icons for accessibility (non-color differentiation)
+        function getStatusIcon(status) {
+            const icons = {
+                draft: '\u270F',      // pencil
+                ready: '\u2713',      // checkmark
+                scheduled: '\u{1F4C5}', // calendar
+                posted: '\u2713\u2713'  // double checkmark
+            };
+            return icons[status] || '';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set to Monday of current week
+            const today = new Date();
+            currentWeekStart = new Date(today);
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+            currentWeekStart.setDate(diff);
+            currentWeekStart.setHours(0, 0, 0, 0);
+
+            // Load from localStorage and merge CAPHE Case Study schedule (IDs 2001-2022)
+            const samplePosts = getSamplePosts();
+            const saved = localStorage.getItem('social-planner-posts');
+            if (saved) {
+                const parsed = JSON.parse(saved).filter(p => !(p.id >= 2001 && p.id <= 2030));
+                const capheScheduled = samplePosts.filter(p => p.id >= 2001 && p.id <= 2022);
+                posts = [...parsed, ...capheScheduled];
+                savePosts();
+            } else {
+                posts = samplePosts;
+                savePosts();
+            }
+
+            renderCalendar();
+            renderPostQueue();
+            updateStats();
+        });
+
+        function getSamplePosts() {
+            return [
+                // CAPHE_22_CASE_STUDIES_START
+                {
+                    "id": 2001,
+                    "site": "caphe",
+                    "text": "During Medi-Cal renewals, eligible families rarely lose coverage because their income changed. Most lose coverage where automated data checks stop and paper packets begin.\n\nIn Santa Clara County's 120,239-member renewal cohort, automated state data checks renew 39.2% of members without paperwork. Among the remaining members sent a paper packet, 27,076 lose coverage for procedural reasons even though an estimated 14,219 (52.5%) still qualify. Standard mail and text reminders move completions by 0% to 2%. Funding bilingual Community Health Worker outreach in high-drop ZIP codes recovers 35.0% of procedural losses (2,228 members retained) at $40 to $80 per member.\n\nRead the full case study:\nhttps://www.caphegroup.org/methods-lab/medicaid-expansion",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://www.caphegroup.org/methods-lab/medicaid-expansion",
+                    "rationale": "CAPHE Case Study #1 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Mon, Nov 2, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/medicaid-expansion",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-02",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145601000
+          },
+          {
+                    "id": 2002,
+                    "site": "caphe",
+                    "text": "A two-point before-and-after count often credits a new policy for a trend that was already underway.\n\nAcross 84 months of Medicaid claims (2018 to 2024), active telehealth-eligible billing providers rose by 22,239 (+24.33%) between 2019 and 2023. However, that count was already climbing by 6,977 providers per year (+8.26%) before the 2020 rule change, and non-telehealth Medicaid services grew 18.71% over the same window. Comparing the full multi-year trajectory against a non-telehealth comparison group separates the true policy lift from background growth.\n\nRead the case study and companion Medicaid claims guide:\nCase Study: https://www.caphegroup.org/methods-lab/before-after-trap\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-data-landscape/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/medicaid-data-landscape/",
+                    "rationale": "CAPHE Case Study #2 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Wed, Nov 4, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/before-after-trap",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-04",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145602000
+          },
+          {
+                    "id": 2003,
+                    "site": "caphe",
+                    "text": "Counting registered provider directories as active care capacity overstates network reach, while treating sanction lists as pure billing fraud mislabels clinical license actions.\n\nAcross 488,032 Medicaid-enrolled billing providers, matching against federal and California sanction registries identifies 648 excluded providers. Only 299 of those 648 excluded providers ever submitted a Medicaid claim during the 84-month observation window, and 95 billed strictly after their sanction date ($9,694.90 median monthly billing vs. $3,820.94 among unsanctioned peers). Filtering for active paid claims and separating billing fraud from license revocations keeps network audits accurate.\n\nRead the case study and companion exclusion-label audit:\nCase Study: https://www.caphegroup.org/methods-lab/measurement-error-claims\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-fraud-labels/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/medicaid-fraud-labels/",
+                    "rationale": "CAPHE Case Study #3 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Mon, Nov 9, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/measurement-error-claims",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-09",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145603000
+          },
+          {
+                    "id": 2004,
+                    "site": "caphe",
+                    "text": "Evaluating a fraud screening model on a downsampled test set or an active-only billing subset inflates apparent precision unless scores are rescaled to the full provider pool.\n\nAcross 487,479 Medicaid billing providers, confirmed post-sanction billers represent a 0.0195% base rate (95 cases). On a 5-to-1 downsampled holdout (55,018 providers), the top 1% risk tier shows 0.922% precision. Rescaling to the full 487,479-provider pool yields 0.186% precision (a 9.53x lift over random audits, catching 9 cases across 4,844 flags). Pairing full-pool calibration with a $500,000 annual billing floor focuses investigators on 16,688 high-volume providers.\n\nRead the case study and companion classifier validation guide:\nCase Study: https://www.caphegroup.org/methods-lab/collider-bias\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/",
+                    "rationale": "CAPHE Case Study #4 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Wed, Nov 11, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/collider-bias",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-11",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145604000
+          },
+          {
+                    "id": 2005,
+                    "site": "caphe",
+                    "text": "Slicing a county renewal dashboard across dozens of age-by-language cells surfaces large percentage swings in tiny subgroups alongside massive headcount losses in core populations.\n\nAcross 62 age-by-language cells in Santa Clara County (472,014 baseline Medi-Cal enrollees dropping by 60,292 to 411,722), the sharpest percentage drops appear in small cells with 47 and 36 enrollees (-34.04% and -25.00%, or 16 and 9 people). After applying a multiple-group reliability check and ranking by total people affected, two large cells account for 70.1% of all coverage losses: English-speaking adults (-24,880) and Spanish-speaking adults (-17,380).\n\nRead the full case study:\nhttps://www.caphegroup.org/methods-lab/p-hacking-multiple-testing",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://www.caphegroup.org/methods-lab/p-hacking-multiple-testing",
+                    "rationale": "CAPHE Case Study #5 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Mon, Nov 16, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/p-hacking-multiple-testing",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-16",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145605000
+          },
+          {
+                    "id": 2006,
+                    "site": "caphe",
+                    "text": "Different stages of a public health program require different evaluation tools. A single study design rarely answers every operational question on a director's desk.\n\nDescriptive funnel tracking across 120,239 Santa Clara Medi-Cal renewals pinpoints where 27,076 procedural losses occur. Multi-year trend splits separate 39,600 added Paid Family Leave claims from baseline workforce growth. Routine-budget models across 1,197 county-years isolate 9.16 fewer deaths per 100,000 per $10 per resident. Finally, randomized trials across 82,695 members test whether live phone outreach lifts renewals (+8% to +11%) where text messages show 0% lift.\n\nRead the full case study:\nhttps://www.caphegroup.org/methods-lab/study-design-ladder",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://www.caphegroup.org/methods-lab/study-design-ladder",
+                    "rationale": "CAPHE Case Study #6 (Medi-Cal Coverage, Renewals & Provider Claims) — Scheduled Wed, Nov 18, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/study-design-ladder",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-18",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145606000
+          },
+          {
+                    "id": 2007,
+                    "site": "caphe",
+                    "text": "Sizing a county Community Health Worker team around fee-for-service clinic billing alone leaves an 89% to 94% funding gap for field outreach.\n\nAcross all 58 California counties, employing one full-time Community Health Worker costs $92,684 to $122,102 per year ($103,719 in Santa Clara County), while Medi-Cal pays a flat $31.74 per 30-minute visit ($26.66 per individual unit). Standard visit billing covers 6.5% to 9.8% of field compensation ($6,775 to $10,162 per year). Accounting for avoided emergency and hospital stays ($107,006 to $291,171) and two-year health gains brings total annual value to $407,006 to $852,900 per worker, showing why sustainable programs blend managed-care reinvestment with base grants.\n\nRead the case study and statewide 58-county spatial financing analysis:\nCase Study: https://www.caphegroup.org/methods-lab/chw-health-outcomes\nStatewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "rationale": "CAPHE Case Study #7 (Community Health Workers & Clinical Financing) — Scheduled Mon, Nov 23, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/chw-health-outcomes",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-23",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145607000
+          },
+          {
+                    "id": 2008,
+                    "site": "caphe",
+                    "text": "High multi-year return ratios do not pay Year-1 salaries. Budget committees need a five-year return model paired with a Year-1 cash-flow and reserve schedule.\n\nIn California, county prevention spending delivers a 125-to-1 five-year societal return (52-to-1 in Year 1 as 42% of the mortality reduction arrives in the first year). At the same time, expanding Paid Family Leave generates $422.0M in net annual worker benefits but requires $623.7M in 2026 cash outlays, dipping the state fund reserve to 10.8% ($1.96B) against a 25.0% ($4.38B) statutory benchmark before rebuilding to 30.4% ($6.37B) by 2030. Pairing long-run return ratios with annual reserve tables gives finance officers both numbers.\n\nRead the case study and companion public health spending analysis:\nCase Study: https://www.caphegroup.org/methods-lab/budget-impact\nCompanion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "rationale": "CAPHE Case Study #8 (Community Health Workers & Clinical Financing) — Scheduled Wed, Nov 25, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/budget-impact",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-25",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145608000
+          },
+          {
+                    "id": 2009,
+                    "site": "caphe",
+                    "text": "Judging a new community health program on Year-1 operating and startup costs alone loads five years of hiring, training, and IT setup onto twelve months of patient care.\n\nIn a 750-client Santa Clara Community Health Worker scenario producing 40.04 healthy life-years per year (200.20 discounted QALYs over five years), Year-1 cost per healthy life-year sits at $48,202 ($1,930,000 in first-year spending). Across Years 2 through 5, ongoing cost drops to $35,090 per QALY ($1,405,000 per year), yielding a five-year average of $36,089 per QALY operating ($37,712 with full $325,000 startup) and +$12.47M in net monetary value at the $100,000/QALY benchmark.\n\nRead the case study and statewide CHW financing analysis:\nCase Study: https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio\nStatewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "rationale": "CAPHE Case Study #9 (Community Health Workers & Clinical Financing) — Scheduled Mon, Nov 30, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/cost-effectiveness-ratio",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-11-30",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145609000
+          },
+          {
+                    "id": 2010,
+                    "site": "caphe",
+                    "text": "When a diabetes clinic tracks blood sugar, a behavioral health team tracks depression scores, and a county health department tracks premature deaths, budget staff lack a common unit to compare programs.\n\nTranslating condition-specific outcomes into standardized healthy life-years (QALYs) and federal life-valuation tiers places each program on a clear ledger. Across a 750-client Santa Clara Community Health Worker cohort generating 40.04 QALYs per year ($4.00M in health value at $100,000/QALY), mental health and social-needs navigation contribute 54.5% of total health gains (21.83 QALYs, or $2.18M) that lab-only blood sugar metrics miss.\n\nRead the case study and statewide CHW financing analysis:\nCase Study: https://www.caphegroup.org/methods-lab/measuring-health-common-unit\nStatewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "rationale": "CAPHE Case Study #10 (Community Health Workers & Clinical Financing) — Scheduled Wed, Dec 2, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/measuring-health-common-unit",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-02",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145610000
+          },
+          {
+                    "id": 2011,
+                    "site": "caphe",
+                    "text": "Adding every available database column into a regression model can erase the exact care pathway a program was built to create.\n\nWhen evaluating how Community Health Workers reduce hospital stays (-30% in randomized trial benchmarks), primary care follow-up visits are a program step (mediator) between enrollment and hospital avoidance. Controlling for post-enrollment clinic visits blocks that pathway and understates program impact. Conversely, omitting neighborhood poverty in a 408-tract Santa Clara food-access regression reverses the apparent store-distance slope (-0.578 raw vs. -0.017 adjusted, with poverty explaining 62.2% of model variance).\n\nRead the full case study:\nhttps://www.caphegroup.org/methods-lab/classifying-causal-mechanisms",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://www.caphegroup.org/methods-lab/classifying-causal-mechanisms",
+                    "rationale": "CAPHE Case Study #11 (Community Health Workers & Clinical Financing) — Scheduled Mon, Dec 7, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/classifying-causal-mechanisms",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-07",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145611000
+          },
+          {
+                    "id": 2012,
+                    "site": "caphe",
+                    "text": "A uniform federal poverty cutoff treats a $60,000 household budget identically in coastal Marin County and inland Fresno County, even though rent absorbs very different shares of monthly income.\n\nComparing median household incomes and median rents across California counties shows how housing costs reshape food budgets. In Marin County, a median monthly income of $5,507 minus $2,318 in median rent (42.1%) and $973 in family food costs (17.7%) leaves $2,216 (30.5%). In Fresno County, a $3,103 monthly income minus $1,007 in rent (32.5%) and $973 in food (31.4%) leaves $1,123 (46.4% remaining before other bills). Pairing post-rent residual income with local store access matches nutrition support to actual household budgets.\n\nRead the case study and companion food-access analysis:\nCase Study: https://www.caphegroup.org/methods-lab/food-affordability-tradeoffs\nCompanion Analysis: https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/",
+                    "rationale": "CAPHE Case Study #12 (Food Security, CalFresh & Local Cost of Living) — Scheduled Wed, Dec 9, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/food-affordability-tradeoffs",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-09",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145612000
+          },
+          {
+                    "id": 2013,
+                    "site": "caphe",
+                    "text": "When households face high monthly rent and rising grocery prices, food shortfalls and diabetes hospital stays reinforce each other across neighborhood lines.\n\nAcross 408 census tracts in Santa Clara County, neighborhood poverty and rent pressure account for 62.2% of the variation in nutrition assistance need, while physical distance to the nearest supermarket adds 1.8%. In high-rent tracts where a $973 monthly family food budget competes directly with housing, pairing CalFresh enrollment navigation with medically tailored groceries targets the household budget constraint that drives emergency room visits.\n\nRead the case study and companion vulnerability index record:\nCase Study: https://www.caphegroup.org/methods-lab/food-insecurity-diabetes\nCompanion Analysis: https://tooearlytosay.com/research/food-security/extended-vulnerability-index/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/food-security/extended-vulnerability-index/",
+                    "rationale": "CAPHE Case Study #13 (Food Security, CalFresh & Local Cost of Living) — Scheduled Mon, Dec 14, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/food-insecurity-diabetes",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-14",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145613000
+          },
+          {
+                    "id": 2014,
+                    "site": "caphe",
+                    "text": "Screening urban counties solely by distance to the nearest supermarket flags wealthy hillside neighborhoods while overlooking low-income renters living half a mile from a grocery store they cannot afford.\n\nAcross 408 Santa Clara County census tracts, poverty explains 58.1 percentage points of the 62.2% model variance in CalFresh participation (r = 0.827), whereas store distance alone explains 0.003 percentage points. Only 1 of 408 Santa Clara tracts (3,252 residents, 1.218 miles from a grocer) meets the federal low-income, low-access distance cutoff. By contrast, rural counties such as Nevada (2.92 miles average store distance) and Imperial (30 of 225 tracts, 13.3%) face physical transportation barriers that require mobile markets and delivery routes.\n\nRead the case study and companion food-desert analysis:\nCase Study: https://www.caphegroup.org/methods-lab/geographic-variables\nCompanion Analysis: https://tooearlytosay.com/research/food-security/food-desert-myth/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/food-security/food-desert-myth/",
+                    "rationale": "CAPHE Case Study #14 (Food Security, CalFresh & Local Cost of Living) — Scheduled Wed, Dec 16, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/geographic-variables",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-16",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145614000
+          },
+          {
+                    "id": 2015,
+                    "site": "caphe",
+                    "text": "A single statewide Medi-Cal fee schedule pays the same nominal dollar amount per visit across California, but those dollars buy very different amounts of clinical staffing in San Francisco versus Imperial County.\n\nUnder the CMS Practice Expense Geographic Practice Cost Index (55.6% clinical wages, 29.7% rent, 14.7% services), clinic overhead runs 50.6% above the national mean in San Francisco (1.506 index) compared with 10.0% below the mean in Imperial County (0.900 index). However, Imperial County sits at the 85th percentile of neighborhood deprivation (58.7% to 66.4% Medi-Cal coverage) while San Francisco sits at the 15th percentile. Pairing regional wage adjustments for high-cost clinics with recruitment grants and simpler billing (recovering 17.6% in claim value) addresses both constraints.\n\nRead the case study and statewide 58-county spatial financing analysis:\nCase Study: https://www.caphegroup.org/methods-lab/identical-data-opposite-policies\nStatewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/",
+                    "rationale": "CAPHE Case Study #15 (Food Security, CalFresh & Local Cost of Living) — Scheduled Mon, Dec 21, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/identical-data-opposite-policies",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-21",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145615000
+          },
+          {
+                    "id": 2016,
+                    "site": "caphe",
+                    "text": "When a supermarket holds separate health permits for its bakery, deli, and meat counter, raw permit registries count one building as three or four food retailers.\n\nIn Santa Clara County, deduplicating 8,555 raw health-permit records removes 1,220 multi-permit duplicates (14.3%), consolidating the registry to 7,335 unique physical locations and 724 verified SNAP-eligible food retailers (with 514 stores in the tract-level distance index at 0.573 miles mean distance vs. 0.29 miles on uncleaned lists). Auditing administrative registries before mapping service gaps prevents permit structure from masquerading as neighborhood retail supply.\n\nRead the case study and companion EBT verification methodology:\nCase Study: https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/ebt-verification-methodology/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/ebt-verification-methodology/",
+                    "rationale": "CAPHE Case Study #16 (Food Security, CalFresh & Local Cost of Living) — Scheduled Wed, Dec 23, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/threat-measurement-instrumentation",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-23",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145616000
+          },
+          {
+                    "id": 2017,
+                    "site": "caphe",
+                    "text": "Comparing county public health spending and death rates in the same calendar year mixes steady prevention budgets with emergency funds sent to counties during disease outbreaks.\n\nAcross 57 California counties over 21 years (2003 to 2023, N = 1,197 county-years), a raw same-year average shows a flat +0.18 deaths per 100,000 residents per $10 per person because emergency transfers spike when mortality rises. Isolating routine budget shifts shows that each $10 per resident in baseline public health spending prevents 9.16 deaths per 100,000 ($109,170 per life saved, or $124.60 in societal value per $1 spent, and 4.56 fewer deaths per 100,000 in the 2003 to 2019 pre-pandemic window).\n\nRead the case study and companion 30-year panel regime analysis:\nCase Study: https://www.caphegroup.org/methods-lab/reverse-causation-feedback\nCompanion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "rationale": "CAPHE Case Study #17 (County Public Health Budgets & Mortality Returns) — Scheduled Mon, Dec 28, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/reverse-causation-feedback",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-28",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145617000
+          },
+          {
+                    "id": 2018,
+                    "site": "caphe",
+                    "text": "Randomized trials are rarely feasible for countywide public health budgets, so finance committees look for independent empirical checks across decades and study designs.\n\nAcross 57 California counties from 2003 to 2023 (1,197 county-years), isolating routine county budget shifts shows 9.16 fewer deaths per 100,000 residents per $10 per person (with a 314.1 method reliability score and 8.93 fewer deaths when excluding Los Angeles). That estimate aligns within 99.4% of Brown's (2014) earlier 40-county California governance study (9.10 fewer deaths per 100,000 from 2001 to 2008), giving county boards two independent replications across twenty years of California fiscal records.\n\nRead the case study and companion public health spending analysis:\nCase Study: https://www.caphegroup.org/methods-lab/observational-to-experimental\nCompanion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "rationale": "CAPHE Case Study #18 (County Public Health Budgets & Mortality Returns) — Scheduled Wed, Dec 30, 2026 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/observational-to-experimental",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2026-12-30",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145618000
+          },
+          {
+                    "id": 2019,
+                    "site": "caphe",
+                    "text": "When a budget committee questions the valuation assumptions behind a public health return ratio, testing the estimate across every federal valuation tier shows whether the funding decision holds up.\n\nAcross the 57-county California public health panel ($109,170 cost per life saved at 9.16 fewer deaths per 100,000 per $10 per resident), societal returns clear the 1-to-1 cost-neutral line under every HHS 2025 valuation standard: 57.7-to-1 at the $6.3M low tier, 124.6-to-1 at the $13.6M central tier, and 189.6-to-1 at the $20.7M high tier. Even at the lower bound of the mortality estimate (6.98 fewer deaths per 100,000, or $143,266 per life saved) paired with the $6.3M valuation floor, the return remains 44.0-to-1.\n\nRead the case study and companion public health spending analysis:\nCase Study: https://www.caphegroup.org/methods-lab/sensitivity-analysis-cea\nCompanion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "rationale": "CAPHE Case Study #19 (County Public Health Budgets & Mortality Returns) — Scheduled Mon, Jan 4, 2027 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/sensitivity-analysis-cea",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2027-01-04",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145619000
+          },
+          {
+                    "id": 2020,
+                    "site": "caphe",
+                    "text": "Awarding multi-year rural health grants based on a single year's mortality spike often mistakes small-population noise for lasting need.\n\nIn Alpine County (1,204 residents), a single death shifts the annual mortality rate by 83.1 per 100,000. When a small county is selected right after a one-year spike, 71.5% to 89.0% of the following year's drop (-28.4 per 100,000) reflects natural settling toward the multi-year average rather than program impact. Using 3-to-5-year pooled baselines and Empirical Bayes weights separates one-year swings from the steady -8.11 deaths per 100,000 rural prevention return (-9.16 statewide).\n\nRead the case study and companion public health spending analysis:\nCase Study: https://www.caphegroup.org/methods-lab/threat-regression-to-mean\nCompanion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/",
+                    "rationale": "CAPHE Case Study #20 (County Public Health Budgets & Mortality Returns) — Scheduled Wed, Jan 6, 2027 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/threat-regression-to-mean",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2027-01-06",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145620000
+          },
+          {
+                    "id": 2021,
+                    "site": "caphe",
+                    "text": "When a statewide economic shift or pandemic rule change hits every county at once, a simple before-and-after comparison blends that shared shock into local program results.\n\nAcross Medicaid billing records from 2018 to 2024, telehealth-eligible billing providers grew 24.33% (from 91,399 in 2019 to 113,638 in 2023). Pairing that series with non-telehealth Medicaid services (which grew 18.71%, from 109,087 to 129,492) isolates the net +5.62 percentage-point divergence (+4.60 pp after pre-trend adjustment). Adding an unaffected comparison series keeps statewide shocks from distorting local evaluations.\n\nRead the case study and companion difference-in-differences guide:\nCase Study: https://www.caphegroup.org/methods-lab/threat-history-solutions\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/when-to-use-did/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/when-to-use-did/",
+                    "rationale": "CAPHE Case Study #21 (County Public Health Budgets & Mortality Returns) — Scheduled Mon, Jan 11, 2027 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/threat-history-solutions",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2027-01-11",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145621000
+          },
+          {
+                    "id": 2022,
+                    "site": "caphe",
+                    "text": "Passing a pre-policy trend test in a small sample does not guarantee that treatment and comparison groups would have stayed on parallel paths after the policy launched.\n\nAcross 84 months of Medicaid claims, the pre-policy trend difference between telehealth-eligible and comparison services averages -0.47 percentage points (SE = 0.22 pp, 95% CI -0.91 to -0.03 pp). Reporting sensitivity bounds shows how much post-policy trend drift an evaluation can absorb before the estimated effect crosses zero, pairing the Medicaid billing series with the 57-county California public health panel (-9.16 deaths per 100,000).\n\nRead the case study and companion parallel-trends sensitivity guide:\nCase Study: https://www.caphegroup.org/methods-lab/parallel-trends-power\nCompanion Method Guide: https://tooearlytosay.com/research/methodology/parallel-trends-sensitivity/",
+                    "platforms": [
+                              "linkedin",
+                              "bluesky"
+                    ],
+                    "status": "scheduled",
+                    "url": "https://tooearlytosay.com/research/methodology/parallel-trends-sensitivity/",
+                    "rationale": "CAPHE Case Study #22 (County Public Health Budgets & Mortality Returns) — Scheduled Wed, Jan 13, 2027 · 7:00 AM PST",
+                    "link": "www.caphegroup.org/methods-lab/parallel-trends-power",
+                    "imageType": "data-viz",
+                    "imageUrl": "",
+                    "imagePrompt": "",
+                    "scheduledDate": "2027-01-13",
+                    "scheduledTime": "07:00 PST",
+                    "createdAt": 1793145622000
+          },
+                // CAPHE_22_CASE_STUDIES_END
+
+                // CAPHE Posts - Week of Jan 20
+                {
+                    id: 1,
+                    site: 'caphe',
+                    text: "California's Medi-Cal spending is projected to reach $222.4 billion in 2026-27.\n\nThat's $25 billion more than last year.\n\nWhen budgets grow this fast, someone has to answer: Are we spending wisely? What's the return on investment?\n\nThese are health economics questions. They require health economics methods.\n\ncaphegroup.org",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: 'https://lao.ca.gov/Publications/Report/5092',
+                    rationale: 'Budget news hook - ties to Jan 9 announcement',
+                    link: 'caphegroup.org',
+                    imageType: 'thought-leadership',
+                    imagePrompt: '',
+                    scheduledDate: '2026-01-21',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 2,
+                    site: 'caphe',
+                    text: "What's the difference between cost-effectiveness analysis and cost-benefit analysis?\n\nOne gives us dollars per outcome.\nThe other gives us net dollars gained or lost.\n\nBoth are useful. But they answer different questions.\n\nOur Methods Lab walks through when to use which approach. Free. Interactive.\n\ncaphegroup.org/methods-lab",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Educational content - Methods Lab driver',
+                    link: 'caphegroup.org/methods-lab',
+                    imageType: 'methods-lab',
+                    imagePrompt: '',
+                    scheduledDate: '2026-01-23',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 3,
+                    site: 'caphe',
+                    text: "Free Webinar: Introduction to Health Economics for Public Health\n\nWednesday, February 12\n12:00 PM - 1:00 PM PT\n\nNot sure what health economics is or how it applies to our work? This webinar covers the fundamentals.\n\nOpen to everyone. No prerequisites.\n\nRegister: caphegroup.org/programs",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Webinar promo - 3 weeks out',
+                    link: 'caphegroup.org/programs',
+                    imageType: 'webinar',
+                    imagePrompt: '',
+                    scheduledDate: '2026-01-25',
+                    createdAt: Date.now()
+                },
+                // Week of Jan 27
+                {
+                    id: 4,
+                    site: 'caphe',
+                    text: "California's public health lab funding is being cut by $20.4 million in 2026-27.\n\nHow do we make the case to restore it?\n\nStep 1: Calculate what the lab system prevents\nStep 2: Assign economic value to those outcomes\nStep 3: Compare to the funding ask\n\nThis is health economics at work.\n\ncaphegroup.org",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: 'https://lao.ca.gov/Publications/Report/5075',
+                    rationale: 'Thought leadership - budget cuts make it concrete',
+                    link: 'caphegroup.org',
+                    imageType: 'thought-leadership',
+                    imagePrompt: '',
+                    scheduledDate: '2026-01-28',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 5,
+                    site: 'caphe',
+                    text: "Our Community Members include:\n\n- Epidemiologists adding economic analysis to grants\n- Program managers building ROI cases\n- Policy analysts supporting budget decisions\n- Students exploring health economics careers\n\nNo economics degree required. Community membership is free.\n\ncaphegroup.org/membership",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Community member recruitment',
+                    link: 'caphegroup.org/membership',
+                    imageType: 'recruitment',
+                    imagePrompt: '',
+                    scheduledDate: '2026-01-30',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 6,
+                    site: 'caphe',
+                    text: "In two weeks: Introduction to Health Economics for Public Health\n\nWednesday, February 12 at 12:00 PM PT\n\nWhat is health economics?\nHow does it differ from epidemiology?\nWhy does it matter for public health decisions?\n\nFree. Virtual. Open to all.\n\ncaphegroup.org/programs",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Webinar reminder - 2 weeks out',
+                    link: 'caphegroup.org/programs',
+                    imageType: 'webinar',
+                    imagePrompt: '',
+                    scheduledDate: '2026-02-01',
+                    createdAt: Date.now()
+                },
+                // Week of Feb 3
+                {
+                    id: 7,
+                    site: 'caphe',
+                    text: "Prevention programs often have costs now and benefits later.\n\nA vaccination program costs money this year. The hospitalizations it prevents happen over decades.\n\nHow do we compare costs today versus benefits in 20 years?\n\nHealth economists use discount rates. It's one of the most important concepts in the field.\n\ncaphegroup.org/methods-lab",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Educational - discount rates',
+                    link: 'caphegroup.org/methods-lab',
+                    imageType: 'thought-leadership',
+                    imagePrompt: '',
+                    scheduledDate: '2026-02-04',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 8,
+                    site: 'caphe',
+                    text: "Are we the only health economist in our department? Maybe in our whole county?\n\nCalifornia's 58 local health jurisdictions need economists. But most of us work in isolation.\n\nCAPHE is the professional home for health economists in California public health.\n\nConnect with peers. Share methods. Shape the field.\n\ncaphegroup.org/membership",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Professional member recruitment',
+                    link: 'caphegroup.org/membership',
+                    imageType: 'recruitment',
+                    imagePrompt: '',
+                    scheduledDate: '2026-02-06',
+                    createdAt: Date.now()
+                },
+                {
+                    id: 9,
+                    site: 'caphe',
+                    text: "One week away: Introduction to Health Economics for Public Health\n\nWednesday, February 12\n12:00 PM - 1:00 PM PT\n\nStill time to register: caphegroup.org/programs\n\nNew to health economics? This is our starting point.",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Webinar reminder - 1 week out',
+                    link: 'caphegroup.org/programs',
+                    imageType: 'webinar',
+                    imagePrompt: '',
+                    scheduledDate: '2026-02-08',
+                    createdAt: Date.now()
+                },
+                // Webinar week
+                {
+                    id: 10,
+                    site: 'caphe',
+                    text: "Tomorrow: Introduction to Health Economics for Public Health\n\nWednesday, February 12 at 12:00 PM PT\n\nLast chance to register: caphegroup.org/programs\n\nSee everyone there.",
+                    platforms: ['linkedin', 'bluesky'],
+                    status: 'ready',
+                    url: '',
+                    rationale: 'Webinar reminder - day before',
+                    link: 'caphegroup.org/programs',
+                    imageType: 'webinar',
+                    imagePrompt: '',
+                    scheduledDate: '2026-02-11',
+                    createdAt: Date.now()
+                },
+                // Other sites
+                {
+                    id: 11,
+                    site: 'tets',
+                    text: "New post: Why discount rates matter in public health economics\n\nWhen comparing interventions that have costs now vs benefits later, the discount rate changes everything.\n\nRead more: tooearlytosay.com/discount-rates",
+                    platforms: ['bluesky'],
+                    status: 'draft',
+                    url: '',
+                    rationale: 'Educational content - methods explainer',
+                    link: 'tooearlytosay.com/discount-rates',
+                    imageType: 'none',
+                    imagePrompt: '',
+                    scheduledDate: null,
+                    createdAt: Date.now()
+                },
+                {
+                    id: 12,
+                    site: 'bwb',
+                    text: "The 15-minute writing session that changed everything.\n\nConsistency beats intensity. Here's the research on why short sessions work better for most writers...\n\nbeatwritersblock.com",
+                    platforms: ['bluesky'],
+                    status: 'draft',
+                    url: 'https://example.com/research-paper',
+                    rationale: 'Writing productivity tip - research-backed',
+                    link: 'beatwritersblock.com',
+                    imageType: 'none',
+                    imagePrompt: '',
+                    scheduledDate: null,
+                    createdAt: Date.now()
+                }
+            ];
+        }
+
+        function savePosts() {
+            localStorage.setItem('social-planner-posts', JSON.stringify(posts));
+        }
+
+        // Filtering
+        function filterBySite(site) {
+            activeFilters.site = site;
+            document.querySelectorAll('#site-filters .filter-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.site === site);
+            });
+            renderPostQueue();
+            renderCalendar();
+        }
+
+        function filterByPlatform(platform) {
+            activeFilters.platform = platform;
+            document.querySelectorAll('#platform-filters .filter-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.platform === platform);
+            });
+            renderPostQueue();
+            renderCalendar();
+        }
+
+        function passesFilters(post) {
+            if (activeFilters.site !== 'all' && post.site !== activeFilters.site) return false;
+            if (activeFilters.platform !== 'all' && !post.platforms.includes(activeFilters.platform)) return false;
+            return true;
+        }
+
+        // Calendar
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Update week label
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            document.getElementById('current-week').textContent =
+                `${formatDate(currentWeekStart)} - ${formatDate(weekEnd)}`;
+
+            let html = '';
+
+            // Headers
+            days.forEach(day => {
+                html += `<div class="calendar-header">${day}</div>`;
+            });
+
+            // Days
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentWeekStart);
+                date.setDate(date.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const isToday = date.getTime() === today.getTime();
+
+                const dayPosts = posts.filter(p =>
+                    p.scheduledDate === dateStr && passesFilters(p)
+                );
+
+                html += `
+                    <div class="calendar-day ${isToday ? 'today' : ''}"
+                         data-date="${dateStr}"
+                         ondrop="dropPost(event)"
+                         ondragover="dragOver(event)"
+                         ondragleave="dragLeave(event)">
+                        <div class="day-header">
+                            <div class="day-number ${isToday ? 'today' : ''}">${date.getDate()}</div>
+                            ${dayPosts.length > 0 ? `<span class="day-count">${dayPosts.length} post${dayPosts.length > 1 ? 's' : ''}</span>` : ''}
+                        </div>
+                        <div class="day-posts">
+                            ${dayPosts.map(p => `
+                                <div class="scheduled-post"
+                                     data-site="${p.site}"
+                                     onclick="editPost(${p.id})"
+                                     title="${SITES[p.site].name}: ${p.text.substring(0, 100)}...">
+                                    <span class="platform-icon">${p.platforms.includes('linkedin') ? 'in' : ''}${p.platforms.includes('bluesky') ? '🦋' : ''}</span>
+                                    ${p.text.substring(0, 25)}...
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function formatDate(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        function previousWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            renderCalendar();
+        }
+
+        function nextWeek() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+            currentWeekStart = new Date(today);
+            currentWeekStart.setDate(diff);
+            currentWeekStart.setHours(0, 0, 0, 0);
+            renderCalendar();
+        }
+
+        // Post Queue
+        function renderPostQueue() {
+            const queue = document.getElementById('post-queue');
+            const unscheduled = posts.filter(p => !p.scheduledDate && passesFilters(p));
+
+            document.getElementById('queue-count').textContent =
+                `${unscheduled.length} post${unscheduled.length !== 1 ? 's' : ''}`;
+
+            if (unscheduled.length === 0) {
+                queue.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p>No posts in queue</p>
+                        <p style="font-size: 0.875rem;">Create a new post to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            queue.innerHTML = unscheduled.map(post => `
+                <div class="post-card"
+                     data-site="${post.site}"
+                     data-id="${post.id}"
+                     draggable="true"
+                     onclick="editPost(${post.id})"
+                     ondragstart="dragStart(event)"
+                     ondragend="dragEnd(event)"
+                     style="cursor: pointer;">
+                    <div class="post-header">
+                        <div class="post-badges">
+                            <span class="site-badge" data-site="${post.site}">${SITES[post.site].name}</span>
+                            ${post.platforms.map(p => `
+                                <span class="platform-badge ${p}">${p}</span>
+                            `).join('')}
+                        </div>
+                        <span class="post-status status-${post.status}">${getStatusIcon(post.status)} ${post.status}</span>
+                    </div>
+                    <div class="post-text">${escapeHtml(post.text)}</div>
+                    <div class="post-meta">
+                        ${post.url ? `
+                            <div class="post-meta-item">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                <a href="${post.url}" target="_blank">Inspiration</a>
+                            </div>
+                        ` : ''}
+                        ${post.rationale ? `
+                            <div class="post-meta-item">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <span>${escapeHtml(post.rationale)}</span>
+                            </div>
+                        ` : ''}
+                        ${post.link ? `
+                            <div class="post-meta-item">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                                <span>${post.link}</span>
+                            </div>
+                        ` : ''}
+                        ${post.imageType && post.imageType !== 'none' ? `
+                            <div class="post-meta-item" style="color: var(--site-bwb);">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>${IMAGE_LABELS[post.imageType] || post.imageType}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="post-actions">
+                        <button class="small" onclick="editPost(${post.id})">Edit</button>
+                        <button class="small" onclick="showScheduleModal(${post.id})">Schedule</button>
+                        <button class="small" onclick="copyPostText(${post.id})">Copy</button>
+                        <button class="small" onclick="duplicatePost(${post.id})">Duplicate</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = posts.filter(p => !p.scheduledDate || p.status !== 'posted').length;
+            document.getElementById('stat-caphe').textContent = posts.filter(p => p.site === 'caphe').length;
+            document.getElementById('stat-tets').textContent = posts.filter(p => p.site === 'tets').length;
+            document.getElementById('stat-bwb').textContent = posts.filter(p => p.site === 'bwb').length;
+            document.getElementById('stat-unstoppable').textContent = posts.filter(p => p.site === 'unstoppable').length;
+            document.getElementById('stat-personal').textContent = posts.filter(p => p.site === 'personal').length;
+        }
+
+        // Drag and Drop
+        function dragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drop-target');
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drop-target');
+        }
+
+        function dropPost(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drop-target');
+
+            const postId = parseInt(e.dataTransfer.getData('text/plain'));
+            const date = e.currentTarget.dataset.date;
+
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.scheduledDate = date;
+                post.status = 'scheduled';
+                savePosts();
+                renderCalendar();
+                renderPostQueue();
+                updateStats();
+                showToast(`Scheduled for ${formatDateShort(new Date(date))}`, 'success');
+            }
+        }
+
+        function formatDateShort(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[date.getMonth()]} ${date.getDate() + 1}`;
+        }
+
+        // Modal Functions
+        function showNewPostModal() {
+            selectedSite = null;
+            document.getElementById('post-url').value = '';
+            document.getElementById('post-rationale').value = '';
+            document.getElementById('post-text').value = '';
+            document.getElementById('post-link').value = '';
+            document.getElementById('post-date').value = '';
+            document.getElementById('platform-linkedin').checked = false;
+            document.getElementById('platform-bluesky').checked = true;
+            document.querySelectorAll('.site-option').forEach(el => el.classList.remove('selected'));
+            updateCharCount();
+            document.getElementById('new-post-modal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function selectSite(site) {
+            selectedSite = site;
+            document.querySelectorAll('.site-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.site === site);
+            });
+
+            // Update available platforms
+            const siteConfig = SITES[site];
+            document.getElementById('platform-linkedin').disabled = !siteConfig.platforms.includes('linkedin');
+            document.getElementById('platform-linkedin').checked = siteConfig.platforms.includes('linkedin');
+            document.getElementById('platform-bluesky').checked = siteConfig.platforms.includes('bluesky');
+        }
+
+        function updateCharCount() {
+            const text = document.getElementById('post-text').value;
+            const count = text.length;
+            const countEl = document.getElementById('char-count');
+            countEl.textContent = `${count} / 300 characters (Bluesky limit)`;
+
+            countEl.classList.remove('warning', 'danger');
+            if (count > 300) countEl.classList.add('danger');
+            else if (count > 270) countEl.classList.add('warning');
+        }
+
+        // Image type toggle
+        document.getElementById('post-image-type')?.addEventListener('change', function() {
+            const customGroup = document.getElementById('custom-image-group');
+            customGroup.style.display = this.value === 'custom' ? 'block' : 'none';
+        });
+
+        const IMAGE_LABELS = {
+            'none': 'No image',
+            'webinar': 'Webinar',
+            'methods-lab': 'Methods Lab',
+            'thought-leadership': 'Thought leadership',
+            'recruitment': 'Recruitment',
+            'launch': 'Launch',
+            'custom': 'Custom image'
+        };
+
+        function savePost(status) {
+            const text = document.getElementById('post-text').value.trim();
+            if (!text) {
+                showToast('Post text is required', 'error');
+                return;
+            }
+            if (!selectedSite) {
+                showToast('Please select a site', 'error');
+                return;
+            }
+
+            const platforms = [];
+            if (document.getElementById('platform-linkedin').checked) platforms.push('linkedin');
+            if (document.getElementById('platform-bluesky').checked) platforms.push('bluesky');
+
+            if (platforms.length === 0) {
+                showToast('Select at least one platform', 'error');
+                return;
+            }
+
+            const scheduleDate = document.getElementById('post-date').value || null;
+
+            const imageType = document.getElementById('post-image-type').value;
+            const newPost = {
+                id: Date.now(),
+                site: selectedSite,
+                text: text,
+                platforms: platforms,
+                status: scheduleDate ? 'scheduled' : status,
+                url: document.getElementById('post-url').value,
+                rationale: document.getElementById('post-rationale').value,
+                link: document.getElementById('post-link').value,
+                imageType: imageType,
+                imagePrompt: imageType === 'custom' ? document.getElementById('post-image-prompt').value : '',
+                scheduledDate: scheduleDate,
+                createdAt: Date.now()
+            };
+
+            posts.push(newPost);
+            savePosts();
+            closeModal('new-post-modal');
+            renderPostQueue();
+            renderCalendar();
+            updateStats();
+            showToast('Post added!', 'success');
+        }
+
+        function editPost(id) {
+            const post = posts.find(p => p.id === id);
+            if (!post) return;
+
+            editingPostId = id;
+            const siteConfig = SITES[post.site];
+
+            const modalBody = document.getElementById('edit-modal-body');
+            modalBody.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Site</label>
+                        <div style="padding: 0.625rem; background: var(--bg-tertiary); border-radius: 6px;">
+                            <span class="site-badge" data-site="${post.site}">${siteConfig.name}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="edit-status">
+                            <option value="draft" ${post.status === 'draft' ? 'selected' : ''}>Draft</option>
+                            <option value="ready" ${post.status === 'ready' ? 'selected' : ''}>Ready</option>
+                            <option value="scheduled" ${post.status === 'scheduled' ? 'selected' : ''}>Scheduled</option>
+                            <option value="posted" ${post.status === 'posted' ? 'selected' : ''}>Posted</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Platforms</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="edit-platform-linkedin"
+                                ${post.platforms.includes('linkedin') ? 'checked' : ''}
+                                ${!siteConfig.platforms.includes('linkedin') ? 'disabled' : ''}>
+                            <label for="edit-platform-linkedin">LinkedIn</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="edit-platform-bluesky" ${post.platforms.includes('bluesky') ? 'checked' : ''}>
+                            <label for="edit-platform-bluesky">Bluesky</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Inspiration URL</label>
+                    <input type="url" id="edit-url" value="${post.url || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Rationale</label>
+                    <textarea id="edit-rationale" rows="2">${post.rationale || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Post Text</label>
+                    <textarea id="edit-text">${escapeHtml(post.text)}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Link</label>
+                        <input type="text" id="edit-link" value="${post.link || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Scheduled Date</label>
+                        <input type="date" id="edit-date" value="${post.scheduledDate || ''}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Image/Art</label>
+                    <select id="edit-image-type" onchange="toggleEditImagePrompt()">
+                        <option value="none" ${post.imageType === 'none' || !post.imageType ? 'selected' : ''}>No image (text only)</option>
+                        <option value="webinar" ${post.imageType === 'webinar' ? 'selected' : ''}>Webinar announcement template</option>
+                        <option value="methods-lab" ${post.imageType === 'methods-lab' ? 'selected' : ''}>Methods Lab template</option>
+                        <option value="thought-leadership" ${post.imageType === 'thought-leadership' ? 'selected' : ''}>Thought leadership / quote template</option>
+                        <option value="recruitment" ${post.imageType === 'recruitment' ? 'selected' : ''}>Recruitment template</option>
+                        <option value="launch" ${post.imageType === 'launch' ? 'selected' : ''}>Launch announcement template</option>
+                        <option value="custom" ${post.imageType === 'custom' ? 'selected' : ''}>Custom (describe below)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="edit-custom-image-group" style="display: ${post.imageType === 'custom' ? 'block' : 'none'};">
+                    <label>Custom Image Description</label>
+                    <textarea id="edit-image-prompt" rows="2">${post.imagePrompt || ''}</textarea>
+                </div>
+            `;
+
+            document.getElementById('edit-post-modal').classList.add('active');
+        }
+
+        function toggleEditImagePrompt() {
+            const customGroup = document.getElementById('edit-custom-image-group');
+            const imageType = document.getElementById('edit-image-type').value;
+            customGroup.style.display = imageType === 'custom' ? 'block' : 'none';
+        }
+
+        function updatePost() {
+            const post = posts.find(p => p.id === editingPostId);
+            if (!post) return;
+
+            const platforms = [];
+            if (document.getElementById('edit-platform-linkedin').checked) platforms.push('linkedin');
+            if (document.getElementById('edit-platform-bluesky').checked) platforms.push('bluesky');
+
+            const imageType = document.getElementById('edit-image-type').value;
+            post.text = document.getElementById('edit-text').value;
+            post.status = document.getElementById('edit-status').value;
+            post.platforms = platforms;
+            post.url = document.getElementById('edit-url').value;
+            post.rationale = document.getElementById('edit-rationale').value;
+            post.link = document.getElementById('edit-link').value;
+            post.imageType = imageType;
+            post.imagePrompt = imageType === 'custom' ? document.getElementById('edit-image-prompt').value : '';
+            post.scheduledDate = document.getElementById('edit-date').value || null;
+
+            savePosts();
+            closeModal('edit-post-modal');
+            renderPostQueue();
+            renderCalendar();
+            updateStats();
+            showToast('Post updated!', 'success');
+        }
+
+        function deletePost() {
+            if (!confirm('Delete this post?')) return;
+            posts = posts.filter(p => p.id !== editingPostId);
+            savePosts();
+            closeModal('edit-post-modal');
+            renderPostQueue();
+            renderCalendar();
+            updateStats();
+            showToast('Post deleted', 'info');
+        }
+
+        function unschedulePost() {
+            const post = posts.find(p => p.id === editingPostId);
+            if (post) {
+                post.scheduledDate = null;
+                post.status = 'ready';
+                savePosts();
+                closeModal('edit-post-modal');
+                renderPostQueue();
+                renderCalendar();
+                showToast('Post unscheduled', 'info');
+            }
+        }
+
+        function duplicatePost(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                const newPost = {
+                    ...post,
+                    id: Date.now(),
+                    status: 'draft',
+                    scheduledDate: null,
+                    createdAt: Date.now()
+                };
+                posts.push(newPost);
+                savePosts();
+                renderPostQueue();
+                updateStats();
+                showToast('Post duplicated!', 'success');
+            }
+        }
+
+        // Keyboard-accessible scheduling
+        function showScheduleModal(id) {
+            schedulingPostId = id;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('schedule-date').value = today;
+            document.getElementById('schedule-modal').classList.add('active');
+            document.getElementById('schedule-date').focus();
+        }
+
+        function confirmSchedule() {
+            const date = document.getElementById('schedule-date').value;
+            if (!date) {
+                showToast('Please select a date', 'error');
+                return;
+            }
+            const post = posts.find(p => p.id === schedulingPostId);
+            if (post) {
+                post.scheduledDate = date;
+                post.status = 'scheduled';
+                savePosts();
+                closeModal('schedule-modal');
+                renderCalendar();
+                renderPostQueue();
+                updateStats();
+                showToast(`Scheduled for ${formatDateShort(new Date(date))}`, 'success');
+            }
+        }
+
+        function copyPostText(id) {
+            const post = posts.find(p => p.id === id);
+            if (post) {
+                navigator.clipboard.writeText(post.text);
+                showToast('Text copied!', 'success');
+            }
+        }
+
+        // Export
+        function showExportModal() {
+            updateExport();
+            document.getElementById('export-modal').classList.add('active');
+        }
+
+        function updateExport() {
+            const format = document.getElementById('export-format').value;
+            const content = document.getElementById('export-content');
+
+            const filteredPosts = posts.filter(passesFilters);
+
+            if (format === 'csv') {
+                content.textContent = generateCSV(filteredPosts);
+            } else if (format === 'json') {
+                content.textContent = JSON.stringify(filteredPosts, null, 2);
+            } else {
+                content.textContent = generateMarkdown(filteredPosts);
+            }
+        }
+
+        function generateCSV(postsToExport) {
+            const headers = ['Site', 'Date', 'Platforms', 'Status', 'Text', 'Link', 'URL', 'Rationale'];
+            const rows = postsToExport.map(p => [
+                SITES[p.site].name,
+                p.scheduledDate || 'Unscheduled',
+                p.platforms.join('; '),
+                p.status,
+                `"${p.text.replace(/"/g, '""')}"`,
+                p.link || '',
+                p.url || '',
+                p.rationale || ''
+            ]);
+            return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        }
+
+        function generateMarkdown(postsToExport) {
+            let md = '# Social Post Plan\n\n';
+            md += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+
+            const bySite = {};
+            postsToExport.forEach(p => {
+                if (!bySite[p.site]) bySite[p.site] = [];
+                bySite[p.site].push(p);
+            });
+
+            for (const [site, sitePosts] of Object.entries(bySite)) {
+                md += `## ${SITES[site].name}\n\n`;
+                sitePosts.forEach(p => {
+                    md += `### ${p.scheduledDate || 'Unscheduled'} - ${p.status}\n`;
+                    md += `**Platforms:** ${p.platforms.join(', ')}\n\n`;
+                    if (p.rationale) md += `*${p.rationale}*\n\n`;
+                    md += '```\n' + p.text + '\n```\n\n';
+                    if (p.link) md += `Link: ${p.link}\n\n`;
+                    md += '---\n\n';
+                });
+            }
+            return md;
+        }
+
+        function copyExport() {
+            const content = document.getElementById('export-content').textContent;
+            navigator.clipboard.writeText(content);
+            showToast('Copied to clipboard!', 'success');
+        }
+
+        function downloadExport() {
+            const format = document.getElementById('export-format').value;
+            const content = document.getElementById('export-content').textContent;
+            const ext = format === 'json' ? 'json' : format === 'csv' ? 'csv' : 'md';
+            const type = format === 'json' ? 'application/json' : 'text/plain';
+
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `social-posts-${new Date().toISOString().split('T')[0]}.${ext}`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded!', 'success');
+        }
+
+        // Utilities
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

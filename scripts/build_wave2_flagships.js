@@ -15,6 +15,14 @@ const wave2Modules = [
   // =========================================================================
   {
     slug: 'chw-health-outcomes',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
+        url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
+        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+      }
+    ],
     tier: 'community',
     hideBlock2: true,
     trackEyebrow: 'Track 1: Program Impact &middot; Flagship Case Study',
@@ -419,7 +427,7 @@ const wave2Modules = [
     ],
     related: [
       { slug: 'before-after-trap', title: 'Evaluating Pre-Post Changes Against Baseline Trends in Pre-Policy Drift', note: 'Case study on why pre-existing enrollment trends confound simple pre-post comparisons' },
-      { slug: 'selection-into-treatment', title: 'Selection Into Treatment & Administrative Take-Up', note: 'Case study on how compliance costs screen out eligible households' },
+      { slug: 'p-hacking-multiple-testing', title: 'Testing Subgroup Drops With Multiple-Group Checks', note: 'Case study on separating real language-group renewal drops from small-group swings' },
       { slug: 'budget-impact', title: 'Budget Impact & Reserve Floor Analysis', note: 'Case study on annual cash-flow planning for county navigation investments' }
     ]
   },

@@ -243,7 +243,7 @@ const wave3Modules = [
     related: [
       { slug: 'threat-history-solutions', title: 'Isolating Shared Shocks with Comparison Groups', note: 'Case study comparing video and non-video Medicaid care, 2018 to 2024' },
       { slug: 'identical-data-opposite-policies', title: 'Nominal vs. Cost-Adjusted Medi-Cal Pay', note: 'Case study on how local clinic costs shape care access' },
-      { slug: 'threat-maturation-solutions', title: 'Multi-Year Trend Splits for Policy Shifts', note: 'Case study separating base PFL claim growth from SB 951 shifts' }
+      { slug: 'parallel-trends-power', title: 'Multi-Year Pre-Policy Trend Checks Across 84 Months', note: 'Case study on pre-policy trend stability in Medicaid billing' }
     ]
   },
 
@@ -252,6 +252,7 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'selection-into-treatment',
+    unlisted: true,
     tier: 'public',
     trackEyebrow: 'Track 1: Program Impact &middot; Worker Take-Up &amp; Tax Share (Mode A on ACS &amp; EDD Baselines)',
     pageTitle: 'Selection Into Treatment & CA Paid Leave | CAPHE',
@@ -479,6 +480,14 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'threat-regression-to-mean',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Public Health Spending Regime Analysis',
+        title: 'Public Health Spending: When Emergency Aid Flips the Sign',
+        url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
+        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+      }
+    ],
     tier: 'community',
     trackEyebrow: 'Track 1: Program Impact &middot; Small-County Swings &amp; Pooled Means (Mode A on Observed County Populations)',
     pageTitle: 'Regression to the Mean in County Health | CAPHE',
@@ -1132,6 +1141,7 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'threat-maturation-solutions',
+    unlisted: true,
     tier: 'public',
     trackEyebrow: 'Track 1: Program Impact &middot; Multi-Year Trend Splits &amp; Base Slopes (Mode A on Observed EDD Baselines)',
     pageTitle: 'Interrupted Time Series & Maturation Trends | CAPHE',
@@ -1330,6 +1340,14 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'budget-impact',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Public Health Spending Regime Analysis',
+        title: 'Public Health Spending: When Emergency Aid Flips the Sign',
+        url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
+        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+      }
+    ],
     tier: 'public',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; Cash Flow &amp; Reserve Floors (Mode A Fiscal Scenarios)',
     pageTitle: 'Budget Impact vs. ROI in Public Health | CAPHE',
@@ -1519,8 +1537,8 @@ const wave3Modules = [
       }
     ],
     related: [
-      { slug: 'chw-health-outcomes', title: 'CHW Program Impact: Medi-Cal DRG vs. Societal ROI', note: 'CHW case study Case Study on payer vs. societal cost offsets' },
-      { slug: 'threat-maturation-solutions', title: 'Multi-Year Trend Models on SDI Reserve Paths', note: 'Case study on 2025-2030 PFL reserve rebuilding slopes' },
+      { slug: 'chw-health-outcomes', title: 'CHW Program Impact: Medi-Cal DRG vs. Societal ROI', note: 'CHW case study on payer vs. societal cost offsets' },
+      { slug: 'measuring-health-common-unit', title: 'Standardized Healthy Life-Years & Federal Life Valuations', note: 'Case study on QALY and VSL valuation units' },
       { slug: 'cost-effectiveness-ratio', title: 'Cost per Healthy Year Across 5-Year Horizons', note: 'Case study on Year 1 startup vs. Years 2-5 steady-state costs' }
     ]
   },
@@ -1530,6 +1548,14 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'measuring-health-common-unit',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
+        url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
+        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+      }
+    ],
     tier: 'community',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; QALYs &amp; VSL Valuation (Mode A Standardization)',
     pageTitle: 'Measuring Health in QALYs & VSL Units | CAPHE',
@@ -1732,6 +1758,14 @@ const wave3Modules = [
   // =========================================================================
   {
     slug: 'cost-effectiveness-ratio',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
+        url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
+        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+      }
+    ],
     tier: 'community',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; ICER, NMB &amp; Thresholds (Mode A CEA Horizons)',
     pageTitle: 'Cost-Effectiveness Ratios & NMB Thresholds | CAPHE',

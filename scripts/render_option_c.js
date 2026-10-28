@@ -1172,7 +1172,7 @@ ${cardsHtml}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${spec.pageTitle}</title>
-  <meta name="description" content="${spec.metaDescription}">
+  <meta name="description" content="${spec.metaDescription}">${spec.unlisted ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   <link rel="canonical" href="${canonicalUrl}">
   <meta property="og:title" content="${spec.pageTitle}">
   <meta property="og:description" content="${spec.metaDescription}">

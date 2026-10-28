@@ -21,7 +21,14 @@ const modules = [
   // =========================================================================
   {
     slug: 'reverse-causation-feedback',
-    // HOLD: TETS companion link held pending replacement of superseded pre-audit draft with the 4-article Oct 2026 AJPH suite (#1A-#1D).
+    tetsCompanion: [
+      {
+        visibleLabel: 'Public Health Spending Regime Analysis',
+        title: 'Public Health Spending: When Emergency Aid Flips the Sign',
+        url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
+        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+      }
+    ],
     tier: 'public',
     trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; Needs-Driven Spending &amp; Simultaneity (Mode B Panel)',
     pageTitle: 'Needs-Driven Spending & Prevention ROI | CAPHE',
@@ -651,7 +658,7 @@ const modules = [
     related: [
       { slug: 'classifying-causal-mechanisms', title: 'Separating Mediators From Confounders', note: 'Case study providing a decision rule for confounders, mediators, colliders, and instruments' },
       { slug: 'measurement-error-claims', title: 'Directory Counts vs. Active Claims', note: 'Case study reconciling 488,032 Medicaid billing NPIs with federal and California sanction registries' },
-      { slug: 'selection-into-treatment', title: 'Incentive Design & Program Take-Up Across Wage Tiers', note: 'Case study examining how benefit design shapes selective participation' }
+      { slug: 'p-hacking-multiple-testing', title: 'Testing Subgroup Drops With Multiple-Group Checks', note: 'Case study on separating real subgroup drops from small-group swings' }
     ]
   },
 
@@ -861,7 +868,20 @@ const modules = [
   // =========================================================================
   {
     slug: 'sensitivity-analysis-cea',
-    // HOLD: TETS companion link held pending replacement of superseded pre-audit draft with the 4-article Oct 2026 AJPH suite (#1A-#1D).
+    tetsCompanion: [
+      {
+        visibleLabel: 'Public Health Spending Regime Analysis',
+        title: 'Public Health Spending: When Emergency Aid Flips the Sign',
+        url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
+        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+      },
+      {
+        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
+        url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
+        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+      }
+    ],
     tier: 'public',
     trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; VSL Tiers &amp; Parameter Uncertainty (Mode A Scenario Grid)',
     pageTitle: 'Sensitivity Analysis in Funding Choices | CAPHE',

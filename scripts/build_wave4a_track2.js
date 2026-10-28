@@ -235,7 +235,14 @@ const modules = [
   // =========================================================================
   {
     slug: 'observational-to-experimental',
-    // HOLD: TETS companion link held pending replacement of superseded pre-audit draft with the 4-article Oct 2026 AJPH suite (#1A-#1D).
+    tetsCompanion: [
+      {
+        visibleLabel: 'Public Health Spending Regime Analysis',
+        title: 'Public Health Spending: When Emergency Aid Flips the Sign',
+        url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
+        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+      }
+    ],
     tier: 'public',
     trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Routine-Budget Identification (Mode B 57-County Panel)',
     pageTitle: 'Routine-Budget Analysis vs. Raw Yearly Averages | CAPHE',
@@ -640,6 +647,14 @@ const modules = [
   // =========================================================================
   {
     slug: 'identical-data-opposite-policies',
+    tetsCompanion: [
+      {
+        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
+        url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
+        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+      }
+    ],
     tier: 'community',
     trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Nominal vs. Real Indices (Mode B Official GPCI &amp; ACS Data)',
     pageTitle: 'Nominal vs. Cost-Adjusted Medi-Cal Fees | CAPHE',
@@ -1232,7 +1247,7 @@ const modules = [
     related: [
       { slug: 'medicaid-expansion', title: 'Medi-Cal Redetermination Funnel & Churn', note: 'CHW case study decomposing the 5-step verification funnel in Santa Clara County' },
       { slug: 'observational-to-experimental', title: 'Routine County Public Health Budgets Lower Premature Deaths After Separating Outbreak Spending', note: 'Case study detailing the 57-county LHA routine-budget replication' },
-      { slug: 'threat-maturation-solutions', title: 'Multi-Year Trend Splits in CA Paid Leave', note: 'Case study separating secular SDI/PFL claim growth from SB 951 jumps' }
+      { slug: 'before-after-trap', title: 'Evaluating Pre-Post Changes Against Baseline Trends', note: 'Case study on separating pre-policy drift from post-policy changes' }
     ]
   },
 

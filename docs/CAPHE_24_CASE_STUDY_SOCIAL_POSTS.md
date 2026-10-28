@@ -1,375 +1,380 @@
-# CAPHE Case Study Social Posts
+# CAPHE Social Posts — 22 Scheduled Case Studies (Mon/Wed 7:00 AM PST) + 2 Held Paid Family Leave Previews
 
-**Property:** California Public Health Economics Group (`caphegroup.org`)
-**Voice Profile:** `caphe` (Professional-accessible, collegial mentor/colleague, first-person plural `"we"` / `"our"`, zero `"you"` / `"your"`, average 14–18 words per sentence, max 20 words per sentence)
-**Collection Hub:** `https://www.caphegroup.org/methods-lab/`
+- **Account:** `CAPHE` (`linkedin.com/company/caphe` & `@caphegroup.org` on Bluesky)
+- **Schedule Cadence:** Every **Monday and Wednesday at 7:00 AM PST**, starting **Monday, November 2, 2026** through **Wednesday, January 13, 2027** (22 scheduled posts).
+- **Held Paid Family Leave Case Studies (PDF Previews Only):** Posts #23 (`selection-into-treatment`) and #24 (`threat-maturation-solutions`) are held off from scheduling and converted to unlisted `noindex` mode with full PDF snapshots in `outputs/` and Google Drive.
 
 ---
 
-## Topic 1: Medi-Cal Coverage, Renewals & Provider Claims
+## Post #1: Automated Data Checks vs. Live Outreach in Medi-Cal Renewals (`medicaid-expansion`)
+- **Schedule:** **Mon, Nov 2, 2026 · 7:00 AM PST** (`2026-11-02 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/medicaid-expansion
 
-### 1. Why Eligible Families Lose Medi-Cal at Renewal (`medicaid-expansion`)
-When a county Medi-Cal roster drops by 27,076 adults in six months, did local incomes suddenly rise?
+During Medi-Cal renewals, eligible families rarely lose coverage because their income changed. Most lose coverage where automated data checks stop and paper packets begin.
 
-In Santa Clara County, we tracked 120,239 newly enrolled Medi-Cal adults across their first six-month renewal window.
+In Santa Clara County's 120,239-member renewal cohort, automated state data checks renew 39.2% of members without paperwork. Among the remaining members sent a paper packet, 27,076 lose coverage for procedural reasons even though an estimated 14,219 (52.5%) still qualify. Standard mail and text reminders move completions by 0% to 2%. Funding bilingual Community Health Worker outreach in high-drop ZIP codes recovers 35.0% of procedural losses (2,228 members retained) at $40 to $80 per member.
 
-- **Measure 1 (Aggregate Roster Count):** Enrollment fell from 120,239 to 93,163 across six months, a 22.5% drop of 27,076 adults.
-- **Measure 2 (Cause-Specific Renewal Funnel):** Only 3,121 exits reflected higher income, while paperwork barriers removed 14,219 still-eligible adults (52.5%).
-
-Across the full exit group, 88.5% remained income-eligible for coverage under state rules. When our teams separate administrative churn from income exits, we fund renewal navigation instead of cutting clinic capacity.
-
-Read the full CAPHE Case Study:
+Read the full case study:
 https://www.caphegroup.org/methods-lab/medicaid-expansion
 
 ---
 
-### 2. Why Simple Before-and-After Comparisons Mislead (`before-after-trap`)
-Did post-2019 telehealth waivers add 22,239 new Medicaid telehealth billers, or were providers already adopting virtual care?
+## Post #2: Evaluating Pre-Post Changes Against Baseline Trends (`before-after-trap`)
+- **Schedule:** **Wed, Nov 4, 2026 · 7:00 AM PST** (`2026-11-04 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/before-after-trap
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/medicaid-data-landscape/
 
-We examined national Medicaid billing records from 2018 through 2023 to test how baseline window length changes the conclusion.
+A two-point before-and-after count often credits a new policy for a trend that was already underway.
 
-- **Measure 1 (Two-Year Before-and-After Snapshot):** Active Medicaid telehealth billers rose from 91,399 in 2019 to 113,638 in 2023 (+22,239).
-- **Measure 2 (Multi-Year Pre-Trend Projection):** Between 2018 and 2019, telehealth billing was already growing by 6,977 providers per year.
+Across 84 months of Medicaid claims (2018 to 2024), active telehealth-eligible billing providers rose by 22,239 (+24.33%) between 2019 and 2023. However, that count was already climbing by 6,977 providers per year (+8.26%) before the 2020 rule change, and non-telehealth Medicaid services grew 18.71% over the same window. Comparing the full multi-year trajectory against a non-telehealth comparison group separates the true policy lift from background growth.
 
-Projecting that pre-existing growth forward yields 119,307 expected billers by 2023, leaving a -5,669 gap against the linear trend. Plotting at least three pre-policy years helps our analysts separate new policy lift from ongoing adoption.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/before-after-trap
-
----
-
-### 3. Why Administrative Claims Miss Sanctioned Providers (`measurement-error-claims`)
-Can a single federal exclusion check catch every sanctioned provider in a Medicaid billing file?
-
-We linked 488,032 Medicaid billing NPIs against both federal OIG exclusions and California DHCS suspended provider records.
-
-- **Measure 1 (Federal OIG LEIE Match Alone):** The federal registry flags 449 excluded providers across the dataset, including 299 financial fraud cases.
-- **Measure 2 (Combined Federal + State S&I Match):** Adding California DHCS state-only suspensions identifies 199 additional sanctioned providers, totaling 648.
-
-Even among confirmed fraud exclusions, the median lag from first billing to formal sanction is 50.0 months. Clean recent billing histories often reflect enforcement delay rather than verified compliance, so our audits cross-check both registries.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/measurement-error-claims
+Read the case study and companion Medicaid claims guide:
+Case Study: https://www.caphegroup.org/methods-lab/before-after-trap
+Companion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-data-landscape/
 
 ---
 
-### 4. How Filtering by Active Billing Distorts Fraud Models (`collider-bias`)
-Why does a provider fraud model lose almost half its ranking power when we filter to active 2024 billers?
+## Post #3: Enrolled Provider Directories vs. Active Claims and Sanction Lists (`measurement-error-claims`)
+- **Schedule:** **Mon, Nov 9, 2026 · 7:00 AM PST** (`2026-11-09 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/measurement-error-claims
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/medicaid-fraud-labels/
 
-We evaluated a fraud screening model across 487,479 Medicaid providers containing 95 confirmed exclusions (a 0.0195% population base rate).
+Counting registered provider directories as active care capacity overstates network reach, while treating sanction lists as pure billing fraud mislabels clinical license actions.
 
-- **Measure 1 (Full Unfiltered Provider Roster):** Across all 487,479 providers, the model achieves a 0.724 AUC ranking score.
-- **Measure 2 (Active-2024 Filtered Subset):** Restricting evaluation to 55,018 active 2024 billers drops the AUC score to 0.442.
+Across 488,032 Medicaid-enrolled billing providers, matching against federal and California sanction registries identifies 648 excluded providers. Only 299 of those 648 excluded providers ever submitted a Medicaid claim during the 84-month observation window, and 95 billed strictly after their sanction date ($9,694.90 median monthly billing vs. $3,820.94 among unsanctioned peers). Filtering for active paid claims and separating billing fraud from license revocations keeps network audits accurate.
 
-Because both high-volume clinics and undetected schemes stay active in 2024, conditioning on active status scrambles the risk ranking. Evaluating models on the full population baseline keeps our audit precision estimates calibrated to real caseloads.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/collider-bias
+Read the case study and companion exclusion-label audit:
+Case Study: https://www.caphegroup.org/methods-lab/measurement-error-claims
+Companion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-fraud-labels/
 
 ---
 
-### 5. Why Small Subgroups Top Percentage-Drop Rankings (`p-hacking-multiple-testing`)
-When we rank 62 demographic cells by raw percentage loss during Medi-Cal unwinding, which communities appear hardest hit?
+## Post #4: Full-List Provider Risk Screening vs. Active-Only Subsets (`collider-bias`)
+- **Schedule:** **Wed, Nov 11, 2026 · 7:00 AM PST** (`2026-11-11 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/collider-bias
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/
 
-We analyzed Santa Clara County's Medi-Cal enrollment decline from 472,014 to 411,722 (-60,292 members) across 62 age-language cells.
+Evaluating a fraud screening model on a downsampled test set or an active-only billing subset inflates apparent precision unless scores are rescaled to the full provider pool.
 
-- **Measure 1 (Unfiltered Percentage Rank):** Young adults speaking Samoan rank first with a -34.04% drop, representing 16 people (n = 47).
-- **Measure 2 (Volume-Gated Count Rank, n >= 100):** Spanish-speaking families lost 24,880 members (-18.00%), accounting for 41.3% of county losses.
+Across 487,479 Medicaid billing providers, confirmed post-sanction billers represent a 0.0195% base rate (95 cases). On a 5-to-1 downsampled holdout (55,018 providers), the top 1% risk tier shows 0.922% precision. Rescaling to the full 487,479-provider pool yields 0.186% precision (a 9.53x lift over random audits, catching 9 cases across 4,844 flags). Pairing full-pool calibration with a $500,000 annual billing floor focuses investigators on 16,688 high-volume providers.
 
-Vietnamese-speaking residents lost another 5,931 members (-15.05%) across the same unwinding period. Requiring n >= 100 and reporting counts alongside percentages directs our outreach to the largest caseloads.
+Read the case study and companion classifier validation guide:
+Case Study: https://www.caphegroup.org/methods-lab/collider-bias
+Companion Method Guide: https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/
 
-Read the full CAPHE Case Study:
+---
+
+## Post #5: Separating Real Program Outliers From Small-Group Swings (`p-hacking-multiple-testing`)
+- **Schedule:** **Mon, Nov 16, 2026 · 7:00 AM PST** (`2026-11-16 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/p-hacking-multiple-testing
+
+Slicing a county renewal dashboard across dozens of age-by-language cells surfaces large percentage swings in tiny subgroups alongside massive headcount losses in core populations.
+
+Across 62 age-by-language cells in Santa Clara County (472,014 baseline Medi-Cal enrollees dropping by 60,292 to 411,722), the sharpest percentage drops appear in small cells with 47 and 36 enrollees (-34.04% and -25.00%, or 16 and 9 people). After applying a multiple-group reliability check and ranking by total people affected, two large cells account for 70.1% of all coverage losses: English-speaking adults (-24,880) and Spanish-speaking adults (-17,380).
+
+Read the full case study:
 https://www.caphegroup.org/methods-lab/p-hacking-multiple-testing
 
 ---
 
-### 6. How to Match Study Designs to Policy Questions (`study-design-ladder`)
-When does a public health team need a randomized trial, and when is an administrative roster the better tool?
+## Post #6: Matching the Study Design to the Operational Question (`study-design-ladder`)
+- **Schedule:** **Wed, Nov 18, 2026 · 7:00 AM PST** (`2026-11-18 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Medi-Cal Coverage, Renewals & Provider Claims
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/study-design-ladder
 
-We compared four California policy evaluations to show how each question requires its own study design.
+Different stages of a public health program require different evaluation tools. A single study design rarely answers every operational question on a director's desk.
 
-- **Descriptive Roster vs. Survey:** In Santa Clara County, ACS surveys report 152,811 Medi-Cal enrollees while DHCS rosters record 255,601 (-40.2% survey undercount).
-- **Natural Experiment vs. Operational RCT:** Multi-year panels estimate county mortality returns (-9.16 deaths per 100,000), while an 82,695-household trial tests renewal outreach (+8 to +11 percentage points from live calls vs. 0% from text wording).
+Descriptive funnel tracking across 120,239 Santa Clara Medi-Cal renewals pinpoints where 27,076 procedural losses occur. Multi-year trend splits separate 39,600 added Paid Family Leave claims from baseline workforce growth. Routine-budget models across 1,197 county-years isolate 9.16 fewer deaths per 100,000 per $10 per resident. Finally, randomized trials across 82,695 members test whether live phone outreach lifts renewals (+8% to +11%) where text messages show 0% lift.
 
-No single study design answers every policy question across a health department. Matching the method to the decision saves our agencies time and protects budget proposals.
-
-Read the full CAPHE Case Study:
+Read the full case study:
 https://www.caphegroup.org/methods-lab/study-design-ladder
 
 ---
 
-## Topic 2: Community Health Workers & Clinical Financing
+## Post #7: Per-Visit Medi-Cal Billing vs. Acute-Care Hospital Offsets (`chw-health-outcomes`)
+- **Schedule:** **Mon, Nov 23, 2026 · 7:00 AM PST** (`2026-11-23 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Community Health Workers & Clinical Financing
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/chw-health-outcomes
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
-### 7. Why Fee-for-Service Billing Cannot Fund County CHWs (`chw-health-outcomes`)
-How much of a county Community Health Worker's salary can clinic fee-for-service Medi-Cal billing actually cover?
+Sizing a county Community Health Worker team around fee-for-service clinic billing alone leaves an 89% to 94% funding gap for field outreach.
 
-We compared Santa Clara County public health wage benchmarks against Medi-Cal fee-for-service reimbursement rates and acute hospital offsets.
+Across all 58 California counties, employing one full-time Community Health Worker costs $92,684 to $122,102 per year ($103,719 in Santa Clara County), while Medi-Cal pays a flat $31.74 per 30-minute visit ($26.66 per individual unit). Standard visit billing covers 6.5% to 9.8% of field compensation ($6,775 to $10,162 per year). Accounting for avoided emergency and hospital stays ($107,006 to $291,171) and two-year health gains brings total annual value to $407,006 to $852,900 per worker, showing why sustainable programs blend managed-care reinvestment with base grants.
 
-- **Measure 1 (Clinic Fee-for-Service Billing Ledger):** Medi-Cal per-visit billing generates $6,775 to $10,162 per year, covering 6.5% to 9.8% of a $103,719 loaded county CHW position.
-- **Measure 2 (Health System Offset Ledger):** Preventing 3.4 inpatient stays and 6.2 emergency visits per 100 clients saves $107,006 in payer claims ($291,171 in hospital costs).
-
-Clinic fee-for-service billing leaves a $93,557 annual funding gap per worker despite positive system savings. Presenting both ledgers helps our county teams negotiate managed care capitation and shared-savings contracts.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/chw-health-outcomes
-
----
-
-### 8. Why Cost-Effective Programs Still Face Year-1 Cash Deficits (`budget-impact`)
-Why can a public health program with a 125-to-1 long-term return still trigger a Year-1 budget shortfall?
-
-We contrasted multi-year economic value against five-year cash-flow ledgers for county health budgets and California Paid Family Leave.
-
-- **Measure 1 (Multi-Year Economic Return):** Local health funding delivers a 125-to-1 five-year return. Year 1 captures 42% of that effect (52-to-1), while 100% of payroll is due immediately.
-- **Measure 2 (Multi-Year Reserve Cash Flow):** Under SB 951, a $623.7M outlay dips the reserve to 10.8% ($1.96B) in 2026 before rebuilding to 30.4% ($6.37B) by 2030.
-
-Long-term value ratios do not pay first-year staffing invoices. Pairing economic evaluations with five-year cash-flow tables helps our budget directors plan bridge financing.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/budget-impact
+Read the case study and statewide 58-county spatial financing analysis:
+Case Study: https://www.caphegroup.org/methods-lab/chw-health-outcomes
+Statewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
 ---
 
-### 9. How One-Time Startup Costs Distort Year-1 Cost-Effectiveness (`cost-effectiveness-ratio`)
-Should a county judge a new Community Health Worker program by its Year-1 cost per QALY?
+## Post #8: Pairing Long-Run Return Ratios With Year-One Cash-Flow Schedules (`budget-impact`)
+- **Schedule:** **Wed, Nov 25, 2026 · 7:00 AM PST** (`2026-11-25 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Community Health Workers & Clinical Financing
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/budget-impact
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
-We tracked a 750-client CHW navigation cohort generating 40.04 Quality-Adjusted Life Years (QALYs) per year across five budget years.
+High multi-year return ratios do not pay Year-1 salaries. Budget committees need a five-year return model paired with a Year-1 cash-flow and reserve schedule.
 
-- **Measure 1 (Year-1 Cost-Effectiveness Ratio):** Loading $325,000 in one-time training and IT setup onto Year 1 raises total outlays to $1,930,000, or $48,202 per QALY.
-- **Measure 2 (Steady-State and 5-Year Ratios):** In Years 2 through 5, recurring costs of $1,405,000 yield $35,090 per QALY (a $37,712 five-year average).
+In California, county prevention spending delivers a 125-to-1 five-year societal return (52-to-1 in Year 1 as 42% of the mortality reduction arrives in the first year). At the same time, expanding Paid Family Leave generates $422.0M in net annual worker benefits but requires $623.7M in 2026 cash outlays, dipping the state fund reserve to 10.8% ($1.96B) against a 25.0% ($4.38B) statutory benchmark before rebuilding to 30.4% ($6.37B) by 2030. Pairing long-run return ratios with annual reserve tables gives finance officers both numbers.
 
-All three figures sit below the $100,000 per QALY benchmark. However, Year 1 looks 37% more expensive when one-time startup capital is treated as permanent. Separating startup costs from steady-state operations keeps our multi-year budget reviews accurate.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio
-
----
-
-### 10. How QALYs Capture Mental Health and Social Needs Gains (`measuring-health-common-unit`)
-If we evaluate a Community Health Worker program using only blood-pressure or diabetes labs, how much value do we miss?
-
-We decomposed the 40.04 annual QALYs ($4.00M in health value at $100,000 per QALY) generated by a 750-client CHW cohort.
-
-- **Measure 1 (Physical Chronic Disease Gains Alone):** Glycemic, hypertension, and asthma improvements generate 18.21 QALYs per year, or 45.5% of total health gains.
-- **Measure 2 (Full Quality-of-Life Ledger):** Mental health gains add 17.49 QALYs (43.7%) and social stability adds 4.34 QALYs (10.8%), totaling 54.5% of program value.
-
-We also keep morbidity QALYs separate from HHS 2025 Value of a Statistical Life tiers ($6.3M, $13.6M, and $20.7M) to avoid double-counting. Using a shared quality-of-life unit lets our analysts capture whole-person program benefits.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/measuring-health-common-unit
+Read the case study and companion public health spending analysis:
+Case Study: https://www.caphegroup.org/methods-lab/budget-impact
+Companion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
 ---
 
-### 11. Why Controlling for Clinic Visits Hides CHW Hospital Savings (`classifying-causal-mechanisms`)
-When evaluating a Community Health Worker program, should our regression model control for post-enrollment primary care visits?
+## Post #9: Spreading Year-One Startup Costs Across Multi-Year Health Gains (`cost-effectiveness-ratio`)
+- **Schedule:** **Mon, Nov 30, 2026 · 7:00 AM PST** (`2026-11-30 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Community Health Workers & Clinical Financing
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
-We traced how CHW navigation reduces inpatient hospital stays by 30% across enrolled Medi-Cal patients.
+Judging a new community health program on Year-1 operating and startup costs alone loads five years of hiring, training, and IT setup onto twelve months of patient care.
 
-- **Measure 1 (Total Program Effect Without Mediator Control):** CHW navigation raises primary care engagement from 57.1% to 71.7% (+14.6 percentage points) and cuts hospital admissions by 30%.
-- **Measure 2 (Mediator-Adjusted Regression):** Controlling for post-enrollment doctor visits absorbs the primary care pathway and shrinks the estimated hospital effect toward zero.
+In a 750-client Santa Clara Community Health Worker scenario producing 40.04 healthy life-years per year (200.20 discounted QALYs over five years), Year-1 cost per healthy life-year sits at $48,202 ($1,930,000 in first-year spending). Across Years 2 through 5, ongoing cost drops to $35,090 per QALY ($1,405,000 per year), yielding a five-year average of $36,089 per QALY operating ($37,712 with full $325,000 startup) and +$12.47M in net monetary value at the $100,000/QALY benchmark.
 
-Doctor visits are the mechanism through which CHWs prevent hospital crises, not a baseline confounder. Separating baseline patient severity from post-enrollment care pathways keeps our program evaluations from erasing their own success.
+Read the case study and statewide CHW financing analysis:
+Case Study: https://www.caphegroup.org/methods-lab/cost-effectiveness-ratio
+Statewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
-Read the full CAPHE Case Study:
+---
+
+## Post #10: Putting Chronic Care, Mental Health, and Saved Lives on Shared Ledgers (`measuring-health-common-unit`)
+- **Schedule:** **Wed, Dec 2, 2026 · 7:00 AM PST** (`2026-12-02 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Community Health Workers & Clinical Financing
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/measuring-health-common-unit
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
+
+When a diabetes clinic tracks blood sugar, a behavioral health team tracks depression scores, and a county health department tracks premature deaths, budget staff lack a common unit to compare programs.
+
+Translating condition-specific outcomes into standardized healthy life-years (QALYs) and federal life-valuation tiers places each program on a clear ledger. Across a 750-client Santa Clara Community Health Worker cohort generating 40.04 QALYs per year ($4.00M in health value at $100,000/QALY), mental health and social-needs navigation contribute 54.5% of total health gains (21.83 QALYs, or $2.18M) that lab-only blood sugar metrics miss.
+
+Read the case study and statewide CHW financing analysis:
+Case Study: https://www.caphegroup.org/methods-lab/measuring-health-common-unit
+Statewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
+
+---
+
+## Post #11: Separating Program Steps From Outside Factors in Care Models (`classifying-causal-mechanisms`)
+- **Schedule:** **Mon, Dec 7, 2026 · 7:00 AM PST** (`2026-12-07 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Community Health Workers & Clinical Financing
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/classifying-causal-mechanisms
+
+Adding every available database column into a regression model can erase the exact care pathway a program was built to create.
+
+When evaluating how Community Health Workers reduce hospital stays (-30% in randomized trial benchmarks), primary care follow-up visits are a program step (mediator) between enrollment and hospital avoidance. Controlling for post-enrollment clinic visits blocks that pathway and understates program impact. Conversely, omitting neighborhood poverty in a 408-tract Santa Clara food-access regression reverses the apparent store-distance slope (-0.578 raw vs. -0.017 adjusted, with poverty explaining 62.2% of model variance).
+
+Read the full case study:
 https://www.caphegroup.org/methods-lab/classifying-causal-mechanisms
 
 ---
 
-## Topic 3: Food Security, CalFresh & Local Cost of Living
+## Post #12: Uniform Poverty Cutoffs vs. Post-Rent Household Budgets (`food-affordability-tradeoffs`)
+- **Schedule:** **Wed, Dec 9, 2026 · 7:00 AM PST** (`2026-12-09 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Food Security, CalFresh & Local Cost of Living
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/food-affordability-tradeoffs
+- **Companion TETS Article:** https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/
 
-### 12. Why Federal Income Thresholds Miss California Food Insecurity (`food-affordability-tradeoffs`)
-Why do families earning 220% of the Federal Poverty Level still run out of food money in California?
+A uniform federal poverty cutoff treats a $60,000 household budget identically in coastal Marin County and inland Fresno County, even though rent absorbs very different shares of monthly income.
 
-We compared the $973 monthly USDA Thrifty Food Plan against four-person household budgets before and after local median rent.
+Comparing median household incomes and median rents across California counties shows how housing costs reshape food budgets. In Marin County, a median monthly income of $5,507 minus $2,318 in median rent (42.1%) and $973 in family food costs (17.7%) leaves $2,216 (30.5%). In Fresno County, a $3,103 monthly income minus $1,007 in rent (32.5%) and $973 in food (31.4%) leaves $1,123 (46.4% remaining before other bills). Pairing post-rent residual income with local store access matches nutrition support to actual household budgets.
 
-- **Measure 1 (Pre-Rent Gross Income Share):** At $5,507 monthly gross income (220% FPL) in Marin County Tract 1122.03, the $973 food plan takes 17.7% of income.
-- **Measure 2 (Post-Rent Disposable Income Share):** After paying $2,318 in median rent (42.1% of income), that same $973 food basket requires 30.5% of the remaining $3,189 budget.
-
-In Fresno County Tract 2 ($3,098 monthly income, $973 rent), the food share jumps from 31.4% pre-rent to 46.4% post-rent. Measuring food costs against post-rent income helps our local programs target working families priced out by housing.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/food-affordability-tradeoffs
-
----
-
-### 13. Why Store Distance Alone Misses Local Food Vulnerability (`food-insecurity-diabetes`)
-Does living close to a supermarket guarantee that a neighborhood can afford healthy food?
-
-We compared post-rent food budget shares and county census tracts across Marin, Fresno, Santa Clara, and Nevada counties.
-
-- **Measure 1 (Store Distance Metric):** Across county census tracts, distance to the nearest grocery store explains only 1.8% of neighborhood food vulnerability.
-- **Measure 2 (Post-Rent Income and Poverty Metric):** Poverty and rent explain 62.2% of vulnerability, pushing post-rent food shares to 30.5% (Marin Tract 1122.03) and 46.4% (Fresno Tract 2).
-
-Even in higher-income counties like Santa Clara (8.9% countywide post-rent share) and rural Nevada County (18.9%), pocket tracts face severe budget squeezes. Pairing CalFresh and nutrition benefit enrollment with retail access gives our diabetes prevention teams a complete strategy.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/food-insecurity-diabetes
+Read the case study and companion food-access analysis:
+Case Study: https://www.caphegroup.org/methods-lab/food-affordability-tradeoffs
+Companion Analysis: https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/
 
 ---
 
-### 14. Why Urban Food Desert Maps Miss Affordability Crises (`geographic-variables`)
-Only 1 of 408 census tracts in Santa Clara County is a USDA food desert, yet food insecurity persists.
+## Post #13: Neighborhood Rent Pressure, Food Shortfalls, and Chronic Disease (`food-insecurity-diabetes`)
+- **Schedule:** **Mon, Dec 14, 2026 · 7:00 AM PST** (`2026-12-14 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Food Security, CalFresh & Local Cost of Living
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/food-insecurity-diabetes
+- **Companion TETS Article:** https://tooearlytosay.com/research/food-security/extended-vulnerability-index/
 
-We tested how urban store-distance thresholds compare against tract poverty rates in Santa Clara County (408 tracts) and Fresno County (225 tracts).
+When households face high monthly rent and rising grocery prices, food shortfalls and diabetes hospital stays reinforce each other across neighborhood lines.
 
-- **Measure 1 (USDA Store-Distance Indicator):** Only 1 of 408 Santa Clara tracts (0.2%) is low-access, and distance adds just +0.003 percentage points of explanatory power (p = 0.827).
-- **Measure 2 (Tract Poverty and Income Indicator):** Adding neighborhood poverty adds +58.1 percentage points of unique explanatory power for local food insecurity.
+Across 408 census tracts in Santa Clara County, neighborhood poverty and rent pressure account for 62.2% of the variation in nutrition assistance need, while physical distance to the nearest supermarket adds 1.8%. In high-rent tracts where a $973 monthly family food budget competes directly with housing, pairing CalFresh enrollment navigation with medically tailored groceries targets the household budget constraint that drives emergency room visits.
 
-In rural and agricultural Fresno County, 30 of 225 tracts (13.3%) face true physical store gaps alongside high poverty. Separating urban affordability barriers from rural transportation gaps helps our planners match interventions to local geography.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/geographic-variables
-
----
-
-### 15. How Equal Nominal Grants Create Unequal Staffing in California (`identical-data-opposite-policies`)
-Does an equal dollar grant per resident buy the same clinic staffing in San Francisco and Imperial County?
-
-We compared Medicare Practice Expense Geographic Practice Cost Indices (GPCI) and population health need across all 58 California counties.
-
-- **Measure 1 (Nominal Dollar Allocation):** A flat per-capita grant appears equal on paper across every county budget ledger.
-- **Measure 2 (Purchasing-Power and Need-Adjusted Allocation):** With a 1.506 GPCI in San Francisco versus 0.900 in Imperial, equal nominal grants buy 55.6% less urban staff time.
-
-Meanwhile, Imperial County sits at the 85th percentile of population health need compared with the 15th percentile in San Francisco. Combining a need floor with a local wage index lets state grant formulas protect rural caseloads and urban staffing.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/identical-data-opposite-policies
+Read the case study and companion vulnerability index record:
+Case Study: https://www.caphegroup.org/methods-lab/food-insecurity-diabetes
+Companion Analysis: https://tooearlytosay.com/research/food-security/extended-vulnerability-index/
 
 ---
 
-### 16. How Unverified Store Lists Overstate Neighborhood Food Access (`threat-measurement-instrumentation`)
-What happens when a county food access map counts every commercial food listing instead of verified CalFresh grocery stores?
+## Post #14: Supermarket Distance Cutoffs vs. Neighborhood Income in Food Access (`geographic-variables`)
+- **Schedule:** **Wed, Dec 16, 2026 · 7:00 AM PST** (`2026-12-16 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Food Security, CalFresh & Local Cost of Living
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/geographic-variables
+- **Companion TETS Article:** https://tooearlytosay.com/research/food-security/food-desert-myth/
 
-We audited three retail food data sources across 408 census tracts in Santa Clara County.
+Screening urban counties solely by distance to the nearest supermarket flags wealthy hillside neighborhoods while overlooking low-income renters living half a mile from a grocery store they cannot afford.
 
-- **Measure 1 (Raw Commercial Map Listings):** Unfiltered commercial points list 6,613 food locations, implying an average trip of 0.29 miles to food.
-- **Measure 2 (Verified USDA SNAP / CalFresh Retailers):** Filtering to 514 verified SNAP-authorized stores nearly doubles the measured trip distance to 0.573 miles (+97%).
+Across 408 Santa Clara County census tracts, poverty explains 58.1 percentage points of the 62.2% model variance in CalFresh participation (r = 0.827), whereas store distance alone explains 0.003 percentage points. Only 1 of 408 Santa Clara tracts (3,252 residents, 1.218 miles from a grocer) meets the federal low-income, low-access distance cutoff. By contrast, rural counties such as Nevada (2.92 miles average store distance) and Imperial (30 of 225 tracts, 13.3%) face physical transportation barriers that require mobile markets and delivery routes.
 
-Within county health permits, removing multi-counter duplicates inside single supermarkets reduces the store count from 8,555 to 7,335 (-1,220 records, or -14.3%). Auditing administrative data definitions before mapping prevents our equity assessments from understating neighborhood travel burdens.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation
-
----
-
-## Topic 4: County Public Health Budgets & Mortality Returns
-
-### 17. Why Raw Correlations Hide the Value of Prevention Budgets (`reverse-causation-feedback`)
-Why does a simple same-year comparison across California counties make higher public health spending look linked to slightly higher mortality?
-
-We analyzed 57 California counties over 21 years (2003 to 2023) to separate emergency crisis spending from baseline prevention budgets.
-
-- **Measure 1 (Unadjusted Same-Year Correlation):** Counties surge emergency funds during outbreaks, so a naive regression shows +0.18 deaths per 100,000 per $10 per resident.
-- **Measure 2 (Routine Prevention Instrumental Variable Estimate):** Isolating multi-year baseline prevention budgets reveals -9.16 deaths per 100,000 per $10 per resident in sustained annual funding.
-
-At $10 per resident, that mortality reduction corresponds to roughly $109,000 per life saved. Separating reactive outbreak surges from routine prevention lets our county leaders evaluate public health budgets fairly.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/reverse-causation-feedback
+Read the case study and companion food-desert analysis:
+Case Study: https://www.caphegroup.org/methods-lab/geographic-variables
+Companion Analysis: https://tooearlytosay.com/research/food-security/food-desert-myth/
 
 ---
 
-### 18. How Two Independent Instruments Confirm County Public Health Returns (`observational-to-experimental`)
-When we cannot randomize county health department budgets, how do we test whether prevention funding truly lowers mortality?
+## Post #15: Nominal Medi-Cal Fee Schedules vs. Local Clinic Purchasing Power (`identical-data-opposite-policies`)
+- **Schedule:** **Mon, Dec 21, 2026 · 7:00 AM PST** (`2026-12-21 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Food Security, CalFresh & Local Cost of Living
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/identical-data-opposite-policies
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
-We compared two independent quasi-experimental designs across 57 California counties over a 21-year panel.
+A single statewide Medi-Cal fee schedule pays the same nominal dollar amount per visit across California, but those dollars buy very different amounts of clinical staffing in San Francisco versus Imperial County.
 
-- **Measure 1 (Historical Governance Instrument, Brown 2014):** Using predetermined local board and jurisdiction structures estimates -9.10 deaths per 100,000 per $10 per resident.
-- **Measure 2 (21-Year Routine-Budget Panel Instrument):** Isolating multi-year routine budget shifts from emergency spikes estimates -9.16 deaths per 100,000 per $10 per resident.
+Under the CMS Practice Expense Geographic Practice Cost Index (55.6% clinical wages, 29.7% rent, 14.7% services), clinic overhead runs 50.6% above the national mean in San Francisco (1.506 index) compared with 10.0% below the mean in Imperial County (0.900 index). However, Imperial County sits at the 85th percentile of neighborhood deprivation (58.7% to 66.4% Medi-Cal coverage) while San Francisco sits at the 15th percentile. Pairing regional wage adjustments for high-cost clinics with recruitment grants and simpler billing (recovering 17.6% in claim value) addresses both constraints.
 
-The two independent designs agree within 99.4%, overturning the +0.18 unadjusted correlation and confirming a $109,000 cost per life saved (125-to-1 return). Converging evidence across distinct designs gives our policy teams confidence when randomized trials are impossible.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/observational-to-experimental
-
----
-
-### 19. Testing County Public Health Returns Across Conservative Bounds (`sensitivity-analysis-cea`)
-Does the economic case for county public health funding depend on optimistic mortality or valuation assumptions?
-
-We tested California mortality estimates across statistical lower bounds and federal HHS 2025 Value of a Statistical Life (VSL) tiers.
-
-- **Measure 1 (Central Estimate at $13.6M HHS Central VSL):** At -9.16 deaths per 100,000 per $10 per resident, county prevention funding delivers a 125-to-1 benefit-cost ratio (190-to-1 at the $20.7M High VSL tier).
-- **Measure 2 (Conservative Joint Floor at $6.3M Low VSL):** Pairing the $6.3M Low VSL tier with the -6.98 lower-bound mortality estimate still yields a 44-to-1 return (58-to-1 at the point estimate).
-
-Even under the most conservative federal valuation and effect bound, benefits exceed costs by 44-fold. Reporting full sensitivity tables equips our analysts to answer skeptical budget questions before they are asked.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/sensitivity-analysis-cea
+Read the case study and statewide 58-county spatial financing analysis:
+Case Study: https://www.caphegroup.org/methods-lab/identical-data-opposite-policies
+Statewide Analysis: https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/
 
 ---
 
-### 20. Why One-Year Mortality Spikes Mislead Small Rural Counties (`threat-regression-to-mean`)
-When a small rural county sees a one-year mortality spike, how much of next year's drop is natural bounce-back?
+## Post #16: How Permit Deduplication Changes Official Retail Access Counts (`threat-measurement-instrumentation`)
+- **Schedule:** **Wed, Dec 23, 2026 · 7:00 AM PST** (`2026-12-23 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** Food Security, CalFresh & Local Cost of Living
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/ebt-verification-methodology/
 
-We examined population-size noise and empirical Bayes shrinkage across California's 58 counties over 21 years.
+When a supermarket holds separate health permits for its bakery, deli, and meat counter, raw permit registries count one building as three or four food retailers.
 
-- **Measure 1 (Single-Year Small-County Rate Swing):** In Alpine County (1,204 residents), one death shifts rates by 83.1 per 100,000, and 89.0% of a spike reverts next year.
-- **Measure 2 (Multi-Year Pooled Panel Estimate):** Pooling 21 years with empirical Bayes weights confirms -8.11 deaths per 100,000 in small counties (-9.16 statewide).
+In Santa Clara County, deduplicating 8,555 raw health-permit records removes 1,220 multi-permit duplicates (14.3%), consolidating the registry to 7,335 unique physical locations and 724 verified SNAP-eligible food retailers (with 514 stores in the tract-level distance index at 0.573 miles mean distance vs. 0.29 miles on uncleaned lists). Auditing administrative registries before mapping service gaps prevents permit structure from masquerading as neighborhood retail supply.
 
-In medium counties like Nevada County (102,000 residents), 24.4% of a single-year swing still reflects random noise. Using multi-year rolling averages and shrinkage weights protects our rural health departments from chasing single-year noise.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/threat-regression-to-mean
-
----
-
-### 21. How Control Groups Separate Policy Lift from Statewide Trends (`threat-history-solutions`)
-When a health program expands during a statewide shift, how much of the gain came from the program itself?
-
-We compared Medicaid telehealth billers between 2019 and 2023 against active non-telehealth Medicaid billers over the same years.
-
-- **Measure 1 (Single-Group Before-and-After Change):** Telehealth billers grew by +24.33% (+22,239 providers from a 91,399 baseline), which a single-group chart attributes entirely to telehealth waivers.
-- **Measure 2 (Two-Group Difference-in-Differences Comparison):** Non-telehealth Medicaid billers also grew +18.71% from broader enrollment expansion, isolating a +5.62 percentage point net policy difference.
-
-Without an untreated comparison group, general enrollment waves get miscounted as program effects. Pairing treated cohorts with contemporaneous comparison groups keeps our policy evaluations honest.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/threat-history-solutions
+Read the case study and companion EBT verification methodology:
+Case Study: https://www.caphegroup.org/methods-lab/threat-measurement-instrumentation
+Companion Method Guide: https://tooearlytosay.com/research/methodology/ebt-verification-methodology/
 
 ---
 
-### 22. Why Passing a Pre-Trend Test Does Not Guarantee Zero Bias (`parallel-trends-power`)
-If a difference-in-differences study passes its pre-policy parallel trends test, can unmeasured post-policy drift still flip the conclusion?
+## Post #17: Separating Emergency Outbreak Surges From Routine Prevention Budgets (`reverse-causation-feedback`)
+- **Schedule:** **Mon, Dec 28, 2026 · 7:00 AM PST** (`2026-12-28 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/reverse-causation-feedback
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
-We audited event-study confidence bands and post-treatment sensitivity bounds in a multi-county evaluation.
+Comparing county public health spending and death rates in the same calendar year mixes steady prevention budgets with emergency funds sent to counties during disease outbreaks.
 
-- **Measure 1 (Conventional Pre-Trend Check):** Pre-policy lead coefficients sit near zero, but their confidence intervals span +-0.58 to +-0.62 percentage points per year.
-- **Measure 2 (Rambachan-Roth Breakdown Sensitivity Check):** The -0.47 percentage point estimate reaches zero at a 0.35x post-period drift bound (+0.003 percentage points with county linear slopes).
+Across 57 California counties over 21 years (2003 to 2023, N = 1,197 county-years), a raw same-year average shows a flat +0.18 deaths per 100,000 residents per $10 per person because emergency transfers spike when mortality rises. Isolating routine budget shifts shows that each $10 per resident in baseline public health spending prevents 9.16 deaths per 100,000 ($109,170 per life saved, or $124.60 in societal value per $1 spent, and 4.56 fewer deaths per 100,000 in the 2003 to 2019 pre-pandemic window).
 
-A noisy pre-period makes it easy to pass a conventional p > 0.05 pre-trend test while hiding meaningful drift. Reporting pre-trend noise bands and breakdown bounds helps our teams see how fragile or robust an estimate truly is.
-
-Read the full CAPHE Case Study:
-https://www.caphegroup.org/methods-lab/parallel-trends-power
+Read the case study and companion 30-year panel regime analysis:
+Case Study: https://www.caphegroup.org/methods-lab/reverse-causation-feedback
+Companion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
 ---
 
-## Topic 5: Paid Family Leave & Workforce Policy
+## Post #18: Two Independent Checks on County Public Health Mortality Returns (`observational-to-experimental`)
+- **Schedule:** **Wed, Dec 30, 2026 · 7:00 AM PST** (`2026-12-30 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/observational-to-experimental
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
-### 23. Who Gains and Who Pays Under California's SB 951 Leave Expansion (`selection-into-treatment`)
-When SB 951 raised Paid Family Leave replacement to 90% for low-wage workers, how did net transfers shift?
+Randomized trials are rarely feasible for countywide public health budgets, so finance committees look for independent empirical checks across decades and study designs.
 
-We modeled 369,600 projected 2026 Paid Family Leave claims (+39,600 new claims) alongside uncapped State Disability Insurance payroll contributions (1.345%).
+Across 57 California counties from 2003 to 2023 (1,197 county-years), isolating routine county budget shifts shows 9.16 fewer deaths per 100,000 residents per $10 per person (with a 314.1 method reliability score and 8.93 fewer deaths when excluding Los Angeles). That estimate aligns within 99.4% of Brown's (2014) earlier 40-county California governance study (9.10 fewer deaths per 100,000 from 2001 to 2008), giving county boards two independent replications across twenty years of California fiscal records.
 
-- **Measure 1 (Low- and Moderate-Wage Worker Net Transfers):** Replacing 90% of wages up to $63,000 yields a +$19.7M net transfer for lowest-wage workers (+$3.3M for the second tier).
-- **Measure 2 (High-Wage Earner Net Payroll Contributions):** Removing the wage cap on the 1.345% payroll rate produces -$78.2M and -$157.5M net contributions from top wage quartiles.
+Read the case study and companion public health spending analysis:
+Case Study: https://www.caphegroup.org/methods-lab/observational-to-experimental
+Companion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
 
-Higher wage replacement makes family leave affordable for hourly workers who previously paid into the fund without claiming benefits. Modeling uptake and financing by wage quartile shows our policymakers how social insurance rules redistribute both leave access and costs.
+---
 
-Read the full CAPHE Case Study:
+## Post #19: Testing County Prevention Returns Across Federal Valuation Tiers (`sensitivity-analysis-cea`)
+- **Schedule:** **Mon, Jan 4, 2027 · 7:00 AM PST** (`2027-01-04 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/sensitivity-analysis-cea
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
+
+When a budget committee questions the valuation assumptions behind a public health return ratio, testing the estimate across every federal valuation tier shows whether the funding decision holds up.
+
+Across the 57-county California public health panel ($109,170 cost per life saved at 9.16 fewer deaths per 100,000 per $10 per resident), societal returns clear the 1-to-1 cost-neutral line under every HHS 2025 valuation standard: 57.7-to-1 at the $6.3M low tier, 124.6-to-1 at the $13.6M central tier, and 189.6-to-1 at the $20.7M high tier. Even at the lower bound of the mortality estimate (6.98 fewer deaths per 100,000, or $143,266 per life saved) paired with the $6.3M valuation floor, the return remains 44.0-to-1.
+
+Read the case study and companion public health spending analysis:
+Case Study: https://www.caphegroup.org/methods-lab/sensitivity-analysis-cea
+Companion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
+
+---
+
+## Post #20: Single-Year Rural Mortality Spikes vs. Multi-Year Pooled Baselines (`threat-regression-to-mean`)
+- **Schedule:** **Wed, Jan 6, 2027 · 7:00 AM PST** (`2027-01-06 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/threat-regression-to-mean
+- **Companion TETS Article:** https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
+
+Awarding multi-year rural health grants based on a single year's mortality spike often mistakes small-population noise for lasting need.
+
+In Alpine County (1,204 residents), a single death shifts the annual mortality rate by 83.1 per 100,000. When a small county is selected right after a one-year spike, 71.5% to 89.0% of the following year's drop (-28.4 per 100,000) reflects natural settling toward the multi-year average rather than program impact. Using 3-to-5-year pooled baselines and Empirical Bayes weights separates one-year swings from the steady -8.11 deaths per 100,000 rural prevention return (-9.16 statewide).
+
+Read the case study and companion public health spending analysis:
+Case Study: https://www.caphegroup.org/methods-lab/threat-regression-to-mean
+Companion Analysis: https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/
+
+---
+
+## Post #21: Using Comparison Groups to Separate Local Shifts From Statewide Shocks (`threat-history-solutions`)
+- **Schedule:** **Mon, Jan 11, 2027 · 7:00 AM PST** (`2027-01-11 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/threat-history-solutions
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/when-to-use-did/
+
+When a statewide economic shift or pandemic rule change hits every county at once, a simple before-and-after comparison blends that shared shock into local program results.
+
+Across Medicaid billing records from 2018 to 2024, telehealth-eligible billing providers grew 24.33% (from 91,399 in 2019 to 113,638 in 2023). Pairing that series with non-telehealth Medicaid services (which grew 18.71%, from 109,087 to 129,492) isolates the net +5.62 percentage-point divergence (+4.60 pp after pre-trend adjustment). Adding an unaffected comparison series keeps statewide shocks from distorting local evaluations.
+
+Read the case study and companion difference-in-differences guide:
+Case Study: https://www.caphegroup.org/methods-lab/threat-history-solutions
+Companion Method Guide: https://tooearlytosay.com/research/methodology/when-to-use-did/
+
+---
+
+## Post #22: Testing How Much Trend Drift an Evaluation Can Withstand (`parallel-trends-power`)
+- **Schedule:** **Wed, Jan 13, 2027 · 7:00 AM PST** (`2027-01-13 07:00 PST`) · **Status:** `SCHEDULED (CAPHE)`
+- **Topic:** County Public Health Budgets & Mortality Returns
+- **Case Study URL:** https://www.caphegroup.org/methods-lab/parallel-trends-power
+- **Companion TETS Article:** https://tooearlytosay.com/research/methodology/parallel-trends-sensitivity/
+
+Passing a pre-policy trend test in a small sample does not guarantee that treatment and comparison groups would have stayed on parallel paths after the policy launched.
+
+Across 84 months of Medicaid claims, the pre-policy trend difference between telehealth-eligible and comparison services averages -0.47 percentage points (SE = 0.22 pp, 95% CI -0.91 to -0.03 pp). Reporting sensitivity bounds shows how much post-policy trend drift an evaluation can absorb before the estimated effect crosses zero, pairing the Medicaid billing series with the 57-county California public health panel (-9.16 deaths per 100,000).
+
+Read the case study and companion parallel-trends sensitivity guide:
+Case Study: https://www.caphegroup.org/methods-lab/parallel-trends-power
+Companion Method Guide: https://tooearlytosay.com/research/methodology/parallel-trends-sensitivity/
+
+---
+
+## Held Off (PDF Preview Created — Not Scheduled)
+
+### Held Post #23: Paid Family Leave Reach Across Worker Wage Tiers (`selection-into-treatment`)
+- **Status:** `ON HOLD — PDF PREVIEW ONLY` (`outputs/caphe_case_study_selection_into_treatment.pdf`)
+- **Unlisted Direct URL:** https://www.caphegroup.org/methods-lab/selection-into-treatment
+
+Filing a Paid Family Leave claim requires an eligible employer, payroll knowledge, job protection, and enough savings to wait for state processing. As a result, voluntary claims skew toward higher-wage workers with human-resources support.
+
+Compare California workers earning under $20,000 a year with higher-wage workers after the 2025 SB 951 benefit expansion. Although the statute raised statutory wage replacement to 90% for lower-wage workers, actual take-up among eligible new mothers earning under $20,000 remains 41.9% (161,315 claim-filing mothers out of 385,000 eligible). Take-up reaches 77.6% among higher-wage workers. Measuring program reach solely by average benefit checks misses the 58.1% of low-wage mothers who never clear the filing hurdles.
+
+The full case study maps every stage of the Paid Family Leave filing funnel across wage tiers:
 https://www.caphegroup.org/methods-lab/selection-into-treatment
 
 ---
 
-### 24. Separating Baseline Claim Growth from Policy Jumps in Paid Family Leave (`threat-maturation-solutions`)
-When California Paid Family Leave reaches 369,600 claims in 2026, how much reflects workforce growth versus policy expansion?
+### Held Post #24: Separating Policy Effects From Long-Term Trends (`threat-maturation-solutions`)
+- **Status:** `ON HOLD — PDF PREVIEW ONLY` (`outputs/caphe_case_study_threat_maturation_solutions.pdf`)
+- **Unlisted Direct URL:** https://www.caphegroup.org/methods-lab/threat-maturation-solutions
 
-We separated long-term demographic growth in California's State Disability Insurance (SDI) fund from the 2026 twelve-week expansion jump.
+Statewide Paid Family Leave claims grow nearly every year as California's labor force expands and awareness spreads. When a new wage-replacement law takes effect, a multi-year trend split separates steady background growth from the policy shift itself.
 
-- **Measure 1 (Baseline Demographic Maturation):** From 325,055 actual claims in 2025, routine +1.52% annual workforce and awareness growth projects 330,000 baseline claims in 2026 (+4,945 claims).
-- **Measure 2 (Incremental Policy Expansion Jump):** Extending leave duration and raising wage replacement adds +39,600 incremental claims in 2026, bringing total volume to 369,600.
+Across 24 years of California Employment Development Department Paid Family Leave records (2004 to 2025), annual bonding claims rose from 152,706 to 492,043. However, bonding claims were already climbing by +5.9% per year before the 2024 taxable wage-ceiling repeal and the 2025 90% wage-replacement tier. Accounting for that 20-year baseline trend and comparing against Disability Insurance claims (+6.2%) isolates the net two-year statutory surge above trend (+15.4% in 2024 and +13.6% in 2025).
 
-Tracking both components explains why the SDI reserve ratio dips to 10.8% ($1.96B) in 2026 before rebuilding to 30.4% ($6.37B) by 2030. Subtracting baseline maturation first prevents our fiscal analysts from overcharging new legislation for routine population growth.
-
-Read the full CAPHE Case Study:
+The full case study walks through the 24-year California Paid Family Leave trend split:
 https://www.caphegroup.org/methods-lab/threat-maturation-solutions
+
+---
+

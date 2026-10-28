@@ -268,8 +268,15 @@ function verifyAllCaseStudiesAndFigures() {
   const hubPath = path.join(LAB_DIR, 'index.html');
   const hubHtml = fs.readFileSync(hubPath, 'utf8');
   assert(hubHtml.includes('<h1>California Public Health Case Studies</h1>'), '[Hub index.html] Missing H1');
+  const HELD_PFL_SLUGS = new Set(['selection-into-treatment', 'threat-maturation-solutions']);
   for (const slug of Object.keys(CASE_STUDY_CHECKS)) {
-    assert(hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Missing link to /methods-lab/${slug}`);
+    if (HELD_PFL_SLUGS.has(slug)) {
+      assert(!hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Held PFL case study /methods-lab/${slug} must not appear on public hub`);
+      const pflHtml = fs.readFileSync(path.join(LAB_DIR, slug, 'index.html'), 'utf8');
+      assert(pflHtml.includes('<meta name="robots" content="noindex, nofollow">'), `[${slug}] Held PFL case study missing noindex meta tag`);
+    } else {
+      assert(hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Missing link to /methods-lab/${slug}`);
+    }
   }
 
   return errors;

@@ -1200,6 +1200,9 @@ const lhaSubmissions = [];
 
 // Submit LHA spending data
 app.post('/api/lha/submit', async (req, res) => {
+  return res.status(503).json({
+    error: 'The LHA Public Health ROI Calculator is temporarily offline for a scheduled data and methodology update.'
+  });
   const {
     county,
     fiscal_year,

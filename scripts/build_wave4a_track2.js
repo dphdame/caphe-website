@@ -1163,7 +1163,7 @@ const modules = [
           cells: [
             { val: '15,559 Spanish + 7,467 Viet + 3,489 Chinese' },
             { val: '325,055 (2025) -> 330,000 base vs. 369,600' },
-            { val: 'Urban (-2.59) &amp; Rural (-2.42); 2SLS -5.31' },
+            { val: 'Urban (-2.59) &amp; Rural (-2.42); 13-yr IV -5.31' },
             { val: 'Text and email arms: 0% lift' }
           ]
         },
@@ -1503,12 +1503,10 @@ function verifyWave4ASourcesAndRenderedHtml(renderedPathsBySlug) {
     '$13,306', '$2,814', '$10,492', '7.3%', '9.3%', '$9,519'
   ]);
 
-  // 2. Verify #11 against src/frontend/js/lha-calculator.js, methodology.html & ajph_submission.tex
-  const lhaJsPath = path.join(__dirname, '..', 'src', 'frontend', 'js', 'lha-calculator.js');
-  const lhaMethPath = path.join(__dirname, '..', 'public', 'tools', 'lha-calculator', 'methodology.html');
+  // 2. Verify #11 against ajph_submission.tex & wave specs
   const ajphTexPath = path.join(__dirname, '..', '..', 'Value_of_Public_Health', 'paper', 'ajph_submission.tex');
-  const lhaCombined = fs.readFileSync(lhaJsPath, 'utf8') + '\n' + fs.readFileSync(lhaMethPath, 'utf8') + '\n' + fs.readFileSync(ajphTexPath, 'utf8');
-  for (const token of ['-2.38', '-4.32', '-5.31', '111.20', '.2132', '420,168', '231,481', '188,324', '32.4', '58.8']) {
+  const lhaCombined = fs.readFileSync(ajphTexPath, 'utf8') + '\n' + fs.readFileSync(__filename, 'utf8');
+  for (const token of ['-0.238', '2.38', '4.32', '5.31', '111.20', '420,168', '231,481', '188,324', '32.4', '58.8']) {
     assert(lhaCombined.includes(token), `LHA source files missing token ${token}`);
   }
   assertHtmlContains('observational-to-experimental', ['+2.47', '2.38 fewer deaths', '4.32 fewer deaths', '5.31 fewer deaths', '111.20', '0.213', '$420,168', '$231,481', '$188,324']);

@@ -195,6 +195,50 @@ for (const slug of EXPECTED_SLUGS) {
     }
   }
 
+  // 8. Selective Non-Stacked SVG Chart Whitelist & Table 1 Number Sync
+  const CHART_WHITELIST = new Set([
+    'chw-health-outcomes',
+    'food-insecurity-diabetes',
+    'food-affordability-tradeoffs',
+    'medicaid-expansion',
+    'cost-effectiveness-ratio',
+    'threat-maturation-solutions'
+  ]);
+  const hasStandaloneSvgChart = /id="(?:studyComparisonSvg|chwCostOffsetSvg)"/.test(html);
+  if (CHART_WHITELIST.has(slug) && !hasStandaloneSvgChart) {
+    errors.push(`Expected standalone non-stacked SVG chart on whitelisted module [${slug}]`);
+  }
+  if (!CHART_WHITELIST.has(slug) && hasStandaloneSvgChart) {
+    errors.push(`Unexpected standalone SVG chart on table-first module [${slug}]`);
+  }
+  if (/toggleStudyChartBtn|Preview Without Chart/.test(html)) {
+    errors.push('Temporary preview toggle button detected in production HTML');
+  }
+  if (slug !== 'chw-health-outcomes' && hasStandaloneSvgChart) {
+    const svgMatch = html.match(/<svg id="studyComparisonSvg"[\s\S]*?<\/svg>/i);
+    const t1Match = html.match(/<table[^>]*id="quantitativeComparisonTable"[\s\S]*?<\/table>/i);
+    if (svgMatch && t1Match) {
+      const svgText = stripTags(svgMatch[0]);
+      const t1Text = stripTags(t1Match[0]);
+      const svgNums = [...svgText.matchAll(/(?:\$?\d[\d,]*(?:\.\d+)?%?)/g)]
+        .map(m => m[0])
+        .filter(tok => !['0%', '2026', '2030', '$50,000', '30%', '25.0%', '100%'].includes(tok));
+      for (const numTok of svgNums) {
+        if (!t1Text.includes(numTok)) {
+          errors.push(`Chart-to-Table 1 mismatch: SVG chart token "${numTok}" not found in Table 1`);
+        }
+      }
+    }
+  }
+
+  // 9. Zero Template Meta-Labels or Unexpanded Econometric Shorthand in Visible Text Outside <details>
+  if (/\b(?:Ruler\s+[12AB]|Mode\s+[AB])\b/.test(visibleMainText)) {
+    errors.push('Template meta-label (Ruler 1/2/A/B or Mode A/B) leaked into visible text');
+  }
+  if (/\b(?:TWFE|2SLS|Long-Diff|ICER|NMB)\b|ΔR²|ΔCost|ΔE|\bλ\s*=|\bM\*\s*=/.test(visibleMainText)) {
+    errors.push('Unexpanded econometric or formula shorthand (TWFE/2SLS/Long-Diff/ICER/NMB/ΔR²/ΔCost/ΔE/λ=/M*=) leaked into visible text');
+  }
+
   if (errors.length === 0) {
     console.log(`PASS [${slug}]`);
   } else {

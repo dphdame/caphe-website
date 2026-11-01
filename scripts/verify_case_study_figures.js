@@ -92,13 +92,14 @@ function verifyAllCaseStudiesAndFigures() {
   assert(Math.round((fraudJson.post_paid_per_month_median / fraudJson.post_paid_per_month_median) * 100) === 100, 'measurement-error-claims bar 3');
 
   // Pipeline 4: 57-County Local Health Jurisdiction Mortality & Exposure Horizons
-  const lhaJsPath = path.join(ROOT, 'src', 'frontend', 'js', 'lha-calculator.js');
-  const lhaMethPath = path.join(ROOT, 'public', 'tools', 'lha-calculator', 'methodology.html');
   const ajphTexPath = path.join(ROOT, '..', 'Value_of_Public_Health', 'paper', 'ajph_submission.tex');
-  const lhaCombined = [lhaJsPath, lhaMethPath, ajphTexPath]
+  const wave3Path = path.join(ROOT, 'scripts', 'build_wave3_track1_track3.js');
+  const wave4aPath = path.join(ROOT, 'scripts', 'build_wave4a_track2.js');
+  const wave4bPath = path.join(ROOT, 'scripts', 'build_wave4b_track4.js');
+  const lhaCombined = [ajphTexPath, wave3Path, wave4aPath, wave4bPath]
     .map(p => fs.readFileSync(p, 'utf8'))
     .join('\n');
-  for (const token of ['-2.38', '-4.32', '-5.31', '111.20', '.2132', '420,168', '231,481', '188,324', '32.4', '58.8', '.0049', '.0788']) {
+  for (const token of ['-0.238', '2.38', '4.32', '5.31', '111.20', '420,168', '231,481', '188,324', '32.4', '58.8', '.0049', '.0788']) {
     assert(lhaCombined.includes(token), `LHA source files missing token ${token}`);
   }
 

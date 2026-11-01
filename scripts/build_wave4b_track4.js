@@ -767,7 +767,7 @@ const modules = [
             { val: 'Poverty explains 62.2% of gap', barWidth: 62, barColor: '#0D9488', textColor: 'text-emerald-800' },
             { val: '71.7% vs. 57.1% visits (1.90x)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
             { val: 'Active months: 38.0th vs. 50.0th', barWidth: 38, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: 'Long-Diff 2SLS: 5.31 fewer / 100K', barWidth: 98, barColor: '#0041A5', textColor: 'text-[#003080]' }
+            { val: '13-yr IV: 5.31 fewer / 100K', barWidth: 98, barColor: '#0041A5', textColor: 'text-[#003080]' }
           ]
         },
         {
@@ -843,7 +843,7 @@ const modules = [
     synthesis: {
       title: 'Why Mapping the System Path Comes Before Running the Model',
       p1: 'Adding every health and income variable to a tract regression mixes pre-program income gaps with health steps that sit on the path between food and chronic disease. If a variable is a pre-program confounder (such as poverty explaining 62.2% of tract food-need variance), leaving it out slants the slope. If a variable is a post-start care step, such as a Community Health Worker linking a patient to primary care (raising visits from 57.1% to 71.7%, OR = 1.90) to prevent a hospital stay, controlling for clinic visits subtracts part of the program\'s gain.',
-      p2: 'Before running a model, health economists map each variable in a causal diagram. Confounders are shared causes measured before treatment, so analysts control for them. Care steps sit on the causal path, so analysts leave them open when measuring total impact. Colliders and post-outcome filters like active 2024 billing alter the evaluation sample (where the 2024 active subset shows an observed 0.442 AUC vs. 0.724 on the full list), so analysts avoid filtering on them. Instruments shift treatment with no direct link to the outcome, so analysts use them in Stage 1 (as the LHA long-difference 2SLS model does with F = 111.20).'
+      p2: 'Before running a model, health economists map each variable in a causal diagram. Confounders are shared causes measured before treatment, so analysts control for them. Care steps sit on the causal path, so analysts leave them open when measuring total impact. Colliders and post-outcome filters like active 2024 billing alter the evaluation sample (where the 2024 active subset shows an observed 0.442 AUC vs. 0.724 on the full list), so analysts avoid filtering on them. Instruments shift treatment with no direct link to the outcome, so analysts use them in Stage 1 (as the LHA 13-year routine-budget IV model does with F = 111.20).'
     },
     methodologyParagraphs: [
       '<strong>Mode Classification (Mode A Synthesis on Observed Inputs):</strong> The role rules and model guide are a Mode A synthesis. The numbers in Table 1 (tract poverty R² = 62.2%; CHW primary care visits 71.7% vs. 57.1% TOT, OR = 1.90, and -30% hospital stays; Medicaid screening AUC = 0.724 full list vs. observed AUC = 0.442 in the 2024 active subset; LHA Long-Difference 2SLS -5.31, first-stage F = 111.20, Hansen J p = 0.2132) are observed outputs from four separate CAPHE files.',
@@ -1102,7 +1102,7 @@ const modules = [
       }
     ],
     related: [
-      { slug: 'cost-effectiveness-ratio', title: 'ICERs, NMB & 1,000-Draw Monte Carlo PSA', note: 'Case study on probabilistic sensitivity analysis and willingness-to-pay thresholds' },
+      { slug: 'cost-effectiveness-ratio', title: 'Cost per QALY, Net Value & 1,000-Draw Sensitivity Checks', note: 'Case study on probabilistic sensitivity analysis and willingness-to-pay thresholds' },
       { slug: 'measuring-health-common-unit', title: 'Measuring Health in QALYs & VSL Tiers', note: 'Case study explaining how HHS 2025 VSL tiers and QALY weights are constructed' },
       { slug: 'chw-health-outcomes', title: 'Evaluating CHW Impact & Medi-Cal Billing', note: 'Case study on CHW direct billing, payer offsets, and societal hospital savings' }
     ]

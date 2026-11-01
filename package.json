@@ -9,8 +9,8 @@
     "dev": "nodemon src/backend/server.js",
     "seo:validate": "node scripts/validate-seo.js",
     "seo:sitemap": "node scripts/generate-sitemap.js",
-    "gate": "npm run seo:validate && npm test",
-    "predeploy": "npm run seo:validate && npm test"
+    "gate": "npm run seo:validate && node scripts/audit_anti_cheat.js && node scripts/verify_case_study_figures.js && npm test",
+    "predeploy": "npm run gate"
   },
   "engines": {
     "node": "22.x"

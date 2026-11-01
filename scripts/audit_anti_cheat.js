@@ -103,10 +103,13 @@ for (const slug of EXPECTED_SLUGS) {
     errors.push('Missing collapsible <details id="data-sources-endnotes"> block');
   }
 
-  // 2. Metadata, JSON-LD & External Citations
+  // 2. Metadata, JSON-LD, GA4 Tag & External Citations
   const expectedCanonical = `https://www.caphegroup.org/case-studies/${slug}`;
   if (!html.includes(`<link rel="canonical" href="${expectedCanonical}">`)) {
     errors.push(`Missing or mismatched canonical link (${expectedCanonical})`);
+  }
+  if (!html.includes('https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE')) {
+    errors.push('Missing GA4 Google tag (G-E1LG1N11QE) in <head>');
   }
   if (!/"@type"\s*:\s*\[\s*"Article"\s*,\s*"LearningResource"\s*\]/.test(html)) {
     errors.push('Missing Article/LearningResource JSON-LD');
@@ -115,7 +118,7 @@ for (const slug of EXPECTED_SLUGS) {
     errors.push('Missing FAQPage JSON-LD');
   }
   const extLinks = (html.match(/href="https:\/\/[^"]+"/g) || []).filter(
-    h => !h.includes('fonts.googleapis.com') && !h.includes('fonts.gstatic.com') && !h.includes('caphegroup.org')
+    h => !h.includes('fonts.googleapis.com') && !h.includes('fonts.gstatic.com') && !h.includes('googletagmanager.com') && !h.includes('caphegroup.org')
   );
   if (extLinks.length < 4) {
     errors.push(`Expected >= 4 external citation links, found ${extLinks.length}`);

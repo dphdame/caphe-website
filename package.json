@@ -9,6 +9,8 @@
     "dev": "nodemon src/backend/server.js",
     "seo:validate": "node scripts/validate-seo.js",
     "seo:sitemap": "node scripts/generate-sitemap.js",
+    "seo:baseline": "node scripts/pull_gsc_ga4_baseline.js",
+    "seo:submit-sitemaps": "node scripts/pull_gsc_ga4_baseline.js --submit-sitemaps && node scripts/indexnow-submit.js --all",
     "gate": "npm run seo:validate && node scripts/audit_anti_cheat.js && node scripts/verify_case_study_figures.js && npm test",
     "predeploy": "npm run gate"
   },

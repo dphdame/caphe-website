@@ -1381,6 +1381,14 @@ ${cardsHtml}
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1LG1N11QE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E1LG1N11QE');
+  </script>
   <title>${spec.pageTitle}</title>
   <meta name="description" content="${spec.metaDescription}">${spec.unlisted ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   <link rel="canonical" href="${canonicalUrl}">
@@ -1989,7 +1997,7 @@ ${relatedLinksHtml}
   if (html.includes('\u2014') || html.includes('&mdash;')) {
     throw new Error(`[${spec.slug}] Em-dash detected in generated HTML! Strictly forbidden by style-pass.`);
   }
-  const extLinks = (html.match(/href="https:\/\/[^"]+"/g) || []).filter(h => !h.includes('fonts.googleapis.com') && !h.includes('fonts.gstatic.com') && !h.includes('caphegroup.org'));
+  const extLinks = (html.match(/href="https:\/\/[^"]+"/g) || []).filter(h => !h.includes('fonts.googleapis.com') && !h.includes('fonts.gstatic.com') && !h.includes('googletagmanager.com') && !h.includes('caphegroup.org'));
   if (extLinks.length < 4) {
     throw new Error(`[${spec.slug}] Expected >= 4 external citation links in body, found ${extLinks.length}`);
   }

@@ -1,5 +1,35 @@
 # CAPHE Website Work Log
 
+## 2026-11-01: Deploy 24 Plain-English PHO Case Studies & Selective Non-Stacked SVG Charts (Heroku v237)
+
+- **Conversation Link:** [CAPHE 24 Case Studies Build & Deployment (`b378d7ce-ffef-403d-86d8-d73c4162621b`)](conversation://b378d7ce-ffef-403d-86d8-d73c4162621b)
+- **Transcript Path:** `/Users/vserver/.gemini/antigravity/brain/b378d7ce-ffef-403d-86d8-d73c4162621b/.system_generated/logs/transcript.jsonl`
+
+### Completed
+- Rebuilt all **24 CAPHE Case Studies** (`public/methods-lab/*/index.html`) around a unified Public Health Officer (PHO) decision architecture:
+  1. **The Policy Setting:** Concrete California policy context, operational mechanisms, and full expansion of technical/program acronyms on first use.
+  2. **Analytical Answer Block (`60–120` words):** Direct answer to the title question with verified magnitudes and inline `[N]` citations resolving to `#ref-N`.
+  3. **Table 1 (Observed Baseline Comparison):** Plain-English column headers, `Baseline Measure` corner label, `Observed Data` vs. `Assumed Input` row tags, inline proportional mini-bars on the highlighted comparison row, and expandable calculation notes.
+  4. **Selective Standalone Non-Stacked SVG Comparison Charts (`6` of `24` modules):**
+     - `chw-health-outcomes` (interactive 58-county calculator + `#chwCostOffsetSvg` 3-bar horizontal comparison against `1x Worker Cost`, keeping 2-year QALYs separate).
+     - `food-insecurity-diabetes` & `food-affordability-tradeoffs` (paired pre-rent vs. post-rent monthly food share bars against the `30%` post-rent budget stress line).
+     - `medicaid-expansion` (paired total six-month coverage losses vs. avoidable paperwork losses in adult counts).
+     - `cost-effectiveness-ratio` (`4` accounting horizons plotted against the `$50,000 / QALY` strict value benchmark).
+     - `threat-maturation-solutions` (paired `2026` vs. `2030` SDI reserve ratio bars relative to `0%` and the `25.0%` prudent reserve floor).
+     - Kept the remaining **18 case studies** table-first without standalone chart duplication.
+  5. **Scenario Cards & Table 2 (Sensitivity & Policy Stress Test):** Plain-English translations of all econometric shorthand (`TWFE`, `OLS`, `2SLS`, `Long-Diff`, `ICER`, `NMB`, `BCR`, `GPCI`, `MACPAC`, `VSL`, `M* = 0.35`, `ΔR²`).
+- Verified with `npm run gate` (`58/58` tests + `validate-seo.js` PASS) and `node scripts/audit_anti_cheat.js` (`24/24` modules PASS).
+- Deployed to production on `master` (commit `481661b`, Heroku Release `v237` at `https://www.caphegroup.org/methods-lab`) while preserving the offline state of the LHA ROI Calculator (`c9fcead`) and backing up the full branch on `claude/lha-calculator-ajph-v2` (`27c3ef1`).
+
+### Files Modified
+- `docs/CASE_STUDY_TEMPLATE_STANDARD.md` — codified selective visualization (`Rule V1–V3`), plain-English PHO prose rules, and ledger purity.
+- `scripts/render_option_c.js` — shared template renderer, plain-English table cell/header sanitizer, and selective SVG chart generator.
+- `scripts/build_wave2_flagships.js`, `scripts/build_wave3_track1_track3.js`, `scripts/build_wave4a_track2.js`, `scripts/build_wave4b_track4.js` — spec definitions for all 24 case studies.
+- `scripts/audit_anti_cheat.js`, `test/answer-block.test.js` — automated governance and DOM verification gates.
+- `public/methods-lab/*/index.html` — all 24 rendered case study HTML pages.
+
+---
+
 ## 2026-06-11: Reschedule "ROI in Public Health" Webinar (June 11 → June 18)
 
 ### Completed

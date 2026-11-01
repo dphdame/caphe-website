@@ -266,13 +266,8 @@
     details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
 
     /* Option C Visual Components */
-    .ruler-svg-frame {
-      margin: 0.65rem 0 0.65rem;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #F8FAFC;
-    }
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
     .col-header-img {
       width: 100%;
       height: 68px;
@@ -293,64 +288,6 @@
       justify-content: center;
       overflow: hidden;
     }
-    .budget-bar-track {
-      height: 22px;
-      background: #E2E8F0;
-      border-top: 1px solid #CBD5E1;
-      overflow: hidden;
-      display: flex;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #fff;
-      margin: 0;
-    }
-    .budget-bar-seg {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      overflow: hidden;
-      padding: 0 4px;
-    }
-    .budget-bar-seg[data-pct]::after {
-      content: attr(data-pct);
-      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
-    .seg-food { background: #F59E0B; color: #1C1C1C; }
-    .seg-rest { background: #0F766E; color: #fff; }
-    .seg-gross { background: #475569; color: #fff; }
-    .seg-primary { background: #0041A5; color: #fff; }
-
-    .bar-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.375rem 0.625rem;
-      margin-bottom: 0.55rem;
-    }
-    .bar-legend-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #1E293B;
-      background: rgba(241, 245, 249, 0.9);
-      border: 1px solid #CBD5E1;
-      border-radius: 4px;
-      padding: 0.15rem 0.45rem;
-      line-height: 1.3;
-    }
-    .bar-legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
     .inline-mini-bar {
       height: 7px;
       background: #E2E8F0;
@@ -471,10 +408,10 @@
     },
     {
       "@type": "Question",
-      "name": "Why do big-county splits in California often look statistically noisy?",
+      "name": "How does the California 57-county LHA panel test stability across county size strata?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "California has only a small count of very large urban counties. Restricting a county panel model to big cities cuts the cluster count, widens standard errors, and lowers statistical power even when the true effect is present."
+        "text": "Across the 2003 to 2019 pre-pandemic window (N = 943), the mortality reduction is statistically significant in both large urban counties (-2.59 per $10, p &lt; 0.0001) and smaller/rural counties (-2.42 per $10, p = 0.0136), with a wild cluster bootstrap p-value of 0.007."
       }
     }
   ]
@@ -533,7 +470,7 @@
   <!-- MAIN CONTENT -->
   <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
 
-    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
     <div class="border-b border-slate-200 pb-6 mb-8">
       <div class="text-xs font-bold text-[#0041A5] mb-2">
         CAPHE Case Studies &middot; Program Impact
@@ -544,9 +481,12 @@
       <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
         Testing how much post-policy trend drift a modeled county panel can take before its result crosses zero.
       </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        Analysts use multi-year county records to measure how public health budgets and local policy changes affect community outcomes. Before trusting a two-group comparison, teams check whether treated and comparison counties followed similar paths before the policy began. Short pre-policy windows with wide year-to-year swings can let slow county drift pass that check.
+      </p>
       <!-- geo:answer:start -->
       <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
-        When auditing a county panel study that passes a pre-policy trend check, budget teams still face risk if wide pre-period noise bands let slow county drift pass unseen. In California's <strong>57-county public health panel (1,197 county-years),</strong> the <strong>9.16 fewer deaths per 100,000</strong> finding holds across <strong>46 of 47</strong> model checks.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> In a shorter <strong>1,408-county panel,</strong> a <strong>-0.47 percentage point</strong> result holds up only if modeled post-policy drift stays below <strong>35% (M* = 0.35)</strong> of pre-policy swing.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Passing a pre-trend check alone leaves a <strong>&plusmn;1.27 percentage point</strong> noise band <strong>(2.5 times</strong> the effect) unexamined, so reporting drift limits shows which findings can guide capital budgets.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+        When auditing California's <strong>57-county public health panel (N = 943 pre-COVID county-years),</strong> the <strong>2.38 fewer deaths per 100,000</strong> annual finding (building to <strong>4.32</strong> over 13-year cumulative horizons) holds across urban and rural strata and wild cluster bootstrap checks <em>(p</em> = 0.007).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> In a shorter <strong>1,408-county panel,</strong> a <strong>-0.47 percentage point</strong> result holds up only if modeled post-policy drift stays below <strong>35% of the pre-policy swing.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Passing a pre-trend check alone leaves a <strong>&plusmn;1.27 percentage point</strong> noise band <strong>(2.5 times</strong> the effect) unexamined, so reporting drift limits shows which findings can guide capital budgets.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
       </p>
       <!-- geo:answer:end -->
     </div>
@@ -573,19 +513,19 @@
                 Trend-Check Measure
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stated Input: Zero Drift</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Model 1: Zero Drift</div>
                 <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Base Event Study</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stated Input: Noise Band</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Model 2: Noise Check</div>
                 <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-Trend Noise Band</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Drift Limit Bound</div>
-                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Trend-Drift Bounds</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Model 3: Drift Bound</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Post-Policy Drift Limit</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Stated Input: County Slopes</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Model 4: Slope Check</div>
                 <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">County Linear Slopes</div>
               </th>
             </tr>
@@ -627,7 +567,7 @@
             </tr>
             <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
               <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
-                Plausible Effect Range*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+                Plausible Effect Range<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
               </th>
               <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
                 <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-0.91 to -0.03 pp</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">0.88 span</span>
@@ -648,7 +588,7 @@
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Trend Check &amp; Drift Limit*<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+                Trend Check &amp; Drift Limit<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
                 <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Clear drop at zero drift</span>
@@ -671,7 +611,7 @@
                 <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Assumes 0.00x drift</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±1.27 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">>2.5x the effect</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">±1.27 pp</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&gt;2.5x the effect</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
                 <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">At 2.0x drift: -1.08 to +0.15 pp</span>
@@ -685,16 +625,16 @@
                 CA 57-County Panel Benchmark
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Full panel: 9.16 fewer deaths</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Annual panel: 2.38 fewer deaths</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Large-county cut: low power</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13-yr cumulative: 4.32 fewer</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-ACA -3.07 vs Post -8.93</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">2003-2016 single-regime: -2.62</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">21-Year Model</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">46 of 47 checks</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13-yr routine-budget IV: -5.31 / 100K</span>
               </td>
             </tr>
           </tbody>
@@ -711,7 +651,7 @@
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
         <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
-          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Exact statistics behind the plain cells (stated base inputs, N = 1,408-county DiD panel). <strong>Base TWFE:</strong> -0.47 pp, SE = 0.22 pp, 95% CI [-0.91, -0.03], p = 0.036 at M = 0. <strong>Pre-period leads:</strong> SE = 0.620 (e = -3), SE = 0.582 (e = -2), SE = 0.549 (e = -1); joint pre-trend test Pre-F p = 0.9997 (low power). <strong>Rambachan-Roth bounds:</strong> robust sets fold in pre-trend SE; M* = 0.35 is a Mode A calculation. <strong>County linear slopes:</strong> +0.003 pp, SE = 0.016 pp, p = 0.87; placebo date test p = 0.04. <strong>California LHA panel (57 counties, N = 1,197 county-years):</strong> Full Panel IV 9.16 fewer deaths per 100,000 per $10/person, SE = 1.11; first-stage F = 314.1.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Base Event Study.</strong> Assumes Zero Post-Trend Gap. <strong>Pre-Trend Noise Band.</strong> 3-Year Pre-Policy Noise Check. <strong>Trend-Drift Bounds.</strong> 35% Drift Limit vs. 2.0x Drift. <strong>County Linear Slopes.</strong> County-Specific Slope Control.</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Drift Bounds on Stated Event-Study Inputs (N = 1,408 Counties); Pre-Test Power &amp; Drift Limits. Ruler 1: Standard Pre-Trend Gate (Passes Standard Trend Check): <strong>ATT = -0.47 pp (clear drop at zero drift)</strong>. Stated base inputs (N = 1,408 counties): pre-policy lead points at <em>e = -3, -2, -1</em> are near zero (<strong>-0.056, -0.030, 0.000</strong>) and pass the joint pre-trend check. Standard practice treats parallel trends as met and reports a <strong>-0.47 pp (&plusmn;0.22 pp margin)</strong> effect. Ruler 2: Mode A Post-Policy Drift Limit (M* = 0.35): <strong>M* = 0.35 | Shifts to +0.003 pp</strong>. Pre-period noise bands span <strong>-1.27 to +1.16 pp</strong> (2.5x wider than the ATT). In the Mode A calculation on these inputs, if post-policy drift tops <strong>35% (M* = 0.35)</strong> of the max pre-period slope change, the range crosses zero. Method details sit in the Table Notes.</p>
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Exact statistics behind the plain cells (stated base inputs, N = 1,408-county DiD panel). <strong>Base TWFE:</strong> -0.47 pp, SE = 0.22 pp, 95% CI [-0.91, -0.03], p = 0.036 at M = 0. <strong>Pre-period leads:</strong> SE = 0.620 (e = -3), SE = 0.582 (e = -2), SE = 0.549 (e = -1); joint pre-trend test Pre-F p = 0.9997 (low power). <strong>Rambachan-Roth bounds:</strong> robust sets fold in pre-trend SE; M* = 0.35 is a Mode A calculation. <strong>County linear slopes:</strong> +0.003 pp, SE = 0.016 pp, p = 0.87; placebo date test p = 0.04. <strong>California LHA panel (57 counties, N = 943 pre-COVID county-years):</strong> Annual TWFE OLS 2.38 fewer deaths per 100,000 per $10/person (SE = 0.78, p = 0.0022), 13-year cumulative OLS -4.32 (SE = 1.54, p = 0.0052), and Long-Difference Lewbel 2SLS -5.31 (first-stage F = 111.20).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Base Event Study.</strong> Assumes Zero Post-Trend Gap. <strong>Pre-Trend Noise Band.</strong> 3-Year Pre-Policy Noise Check. <strong>Post-Policy Drift Limit.</strong> 35% Drift Limit vs. 2.0x Drift. <strong>County Linear Slopes.</strong> County-Specific Slope Control.</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Drift Bounds on Stated Event-Study Inputs (N = 1,408 Counties); Pre-Test Power &amp; Drift Limits. Ruler 1: Standard Pre-Trend Gate (Passes Standard Trend Check): <strong>ATT = -0.47 pp (clear drop at zero drift)</strong>. Stated base inputs (N = 1,408 counties): pre-policy lead points at <em>e = -3, -2, -1</em> are near zero (<strong>-0.056, -0.030, 0.000</strong>) and pass the joint pre-trend check. Standard practice treats parallel trends as met and reports a <strong>-0.47 pp (&plusmn;0.22 pp margin)</strong> effect. Ruler 2: Mode A Post-Policy Drift Limit (M* = 0.35): <strong>M* = 0.35 | Shifts to +0.003 pp</strong>. Pre-period noise bands span <strong>-1.27 to +1.16 pp</strong> (2.5x wider than the ATT). In the Mode A calculation on these inputs, if post-policy drift tops <strong>35% (M* = 0.35)</strong> of the max pre-period slope change, the range crosses zero. Method details sit in the Table Notes.</p>
         </div>
       </details>
       <div class="px-5 pb-4">
@@ -750,7 +690,7 @@
                 Pre-Trend Noise Band
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
-                Trend-Drift Bounds
+                Post-Policy Drift Limit
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
                 County Linear Slopes
@@ -763,13 +703,13 @@
                 Core Trend Assumption
               </th>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Post-policy paths stay 100% parallel across treated and comparison counties.
+                Post-policy paths stay 100% parallel across treated and comparison counties (zero drift).
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
                 A passing pre-policy trend check is read as proof that post-policy paths stay parallel.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Allows post-policy trend drift up to M times the max slope shift between pre-policy years.
+                Allows post-policy trend drift up to a chosen multiple of the largest pre-policy slope shift.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
                 Fits a straight-line time slope for each county using only 3 pre-policy years.
@@ -783,10 +723,10 @@
                 Bounds fold pre-period lead noise into the post-policy range that [-0.91, -0.03] omits.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                A 1.0 pp/yr drift passes the check yet accounts for the -0.47 pp drop.
+                With ±0.62 pp pre-noise, a 1.0 pp/yr drift passes the check yet accounts for the -0.47 pp drop.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                A drift limit of M* = 0.35 shows how little drift crosses zero.
+                A 35% drift limit shows how little drift crosses zero.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
                 Fitting 1,408 county slopes on 3 pre-years overfits noise and absorbs real phased-in gains.
@@ -797,16 +737,16 @@
                 Lesson for County Studies
               </th>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                The 57-county LHA panel has high power across 21 years.
+                The 57-county LHA panel has high power across 17 pre-COVID years, holding in urban and rural strata.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Teams should not read low power as zero effect.
+                When a short 3-year pre-window gives wide ranges, teams should not read low power as zero drift.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Big policy shifts like the 2014 ACA expansion shift flat trend lines.
+                Regime shifts like the 2020-2023 COVID-19 grant surge require separate windows.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Long 21-year panels with routine-budget models beat fitting county slopes on 3 pre-years.
+                Long multi-year panels and 13-year cumulative models (-4.32) beat fitting county slopes on 3 pre-years.
               </td>
             </tr>
             <tr class="bg-slate-50 border-t-2 border-slate-200">
@@ -822,8 +762,8 @@
                 <span class="block text-slate-800 leading-snug">Report the pre-period band beside any pre-policy trend check.</span>
               </td>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
-                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check M* >= 1.0 for Capital Shifts<span class="sr-only">.</span></strong>
-                <span class="block text-slate-800 leading-snug">If the drift limit sits below 1.0, pair the study with a routine-budget model.</span>
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check 1.0x Drift for Capital Shifts<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">If the drift limit sits below 1.0x (here 0.35x), pair the study with a multi-year panel model.</span>
               </td>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
                 <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use 6+ Pre-Years for County Slopes<span class="sr-only">.</span></strong>
@@ -839,44 +779,44 @@
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Table 2 Notes: Roth (2022) Pre-Test Power &amp; Rambachan-Roth (2023) M* Bounds</span>
+            <span class="font-bold text-slate-900">Table 2 Notes: Roth (2022) Pre-Test Power &amp; Rambachan-Roth (2023) Drift Bounds</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
         <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
           <p>&bull; <strong>Pre-Period Noise vs. Signal (Stated Base Inputs, N = 1,408 Counties):</strong> At lead e = -3, the point is -0.056 pp with SE = 0.620 (95% CI: [-1.27, +1.16]). At e = -2, it is -0.030 pp with SE = 0.582 ([-1.17, +1.11]). At e = -1, it is 0.000 pp with SE = 0.549 ([-1.08, +1.08]). The pre-period CIs are 2.5x wider than the -0.47 pp ATT, so the joint test (p = 0.9997) has low power (<a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Roth, 2022, AER: Insights</a>).</p>
-          <p>&bull; <strong>HonestDiD Drift Limit (Mode A Calculation, M* = 0.35):</strong> Under <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023, Review of Economic Studies)</a>, M = 1.0 allows post-policy trend drift up to 100% of the max pre-period slope shift. Here, the 95% robust range hits 0.00 at M* = 0.35 ([-0.96, 0.00] pp) and widens to [-1.08, +0.15] pp at M = 2.0.</p>
-          <p>&bull; <strong>Unit Rules:</strong> The ATT, leads, SEs, and M* bounds come from the 1,408-county panel (percentage points). The -9.16, -3.07, -8.93, and F = 314.1 figures come from the separate 57-county California LHA panel (deaths per 100,000 per $10/person; N = 1,197 county-years, N = 969 in model).</p>
-          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Core Trend Assumption (Base Event Study).</strong> Post-policy paths stay 100% parallel across treated and comparison counties (M = 0). &middot; <strong>What Drift Bounds Add (Pre-Trend Noise Band).</strong> With ±0.62 pp pre-noise, a 1.0 pp/yr drift passes the check yet accounts for the -0.47 pp drop. &middot; <strong>What Drift Bounds Add (Trend-Drift Bounds).</strong> A drift limit of M* = 0.35 (below the 1.0 benchmark) shows how little drift crosses zero. &middot; <strong>Lesson for County Studies (Base Event Study).</strong> The 57-county LHA panel has high power across 21 years, while a big-city cut has too few groups. &middot; <strong>Lesson for County Studies (Pre-Trend Noise Band).</strong> When a small-count urban cut gives wide ranges, teams should not read low power as zero effect. &middot; <strong>Lesson for County Studies (Trend-Drift Bounds).</strong> Big policy shifts like the 2014 ACA expansion (-3.07 to -8.93) shift flat trend lines. &middot; <strong>Best-Fit Policy Rule (Pre-Trend Noise Band).</strong> Report the pre-period band (-1.27 to +1.16 pp) beside any pre-policy trend check.</p>
+          <p>&bull; <strong>HonestDiD Drift Limit (M* = 0.35):</strong> Under <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023, Review of Economic Studies)</a>, M = 1.0 allows post-policy trend drift up to 100% of the max pre-period slope shift. Here, the 95% robust range hits 0.00 at M* = 0.35 ([-0.96, 0.00] pp) and widens to [-1.08, +0.15] pp at M = 2.0.</p>
+          <p>&bull; <strong>Unit Rules:</strong> The ATT, leads, SEs, and M* bounds come from the 1,408-county panel (percentage points). The -2.38 annual, -2.62 single-regime, -4.32 cumulative, and -5.31 Long-Difference 2SLS (F = 111.20) figures come from the separate 57-county California LHA panel (deaths per 100,000 per $10/person; N = 943 pre-COVID county-years).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>What Drift Bounds Add (Post-Policy Drift Limit).</strong> A 35% drift limit (0.35x pre-period swing, below the 1.0x benchmark) shows how little drift crosses zero. &middot; <strong>Lesson for County Studies (Post-Policy Drift Limit).</strong> Regime shifts like the 2020-2023 COVID-19 grant surge (+2.47 vs. -2.38) require separate windows. &middot; <strong>Best-Fit Policy Rule (Pre-Trend Noise Band).</strong> Report the pre-period band (-1.27 to +1.16 pp) beside any pre-policy trend check.</p>
         </div>
       </details>
     </div>
 
     <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
     <div class="mb-3">
-      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare How Allowing Post-Policy Drift (M) Shifts the Plausible Effect Range</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare How Allowing Post-Policy Drift Shifts the Plausible Effect Range</h2>
       <p class="text-sm text-slate-600 mt-1 max-w-4xl">
         Comparing the zero-drift base model against drift limits and county linear slopes across 1,408 counties.
       </p>
     </div>
-    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare How Allowing Post-Policy Drift (M) Shifts the Plausible Effect Range">
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare How Allowing Post-Policy Drift Shifts the Plausible Effect Range">
       <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
         <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
           <div class="text-xs font-bold text-[#0041A5] mb-1">Bound 1 · Exact Parallel Trends</div>
-          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Zero Post-Policy Drift (M = 0)</div>
-          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">ATT = -0.47 pp | [-0.91, -0.03] pp</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Zero Post-Policy Drift (0.0x)</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">Effect = -0.47 pp | [-0.91, -0.03] pp</div>
           <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Assuming post-policy county paths stay 100% parallel passes the pre-policy trend check and yields a clear drop.</p>
         </div>
         <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
-          <div class="text-xs font-bold text-[#0041A5] mb-1">Bound 2 · Drift Limit (M* = 0.35)</div>
-          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Post Drift <= 35% of Pre-Period Drift</div>
-          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">M* = 0.35 | [-0.96, 0.00] pp</div>
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Bound 2 · 35% Drift Limit</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Post Drift &le; 35% of Pre-Period Swing</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">0.35x Limit | [-0.96, 0.00] pp</div>
           <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Allowing post-policy drift equal to 35% of the max pre-period slope shift brings the top of the range to zero.</p>
         </div>
         <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
           <div class="text-xs font-bold text-emerald-950 mb-1">Bound 3 · County Linear Slopes</div>
           <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">County Slopes (Year x County)</div>
-          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">ATT = +0.003 pp | [-0.028, +0.034] pp</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">Effect = +0.003 pp | [-0.028, +0.034] pp</div>
           <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Fitting county linear slopes across three pre-policy years shifts the point estimate to near zero (+0.003 pp).</p>
         </div>
       </div>
@@ -897,7 +837,14 @@
         </div>
       </details>
     </div>
-    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Passing a Pre-Trend Check Is Only the First Step</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">In county program reviews, analysts check that pre-policy lead points cross zero and cite a high joint p-value (such as p = 0.9997). Yet wide pre-period noise bands can let slow county drift pass that check. The smaller the sample or the wider the pre-period margin, the easier it is to pass a pre-trend check while an unseen slope accounts for the post-policy gap.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Modern health economics pairs pre-trend checks with explicit drift bounds. Reporting the Rambachan-Roth drift limit (35% of the pre-period swing) and comparing short panels against multi-year models (such as the 57-county California LHA panel, N = 943 pre-COVID county-years, where the annual county panel yields -2.38 and 13-year cumulative differences yield -4.32) shows leaders how much trend drift a finding can take.</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
       <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
         <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
@@ -917,16 +864,11 @@
             <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
               <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Multi-State 1,408-County Event-Study Panel:</strong> <a href="https://www.ers.usda.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA SNAP Retailer Historical Database</a> and <a href="https://www.fdic.gov/resources/resolutions/bank-failures/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">FDIC Bank Failures &amp; Branch Panel</a> (N = 1,408 counties; base post-policy estimate -0.47 pp, SE = 0.22, p = 0.036; pre-policy leads -0.056, -0.030, 0.000 with 95% CIs from -1.27 to +1.16 pp).</li>
               <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Methodological reference: <a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Roth, J. (2022), <em>AER: Insights</em></a> and <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Rambachan, A., &amp; Roth, J. (2023), <em>Review of Economic Studies</em></a>. CAPHE case-study sensitivity calculation (1,408-county panel): post-policy trend drift limit M* = 0.35, where the 95% robust CI hits [-0.96, 0.00] pp.</li>
-              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>California 57-County LHA Panel Comparison (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> (N = 1,197 county-years; -9.16 deaths/100K per $10/person across 46 of 47 models; -3.07 pre-ACA vs. -8.93 post-ACA).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>California 57-County LHA Panel Comparison (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> (N = 943 pre-COVID county-years; -2.38 deaths/100K per $10/person annually, -4.32 over 13-year cumulative horizons, and -5.31 in Long-Difference Lewbel 2SLS with F = 111.20).</li>
               <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Rambachan &amp; Roth (2023), "A More Credible Approach to Parallel Trends," Review of Economic Studies</a></li>
             </ol>
           </div>
-          <div class="pb-3 border-b border-slate-200/80 space-y-2">
-            <h3 class="text-sm font-bold text-slate-900">Why Passing a Pre-Trend Check Is Only the First Step</h3>
-            <p class="text-slate-800">In county program reviews, analysts check that pre-policy lead points cross zero and cite a high joint p-value (such as p = 0.9997). Yet wide pre-period noise bands can let slow county drift pass that check. The smaller the sample or the wider the pre-period margin, the easier it is to pass a pre-trend check while an unseen slope accounts for the post-policy gap.</p>
-            <p class="text-slate-800">Modern health economics pairs pre-trend checks with explicit drift bounds. Reporting the Rambachan-Roth drift limit (M* = 0.35, a Mode A bound) and comparing short panels against 21-year models (such as the 57-county California LHA panel, N = 1,197 county-years, where F = 314.1 and 46 of 47 models hold) shows leaders how much trend drift a finding can take.</p>
-          </div>
-          <p><strong>Mode Classification (Mode A Drift Bounds on Stated Base Inputs):</strong> Event-study pre-trend leads (-0.056, -0.030, 0.000), standard errors (0.620, 0.582, 0.549), and the base ATT (-0.47 pp, SE = 0.22, p = 0.036) are stated inputs from the 1,408-county DiD panel. The Rambachan-Roth limit (M* = 0.35) and its robust ranges are Mode A calculations on those inputs. California LHA splits (Pre-ACA -3.07 vs. Post-ACA -8.93; base-funding -4.56 vs. Full -9.16) come from the separate 57-county LHA panel (N = 1,197 county-years; N = 969 in model).</p>
+          <p><strong>Mode Classification (Mode A Drift Bounds on Stated Base Inputs):</strong> Event-study pre-trend leads (-0.056, -0.030, 0.000), standard errors (0.620, 0.582, 0.549), and the base ATT (-0.47 pp, SE = 0.22, p = 0.036) are stated inputs from the 1,408-county DiD panel. The Rambachan-Roth limit (M* = 0.35) and its robust ranges are Mode A calculations on those inputs. California LHA benchmarks (-2.38 annual TWFE, -2.62 single-regime, -4.32 13-year cumulative, and -5.31 Long-Difference 2SLS) come from the separate 57-county LHA panel (N = 943 pre-COVID county-years).</p>
           <p><strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023), "A More Credible Approach to Parallel Trends," Review of Economic Studies</a>; <a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Roth (2022), "Pretest with Caution: Event-Study Estimates after Testing for Parallel Trends," AER: Insights</a>; <a href="https://www.ers.usda.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA SNAP Retailer Historical Database</a>; and <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions (2003-2023)</a>.</p>
           <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
             <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
@@ -953,8 +895,8 @@
                 <dd class="text-slate-700 mt-0.5">If post-policy trend drift exceeds 35% of the max slope change seen in the pre-period, the 95% robust range crosses zero and the finding is no longer statistically clear.</dd>
               </div>
               <div>
-                <dt class="font-bold text-slate-900">Why do big-county splits in California often look statistically noisy?</dt>
-                <dd class="text-slate-700 mt-0.5">California has only a small count of very large urban counties. Restricting a county panel model to big cities cuts the cluster count, widens standard errors, and lowers statistical power even when the true effect is present.</dd>
+                <dt class="font-bold text-slate-900">How does the California 57-county LHA panel test stability across county size strata?</dt>
+                <dd class="text-slate-700 mt-0.5">Across the 2003 to 2019 pre-pandemic window (N = 943), the mortality reduction is statistically significant in both large urban counties (-2.59 per $10, p &lt; 0.0001) and smaller/rural counties (-2.42 per $10, p = 0.0136), with a wild cluster bootstrap p-value of 0.007.</dd>
               </div>
             </dl>
           </div>
@@ -967,7 +909,7 @@
       <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
       <ul class="list-none text-sm">
           <li class="my-2"><a href="/methods-lab/threat-history-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Two-Group Comparisons Across Medicaid Care Lines</a></li>
-          <li class="my-2"><a href="/methods-lab/observational-to-experimental" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Comparing Simple Avg & 21-Year Budget Models (-9.16)</a></li>
+          <li class="my-2"><a href="/methods-lab/observational-to-experimental" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Comparing Pandemic Surges & Routine Prevention (-2.38 Annual / -4.32 Cumulative)</a></li>
           <li class="my-2"><a href="/methods-lab/reverse-causation-feedback" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Outbreak Spending & Routine Prevention Returns</a></li>
       </ul>
       <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>

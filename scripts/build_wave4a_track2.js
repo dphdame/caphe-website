@@ -6,7 +6,7 @@
  *
  * Modules built:
  *  - #9  food-affordability-tradeoffs (Track 2, public) - Poverty & Affordability Denominators
- *  - #11 observational-to-experimental (Track 2, public) - OLS +0.18 vs Brown 2014 -9.10 vs Cholette 2026 -9.16 (folds regression-tables-confounding)
+ *  - #11 observational-to-experimental (Track 2, public) - Pandemic Surge +2.47 vs Pre-COVID TWFE -2.38, 13-Yr Cumulative -4.32 & Long-Diff 2SLS -5.31 (folds regression-tables-confounding)
  *  - #12 geographic-variables (Track 2, public) - Poverty R²=62.2% vs Store Distance R²=0.0% across CA Tracts
  *  - #14 identical-data-opposite-policies (Track 2, community) - CMS CY 2026 GPCI (1.506 SF vs 0.90 Imperial), Census ACS Rent & MACPAC/Polsky Benchmarks
  *  - #16 threat-measurement-instrumentation (Track 2, community) - 6,613 Google Stores vs 514 SNAP-Verified EBT & GTFS Fix
@@ -47,7 +47,8 @@ const modules = [
       '<a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: 2019&ndash;2023 American Community Survey (ACS) 5-Year Detailed Tables (<code>B19013</code> Median Household Income &amp; <code>B25064</code> Median Gross Rent).',
       '<a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Department of Health and Human Services (HHS)</a>: 2023 Federal Poverty Guidelines ($2,500/month four-person baseline; 130% = $3,250/mo; 200% = $5,000/mo).'
     ],
-    answerHtml: 'When screening families for food aid by gross pay alone, a county leaves out high rent costs in California [1,3]. In Marin County\'s Canal area, typical monthly pay sits above federal poverty cutoffs [2,3]. Yet local rent takes more than two-fifths of pay [2]. Taking rent (<strong>$2,318</strong>) from monthly pay (<strong>$5,507</strong>) shifts a four-person food plan (<strong>$973</strong>) from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay [1,2]. Checking post-rent pay across four local areas helps teams pair CalFresh shelter rules with clinic food scripts [1,2].',
+    policySettingHtml: 'Federal food aid cutoffs use one gross income line across all 48 contiguous states. In high-rent California neighborhoods, families pay rent first and buy groceries from whatever cash remains. Comparing pre-rent and post-rent budgets shows why working renter families above federal poverty cutoffs still face severe food strain.',
+    answerHtml: 'When screening families for food aid by gross pay alone, a county leaves out high rent costs in areas like Marin County\'s Canal neighborhood, where typical monthly pay sits above federal poverty cutoffs while local rent takes more than two-fifths of pay [1,2]. Taking rent (<strong>$2,318</strong>) from monthly pay (<strong>$5,507</strong>) shifts a four-person food plan (<strong>$973</strong>) from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay [1,2]. Checking post-rent pay across four local areas helps teams pair CalFresh shelter rules with clinic food scripts [2,3].',
     block2: {
       title: 'Same $973 Monthly Grocery Bill, Two Different Denominators (Marin Canal Neighborhood)',
       contextTag: '2019-2023 Census ACS Area Medians + Post-Rent Budget Benchmark',
@@ -179,7 +180,7 @@ const modules = [
             { val: 'Rent takes 42.1% of pay above 200% FPL.' },
             { val: 'Low pay meets high rent and far stores.' },
             { val: 'Rural store trips reach up to 12.4 miles.' },
-            { val: 'High county pay ($13,306) covers renter pockets.' }
+            { val: 'High county pay ($13,306) averages over low-income renter tracts.' }
           ]
         },
         {
@@ -240,194 +241,195 @@ const modules = [
         visibleLabel: 'Public Health Spending Regime Analysis',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
       }
     ],
     tier: 'public',
     trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Routine-Budget Identification (Mode B 57-County Panel)',
     pageTitle: 'Routine-Budget Analysis vs. Raw Yearly Averages | CAPHE',
-    metaDescription: 'Compare raw yearly county averages (+0.18) against routine-budget estimates preventing 9.10 to 9.16 deaths per 100,000 across 57 California counties.',
+    metaDescription: 'Compare pandemic surge spending (+2.47) against pre-COVID routine-budget estimates preventing 2.38 to 5.31 deaths per 100,000 across 57 California counties.',
     h1: 'Routine County Public Health Budgets Lower Premature Deaths After Separating Outbreak Spending',
-    subtitle: 'We compare raw yearly spending averages with multi-year routine budget models across California counties.',
+    subtitle: 'We compare pandemic emergency surge spending with annual and multi-year routine budget models across California counties.',
     endnotes: [
-      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: County Financial Transactions Reports (57-County Public Health Spending Panel, 2003&ndash;2023, N = 1,197 county-years).',
-      '<a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC WONDER &amp; CDPH Vital Statistics</a>: County All-Cause Mortality Files (2003&ndash;2023) &amp; <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>.',
+      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: County Financial Transactions Reports &amp; LGRS Schedule Harmonization (57-County Public Health Spending Panel, 2003&ndash;2023, N = 943 pre-COVID and N = 220 COVID-19 era county-years).',
+      '<a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDPH Vital Statistics</a>: County All-Cause &amp; Cause-Specific Mortality Files (2003&ndash;2023) &amp; <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>.',
       '<a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown, T. T. (2014)</a>: "How Effective Are Public Health Departments at Preventing Mortality?", <em>Economics &amp; Human Biology</em>, 13, 34&ndash;45; and <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012)</a>, <em>JBES</em>, 30(1), 67&ndash;80.'
     ],
-    answerHtml: 'When evaluating county public health budgets by same-year death rates, an analyst sees flat results because emergency outbreak grants arrive in high-death years. Tracking routine budget shifts across <strong>1,197 county-years</strong> (2003 to 2023) shows that each <strong>$10 per resident</strong> in county health spending prevents <strong>9.16 deaths per 100,000</strong> (<strong>$125</strong> in health value per <strong>$1</strong> spent) [1,2]. A raw yearly average across counties shows <strong>+0.18 deaths per 100,000</strong> because boards send surge funds when death rates spike [1,2]. Matching this <strong>9.16</strong> result within <strong>99.4%</strong> of an earlier 40-county board study (<strong>9.10 fewer deaths per 100,000</strong>) gives boards two separate checks across two decades [3].',
+    policySettingHtml: 'County boards review health budgets across calm years and outbreak years. From 2020 to 2023, state and federal relief grants rose fast in counties with high death rates. Splitting outbreak aid from base care shows how steady county health funds save lives.',
+    answerHtml: 'Tracking routine pre-pandemic budget shifts across <strong>943 county-years</strong> (2003 to 2019) shows that each <strong>$10 per resident</strong> in county health spending prevents <strong>2.38 deaths per 100,000 annually</strong> (<strong>$32</strong> in health value per <strong>$1</strong> spent) and <strong>4.32 deaths per 100,000 over 13-year cumulative horizons</strong> (<strong>$59</strong> per <strong>$1</strong> spent) [1,2]. During the 2020 to 2023 pandemic window, emergency grants jumped 64% and show <strong>+2.47 deaths per 100,000 per $10</strong> because surge funds followed pandemic mortality spikes [1,2]. Multi-year routine-budget models confirm <strong>5.31 fewer deaths per 100,000</strong> across the single-regime 2003 to 2016 horizon [3].',
     block2: {
-      title: 'Two Identification Rulers: Raw Yearly Average vs. Routine-Budget Analysis (57 Counties)',
-      contextTag: 'Mode B Empirical Estimates (N = 1,197 County-Years, 2003 to 2023) &amp; Published 40-County Benchmark',
-      ariaLabel: 'Comparison of raw yearly average of +0.18 deaths per 100,000 versus routine-budget estimate of 9.16 fewer deaths per 100,000',
+      title: 'Two Identification Rulers: Pandemic Surge Window vs. Routine-Budget Horizons (57 Counties)',
+      contextTag: 'Mode B Empirical Estimates (N = 943 Pre-COVID &amp; N = 220 COVID-19 County-Years, 2003 to 2023)',
+      ariaLabel: 'Comparison of pandemic surge slope of +2.47 deaths per 100,000 versus routine-budget estimates of 2.38 annual and 4.32 to 5.31 cumulative fewer deaths per 100,000',
       ruler1: {
-        title: 'Ruler 1: Raw Yearly Average (Outbreak and Routine Budgets Mixed)',
-        stat: '+0.18 Deaths / 100K (Outbreak Surge Mix)',
-        ariaLabel: 'Raw yearly regression slope of +0.18 deaths per 100,000 per $10 per capita shifted by +9.34 due to reactive outbreak spending',
+        title: 'Ruler 1: Pandemic Emergency Window (2020-2023 Surge Grants)',
+        stat: '+2.47 Deaths / 100K (4.85-Point Sign Flip)',
+        ariaLabel: 'Pandemic 2020-2023 regression slope of +2.47 deaths per 100,000 per $10 per capita shifted by +4.85 points above the -2.38 pre-COVID baseline due to reactive pandemic relief grants',
         segments: [
-          { cls: 'seg-Housing', width: 92, label: '+9.34 Outbreak-Spending Shift (Surge Funds)' },
-          { cls: 'seg-rest', width: 8, label: '+0.18 Raw Avg' }
+          { cls: 'seg-Housing', width: 92, label: '+4.85 Emergency Grant Shift (+64.2% COVID-19 Surge)' },
+          { cls: 'seg-rest', width: 8, label: '+2.47 Surge Slope' }
         ],
-        desc: 'Linking county health pay and deaths in the same year gives <strong>+0.18 (a range that crosses zero)</strong>. Outbreaks bring surge funds, shifting the slope by <strong>+9.34 deaths/100K</strong>.'
+        desc: 'During 2020 to 2023 (N = 220), county health spending jumped <strong>+64.2% ($99.65 to $168.70/capita)</strong> as federal COVID-19 relief followed mortality waves, flipping the slope to <strong>+2.47 deaths/100K per $10</strong> and attenuating pooled 2003-2023 TWFE to <strong>-0.25</strong>.'
       },
       ruler2: {
-        title: 'Ruler 2: Routine-Budget Analysis (Two Separate Checks Across 2001 to 2023)',
-        stat: '9.16 Fewer Deaths / 100K (99.4% Match)',
-        ariaLabel: 'Routine-budget analysis isolates 9.16 fewer deaths per 100,000 per $10 per capita, holding in 46 of 47 checks and matching the earlier 9.10 governance benchmark',
+        title: 'Ruler 2: Routine-Budget Analysis (Annual TWFE &amp; Cumulative Horizons)',
+        stat: '2.38 Yr | 4.32 13-Yr | 5.31 2SLS Fewer / 100K',
+        ariaLabel: 'Routine-budget analysis isolates 2.38 fewer deaths per 100,000 annually, 4.32 fewer over 13-year cumulative horizons, and 5.31 fewer under Long-Difference 2SLS',
         segments: [
-          { cls: 'seg-primary', width: 50, label: 'County Board Check (2001-2008): 9.10 Fewer' },
-          { cls: 'seg-food', width: 50, label: '21-Year Panel Check (2003-2023): 9.16 Fewer' }
+          { cls: 'seg-primary', width: 45, label: 'Annual TWFE (2003-2019): 2.38 Fewer' },
+          { cls: 'seg-food', width: 55, label: '13-Yr Cumulative: 4.32 OLS / 5.31 2SLS Fewer' }
         ],
-        desc: 'Tracking routine budget changes gives <strong>9.10 fewer deaths/100K</strong> under county board rules (2001 to 2008). It gives <strong>9.16 fewer deaths/100K (holding in 46 of 47 checks)</strong> across the 21-year 57-county panel.'
+        desc: 'Tracking routine pre-pandemic budgets (2003 to 2019, N = 943) gives <strong>2.38 fewer deaths/100K annually</strong>. Over 13-year cumulative horizons (2003 to 2016), protection builds to <strong>4.32 fewer deaths/100K in OLS</strong> and <strong>5.31 fewer in long-difference 2SLS</strong>.'
       }
     },
     table1: {
-      title: 'Table 1. From Raw Yearly Averages to Two Separate Routine-Budget Checks',
+      title: 'Table 1. From Pandemic Surge Feedback to Annual and Multi-Year Routine-Budget Checks',
       subtitle: 'We compare four models of local health spending ($10 per resident) and death rates per 100,000.',
-      caption: 'Empirical comparison of Raw Yearly Averages, 40-County Board Check, 57-County 21-Year Routine-Budget Check, and an era split at the 2010 health law.',
+      caption: 'Empirical comparison of the 2020-2023 Pandemic Surge Window, 2003-2019 Annual County Panel, 13-Year Cumulative Change, and 13-Year Routine-Budget IV Model.',
       cornerLabel: 'Model Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates):</strong> We use county-clustered standard errors. The raw yearly average has SE = 0.40, t = +0.46, and p = 0.644 (95% CI -0.60 to +0.97). The Brown (2014) 40-county board estimate has p &lt; 0.01 in the 2001-2008 panel and p &lt; 0.01 for the 3.07 pre-2010 estimate. The 21-year IV model has SE = 1.11, t = -8.27, and p &lt; 0.001 (95% CI -11.33 to -6.98). Its first-stage F is 314.1 (above the &gt;10 rule) and Hansen J is 4.49 (p = 0.343). Also, 46 of 47 model checks are statistically significant. Death reductions in Models 2-4 are significant at p &lt; 0.01 (***). Cost per life saved is $10 / (|β| / 100,000).',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates):</strong> We use county-clustered standard errors across 57 California counties. The 2020-2023 pandemic window (N = 220) has β = +0.247 per $1 (+2.47 per $10, SE = 0.75, p = 0.0010), while pooled 2003-2023 TWFE (N = 1,163) is attenuated to -0.25 per $10 (p = 0.710). The 2003-2019 pre-COVID TWFE OLS baseline (N = 943) has β = -0.238 per $1 (-2.38 per $10, SE = 0.78, p = 0.0022, wild cluster bootstrap p = 0.007, 95% CI -3.91 to -0.85). The 13-year cumulative long-difference OLS (2003-2016, N = 57) has -4.32 per $10 (SE = 1.54, p = 0.0052; 16-year 2003-2019 excl. 5 LGRS outliers is -5.91, p = 0.0330). The 13-year Long-Difference Lewbel (2012) 2SLS model (2003-2016, N = 57) has -5.31 per $10 (SE = 1.67, p = 0.0015, first-stage F = 111.20, Hansen J p = 0.2132). Cost per life saved is $10 / (|β_10| / 100,000).',
       columns: [
-        { tag: 'Model 1: Raw Average', tagHighlight: false, title: 'Raw Yearly Average', subtitle: '57 Counties (2003-2023, N=1,197).' },
-        { tag: 'Model 2: Board Check', tagHighlight: true, title: 'County Board Rules', subtitle: '40 CA Counties (2001-2008).' },
-        { tag: 'Model 3: 21-Yr Check', tagHighlight: true, title: '57-County Routine Budget', subtitle: '57 Counties (2003-2023, N=1,197).' },
-        { tag: 'Model 4: Era Split', tagHighlight: false, title: 'After 2010 Law (2010-2023)', subtitle: 'Compared to 2003-2009 (3.07 Fewer).' }
+        { tag: 'Model 1: Pandemic Surge', tagHighlight: false, title: 'COVID-19 Surge Window', subtitle: '57 Counties (2020-2023, N=220).' },
+        { tag: 'Model 2: Annual Panel', tagHighlight: true, title: 'Pre-COVID Annual Baseline', subtitle: '57 Counties (2003-2019, N=943).' },
+        { tag: 'Model 3: 13-Yr Span', tagHighlight: true, title: '13-Year Cumulative Change', subtitle: '57 Counties (2003-2016, N=57).' },
+        { tag: 'Model 4: Routine-Budget IV', tagHighlight: false, title: 'Supply-Shift IV Check', subtitle: '13-Yr Routine-Budget Model (2003-2016, N=57).' }
       ],
       rows: [
         {
           label: 'Source of Budget Shifts',
           cells: [
-            { val: 'Routine + outbreak funds mixed' },
-            { val: 'County board budget rules' },
-            { val: '21-year routine budget shifts' },
-            { val: 'Routine budget split at 2010' }
+            { val: 'Emergency COVID-19 relief (+64.2%)' },
+            { val: 'Within-county routine budgets' },
+            { val: '13-year sustained budget shifts' },
+            { val: 'Variance-based routine-budget check' }
           ]
         },
         {
           label: 'Deaths per $10 per Resident',
           highlight: true,
           cells: [
-            { val: '+0.18 (plus sign)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '9.10 fewer deaths', barWidth: 99, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '9.16 fewer deaths (99.4% match)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '8.93 fewer deaths (2.9x 2003-2009)', barWidth: 97, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '+2.47 (pandemic surge)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '2.38 fewer deaths (annual)', barWidth: 45, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '4.32 fewer deaths (13-yr)', barWidth: 81, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '5.31 fewer deaths (routine IV)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Effect Range Across Counties',
+          label: 'Effect Range &amp; Precision',
           cells: [
-            { val: '-0.60 to +0.97 (crosses zero)' },
-            { val: 'Steady drop (40 counties)' },
-            { val: '6.98 to 11.33 fewer deaths' },
-            { val: 'Holds in both eras (3.07 pre-2010)' }
+            { val: '+1.00 to +3.94 range' },
+            { val: '0.85 to 3.91 fewer range' },
+            { val: '1.30 to 7.34 fewer range' },
+            { val: '2.04 to 8.58 fewer range' }
           ]
         },
         {
-          label: 'Outbreak Surge Split',
+          label: 'Subgroup &amp; Regime Checks',
           cells: [
-            { val: 'No split for outbreak surges' },
-            { val: 'Splits via county board rules' },
-            { val: 'Splits routine pay (46 of 47 checks)' },
-            { val: 'Holds before and after 2010' }
+            { val: 'Pooled 2003-23 attenuated (-0.25)' },
+            { val: 'Urban (-2.59) &amp; Rural (-2.42)' },
+            { val: '16-yr 2003-19 span: 5.91 fewer' },
+            { val: 'Strong first-stage &amp; valid instruments' }
           ]
         },
         {
           label: 'Cost per Life Saved',
           cells: [
-            { val: 'Not defined (+0.18 sign)' },
-            { val: '~$110,000 per life saved' },
-            { val: '$109,000 per life saved' },
-            { val: '$111,982 per life saved' }
+            { val: 'Not defined (+2.47 sign)' },
+            { val: '$420,168 per life saved' },
+            { val: '$231,481 per life saved' },
+            { val: '$188,324 per life saved' }
           ]
         },
         {
-          label: 'Return per $1 Spent (BCR)',
+          label: 'Return per $1 Spent',
           cells: [
-            { val: 'Looks like 0:1 (false zero)' },
-            { val: '$67 to $88 per $1 (2016 VSL)' },
-            { val: '$125 per $1 ($13.6M VSL)' },
-            { val: '$121 per $1 ($13.6M VSL)' }
+            { val: 'Looks like 0:1 (reverse feedback)' },
+            { val: '$32 per $1 ($13.6M life value)' },
+            { val: '$59 per $1 ($13.6M life value)' },
+            { val: '$72 per $1 ($13.6M life value)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Why Two Separate Checks Build Trust for County Budgets',
-      subtitle: 'We show how two methods across two decades find the same 9.1 fewer deaths per 100,000.',
+      title: 'Table 2. Why Separating Pandemic Surges and Exposure Horizons Builds Budget Trust',
+      subtitle: 'We show how the annual county panel, 13-year cumulative differences, and routine-budget IV models reinforce each other.',
       caption: 'Decision matrix comparing data scope, outbreak spending rules, budget risk, and policy fit across four models.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
           label: 'Data &amp; Time Scope',
           cells: [
-            { val: 'Raw yearly average across 57 counties from 2003 to 2023.' },
-            { val: 'Published study of 40 county health departments from 2001 to 2008.' },
-            { val: '21-year, 57-county CAPHE panel from 2003 to 2023.' },
-            { val: 'Splits the 57-county panel at 2010 (2003-2009 vs. 2010-2023).' }
+            { val: 'Emergency pandemic window across 57 counties from 2020 to 2023 (N = 220).' },
+            { val: 'Routine pre-pandemic panel across 57 counties from 2003 to 2019 (N = 943).' },
+            { val: '13-year single-regime cumulative change from 2003 to 2016 (N = 57).' },
+            { val: '13-year routine-budget IV model from 2003 to 2016 (N = 57).' }
           ]
         },
         {
           label: 'How Outbreak Funds Are Handled',
           cells: [
-            { val: 'Mixes outbreak surge grants with base budgets (+9.34 shift).' },
-            { val: 'Uses county board budget rules to track steady spending.' },
-            { val: 'Tracks routine budget shifts across 1,197 county-years.' },
-            { val: 'Compares slopes before and after 2010 across 57 counties.' }
+            { val: 'Captures +64.2% COVID-19 grant surges following pandemic death spikes (+2.47).' },
+            { val: 'Separates routine prevention budgets ($99.65/cap) from pandemic relief ($168.70/cap).' },
+            { val: 'Accumulates multi-year chronic disease and cardiovascular gains (48.4% heart).' },
+            { val: 'Uses variance-based instruments with strong first-stage checks.' }
           ]
         },
         {
           label: 'Budget Risk if Misread',
           cells: [
-            { val: 'A raw +0.18 average makes steady health programs look flat.' },
-            { val: 'Staff may ask if a 2001-2008 result holds after 2014.' },
-            { val: 'One model alone leaves staff unsure about the +0.18 shift.' },
-            { val: 'Treating clinics and public health as swaps leads to budget cuts.' }
+            { val: 'Pooling 2020-2023 with 2003-2019 attenuates the slope to -0.25.' },
+            { val: 'Judging budgets only on 1-year returns omits 45% of cumulative 13-year gains.' },
+            { val: 'Ignoring the FY 2016-17 state reporting schedule shift creates artificial jump outliers.' },
+            { val: 'Single-year IV has weak first stages, whereas 13-year cumulative IV is strong.' }
           ]
         },
         {
           label: 'Best Policy &amp; Budget Action',
           policyFit: true,
           cells: [
-            { headline: 'Use Adjusted Budget Models', detail: 'Treat raw averages as trackers of where outbreaks hit.' },
-            { headline: 'Cite Past Board Benchmarks', detail: 'Show staff that 9.1 fewer deaths holds in both studies.' },
-            { headline: 'Use 21-Year Panel for ROI', detail: 'Use 9.16 fewer deaths ($125 per $1) in budget hearings.' },
-            { headline: 'Fund Care and Prevention', detail: 'The post-2010 effect is 2.9x larger (8.93 vs. 3.07).' }
+            { headline: 'Separate Emergency Relief Windows', detail: 'Never pool emergency pandemic grants with baseline prevention budgets.' },
+            { headline: 'Use -2.38 ($32:$1) as Yr 1 Floor', detail: 'Use 2.38 fewer deaths ($420,168/life) for conservative annual budgeting.' },
+            { headline: 'Use -4.32 ($59:$1) for Multi-Year ROI', detail: 'Show boards that sustained 13-year investments save lives at $231,481 each.' },
+            { headline: 'Cite 13-Yr Routine-Budget IV (-5.31)', detail: 'Show that endogeneity-corrected cumulative returns reach $72 per $1.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: 99.4% Cross-Decade Match, Lag Checks &amp; Era Split',
+      notesTitle: 'Table 2 Notes: Regime Separation, Exposure Horizons &amp; Lewbel 2SLS Diagnostics',
       notesBullets: [
-        '<strong>Cross-Decade Match (Mode B):</strong> We compare the 2001-2008 county board result (-9.10) on 40 counties with the 2003-2023 routine-budget result (-9.16) on 57 counties. The match is 1 - |-9.16 - (-9.10)| / 9.16 = 99.34% (~99.4% match) across two methods and time windows.',
-        '<strong>Regression &amp; Lag Checks (Mode B):</strong> In 2SLS, raw averages give SE = 0.40 (t = 0.46, p = 0.644, 95% CI -0.60 to +0.97). The variance-based IV model gives SE = 1.11. Two checks back up splitting base and surge funds. First, a lag model (N = 684) finds a positive 2-year lag (+1.58, SE = 0.49, p = 0.001) when counties raise pay after death shocks. Second, a Breusch-Pagan test (LM = 91.68, F = 12.32, p < 0.001) rejects equal error spread. Results hold in 2003-2019 pre-COVID data (4.56 fewer deaths***, N = 969, 62:1 BCR), rural counties (8.11 fewer deaths**), and 46 of 47 checks (leave-one-out SD = 0.05, range -9.21 to -9.02).',
-        '<strong>Data Provenance:</strong> Exact slopes and checks come from `src/frontend/js/lha-calculator.js (L28-72), public/tools/lha-calculator/methodology.html (L129-310), Value_of_Public_Health/paper/sections/lewbel_iv_results_section.tex, and Value_of_Public_Health/paper/sections/robustness_tables.tex`.'
+        '<strong>Pandemic Regime Separation:</strong> During 2020 to 2023 (N = 220), intergovernmental COVID-19 grants pushed mean county public health spending up 64.2% (from $99.65 to $168.70 per capita in 2023 USD) while mortality rose from 703.4 to 795.4 per 100,000. That reverse-causality surge yields β = +0.247 per $1 (+2.47 per $10, p = 0.0010), a 4.85-point shift above the pre-pandemic baseline (-2.38 per $10, p = 0.0022).',
+        '<strong>Subgroup &amp; Cause-Specific Channels:</strong> Within the 2003 to 2019 pre-COVID baseline (N = 943), protective effects hold in both large urban counties (&gt;500,000 residents: -2.59 per $10, p &lt; 0.0001) and smaller/rural counties (&le;500,000 residents: -2.42 per $10, p = 0.0136), as well as the single-regime 2003-2016 SCO schedule (-2.62 per $10, p = 0.0128). Preventable chronic disease mortality falls by -2.84 per $10 (p = 0.0022), led by heart disease (-1.15 per $10, p = 0.0066, accounting for 48.4% of the all-cause reduction).',
+        '<strong>Data Provenance:</strong> Exact slopes and diagnostics come from `src/frontend/js/lha-calculator.js`, `public/tools/lha-calculator/methodology.html`, and `Value_of_Public_Health/paper/ajph_submission.tex` (Tables 1-3 and Online Appendix Table A3).'
       ]
     },
     synthesis: {
-      title: 'Why Two Separate Checks Across Two Decades Build Budget Trust',
-      p1: 'County boards and state lawmakers set health budgets in real time. They send surge funds to counties facing disease outbreaks or death spikes. Because surge cash flows to high death rates, a raw yearly average (+0.18 deaths per 100,000, p = 0.64) mixes emergency aid with base care. That makes strong county programs look flat.',
-      p2: 'Splitting base budgets from outbreak surges shows the true value of county health teams. Two studies across two decades sit within 0.06 deaths per 100,000 of each other. Brown\'s 2001-2008 study found 9.10 fewer deaths per 100,000. CAPHE\'s working-paper 2003-2023 study across 57 counties found 9.16 fewer deaths per 100,000 (F = 314.1). It also found a 2.9x larger result for 2010-2023 than for 2003-2009 (8.93 vs. 3.07 fewer deaths). Budget leaders can back base prevention with clear proof.'
+      title: 'Why Regime Separation and Multi-Year Horizons Build Budget Trust',
+      p1: 'County boards and state lawmakers set health budgets in real time. During the 2020 to 2023 COVID-19 emergency, federal and state relief grants boosted county health budgets by 64.2% in response to pandemic death waves. Because emergency aid chased high mortality (+2.47 deaths per 100,000 per $10, p = 0.001), pooling pandemic emergency years with routine budgets makes steady prevention programs look flat (-0.25, p = 0.710).',
+      p2: 'Separating routine pre-pandemic prevention budgets (2003 to 2019, N = 943) from pandemic surge grants reveals clear, compounding mortality reductions across California\'s 57 county health departments. Each $10 per resident averts 2.38 deaths per 100,000 annually ($420,168 per life saved, $32 return per $1), building to 4.32 fewer deaths over 13-year cumulative horizons ($231,481 per life, $59 return per $1), 5.91 over 16 years ($80 return per $1), and 5.31 in 13-year routine-budget models ($72 return per $1). Budget leaders can back base prevention with verified annual and multi-year proof.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Panel &amp; Published Studies:</strong> All slopes (+0.18, -9.10, -9.16, -3.07, -8.93), standard errors (0.40, 1.11), and checks (F = 314.1, Hansen J = 4.49, p = 0.343) are Mode B estimates. They come from the 57-county working-paper panel (N = 1,197, excluding Berkeley and Pasadena city health units) and published studies.',
-      '<strong>Main Sources:</strong> We cite <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), "How Effective Are Public Health Departments at Preventing Mortality?", Economics &amp; Human Biology, 13, 34-45</a> and <a href="https://doi.org/10.2105/AJPH.2016.303233" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2016), American Journal of Public Health, 106(8), 1477-1482</a>. We also use <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>, and <a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC WONDER Mortality Data</a>.'
+      '<strong>Mode B Panel &amp; Published Studies:</strong> All slopes (+2.47 pandemic surge, -0.25 pooled 2003-2023, -2.38 pre-COVID annual TWFE, -2.62 single-regime 2003-2016, -2.59 urban, -2.42 smaller/rural, -4.32 13-year long-difference OLS, -5.91 16-year long-difference OLS, and -5.31 / -11.49 Long-Difference Lewbel 2SLS), standard errors, and diagnostics (F = 111.20, Hansen J p = 0.2132) are Mode B estimates from the 57-county working-paper panel (`ajph_submission.tex`).',
+      '<strong>Main Sources:</strong> We cite <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), "How Effective Are Public Health Departments at Preventing Mortality?", Economics &amp; Human Biology, 13, 34-45</a> and <a href="https://doi.org/10.2105/AJPH.2016.303233" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2016), American Journal of Public Health, 106(8), 1477-1482</a>. We also use <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>, and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Mortality Data</a>.'
     ],
     faqs: [
       {
-        question: 'Why does the raw yearly average (+0.18) have the opposite sign of the routine budget result (9.16 fewer deaths)?',
-        answer: 'County boards and state teams send emergency health funds when death rates spike, such as during flu waves or COVID-19. That outbreak funding shift (+9.34 deaths/100K) offsets the 9.16 protective effect in raw comparisons.'
+        question: 'Why does the 2020-2023 pandemic window (+2.47) have the opposite sign of the pre-pandemic routine budget result (2.38 fewer deaths)?',
+        answer: 'During 2020 to 2023, emergency COVID-19 relief grants pushed county public health spending up 64.2% ($99.65 to $168.70 per capita) specifically in response to pandemic mortality waves. That reactive surge (+2.47 deaths/100K per $10) reverses the sign when pooled with routine pre-pandemic prevention (-2.38 deaths/100K).'
       },
       {
-        question: 'Why does the match between the 2001-2008 study and the 2003-2023 panel matter?',
-        answer: 'The 2001-2008 study used county board rules across 40 counties (9.10 fewer deaths). The 2003-2023 panel used routine budget shifts across 57 counties (9.16 fewer deaths). A 99.4% match across two methods, decades, and samples rules out model quirks.'
+        question: 'Why do 13-year and 16-year cumulative long-difference models find larger effects (-4.32 to -5.91) than annual TWFE (-2.38)?',
+        answer: 'Public health prevention works primarily through chronic disease control (where heart disease accounts for 48.4% of the mortality drop). Sustained multi-year investments compound over 4 to 16 years and filter out single-year budget noise, nearly doubling the protective effect from 2.38 to 4.32-5.91 fewer deaths per 100,000.'
       },
       {
-        question: 'Why is the result 2.9 times larger for 2010-2023 than for 2003-2009?',
-        answer: 'Splitting the panel at 2010 gives 3.07 fewer deaths/100K in 2003-2009 and 8.93 fewer in 2010-2023 per $10 spent. Wider insurance under the 2014 Medi-Cal expansion may help people act on county health screenings. Yet the later window also spans the post-2009 recovery and COVID-19, so the era split alone cannot isolate insurance.'
+        question: 'Does public health spending reduce mortality in both urban and rural California counties?',
+        answer: 'Yes. In the 2003 to 2019 pre-COVID panel (N = 943), a $10 per capita increase reduces mortality by 2.59 deaths per 100,000 in large urban counties (>500,000 residents, p < 0.0001) and by 2.42 deaths per 100,000 in smaller and rural counties (<=500,000 residents, p = 0.0136).'
       }
     ],
     related: [
-      { slug: 'reverse-causation-feedback', title: 'Outbreak Spending Surges & 5-Year Phase-In', note: 'Case study detailing the needs-based funding feedback loop and 5-year phase-in schedule' },
+      { slug: 'reverse-causation-feedback', title: 'Outbreak Spending Surges & Multi-Horizon Returns', note: 'Case study detailing pandemic grant feedback and annual vs. cumulative horizons' },
       { slug: 'study-design-ladder', title: 'Each Public Health Budget Question Requires a Distinct Empirical Study Design', note: 'Case study matching linked administrative records, trend splits, panel analyses, and outreach trials' },
-      { slug: 'sensitivity-analysis-cea', title: 'Testing Which Assumptions Change a Funding Decision', note: 'Case study stress-testing the 125:1 return across HHS 2025 VSL tiers' }
+      { slug: 'sensitivity-analysis-cea', title: 'Testing Which Assumptions Change a Funding Decision', note: 'Case study stress-testing the 32:1 annual and 59:1 cumulative returns across HHS 2025 VSL tiers' }
     ]
   },
 
@@ -464,9 +466,11 @@ const modules = [
     subtitle: 'We compare local poverty and SNAP rates with store distance across city, suburb, and rural census tracts.',
     endnotes: [
       '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Census Tract Poverty, SNAP &amp; Vehicle Access Estimates (N = 408 Santa Clara Tracts, N = 225 Fresno Tracts &amp; N = 26 Nevada County Tracts).',
-      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator Geo-Verified Store Coordinates (514 Santa Clara SNAP Stores) &amp; <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.'
+      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator Geo-Verified Store Coordinates (514 Santa Clara SNAP Stores).',
+      '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service (ERS)</a>: Food Access Research Atlas Low-Income and Low-Access Tract Definitions (1-Mile Urban and 10-Mile Rural Thresholds).'
     ],
-    answerHtml: 'When targeting food vans by distance to the nearest grocery store alone, a suburban team sends routes to car-owning foothill tracts while skipping low-pay renter areas near stores. Across <strong>408 Santa Clara County tracts</strong>, household poverty accounts for <strong>62.2%</strong> of the 5-part food index (a <strong>58.1 pp unique R&sup2; gain</strong>, vs. <strong>0.003 pp</strong> from distance, <em>p</em> = 0.827) because poverty and SNAP hold 55% of index weight and <strong>93.4% of tracts</strong> sit within 1 mile [1,2]. Distance maps flag foothills (<strong>4.1% of spread</strong>) where <strong>26 of 27 tracts</strong> past 1 mile have under 20% poverty [1,2]. Pairing poverty with trip miles separates urban outreach from Fresno (<strong>30 of 225 tracts, 13.3%</strong>) [1,2].',
+    policySettingHtml: 'Local health agencies map census tracts to decide where to send mobile food vans and grocery outreach. Some neighborhood maps focus on distance to the nearest supermarket, while others weight household poverty and CalFresh enrollment. Comparing poverty rates with store distance across suburban and rural tracts guides where each tool fits.',
+    answerHtml: 'Across <strong>408 Santa Clara County tracts</strong>, household poverty accounts for <strong>62.2%</strong> of the 5-part food index (<strong>58.1 percentage points</strong> of unique explained spread, vs. <strong>0.003 points</strong> from distance, <em>p</em> = 0.827) because poverty and SNAP hold 55% of index weight and <strong>93.4% of tracts</strong> sit within 1 mile [1,2]. Distance maps alone flag suburban foothills (<strong>4.1% of spread</strong>) where <strong>26 of 27 tracts</strong> past 1 mile have under 20% poverty [2,3]. Pairing poverty with trip miles separates urban outreach from rural and valley gaps in Fresno (<strong>30 of 225 tracts, 13.3%</strong>) [1,3].',
     block2: {
       title: 'Two Spatial Rulers on the 5-Part Composite Index: Poverty Rate vs. Store Distance (N = 408 Tracts)',
       contextTag: 'Mode B Composite Vulnerability Index Split (30% Poverty, 25% SNAP, 20% Distance, 15% No-Car, 10% Density; Santa Clara N = 408 Tracts)',
@@ -542,11 +546,11 @@ const modules = [
           ]
         },
         {
-          label: 'Unique R² Gain (ΔR² on 5-Part Index)',
+          label: 'Share of Food Index Explained',
           highlight: true,
           cells: [
-            { val: '+58.1 pp ΔR² from poverty (60.6% partial)', barWidth: 93, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '+0.003 pp ΔR² from distance (0.009% partial)', barWidth: 1, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '+58.1 pp from poverty (60.6% partial)', barWidth: 93, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '+0.003 pp from distance (0.009% partial)', barWidth: 1, barColor: '#DC2626', textColor: 'text-rose-800' },
             { val: 'Poverty slope 132x larger in index', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
             { val: '13.3% Fresno USDA food deserts', barWidth: 13, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
@@ -582,7 +586,7 @@ const modules = [
           cells: [
             { val: 'Only 1 county tract meets both USDA cutoffs (1.218 mi and 22.1% poverty), with 5.3% SNAP use.' },
             { val: '26 of 27 Santa Clara tracts past 1 mile from a SNAP store have under 20% poverty.' },
-            { val: 'Poverty accounts for 62.2% of the 5-part index spread while distance adds +0.003 pp ΔR².' },
+            { val: 'Poverty accounts for 62.2% of the 5-part index spread while distance adds +0.003 pp unique spread.' },
             { val: 'In Fresno (max 15.53 mi) and Nevada County (max 12.43 mi), long trips and poverty overlap.' }
           ]
         },
@@ -652,7 +656,7 @@ const modules = [
         visibleLabel: 'Statewide CHW Reimbursement Analysis',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
       }
     ],
     tier: 'community',
@@ -666,7 +670,8 @@ const modules = [
       '<a href="https://www.neighborhoodatlas.medicine.wisc.edu/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">University of Wisconsin School of Medicine and Public Health</a>: Area Deprivation Index (ADI) Neighborhood Atlas &amp; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.',
       '<a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">MACPAC (Jan 2025) &amp; Dunn et al.</a>: Medicaid Provider Billing Friction (17.6% claim value loss) &amp; <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), <em>NEJM</em>, 372(6), 537&ndash;545</a>.'
     ],
-    answerHtml: 'When setting Medi-Cal clinic pay rates from one state list alone, a state agency sends funds to high-wage coastal cities or low-pay inland counties based on whether the rule tracks overhead or local poverty. Tying city clinic rates to the CMS Practice Expense GPCI backs coastal clinics where overhead runs <strong>50.6% above the US mean</strong> (<strong>1.506 index</strong> in San Francisco vs. <strong>0.900</strong> in Imperial County) [1]. One flat fee list leaves out cost and need gaps because San Francisco sits at the <strong>15th percentile</strong> of local need while Imperial County sits at the <strong>85th percentile</strong> [2]. Pairing cost rate boosts with loan grants and simpler billing (saving <strong>17.6%</strong> claim value) fits both [1,3].',
+    policySettingHtml: 'California pays one statewide Medi-Cal fee schedule across coastal cities and rural inland counties. Yet coastal clinics pay high staff wages and office rents, while inland rural counties face deep resident poverty and doctor shortages. Comparing local clinic overhead indices against neighborhood need ranks shows why two separate policy tools are needed.',
+    answerHtml: 'Tying city Medi-Cal clinic rates to the federal Geographic Practice Cost Index (CMS Practice Expense GPCI) backs coastal clinics where overhead runs <strong>50.6% above the US mean</strong> (<strong>1.506 index</strong> in San Francisco vs. <strong>0.900</strong> in Imperial County) [1]. One flat fee list leaves out cost and need gaps because San Francisco sits at the <strong>15th percentile</strong> of local need while Imperial County sits at the <strong>85th percentile</strong> [2]. Pairing cost rate boosts with loan grants and simpler billing (saving <strong>17.6%</strong> claim value) fits both [1,3].',
     block2: {
       title: 'Two Policy Rulers on the Same State Schedule: Practice Expense GPCI vs. Local Need',
       contextTag: 'Mode B Observed Federal &amp; State Benchmarks: CMS CY 2026 Practice Expense GPCI, Census ACS Gross Rent, Local Need Percentile &amp; MACPAC Billing Loss',
@@ -706,7 +711,7 @@ const modules = [
       ],
       rows: [
         {
-          label: 'Practice Expense GPCI',
+          label: 'Clinic Overhead Index (GPCI)',
           highlight: true,
           cells: [
             { val: '1.506 (+50.6% vs US base)', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
@@ -734,7 +739,7 @@ const modules = [
           ]
         },
         {
-          label: 'Local Need Index (ADI)',
+          label: 'Neighborhood Need Rank',
           highlight: true,
           cells: [
             { val: '15th percentile (Low need)', barWidth: 18, barColor: '#0D9488', textColor: 'text-emerald-800' },
@@ -744,7 +749,7 @@ const modules = [
           ]
         },
         {
-          label: 'Billing Friction Loss (MACPAC)',
+          label: 'Billing Hurdle Loss',
           cells: [
             { val: '17.6% Medicaid vs 2.4% Private' },
             { val: '17.6% Medicaid vs 4.7% Medicare' },
@@ -815,8 +820,8 @@ const modules = [
     },
     synthesis: {
       title: 'Matching Cost Rate Indexing and Need-Targeted Staff Grants to Local Markets',
-      p1: 'In state budget hearings, coastal city health systems and inland rural groups show real federal data that rank counties in opposite ways. Coastal groups cite the CMS Practice Expense GPCI (where a CAPHE 3-part composite weights staff pay at 55.6% and office rent at 29.7%). San Francisco\'s Practice Expense GPCI sits at 1.506 (+50.6% above the US mean, with Santa Clara median rent at $2,814/month). Because the state pays one flat Medi-Cal fee list, coastal clinics face tight margins. Inland and border groups cite the Local Need Index (ADI) and Census ACS pay. Imperial County sits at the 85th US need percentile and Central Fresno homes earn $3,103/month ($1,007 rent), while San Francisco sits at the 15th percentile.',
-      p2: 'Health economics shows that these two rulers do not conflict. They track two separate market limits that need two separate tools. Polsky et al. (2015, NEJM) show that raising primary care fees lifts visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Dunn et al. / MACPAC (2025) show that 17.6% of Medicaid claim value is lost to billing hurdles (vs. 2.4% in private plans). Tying fee lists to clinic costs and cutting the 17.6% billing loss backs high-cost city clinics. Sending CalHealthCares loan pay and residency grants by local need builds doctor supply in inland counties.'
+      p1: 'In state budget hearings, coastal city health systems and inland rural groups show real federal data that rank counties in opposite ways. Coastal groups cite the CMS Practice Expense Geographic Practice Cost Index (GPCI, where a CAPHE 3-part composite weights staff pay at 55.6% and office rent at 29.7%). San Francisco\'s Practice Expense GPCI sits at 1.506 (+50.6% above the US mean, with Santa Clara median rent at $2,814/month). Because the state pays one flat Medi-Cal fee list, coastal clinics face tight margins. Inland and border groups cite the Local Need Index (Area Deprivation Index, ADI) and Census ACS pay. Imperial County sits at the 85th US need percentile and Central Fresno homes earn $3,103/month ($1,007 rent), while San Francisco sits at the 15th percentile.',
+      p2: 'Health economics shows that these two benchmarks do not conflict. They track two separate market limits that need two separate tools. Polsky et al. (2015, NEJM) show that raising primary care fees lifts visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Dunn et al. and the Medicaid and CHIP Payment and Access Commission (MACPAC, 2025) show that 17.6% of Medicaid claim value is lost to billing hurdles (vs. 2.4% in private plans). Tying fee lists to clinic costs and cutting the 17.6% billing loss backs high-cost city clinics. Sending CalHealthCares loan pay and residency grants by local need builds doctor supply in inland counties.'
     },
     methodologyParagraphs: [
       '<strong>Mode B Observed Benchmarks:</strong> All CMS CY 2026 Practice Expense GPCI scores (1.506 San Francisco vs. 0.900 Imperial) and CAPHE 3-part normalized cost shares (55.6% pay, 29.7% rent, 14.7% estimated services from the 19.15%, 10.22%, and 5.07% MEI shares) are Mode B data. They pair with Area Deprivation Index percentiles (15th vs. 85th) and Census ACS 5-Year (2019-2023) rents ($2,814, $2,318, $1,635, $1,007) and monthly pay ($13,306, $5,507, $7,075, $3,103) across different census universes. MACPAC billing loss rates (17.6% Medicaid, 4.7% Medicare, 2.4% private) and Polsky et al. (58.7% to 66.4%, +7.7 pp) benchmarks come from the CMS CY 2026 Physician Fee Schedule Final Rule and Census ACS 5-Year tables.',
@@ -879,7 +884,8 @@ const modules = [
       '<a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Active Retail Food Facility Permit Registry (755 Permitted Grocers, 97.5% Concordance).',
       '<a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh Caseloads vs. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Rolling Windows</a>.'
     ],
-    answerHtml: 'A county food team that switches its map from raw business listings to verified CalFresh EBT stores shifts local store counts even when zero stores opened or closed. Checking map lists against <strong>514 verified CalFresh EBT stores</strong> and <strong>755 county health permits</strong> keeps <strong>81.7% of top-need areas (67 of 82 tracts)</strong> in the same top tier [1,2]. Raw map queries return <strong>6,613 food spots</strong> (such as cafes that do not take CalFresh), so switching to verified grocers doubles mean trip distance by <strong>+97% (0.29 to 0.573 miles)</strong> with zero store closures [1,2]. Checking map feeds and 5-year census surveys against monthly permits and caseloads keeps grants aimed at real local gaps [2,3].',
+    policySettingHtml: 'County food teams build access dashboards from commercial map directories, USDA CalFresh retailer lists, county health permits, and census surveys. Each data source uses different counting rules and update schedules. Switching from raw business map tags to verified CalFresh EBT stores changes measured trip distance even when zero stores closed.',
+    answerHtml: 'Checking county map lists against <strong>514 verified CalFresh EBT stores</strong> and <strong>755 county health permits</strong> keeps <strong>81.7% of top-need areas (67 of 82 tracts)</strong> in the same top tier [1,2]. Raw map queries return <strong>6,613 food spots</strong> (such as cafes that do not take CalFresh), so switching to verified grocers doubles mean trip distance by <strong>+97% (0.29 to 0.573 miles)</strong> with zero store closures [1,2]. Checking map feeds and 5-year census surveys against monthly permits and caseloads keeps grants aimed at real local gaps [2,3].',
     block2: {
       title: 'Two Store Rulers on the Same 408 Tracts: Raw Map Spots vs. SNAP-Verified EBT Stores',
       contextTag: 'Mode B Store-List Check on 408 Santa Clara Tracts (Permit Deduplication &amp; Survey Window Checks in Table 1)',
@@ -912,14 +918,14 @@ const modules = [
       cornerLabel: 'Data Check Step',
       footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Observed Data Rule Shifts):</strong> Each column uses its own group base and is not pooled across columns. Shift 1 counts Santa Clara County food map spots (344 single-tag vs. 6,613 multi-tag). Shift 2 tracks distance for 408 Santa Clara census tracts (6,613 spots vs. 514 SNAP stores, checked against 755 refined / 724 confirmed DEH permits). Shift 3 tracks Santa Clara County DEH food permit deduplication (`DEHDENOM_UPDATES_SUMMARY.md`: 8,555 raw permit rows minus 1,220 multi-department duplicates = 7,335 unique sites, yielding 755 refined / 724 confirmed SNAP-eligible grocers vs. 987 under an older un-deduplicated keyword rule). Shift 4 compares ACS 5-year survey homes with CDSS monthly caseloads (`PHASE6_FINAL_DELIVERABLE.md`). In Shift 2 across N = 408 tracts (`EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md`), 266 of 408 tracts (65.2%) stay in the exact same quintile, 400 of 408 (98.0%) stay within ±1 quintile, and 67 of 82 Q5 tracts (81.7%) stay in Q5.',
       columns: [
-        { tag: 'Shift 1: Map Tag', tagHighlight: false, title: 'Google Map Tags', subtitle: 'Base: SCC Store Spots.' },
-        { tag: 'Shift 2: EBT Filter', tagHighlight: true, title: 'Broad Spots vs. SNAP EBT', subtitle: 'Base: 408 SCC Tracts.' },
-        { tag: 'Shift 3: Permit List', tagHighlight: true, title: 'Raw vs. Deduplicated DEH', subtitle: 'Base: 8,555 SCC Permits.' },
-        { tag: 'Shift 4: Survey Wave', tagHighlight: false, title: 'ACS 5-Yr vs. CDSS Rolls', subtitle: 'Base: Survey vs. Rolls.' }
+        { tag: 'Source 1: Map Tags', tagHighlight: false, title: 'Commercial Map Listings', subtitle: 'Base: SCC Store Spots.' },
+        { tag: 'Source 2: EBT Filter', tagHighlight: true, title: 'Broad Spots vs. SNAP EBT', subtitle: 'Base: 408 SCC Tracts.' },
+        { tag: 'Source 3: Permits', tagHighlight: true, title: 'Deduplicated Health Permits', subtitle: 'Base: 8,555 SCC Permits.' },
+        { tag: 'Source 4: Rolls', tagHighlight: false, title: '5-Yr Survey vs. Monthly Rolls', subtitle: 'Base: Survey vs. Rolls.' }
       ],
       rows: [
         {
-          label: 'Ruler A (First or Raw Feed)',
+          label: 'Unfiltered Data Feed',
           cells: [
             { val: '344 stores (1 old tag)' },
             { val: '6,613 broad spots (0.29 mi)' },
@@ -928,7 +934,7 @@ const modules = [
           ]
         },
         {
-          label: 'Ruler B (Checked Feed)',
+          label: 'Verified Agency List',
           cells: [
             { val: '6,613 stores (multi-tag pull)' },
             { val: '514 SNAP / 755 DEH (0.573 mi)' },
@@ -937,7 +943,7 @@ const modules = [
           ]
         },
         {
-          label: 'Apparent Shift From Ruler Change',
+          label: 'Apparent Shift From Data Rule',
           highlight: true,
           cells: [
             { val: '+1,822% Store Jump', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
@@ -1072,33 +1078,34 @@ const modules = [
       '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: 57-County Public Health Spending Panel (2003&ndash;2023) &amp; <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014)</a>.',
       '<a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">National Bureau of Economic Research (NBER WP 34191)</a>: California Medicaid Renewal Outreach 5-Arm Trial (N = 82,695).'
     ],
-    answerHtml: 'In California public health budgeting, teams answer four separate questions on headcount, state law shifts, county returns, and outreach scripts that no single study design can solve alone. Matching each question to the right method locates <strong>120,239 Medi-Cal members</strong> needing renewal outreach [1], <strong>+39,600 Paid Family Leave claims</strong> [2], <strong>9.16 fewer deaths per 100,000</strong> from county health spending [3], and an <strong>8% to 11% renewal lift</strong> from live calls [4]. Using one raw source alone undercounts Medi-Cal adults by <strong>-40.2%</strong> in home surveys or mixes trend growth with new policy shifts [1,2]. Pairing linked records, trend splits, county panels, and outreach trials gives leaders a full toolkit [1,4].',
+    policySettingHtml: 'Public health leaders answer different budget questions at each stage of launching and scaling a program. Sizing a multilingual outreach cohort, forecasting a statewide paid leave law, scoring county health budgets, and testing phone call scripts each require different data structures. Matching each budget question to its study design prevents costly planning gaps.',
+    answerHtml: 'Matching each California public health budget question to its study design locates <strong>120,239 Medi-Cal members</strong> needing renewal outreach [1], <strong>+39,600 Paid Family Leave claims</strong> [2], <strong>2.38 annual to 4.32 cumulative fewer deaths per 100,000</strong> from county health spending [3], and an <strong>8% to 11% renewal lift</strong> from live calls [4]. Using one raw source alone undercounts Medi-Cal adults by <strong>-40.2%</strong> in home surveys or mixes trend growth with new policy shifts [1,2]. Pairing linked records, trend splits, county panels, and outreach trials gives leaders a full toolkit [3,4].',
     block2: {
       title: 'Two Design Rulers: Unmatched Baseline Errors vs. Matched Designs Across 4 Decisions',
       contextTag: 'Mode B Multi-Design Summary Across Medi-Cal, Paid Family Leave, County LHA &amp; CHW Outreach Studies',
-      ariaLabel: 'Comparison of descriptive and uncontrolled errors (-40.2% survey undercount, -12.31% pre-trend drift, +0.18 raw average) versus fit-for-purpose study designs',
+      ariaLabel: 'Comparison of descriptive and uncontrolled errors (-40.2% survey undercount, -12.31% pre-trend drift, +2.47 pandemic surge slope) versus fit-for-purpose study designs',
       ruler1: {
         title: 'Ruler 1: Single-Source &amp; Raw Estimates (Undercounts, Drift &amp; Surge Mix)',
-        stat: '-40.2% Undercount | -12.3% Drift | +0.18 Raw Avg',
-        ariaLabel: 'Relying on uncalibrated surveys or unadjusted pre-post designs produces a 40.2% Medi-Cal survey undercount, 12.31% pre-policy drift, and a +0.18 raw slope',
+        stat: '-40.2% Undercount | -12.3% Drift | +2.47 Surge Mix',
+        ariaLabel: 'Relying on uncalibrated surveys or unadjusted designs produces a 40.2% Medi-Cal survey undercount, 12.31% pre-policy drift, and a +2.47 pandemic surge slope',
         segments: [
           { cls: 'seg-Housing', width: 40, label: '-40.2% ACS Undercount' },
           { cls: 'seg-gross', width: 25, label: '-12.3% Drift' },
-          { cls: 'seg-rest', width: 35, label: '+0.18 Raw Avg' }
+          { cls: 'seg-rest', width: 35, label: '+2.47 Surge Mix' }
         ],
-        desc: 'Using an unmatched design undercounts Santa Clara adult Medi-Cal members by <strong>-40.2% in ACS surveys</strong> (152,811 vs. 255,601 DHCS). It also misreads a <strong>-12.31% pre-law enrollment drop</strong> or flips the sign in county spending (<strong>+0.18 raw average</strong>).'
+        desc: 'Using an unmatched design undercounts Santa Clara adult Medi-Cal members by <strong>-40.2% in ACS surveys</strong> (152,811 vs. 255,601 DHCS). It also misreads a <strong>-12.31% pre-law enrollment drop</strong> or flips the sign in pandemic county spending (<strong>+2.47 in 2020-2023</strong>).'
       },
       ruler2: {
         title: 'Ruler 2: Matched Design Toolkit (Linked Records, Trend Split, County Panel &amp; Trials)',
-        stat: '120,239 Target | +39.6K PFL | 9.16 Fewer Deaths | +8-11% Lift',
-        ariaLabel: 'Matched designs isolate 120,239 HR1-exposed enrollees, +39,600 incremental PFL claims, 9.16 fewer deaths/100K per $10/capita, and +8-11% navigator lift',
+        stat: '120,239 Target | +39.6K PFL | 2.38-4.32 Fewer Deaths | +8-11% Lift',
+        ariaLabel: 'Matched designs isolate 120,239 HR1-exposed enrollees, +39,600 incremental PFL claims, 2.38 annual and 4.32 cumulative fewer deaths/100K per $10/capita, and +8-11% navigator lift',
         segments: [
           { cls: 'seg-primary', width: 25, label: 'Record Link: 120.2K' },
           { cls: 'seg-food', width: 25, label: 'Trend Split: +39.6K' },
-          { cls: 'seg-primary', width: 25, label: 'Panel: 9.16 Fewer (125:1)' },
+          { cls: 'seg-primary', width: 25, label: 'Panel: 2.38 Yr / 4.32 Cumul (32-59:1)' },
           { cls: 'seg-food', width: 25, label: 'Trial: +8-11% Lift' }
         ],
-        desc: 'Matching each question to its design finds <strong>120,239 exposed members</strong> and <strong>+39,600 PFL claims ($623.7M)</strong>. It also finds <strong>9.16 fewer deaths/100K ($109K/life, 125:1 BCR)</strong> and <strong>+8% to +11% live-call renewal lift</strong>.'
+        desc: 'Matching each question to its design finds <strong>120,239 exposed members</strong> and <strong>+39,600 PFL claims ($623.7M)</strong>. It also finds <strong>2.38 annual / 4.32 cumulative fewer deaths/100K (32:1 to 59:1 BCR)</strong> and <strong>+8% to +11% live-call renewal lift</strong>.'
       }
     },
     table1: {
@@ -1106,11 +1113,11 @@ const modules = [
       subtitle: 'We compare four CAPHE studies across budget question, raw baseline error, matched design, and main result.',
       caption: 'Four-column study design matrix comparing Admin-Survey Linkage, Trend Split + Simulation, Routine-Budget Panel, and Outreach Trial + Funnel Check.',
       cornerLabel: 'Study Design Factor',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates; Rung 2 Mode A Simulation):</strong> Each column uses a separate study group (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). The Rung 2 PFL SB 951 claim and cost numbers are Mode A simulation outputs. In Rung 3, the raw yearly average is +0.18 deaths per 100,000 per $10 per resident (p = 0.64, 95% range crosses zero). Rung 3 routine-budget model uses variance-based IV with first-stage F = 314.1 and Hansen J = 4.49 (p = 0.343), holding across 46 of 47 checks.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates; Rung 2 Mode A Simulation):</strong> Each column uses a separate study group (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). The Rung 2 PFL SB 951 claim and cost numbers are Mode A simulation outputs. In Rung 3, the 2020-2023 pandemic surge slope is +2.47 deaths per 100,000 per $10 per resident (p = 0.001) and pooled 2003-2023 TWFE is -0.25 (p = 0.710). Rung 3 pre-COVID routine-budget TWFE (2003-2019, N = 943) yields -2.38 (p = 0.0022), 13-year long-difference OLS yields -4.32 (p = 0.0052), and Long-Difference Lewbel 2SLS yields -5.31 (first-stage F = 111.20, Hansen J p = 0.2132).',
       columns: [
         { tag: 'Rung 1: Target Size', tagHighlight: false, title: 'Record + Survey Link', subtitle: 'SCC Medi-Cal HR 1 Scope.' },
         { tag: 'Rung 2: Law Shift', tagHighlight: false, title: 'Trend Split + Model', subtitle: 'CA Paid Family Leave (SB 951).' },
-        { tag: 'Rung 3: County Panel', tagHighlight: true, title: 'Routine-Budget Panel', subtitle: '57-County LHA Pay (21 Yrs).' },
+        { tag: 'Rung 3: County Panel', tagHighlight: true, title: 'Routine-Budget Panel', subtitle: '57-County LHA Pay (2003-2019).' },
         { tag: 'Rung 4: Outreach Step', tagHighlight: true, title: 'Outreach Trial + Funnel', subtitle: 'Call Scripts &amp; CHW Reach.' }
       ],
       rows: [
@@ -1128,7 +1135,7 @@ const modules = [
           cells: [
             { val: 'ACS alone undercounts by -40.2% (152.8K vs 255.6K)' },
             { val: 'Pre-post mixes +1.52% claim drift &amp; +3.5% pay' },
-            { val: 'Raw yearly mean gives +0.18 (plus sign)' },
+            { val: 'Pandemic surge grants give +2.47 (plus sign)' },
             { val: 'Total rate leaves out 85% pre-visit drop' }
           ]
         },
@@ -1137,7 +1144,7 @@ const modules = [
           cells: [
             { val: 'Fix totals to DHCS; use ACS shares' },
             { val: 'Split 2025-26 base slope from law jump' },
-            { val: 'Track routine budget shifts (46 of 47)' },
+            { val: 'Separate pre-COVID routine budgets &amp; horizons' },
             { val: '5-arm trial (N=82,695) + funnel check' }
           ]
         },
@@ -1147,7 +1154,7 @@ const modules = [
           cells: [
             { val: '120,239 Exposed (23K Sp/Viet LEP)', textColor: 'text-[#003080]' },
             { val: '+39,600 Claims ($623.7M Gross)', textColor: 'text-[#003080]' },
-            { val: '9.16 Fewer Deaths/100K (125:1 BCR)', textColor: 'text-emerald-800' },
+            { val: '2.38 Yr / 4.32 Cumul Fewer (32-59:1)', textColor: 'text-emerald-800' },
             { val: '+8-11% Call Lift (15.0% CHW Link)', textColor: 'text-emerald-800' }
           ]
         },
@@ -1156,7 +1163,7 @@ const modules = [
           cells: [
             { val: '15,559 Spanish + 7,467 Viet + 3,489 Chinese' },
             { val: '325,055 (2025) -> 330,000 base vs. 369,600' },
-            { val: '99.4% match to 2001-2008 study (9.10)' },
+            { val: 'Urban (-2.59) &amp; Rural (-2.42); 2SLS -5.31' },
             { val: 'Text and email arms: 0% lift' }
           ]
         },
@@ -1165,7 +1172,7 @@ const modules = [
           cells: [
             { val: 'Hire bilingual staff for 26,515 adults' },
             { val: 'Set payroll tax at +0.04 pp ($60/yr)' },
-            { val: 'Back base county LHA ($109K/life)' },
+            { val: 'Back base county LHA ($420K yr / $231K cumul)' },
             { val: 'Fund live calls and CHWs over text tweaks' }
           ]
         }
@@ -1182,7 +1189,7 @@ const modules = [
           cells: [
             { val: 'When a team sizes a target group and finds language or age subgroups before launch.' },
             { val: 'When a state law (like SB 951\'s jump to 90% pay) starts on one date statewide.' },
-            { val: 'When budgets shift across 57 counties over 21 years and surge aid tracks death spikes.' },
+            { val: 'When budgets shift across 57 counties and pandemic surge grants must be separated from base care.' },
             { val: 'When a team tests outreach scripts across 82,695 members or checks referral steps.' }
           ]
         },
@@ -1191,7 +1198,7 @@ const modules = [
           cells: [
             { val: 'Gives the exact county headcount and language shares (like 7,467 Vietnamese members) to staff outreach.' },
             { val: 'Splits yearly wage and claim growth (+1.52% claims, +6.88% pay) from the new law jump (+39,600 claims).' },
-            { val: 'Tracks death rates across 21 years and 57 counties while splitting routine care from outbreak grants.' },
+            { val: 'Tracks death rates across 57 counties over annual (-2.38) and 13-year cumulative (-4.32) horizons.' },
             { val: 'Checks each referral step to show that 78.1% of reached patients link to care once reached (27.8%).' }
           ]
         },
@@ -1200,7 +1207,7 @@ const modules = [
           cells: [
             { val: 'Using raw ACS survey counts (152,811 vs. 255,601 DHCS adults) under-budgets renewal staff by 40.2%.' },
             { val: 'Treating a pre-law -12.31% enrollment drop (120,239 to 105,436 in 2025) as a 2027 law effect overstates loss.' },
-            { val: 'Using raw yearly averages (+0.18) to judge county health budgets mixes outbreak aid with steady prevention.' },
+            { val: 'Pooling 2020-2023 emergency COVID-19 grants (+2.47) with routine budgets attenuates prevention gains.' },
             { val: 'Spending months testing SMS text wording (0% lift) delays live phone calls that lift renewals +8% to +11%.' }
           ]
         },
@@ -1210,7 +1217,7 @@ const modules = [
           cells: [
             { headline: 'Link State Totals + Survey Shares', detail: 'Use DHCS rolls for total headcount and ACS microdata for language shares.' },
             { headline: 'Model Base Slopes Before Laws', detail: 'Use multi-year trend splits to separate wage growth from new benefit jumps.' },
-            { headline: 'Use Routine-Budget Panels for ROI', detail: 'Judge multi-year county budgets with 21-year panels that split out surge grants.' },
+            { headline: 'Use Routine-Budget Panels for ROI', detail: 'Judge multi-year county budgets with pre-COVID panels and 13-year cumulative horizons.' },
             { headline: 'Test Outreach Calls &amp; Funnels', detail: 'Use outreach trials and funnel checks to tune call scripts and CHW caseloads.' }
           ]
         }
@@ -1218,16 +1225,16 @@ const modules = [
       notesTitle: 'Table 2 Notes: Referral Funnel Math &amp; Multi-Study Provenance',
       notesBullets: [
         '<strong>CHW Referral Funnel Math (Mode B Published Trial Split):</strong> In the Bronx CHW study (N = 3,522 patients, 5,021 referrals; INTERVENTION_DESIGN.md:L185-232), total referral completion was 15.0%. That equals 27.8% started outreach &times; 69.2% of started were reached (19.2% of total) &times; 78.1% of reached linked to care (0.278 × 0.692 × 0.781 = 0.1502 = 15.0%).',
-        '<strong>Data Provenance:</strong> Exact numbers come from `scc_hr1_medicaid/SCC_HR1_MediCal_Risk_Profiles.md (L13-112), scc_hr1_medicaid/scc_dhcs_medical_enrollment.csv (L2-15), INTERVENTION_DESIGN.md (L19-232), public/tools/pfl-simulator/data/pfl_model_data.json (L20-169), and src/frontend/js/lha-calculator.js (L28-72)`.'
+        '<strong>Data Provenance:</strong> Exact numbers come from `scc_hr1_medicaid/SCC_HR1_MediCal_Risk_Profiles.md (L13-112), scc_hr1_medicaid/scc_dhcs_medical_enrollment.csv (L2-15), INTERVENTION_DESIGN.md (L19-232), public/tools/pfl-simulator/data/pfl_model_data.json (L20-169), and src/frontend/js/lha-calculator.js`.'
       ]
     },
     synthesis: {
       title: 'Why Health Agencies Use All Four Methods Together',
-      p1: 'A county health director launching a Medi-Cal renewal or chronic-care plan needs four types of proof at four steps. First, record-survey linkage sizes the group (fixing the -40.2% ACS undercount to find 120,239 exposed adults and 26,515 LEP members). Second, trend models split baseline enrollment drift (-12.31%) from new laws. Third, 21-year county panels measure department returns (9.16 fewer deaths/100K, 125:1 BCR). Fourth, outreach trials test which contact channel works.',
+      p1: 'A county health director launching a Medi-Cal renewal or chronic-care plan needs four types of proof at four steps. First, record-survey linkage sizes the group (fixing the -40.2% ACS undercount to find 120,239 exposed adults and 26,515 LEP members). Second, trend models split baseline enrollment drift (-12.31%) from new laws. Third, multi-year county panels measure department returns (2.38 fewer deaths/100K annually and 4.32 over 13-year cumulative horizons, 32:1 to 59:1 BCR). Fourth, outreach trials test which contact channel works.',
       p2: 'Checking each step of the delivery funnel turns study numbers into daily fixes. In California\'s 5-arm renewal outreach trial (N = 82,695, NBER WP 34191), changing the wording of texts and emails gave a 0% difference. Adding a live phone call lifted renewals by +8% to +11% (+1.0 to +1.8 pp). Likewise, splitting a CHW referral funnel shows that 78.1% of reached patients link to care. The 15.0% overall rate points to an early gap in starting referrals (27.8%), not a gap in CHW support.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Studies + Mode A PFL Simulation:</strong> Rung 1 (120,239 DHCS / 152,811 ACS vs. 255,601), Rung 3 (-9.16 routine-budget panel), and Rung 4 (NBER WP 34191 N = 82,695 and Bronx CHW 27.8% × 69.2% × 78.1% = 15.0%) are observed Mode B studies. Rung 2 (330,000 vs. 369,600 PFL claims, $623.7M) is a Mode A simulation calibrated to EDD forecasts. The four rungs use four separate groups (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). Their estimates are not pooled on one scale.',
+      '<strong>Mode B Studies + Mode A PFL Simulation:</strong> Rung 1 (120,239 DHCS / 152,811 ACS vs. 255,601), Rung 3 (-2.38 annual and -4.32 cumulative routine-budget panel), and Rung 4 (NBER WP 34191 N = 82,695 and Bronx CHW 27.8% × 69.2% × 78.1% = 15.0%) are observed Mode B studies. Rung 2 (330,000 vs. 369,600 PFL claims, $623.7M) is a Mode A simulation calibrated to EDD forecasts. The four rungs use four separate groups (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). Their estimates are not pooled on one scale.',
       '<strong>Main Sources:</strong> We cite <a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">NBER Working Paper 34191 (California Medicaid Renewal Outreach 5-Arm Trial, N = 82,695)</a> and <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Enrollment Dashboards</a>. We also use <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 DI Fund Forecast</a> and <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), Health Economics</a>.'
     ],
     faqs: [
@@ -1264,9 +1271,11 @@ const modules = [
     subtitle: 'We filter small-group swings across modeled county subgroup benchmarks so outreach funds target the largest plan drops.',
     endnotes: [
       '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Santa Clara County Medi-Cal Certified Eligibles across 62 Demographic &amp; Language Cells (June 2025 to June 2026 snapshots, 472,014 to 411,722 enrollees).',
-      '<a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Benjamini, Y., &amp; Hochberg, Y. (1995)</a>: "Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing", <em>JRSS-B</em>, 57(1), 289&ndash;300.'
+      '<a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Benjamini, Y., &amp; Hochberg, Y. (1995)</a>: "Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing", <em>JRSS-B</em>, 57(1), 289&ndash;300.',
+      '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Language Spoken at Home &amp; Residential Mobility Tables.'
     ],
-    answerHtml: 'When scanning 62 demographic and language cells on a monthly dashboard, a county team risks ranking random swings in tiny groups over large headcount drops. Pairing a modeled 62-group screen across <strong>62 Santa Clara County Medi-Cal groups</strong> with total headcount focuses outreach on <strong>Spanish-speaking members (-24,880 net drop, or 41.3% of the county drop)</strong> and <strong>Hispanic adults ages 19 to 44 (-17,380)</strong> [1,2]. Sorting those 62 groups by raw percent drop puts tiny groups first, like <strong>Samoan (-34.04%, 47 to 31 members)</strong> and <strong>French (-25.00%, 56 to 42)</strong>, where a few moving homes shift the rate [1]. Setting a size floor (<strong>100+ members</strong>) with modeled drops past the county rate guides staff [1,2].',
+    policySettingHtml: 'County Medi-Cal teams track monthly enrollment across dozens of language, age, and demographic cells to spot renewal drops. In small language groups with fewer than 60 members, a few moving families can create a large percentage swing. Combining a minimum group-size floor with net headcount losses directs outreach staff to the largest coverage drops.',
+    answerHtml: 'In a multilingual county like Santa Clara (where the 62-cell DHCS grid spans both 47-member and 138,215-member language groups), pairing a modeled 62-group screen with total headcount focuses outreach on <strong>Spanish-speaking members (-24,880 net drop, or 41.3% of the county drop)</strong> and <strong>Hispanic adults ages 19 to 44 (-17,380)</strong> [1,2]. Sorting those 62 groups by raw percent drop puts tiny groups first, like <strong>Samoan (-34.04%, 47 to 31 members)</strong> and <strong>French (-25.00%, 56 to 42)</strong>, where a few moving homes shift the rate [1,3]. Setting a size floor (<strong>100+ members</strong>) with modeled drops past the county rate guides staff [2,3].',
     block2: {
       title: 'Two Dashboard Rulers Across 62 DHCS Cells: Raw Percent Rank vs. Size-Filtered Volume Rank',
       contextTag: 'Observed 62-Cell Santa Clara County DHCS Medi-Cal Snapshots (472,014 to 411,722, -12.77% Net Change) &amp; Mode A Screening Rules',
@@ -1293,13 +1302,13 @@ const modules = [
       }
     },
     table1: {
-      title: 'Table 1. Checking the 62-Cell Santa Clara Medi-Cal Grid: Small-Group Swings vs. Large Drops',
+      title: 'Table 1. Checking a 62-Cell County Medi-Cal Grid: Small-Group Swings vs. Large Drops',
       subtitle: 'We compare observed June 2025 to June 2026 Medi-Cal net snapshot changes with size floors and benchmark gaps.',
       caption: 'Comparison of Samoan cell, French and Thai cells, Spanish cell, and Young Adult (19-44) cells across 62 Santa Clara County Medi-Cal groups.',
       cornerLabel: '62-Group Check Measure',
       footnote: '<strong class="text-slate-800">Table 1 Notes (Observed DHCS Snapshot Counts &amp; Mode A Screening Rules):</strong> Observed June 2025 (472,014) and June 2026 (411,722) counts come from `scc_dhcs_medical_enrollment.csv` (county net change -60,292 or -12.773%, rounded to -12.77%). Rows 3-5 show Mode A operational rules: a minimum group-size floor (n &ge; 100) and the net drop past the -12.77% county benchmark (`Observed_Net_Change - Base_2025 × (-0.1277)`). Because monthly DHCS snapshots record net stock changes (entries minus exits), overlap across age/sex/language tables, and cluster within families, exact binomial exit p-values are not valid on net snapshot counts; see Table 2 Notes for verified replicate-weight, Holm/FDR, and permutation tests.',
       columns: [
-        { tag: 'Rank #1 Raw % (Small n)', tagHighlight: false, title: 'Samoan Language Cell', subtitle: '47 to 31 Members (-16).' },
+        { tag: 'Rank #1 Raw %', tagHighlight: false, title: 'Samoan Language Cell', subtitle: '47 to 31 Members (-16).' },
         { tag: 'Ranks #2 &amp; #5 Raw %', tagHighlight: false, title: 'French &amp; Thai Cells', subtitle: '56 to 42 (-14) | 53 to 42 (-11).' },
         { tag: '41.3% of County Drop', tagHighlight: true, title: 'Spanish Language Cell', subtitle: '138,215 to 113,335 (-24,880).' },
         { tag: 'High-Loss Adult Group', tagHighlight: true, title: 'Hispanic &amp; Male 19-44', subtitle: '86,421 to 69,041 (-17,380).' }
@@ -1324,23 +1333,23 @@ const modules = [
           ]
         },
         {
-          label: 'June 2025 Group Size (n)',
+          label: 'June 2025 Enrolled Group Size',
           modeled: true,
           cells: [
-            { val: 'n = 47 (tiny cell; 3-4 homes)' },
-            { val: 'n = 56 (French) &amp; n = 53 (Thai)' },
-            { val: 'n = 138,215 (29.3% of county)' },
-            { val: 'n = 86,421 (Hisp) &amp; 76,734 (Male)' }
+            { val: '47 members (tiny cell; 3-4 homes)' },
+            { val: '56 (French) &amp; 53 (Thai)' },
+            { val: '138,215 (29.3% of county)' },
+            { val: '86,421 (Hisp) &amp; 76,734 (Male)' }
           ]
         },
         {
-          label: 'Size Floor &amp; Scale Gate',
+          label: 'Minimum Group-Size Check',
           modeled: true,
           cells: [
-            { val: 'Below n &ge; 100 Floor (Partner List)', textColor: 'text-amber-900' },
-            { val: 'Below n &ge; 100 Floor (Small Cell)', textColor: 'text-rose-800' },
-            { val: 'Clears n &ge; 100 &amp; Volume Gate', textColor: 'text-emerald-800' },
-            { val: 'Clears n &ge; 100 &amp; Volume Gate', textColor: 'text-emerald-800' }
+            { val: 'Under 100-Member Cutoff (Partner List)', textColor: 'text-amber-900' },
+            { val: 'Under 100-Member Cutoff (Small Cell)', textColor: 'text-rose-800' },
+            { val: 'Clears 100+ Member &amp; Volume Check', textColor: 'text-emerald-800' },
+            { val: 'Clears 100+ Member &amp; Volume Check', textColor: 'text-emerald-800' }
           ]
         },
         {
@@ -1494,17 +1503,15 @@ function verifyWave4ASourcesAndRenderedHtml(renderedPathsBySlug) {
     '$13,306', '$2,814', '$10,492', '7.3%', '9.3%', '$9,519'
   ]);
 
-  // 2. Verify #11 against src/frontend/js/lha-calculator.js, methodology.html, lewbel_iv_results_section.tex & robustness_tables.tex
+  // 2. Verify #11 against src/frontend/js/lha-calculator.js, methodology.html & ajph_submission.tex
   const lhaJsPath = path.join(__dirname, '..', 'src', 'frontend', 'js', 'lha-calculator.js');
   const lhaMethPath = path.join(__dirname, '..', 'public', 'tools', 'lha-calculator', 'methodology.html');
-  const lewbelTexPath = path.join(__dirname, '..', '..', 'PublicHealthValue', 'paper', 'sections', 'lewbel_iv_results_section.tex');
-  const robTexPath = path.join(__dirname, '..', '..', 'PublicHealthValue', 'paper', 'sections', 'robustness_tables.tex');
-  const lhaCombined = fs.readFileSync(lhaJsPath, 'utf8') + '\n' + fs.readFileSync(lhaMethPath, 'utf8') + '\n' + fs.readFileSync(lewbelTexPath, 'utf8') + '\n' + fs.readFileSync(robTexPath, 'utf8');
-  for (const token of ['-9.16', '1.11', '314.1', '4.49', '0.343', '0.18', '-9.1', '-3.07', '-8.93', '125']) {
+  const ajphTexPath = path.join(__dirname, '..', '..', 'Value_of_Public_Health', 'paper', 'ajph_submission.tex');
+  const lhaCombined = fs.readFileSync(lhaJsPath, 'utf8') + '\n' + fs.readFileSync(lhaMethPath, 'utf8') + '\n' + fs.readFileSync(ajphTexPath, 'utf8');
+  for (const token of ['-2.38', '-4.32', '-5.31', '111.20', '.2132', '420,168', '231,481', '188,324', '32.4', '58.8']) {
     assert(lhaCombined.includes(token), `LHA source files missing token ${token}`);
   }
-  assertClose(1 - Math.abs(-9.16 - (-9.10)) / 9.16, 0.99345, 0.001, 'LHA replication concordance');
-  assertHtmlContains('observational-to-experimental', ['+0.18', '9.10', '9.16', '3.07', '8.93', '314.1', '4.49', '0.343', '99.4%', '$125 per $1', '$109,000']);
+  assertHtmlContains('observational-to-experimental', ['+2.47', '2.38 fewer deaths', '4.32 fewer deaths', '5.31 fewer deaths', '111.20', '0.213', '$420,168', '$231,481', '$188,324']);
 
   // 3. Verify #12 & #16 against retained FoodSecurity CSVs and JSONs on disk
   const foodSecRoot = path.resolve(__dirname, '..', '..', '..', 'Projects', 'FoodSecurity');
@@ -1578,7 +1585,7 @@ function verifyWave4ASourcesAndRenderedHtml(renderedPathsBySlug) {
   assert(fraudJson.permutation_p_value === 0.001, 'Mcaid permutation_p_value');
   const ajphTex = fs.readFileSync(path.join(__dirname, '..', '..', 'Value_of_Public_Health', 'paper', 'ajph_submission.tex'), 'utf8');
   assert(ajphTex.includes('.0049') && ajphTex.includes('.0788'), 'AJPH 16-horizon Holm/FDR multiplicity check');
-  assertHtmlContains('study-design-ladder', ['120,239', '255,601', '152,811', '40.2%', '330,000', '369,600', '+39,600', '9.16', '82,695', '27.8%', '69.2%', '78.1%', '15.0%']);
+  assertHtmlContains('study-design-ladder', ['120,239', '255,601', '152,811', '40.2%', '330,000', '369,600', '+39,600', '2.38', '4.32', '82,695', '27.8%', '69.2%', '78.1%', '15.0%']);
 
   const html18 = assertHtmlContains('p-hacking-multiple-testing', [
     '472,014', '411,722', '-60,292', '-12.77%', '-34.04%', '-25.00%', '-20.75%', '-24,880', '-17,380', '-15,496', '-7,230', '-6,344', '-5,697', '0.469 to 0.730', '0.0788', '0.593'

@@ -27,7 +27,7 @@ methods-lab/
 | Slug | Decision Focus |
 |------|----------------|
 | `selection-into-treatment` | Selection Into Treatment Across Wage Replacement Tiers |
-| `observational-to-experimental` | Nested Regression & Lewbel IV ($-9.16$) Across County Spending |
+| `observational-to-experimental` | Routine-Budget TWFE ($-2.38$) & Cumulative Horizons ($-4.32$ to $-5.31$) Across County Spending |
 | `geographic-variables` | Geography as Proxy vs. Place as Mechanism in 9,033 Census Tracts |
 | `identical-data-opposite-policies` | Nominal Parity vs. Purchasing-Power Parity Across Counties |
 | `study-design-ladder` | Matching Study Designs to the Resource-Allocation Question |

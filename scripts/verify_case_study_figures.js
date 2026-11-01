@@ -7,8 +7,8 @@
  * 1. Authoritative code-generated source files on disk (JSON, CSV, JS, TeX)
  * 2. Exact mathematical derivations (post-rent shares, QALYs, ICERs, NMBs, BCRs,
  *    Bayes base-rate rescaling, empirical Bayes shrinkage, PFL reserve ratios)
- * 3. Every rendered case study's figures (Block 2 .budget-bar-seg widths & Table 1
- *    .inline-mini-bar-fill widths) and numeric prose/table tokens
+ * 3. Every rendered case study's figures (Paired Horizontal Cost-vs-Offset Bar Chart & Table 1
+ *    .inline-mini-bar widths) and numeric prose/table tokens
  * 4. Main Case Studies Hub (public/methods-lab/index.html) 1-line comparisons
  */
 
@@ -48,12 +48,11 @@ function verifyAllCaseStudiesAndFigures() {
     stateChw.scen4_gross_societal_offset === 34900,
     'CHW benchmark JSON values mismatch'
   );
-  // Verify Table 1 barWidth math for chw-health-outcomes:
-  // $407,006 ($107,006 + $300,000), $591,171 ($291,171 + $300,000), $591,333 ($182,333 + $409,000), $852,900 ($34,900 + $818,000)
-  assert(Math.round((407006 / 852900) * 100) === 48, 'chw-health-outcomes bar 1');
-  assert(Math.round((591171 / 852900) * 100) === 69, 'chw-health-outcomes bar 2');
-  assert(Math.round((591333 / 852900) * 100) === 69, 'chw-health-outcomes bar 3');
-  assert(Math.round((852900 / 852900) * 100) === 100, 'chw-health-outcomes bar 4');
+  // Verify ledger-separated Table 1 math for chw-health-outcomes (never summing cash offsets and QALYs):
+  assert(103719 - 107006 === -3287, 'chw-health-outcomes Scenario 1 net cost-saving');
+  assert(103719 - 291171 === -187452, 'chw-health-outcomes Scenario 2 net cost-saving');
+  assert(101369 - 182333 === -80964, 'chw-health-outcomes Scenario 3 net cost-saving');
+  assert(Math.round((98469 - 34900) / 8.18) === 7771, 'chw-health-outcomes Scenario 4 ICER per QALY');
 
   // Pipeline 2: Santa Clara Medi-Cal Churn & Redetermination Funnel
   const churnReconPath = path.join('/Users', 'vserver', 'laptop_archive_20261024', 'code', 'scc_medi_cal_churn_memo', 'SCC_MediCal_Churn_Mapping_Strategy_Memo-reconciliation.json');
@@ -92,16 +91,14 @@ function verifyAllCaseStudiesAndFigures() {
   assert(Math.round((fraudJson.during_paid_per_month_median / fraudJson.post_paid_per_month_median) * 100) === 69, 'measurement-error-claims bar 2');
   assert(Math.round((fraudJson.post_paid_per_month_median / fraudJson.post_paid_per_month_median) * 100) === 100, 'measurement-error-claims bar 3');
 
-  // Pipeline 4: 57-County Local Health Jurisdiction Mortality & Lewbel IV
+  // Pipeline 4: 57-County Local Health Jurisdiction Mortality & Exposure Horizons
   const lhaJsPath = path.join(ROOT, 'src', 'frontend', 'js', 'lha-calculator.js');
   const lhaMethPath = path.join(ROOT, 'public', 'tools', 'lha-calculator', 'methodology.html');
-  const lewbelTexPath = path.join(ROOT, '..', 'PublicHealthValue', 'paper', 'sections', 'lewbel_iv_results_section.tex');
-  const robTexPath = path.join(ROOT, '..', 'PublicHealthValue', 'paper', 'sections', 'robustness_tables.tex');
   const ajphTexPath = path.join(ROOT, '..', 'Value_of_Public_Health', 'paper', 'ajph_submission.tex');
-  const lhaCombined = [lhaJsPath, lhaMethPath, lewbelTexPath, robTexPath, ajphTexPath]
+  const lhaCombined = [lhaJsPath, lhaMethPath, ajphTexPath]
     .map(p => fs.readFileSync(p, 'utf8'))
     .join('\n');
-  for (const token of ['-9.16', '1.11', '314.1', '4.49', '0.343', '0.18', '-9.1', '-3.07', '-8.93', '125', '.0049', '.0788']) {
+  for (const token of ['-2.38', '-4.32', '-5.31', '111.20', '.2132', '420,168', '231,481', '188,324', '32.4', '58.8', '.0049', '.0788']) {
     assert(lhaCombined.includes(token), `LHA source files missing token ${token}`);
   }
 
@@ -143,8 +140,8 @@ function verifyAllCaseStudiesAndFigures() {
   const CASE_STUDY_CHECKS = {
     // Wave 2 (3 case studies)
     'chw-health-outcomes': {
-      tokens: ['$103,719', '6.5% to 9.8%', '$6,775 to $10,162', '$107,006', '$291,171', '$182,333', '+3.00 QALYs', '+4.09 QALYs', '+8.18 QALYs', '$407,006', '$591,171', '$591,333', '$852,900'],
-      bars: [48, 69, 69, 100]
+      tokens: ['$103,719', '6.5% to 9.8%', '$6,775 to $10,162', '$107,006', '$291,171', '$182,333', '+3.00 QALYs', '+4.09 QALYs', '+8.18 QALYs', '+$3,287 net cash', '+$187,452 net cash', '+$80,964 net cash', '$7,771 / QALY', '$63,569 net outlay'],
+      bars: [92, 100, 96, 88]
     },
     'medicaid-expansion': {
       tokens: ['120,239', '27,076', '14,219', '52.5%', '35.0%', '2,228', '72.4%', '6,831', '64.6%', '3,319', '30.0%', '1,841'],
@@ -164,15 +161,15 @@ function verifyAllCaseStudiesAndFigures() {
       bars: [13, 2, 50, 100]
     },
     'threat-regression-to-mean': {
-      tokens: ['1,204', '39,538,223', '89.0% pulled', '68.0% pulled', '24.0% pulled', '6.0% pulled', '-8.11 / 100K', '-9.16 / 100K'],
-      bars: [89, 68, 24, 6, 89, 100]
+      tokens: ['1,204', '39,538,223', '89.0% pulled', '68.0% pulled', '24.0% pulled', '6.0% pulled', '-2.42 / 100K', '-4.32 13-yr'],
+      bars: [89, 68, 24, 6, 56, 100]
     },
     'threat-history-solutions': {
       tokens: ['84,422', '91,399', '113,638', '101,905', '109,087', '129,492', '+24.33%', '+18.71%', '+5.62 pp', '+4.60 pp', '+1.21 pp', '-0.37 pp'],
       bars: [22, 100, 82, 7]
     },
     'parallel-trends-power': {
-      tokens: ['-0.47 pp', '0.22 pp', '-0.91 to -0.03 pp', '-1.27 to +1.16 pp', '0.35x', '+0.003 pp', '9.16'],
+      tokens: ['-0.47 pp', '0.22 pp', '-0.91 to -0.03 pp', '-1.27 to +1.16 pp', '0.35x', '+0.003 pp', '2.38', '4.32'],
       bars: [36, 100, 40, 3]
     },
     'threat-maturation-solutions': {
@@ -180,11 +177,11 @@ function verifyAllCaseStudiesAndFigures() {
       bars: [73, 45, 54, 13]
     },
     'budget-impact': {
-      tokens: ['125:1', '52:1', '$422.0M', '$623.7M', '10.8%', '$1.96B', '$4.38B', '42%', '$709M'],
-      bars: [11, 3, 42]
+      tokens: ['59:1', '32:1', '$422.0M', '$623.7M', '10.8%', '$1.96B', '$4.38B', '55%', '$709M'],
+      bars: [11, 3, 55]
     },
     'measuring-health-common-unit': {
-      tokens: ['40.04 QALYs', '18.21', '17.49', '4.34', '$1,821,046', '$2,183,037', '$4,004,083', '$13.6M', '$6.3M', '$20.7M', '125:1'],
+      tokens: ['40.04 QALYs', '18.21', '17.49', '4.34', '$1,821,046', '$2,183,037', '$4,004,083', '$13.6M', '$6.3M', '$20.7M', '32:1', '59:1'],
       bars: [13, 16, 29, 100]
     },
     'cost-effectiveness-ratio': {
@@ -197,8 +194,8 @@ function verifyAllCaseStudiesAndFigures() {
       bars: [66, 100, 39, 20]
     },
     'observational-to-experimental': {
-      tokens: ['+0.18', '9.10 fewer deaths', '9.16 fewer deaths', '8.93 fewer deaths', '314.1', '4.49', '0.343', '99.4%', '$109,000', '$125 per $1'],
-      bars: [2, 99, 100, 97]
+      tokens: ['+2.47', '2.38 fewer deaths', '4.32 fewer deaths', '5.31 fewer deaths', '111.20', '0.213', '$420,168', '$231,481', '$188,324', '$32 per $1', '$59 per $1'],
+      bars: [2, 45, 81, 100]
     },
     'geographic-variables': {
       tokens: ['62.2%', '58.1 pp', '60.6%', '0.003 pp', '0.827', '1.218 miles', '3,252 residents', '30 of 225', '13.3%', '2.92 mi', '12.43 mi'],
@@ -213,7 +210,7 @@ function verifyAllCaseStudiesAndFigures() {
       bars: [100, 92, 14, 71]
     },
     'study-design-ladder': {
-      tokens: ['120,239', '255,601', '152,811', '40.2%', '330,000', '369,600', '+39,600', '9.16', '82,695', '27.8%', '69.2%', '78.1%', '15.0%'],
+      tokens: ['120,239', '255,601', '152,811', '40.2%', '330,000', '369,600', '+39,600', '2.38', '4.32', '82,695', '27.8%', '69.2%', '78.1%', '15.0%'],
       bars: []
     },
     'p-hacking-multiple-testing': {
@@ -222,8 +219,8 @@ function verifyAllCaseStudiesAndFigures() {
     },
     // Wave 4B (5 case studies)
     'reverse-causation-feedback': {
-      tokens: ['+0.18', '-4.56', '-8.11', '-9.16', '$219,298', '$123,305', '$109,170', '62.0:1', '110.3:1', '124.6:1'],
-      bars: [2, 50, 89, 100]
+      tokens: ['+2.47', '2.38 fewer deaths / 100K', '4.32 fewer deaths / 100K', '5.31 fewer deaths / 100K', '$420,168', '$231,481', '$188,324', '32.4:1', '58.8:1', '72.2:1'],
+      bars: [2, 45, 81, 100]
     },
     'measurement-error-claims': {
       tokens: ['488,032', '648', '299', '199', '150', '487,384', '204', '95', '$3,820.94', '$6,721.78', '$9,694.90', '50.0-month'],
@@ -234,12 +231,12 @@ function verifyAllCaseStudiesAndFigures() {
       bars: [72, 44, 72, 82]
     },
     'classifying-causal-mechanisms': {
-      tokens: ['-0.578', '-0.017', '62.2%', '71.7%', '57.1%', '1.90', '30%', '9 of 95', '38.0th vs. 50.0th', '-9.16', '46 of 47'],
+      tokens: ['-0.578', '-0.017', '62.2%', '71.7%', '57.1%', '1.90', '30%', '9 of 95', '38.0th vs. 50.0th', '5.31', '111.20'],
       bars: [62, 72, 38, 98]
     },
     'sensitivity-analysis-cea': {
-      tokens: ['6.98 fewer deaths', '9.16 fewer deaths', '$6.3M', '$13.6M', '$20.7M', '$143,266', '$109,170', '44.0:1', '57.7:1', '124.6:1', '189.6:1', '$6,775', '$10,162', '$107,006', '$291,171'],
-      bars: [23, 30, 66, 100]
+      tokens: ['0.85 yr | 1.30 cumul fewer', '2.38 yr | 4.32 cumul fewer', '$6.3M', '$13.6M', '$20.7M', '$420,168', '$231,481', '5.4:1', '15.0:1', '32.4:1', '49.3:1', '$6,775', '$10,162', '$107,006', '$291,171'],
+      bars: [9, 30, 66, 100]
     }
   };
 

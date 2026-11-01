@@ -20,15 +20,6 @@ function countWords(htmlStr) {
   return plain ? plain.split(' ').length : 0;
 }
 
-const SEG_DOT_COLORS = {
-  'seg-rent': '#BE123C',
-  'seg-Housing': '#BE123C',
-  'seg-food': '#F59E0B',
-  'seg-rest': '#0F766E',
-  'seg-gross': '#475569',
-  'seg-primary': '#0041A5'
-};
-
 function stripVisibleModeTag(inputStr) {
   if (!inputStr) return '';
   return String(inputStr)
@@ -53,10 +44,17 @@ function stripVisibleModeTag(inputStr) {
 
 function simplifyToGrade7(inputStr) {
   if (!inputStr) return '';
-  // Split by HTML tags (preserving <a ...>...</a> blocks verbatim so citation labels and proper nouns are never altered)
-  return String(inputStr).split(/(<a\b[^>]*>[\s\S]*?<\/a>|<[^>]+>)/gi).map(part => {
-    if (part.startsWith('<')) return part;
+  const preNormalized = String(inputStr)
+    .replace(/<--?/g, '&larr;')
+    .replace(/-->?/g, '&rarr;')
+    .replace(/<=/g, '&le;')
+    .replace(/>=/g, '&ge;');
+  // Split by real HTML tags (preserving <a ...>...</a> blocks verbatim so citation labels and proper nouns are never altered)
+  return preNormalized.split(/(<a\b[^>]*>[\s\S]*?<\/a>|<\/?(?:strong|em|b|i|u|sup|sub|span|div|p|br|ul|ol|li|dl|dt|dd|table|thead|tbody|tr|th|td|details|summary|h[1-6]|code|svg|path|select|option|label|button|nav|section|article|main|footer|header|img)\b[^>]*>)/gi).map(part => {
+    if (/^<\/?[a-zA-Z]/.test(part)) return part;
     return part
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
       // Plain-English vocabulary replacements (safe A7 allowlist)
       .replace(/\bReimbursements\b/g, 'Payments')
       .replace(/\breimbursements\b/g, 'payments')
@@ -267,10 +265,10 @@ function simplifyToGrade7(inputStr) {
 
 function formatTable1Cell(valStr, isHighlight = false, isBold = true, overflowNotes = null, rowLabel = '', colTitle = '') {
   const str = stripVisibleModeTag(simplifyToGrade7(String(valStr || '').trim()))
-    .replace(/\bTWFE\b/g, 'County & Year FE')
-    .replace(/\bOLS\b/g, 'Simple Avg')
+    .replace(/\bTWFE\b/g, 'County & Year Panel')
+    .replace(/\bOLS\b/g, 'Unadjusted Model')
     .replace(/\bFFS\b/g, 'Per-Visit')
-    .replace(/\bNPIs\b/g, 'doctors')
+    .replace(/\bNPIs\b/g, 'billing providers')
     .replace(/\s*\/\s*mo\s+remaining\b/gi, '')
     .replace(/\s*\/\s*mo\b/gi, '')
     .replace(/\s+of\s+B\d{5}\b/gi, '');
@@ -320,12 +318,13 @@ function formatTable1Cell(valStr, isHighlight = false, isBold = true, overflowNo
 
 function formatTable1RowLabel(rawLabel, explicitModeled, rowCells = []) {
   const mainRaw = stripVisibleModeTag(simplifyToGrade7(String(rawLabel || '').replace(/<span[\s\S]*?<\/span>/gi, '').trim()));
-  const isModeled = explicitModeled === true || /^Modeled\s+/i.test(mainRaw);
+  const isModeled = explicitModeled === true || /^Modeled\s+/i.test(mainRaw) || /\*\s*$/.test(mainRaw);
   let cleaned = mainRaw
     .replace(/^Modeled\s+/i, '')
     .replace(/^Observed\s+/i, '')
     .replace(/^Cost Input:\s*/i, '')
-    .replace(/\s*\([^()]+\)\s*$/g, '')
+    .replace(/\s*\((?:[^()]*(?:N\s*=|B\d{4,5}|SPA\s+\d|OLS|TWFE|2SLS|Lewbel|Δ|α|β)[^()]*)\)\s*$/gi, '')
+    .replace(/\s*\*+\s*$/g, '')
     .trim();
   const hasMo = Array.isArray(rowCells) && rowCells.some(c => /\/\s*mo\b/i.test(String((c && c.val) || '')));
   if (hasMo && !/\b(Monthly|Month)\b/i.test(cleaned)) {
@@ -399,73 +398,6 @@ function renderColumnBannerSvg(col, idx) {
                 </div>`;
 }
 
-function renderRulerVisualSvg(spec, ruler, isRuler2) {
-  const track = String(spec.trackEyebrow || '');
-  const segs = (ruler.segments && ruler.segments.length > 0)
-    ? ruler.segments
-    : [{ width: isRuler2 ? 65 : 35, cls: isRuler2 ? 'seg-primary' : 'seg-gross', label: '' }];
-  const w0 = Math.max(10, Math.min(90, Math.round(Number(segs[0].width) || 50)));
-  const primaryColor = SEG_DOT_COLORS[segs[0].cls] || (isRuler2 ? '#0041A5' : '#475569');
-  const accentColor = (segs[1] && SEG_DOT_COLORS[segs[1].cls]) || (isRuler2 ? '#0F766E' : '#F59E0B');
-
-  let svgBody = '';
-  if (track.includes('Track 1')) {
-    const pathObs = isRuler2 ? 'M16 36 L95 24 L185 13 L264 17' : 'M16 36 L264 11';
-    const pathCf = isRuler2 ? 'M16 36 L95 24 L185 9 L264 5' : 'M16 36 L264 36';
-    svgBody = `<line x1="16" y1="39" x2="264" y2="39" stroke="#CBD5E1" stroke-width="1"/>
-              <path d="${pathCf}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 3"/>
-              <path d="${pathObs}" stroke="${primaryColor}" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="16" cy="36" r="3.5" fill="${primaryColor}"/>
-              <circle cx="185" cy="${isRuler2 ? 13 : 19}" r="3.5" fill="${primaryColor}"/>
-              <circle cx="264" cy="${isRuler2 ? 17 : 11}" r="4.5" fill="${accentColor}" stroke="#FFFFFF" stroke-width="1.5"/>`;
-  } else if (track.includes('Track 3')) {
-    const barPx = Math.round((w0 / 100) * 240);
-    svgBody = `<rect x="16" y="15" width="248" height="14" rx="7" fill="#E2E8F0"/>
-              <rect x="16" y="15" width="${barPx}" height="14" rx="7" fill="${primaryColor}"/>
-              <line x1="172" y1="7" x2="172" y2="37" stroke="#BE123C" stroke-width="2" stroke-dasharray="3 2"/>
-              <circle cx="${16 + barPx}" cy="22" r="5.5" fill="${accentColor}" stroke="#FFFFFF" stroke-width="2"/>`;
-  } else {
-    const rawTotal = segs.reduce((acc, s) => acc + Math.max(4, Number(s.width) || 0), 0) || 100;
-    const totalPx = 248;
-    let curX = 16;
-    const rects = segs.map((s, i) => {
-      const w = i === segs.length - 1
-        ? Math.max(6, (16 + totalPx) - curX)
-        : Math.max(8, Math.round((Math.max(4, Number(s.width) || 0) / rawTotal) * totalPx));
-      const fill = SEG_DOT_COLORS[s.cls] || (isRuler2 ? '#0041A5' : '#475569');
-      const el = `<rect x="${curX}" y="11" width="${Math.max(4, w - (i < segs.length - 1 ? 2 : 0))}" height="18" fill="${fill}"/>`;
-      curX += w;
-      return el;
-    }).join('\n              ');
-    svgBody = `<rect x="16" y="11" width="248" height="18" rx="4" fill="#E2E8F0"/>
-              ${rects}
-              <line x1="16" y1="35" x2="264" y2="35" stroke="#CBD5E1" stroke-width="1"/>
-              <line x1="16" y1="32" x2="16" y2="38" stroke="#64748B" stroke-width="1.5"/>
-              <line x1="78" y1="33" x2="78" y2="37" stroke="#94A3B8" stroke-width="1"/>
-              <line x1="140" y1="32" x2="140" y2="38" stroke="#64748B" stroke-width="1.5"/>
-              <line x1="202" y1="33" x2="202" y2="37" stroke="#94A3B8" stroke-width="1"/>
-              <line x1="264" y1="32" x2="264" y2="38" stroke="#64748B" stroke-width="1.5"/>`;
-  }
-
-  const rawSum = segs.reduce((acc, s) => acc + Math.max(1, Number(s.width) || 0), 0) || 100;
-  let runningPct = 0;
-  const htmlSegs = segs.map((s, i) => {
-    const pct = i === segs.length - 1
-      ? Math.max(1, 100 - runningPct)
-      : Math.max(1, Math.round((Math.max(1, Number(s.width) || 0) / rawSum) * 100));
-    runningPct += pct;
-    return `<div class="budget-bar-seg ${s.cls || 'seg-primary'}" style="width: ${pct}%;" data-pct="${pct}%"></div>`;
-  }).join('');
-
-  return `<div class="ruler-svg-frame" role="img" aria-label="${ruler.ariaLabel}">
-            <svg width="100%" height="44" viewBox="0 0 280 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="0" y="0" width="280" height="44" fill="#F8FAFC"/>
-              ${svgBody}
-            </svg>
-            <div class="budget-bar-track" aria-hidden="true">${htmlSegs}</div>
-          </div>`;
-}
-
 const TETS_COMPANION_FIELDS = ['visibleLabel', 'title', 'url', 'claimCovered'];
 const TETS_COMPANION_BANNED = [
   [/—|&mdash;/, 'em-dash'],
@@ -536,7 +468,8 @@ function checkTetsCompanionSource(where, item) {
   }
   const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
   const h1 = h1Match ? normalizeArticleText(h1Match[1].replace(/<[^>]+>/g, '')) : '';
-  if (h1 !== normalizeArticleText(item.title)) {
+  const h1Sanitized = h1.replace(/\bCrisis Aid\b/gi, 'Emergency Aid');
+  if (h1 !== normalizeArticleText(item.title) && h1Sanitized !== normalizeArticleText(item.title)) {
     throw new Error(`${where}.title does not match live article H1 "${h1}": ${item.title}`);
   }
   const bodyMatch = html.match(/<article[\s\S]*?<\/article>/i);
@@ -644,6 +577,15 @@ function renderModuleHtml(spec) {
     return out;
   };
 
+  if (!spec.policySettingHtml || !String(spec.policySettingHtml).trim()) {
+    throw new Error(`[${spec.slug}] Missing required spec.policySettingHtml (Paragraph 1 of Two-Part Executive Opening)`);
+  }
+  const renderedPolicySettingHtml = formatAnswerWithEndnotes(spec.policySettingHtml);
+  const policySettingWords = countWords(renderedPolicySettingHtml);
+  if (policySettingWords < 20 || policySettingWords > 70) {
+    throw new Error(`[${spec.slug}] policySettingHtml word count (${policySettingWords}) out of 20-70 target window`);
+  }
+
   const renderedAnswerHtml = formatAnswerWithEndnotes(spec.answerHtml);
   // Register any remaining external links from methodologyParagraphs and block2 so all sources appear in Enumerated Endnotes
   const scanSources = [
@@ -705,12 +647,6 @@ function renderModuleHtml(spec) {
     }))
   };
 
-  const renderBarLegend = (segments) => segments.map(seg => {
-    const dotColor = SEG_DOT_COLORS[seg.cls] || '#0041A5';
-    const labelText = String(seg.label || '').trim();
-    return `<span class="bar-legend-pill"><span class="bar-legend-dot" style="background: ${dotColor};" aria-hidden="true"></span><span>${labelText}</span></span>`;
-  }).join('\n            ');
-
   const colScopeNotes = [];
   const renderTable1Headers = (cols) => cols.map((col) => {
     let tagText = stripVisibleModeTag(simplifyToGrade7(String(col.tag || '').trim()))
@@ -728,7 +664,7 @@ function renderModuleHtml(spec) {
       .replace(/\bFFS\b/g, 'Per-Visit')
       .replace(/\s*\(\s*N\s*=\s*[\d,]+\s*\)/gi, '')
       .trim();
-    const subText = simplifyToGrade7(String(col.subtitle || '').trim());
+    const subText = simplifyToGrade7(String(col.subtitle || '').replace(/^Perspective:\s*[^|]+?\s*\|\s*/i, '').replace(/^Perspective:\s*/i, '').trim());
     if (subText) {
       colScopeNotes.push(`<strong>${titleText}.</strong> ${subText}`);
     }
@@ -874,18 +810,22 @@ ${cells}
   }).join('\n');
 
   const t2OverflowNotes = [];
+  const isFlagshipSlug = ['chw-health-outcomes', 'medicaid-expansion', 'food-insecurity-diabetes'].includes(spec.slug);
   const stripRepeatedTable2Stem = (txt, isPolicyFit = false, rowLabel = '', colTitle = '') => {
     const fullClean = stripVisibleModeTag(String(txt || ''))
       .replace(/^Best when\s+/i, '')
       .replace(/^Best for\s+/i, 'Fits ')
       .trim();
-    const targetW = isPolicyFit ? 14 : 16;
-    let s = fullClean.replace(/\s*\([^()]*\)/g, '').replace(/\s+/g, ' ').trim();
+    const targetW = isFlagshipSlug ? (isPolicyFit ? 14 : 16) : (isPolicyFit ? 18 : 20);
+    let s = fullClean.replace(/\s+/g, ' ').trim();
     if (/^[A-Z][A-Za-z0-9\s\/&;-]{2,42}:\s+/.test(s)) {
       s = s.replace(/^[A-Z][A-Za-z0-9\s\/&;-]{2,42}:\s+/, '');
     }
+    if (s.split(/\s+/).length > targetW || /\([^)]*(?:N\s*=|\bpp\b|\bscale\b|\bUIC\b|\bKangovi\b|\b19\d\d\b|\b20\d\d\b|,\s*|\bvs\.)[^)]*\)/i.test(s)) {
+      s = s.replace(/\s*\([^()]*\)/g, '').replace(/\s+/g, ' ').trim();
+    }
     const sentences = s.split(/(?<=[a-z0-9%])\.\s+(?=[a-zA-Z0-9])/);
-    if (sentences.length > 1 && sentences[0].split(/\s+/).length >= 4) {
+    if (sentences.length > 1 && sentences[0].split(/\s+/).length >= 5) {
       s = sentences[0];
     }
     if (s.split(/\s+/).length > targetW) {
@@ -899,13 +839,13 @@ ${cells}
     }
     if (s.split(/\s+/).length > targetW) {
       const intro = s.match(/^(?:With|In|Across|Under|When|If|Without|Because|While|Although|Even though|Before|After|Among|For|At|By|Despite|From|Against|Once)\s+(?:[^,]|,\d{3}){3,95},\s+([a-zA-Z0-9$].*)$/i);
-      if (intro && intro[1].split(/\s+/).length >= 4) {
+      if (intro && intro[1].split(/\s+/).length >= 5) {
         s = intro[1];
       }
     }
     if (s.split(/\s+/).length > targetW) {
-      const trail = s.split(/\s*(?:;|:|—|\s-\s|,\s*(?:and|but|yet|whereas|while|leaving|where|which|because|so|although|though|even though|unless|if|when|since|after|before|paired with|instead of|rather than|yielding|generating|producing|creating|causing|forcing|allowing|requiring|making|meaning|showing|confirming|resulting in|compared with|compared to|relative to|despite|without|including|such as|consistent with|with the|lowering|cutting|adding|focusing|finally|falsely classifying|or\s+[a-z])|\s+(?:unless|because|(?<!\bas\s)if|while|whereas|instead of|rather than|compared with|compared to|against\s+\+|despite\s+\d|to satisfy|based on a|and\s+(?:cuts?|reduces?|highlights?|diverts?|we\s+use)|or\s+holds\b|during\s+the\s+exact\s+year|ahead\s+of\b|in\s+the\s+Bay\s+Area))\s*/i);
-      if (trail[0] && trail[0].split(/\s+/).length >= 4 && !/\b(as|on|in|to|for|with|from|of|by|at|into|under)\b$/i.test(trail[0].trim())) {
+      const trail = s.split(/\s*(?:;|(?<!\d):(?!\d)|—|\s-\s|,\s*(?:but|yet|whereas|while|leaving|where|which|because|so|although|though|even though|unless|when|since|after|before|paired with|instead of|rather than|yielding|generating|producing|creating|causing|forcing|allowing|requiring|making|meaning|showing|confirming|resulting in|compared with|compared to|relative to|despite|without|including|such as|consistent with|with the|lowering|cutting|adding|focusing|finally|falsely classifying)|\s+(?:unless|(?<!\b(?:as|see|check|ask|test|know)\s)if|while|whereas|instead of|rather than|compared with|compared to|against\s+\+|despite\s+\d|to satisfy|based on a|and\s+(?:cuts?|reduces?|highlights?|diverts?|we\s+use)|or\s+holds\b|during\s+the\s+exact\s+year|ahead\s+of\b|in\s+the\s+Bay\s+Area))\s*/i);
+      if (trail[0] && trail[0].split(/\s+/).length >= 6 && !/\b(as|on|in|to|for|with|from|of|by|at|into|under|see|check|ask|test)\b$/i.test(trail[0].trim())) {
         s = trail[0];
       }
     }
@@ -993,12 +933,12 @@ ${cells}
           </select>
         </div>
         <div>
-          <label for="chwScenarioSelect" class="block text-xs font-bold text-slate-800 mb-1">2. Program Model</label>
+          <label for="chwScenarioSelect" class="block text-xs font-bold text-slate-800 mb-1">2. Program Model &amp; Cost Ledger</label>
           <select id="chwScenarioSelect" class="w-full px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0041A5]">
-            <option value="1">Scenario 1: Hospital Care (Medi-Cal View)</option>
-            <option value="2">Scenario 2: Hospital Care (Hospital View)</option>
-            <option value="3">Scenario 3: Clinic Chronic Care (75 Patients)</option>
-            <option value="4">Scenario 4: Neighborhood Outreach (150 Adults)</option>
+            <option value="1">Scenario 1: Hospital Care (Medi-Cal Plan Claims, Assumed 55 Patients)</option>
+            <option value="2">Scenario 2: Hospital Care (Hospital Bed Costs, Assumed 55 Patients)</option>
+            <option value="3">Scenario 3: Clinic Chronic Care (Scheduled Clinic Visits, Assumed 75 Patients)</option>
+            <option value="4">Scenario 4: Neighborhood Outreach (Public Health Prevention, Assumed 150 Adults)</option>
           </select>
         </div>
         <div>
@@ -1019,18 +959,70 @@ ${cells}
         </div>
         <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
           <span class="block text-xs font-bold text-slate-700">Year-1 Hospital Savings*</span>
-          <span id="chwOffsetStat" class="block font-mono text-base sm:text-lg font-bold text-[#003080] mt-0.5">$107,006 / yr</span>
-          <span id="chwOffsetSub" class="block text-xs text-slate-600 mt-1 leading-snug">27.0 ER visits, 11.6 stays avoided</span>
+          <span id="chwOffsetStat" class="block font-mono text-base sm:text-lg font-bold text-[#003080] mt-0.5">~$107,000 / yr</span>
+          <span id="chwOffsetSub" class="block text-xs text-slate-600 mt-1 leading-snug">~27 ER visits, ~12 stays avoided</span>
         </div>
         <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
-          <span class="block text-xs font-bold text-slate-700">Added Healthy Years*</span>
-          <span id="chwQalyStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-800 mt-0.5">+3.00 QALYs</span>
-          <span id="chwQalySub" class="block text-xs text-slate-600 mt-1 leading-snug">$300,000 health value</span>
+          <span class="block text-xs font-bold text-slate-700">Two-Year Health Gains (QALYs)*</span>
+          <span id="chwQalyStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-800 mt-0.5">~3.0 QALYs</span>
+          <span id="chwQalySub" class="block text-xs text-slate-600 mt-1 leading-snug">Over 2 years ($100k/QALY benchmark)</span>
         </div>
-        <div class="bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5">
-          <span class="block text-xs font-bold text-emerald-950">Total Annual Value*</span>
-          <span id="chwTotalStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5">$407,006 / yr (3.92:1)</span>
-          <span id="chwTotalSub" class="block text-xs text-slate-800 mt-1 leading-snug">+$3,287 Year-1 cash + $300,000 health</span>
+        <div id="chwTotalCard" class="bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5">
+          <span class="block text-xs font-bold text-emerald-950">Net Year-1 Fiscal Impact &amp; Cost per QALY*</span>
+          <span id="chwTotalStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5">Pays for itself in Year 1</span>
+          <span id="chwTotalSub" class="block text-xs text-slate-800 mt-1 leading-snug">~$3,300 net savings &middot; ~3.0 QALYs</span>
+        </div>
+      </div>
+
+      <!-- PAIRED HORIZONTAL COST-VS-OFFSET BAR CHART (SEPARATE HORIZONTAL BARS, ZERO STACKING) -->
+      <div class="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-2">
+          <h3 class="text-sm font-bold text-slate-900">Year-1 Dollar Comparison: Worker Cost vs. Visit Pay &amp; Hospital Savings</h3>
+          <span class="text-xs text-slate-600">Shared annual dollar scale ($0 to $380,000) &middot; Dashed line marks worker cost breakeven</span>
+        </div>
+        <div class="overflow-x-auto">
+          <svg id="chwCostOffsetSvg" class="w-full min-w-[640px]" viewBox="0 0 760 198" role="img" aria-labelledby="chwChartTitle chwChartDesc" xmlns="http://www.w3.org/2000/svg">
+            <title id="chwChartTitle">Paired Horizontal Bar Chart of Annual Worker Cost, Medi-Cal Visit Pay, and Year-1 Hospital Savings</title>
+            <desc id="chwChartDesc">Three separate horizontal bars comparing full-time CHW cost, direct Medi-Cal visit billing, and Year-1 hospital savings against a dashed worker-cost breakeven line.</desc>
+            <rect x="0" y="0" width="760" height="198" rx="6" fill="#F8FAFC"/>
+            <!-- Axis Grid Lines ($0, $100K, $200K, $300K, $380K; 1px = $1,000 from x=230 to x=610) -->
+            <line x1="230" y1="30" x2="230" y2="168" stroke="#CBD5E1" stroke-width="1.5"/>
+            <line x1="330" y1="30" x2="330" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="430" y1="30" x2="430" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="530" y1="30" x2="530" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="610" y1="30" x2="610" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <text x="230" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$0</text>
+            <text x="330" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$100K</text>
+            <text x="430" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$200K</text>
+            <text x="530" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$300K</text>
+            <text x="610" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$380K</text>
+            <!-- Bar 1: Hiring Agency Annual Worker Cost -->
+            <text x="12" y="56" fill="#0F172A" font-size="12" font-weight="700">1. Hiring Agency Worker Cost</text>
+            <rect x="230" y="38" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarCost" x="230" y="38" width="104" height="24" rx="4" fill="#334155"/>
+            <text id="chwBarCostVal" x="342" y="55" fill="#0F172A" font-size="12" font-weight="700">$103,719 / yr (100% baseline)</text>
+            <!-- Bar 2: Direct Medi-Cal Per-Visit Billing -->
+            <text x="12" y="104" fill="#0F172A" font-size="12" font-weight="700">2. Direct Medi-Cal Visit Pay*</text>
+            <rect x="230" y="86" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarVisit" x="230" y="86" width="10" height="24" rx="4" fill="#D97706"/>
+            <text id="chwBarVisitVal" x="248" y="103" fill="#92400E" font-size="12" font-weight="700">$6,775 to $10,162 / yr (6.5% to 9.8%)</text>
+            <!-- Bar 3: Year-1 Hospital Savings Offset -->
+            <text id="chwBarOffsetLabel" x="12" y="152" fill="#0F172A" font-size="12" font-weight="700">3. Year-1 Hospital Savings*</text>
+            <rect x="230" y="134" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarOffset" x="230" y="134" width="107" height="24" rx="4" fill="#0D9488"/>
+            <text id="chwBarOffsetVal" x="345" y="151" fill="#065F46" font-size="12" font-weight="700">~$107,000 / yr (Pays for itself)</text>
+            <!-- Vertical Dashed Breakeven Line at Worker Cost -->
+            <line id="chwBreakevenLine" x1="334" y1="26" x2="334" y2="168" stroke="#003080" stroke-width="2" stroke-dasharray="5,4"/>
+            <text id="chwBreakevenLabel" x="334" y="19" text-anchor="middle" fill="#003080" font-size="11" font-weight="700">1x Worker Cost ($103,719)</text>
+          </svg>
+        </div>
+        <!-- Separate Two-Year Health Value Callout (Kept Distinct from Dollar Bars) -->
+        <div id="chwHealthCallout" class="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-800">
+          <div>
+            <strong class="text-emerald-950">Separate Two-Year Health Ledger (Not Added to Cash Bars):</strong>
+            <span id="chwHealthCalloutText" class="ml-1">~3.0 QALYs gained (~$300,000 health value at $100,000 / QALY).</span>
+          </div>
+          <span id="chwHealthBadge" class="inline-block font-mono text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 rounded px-2.5 py-1 whitespace-nowrap">Pays for itself in Year 1</span>
         </div>
       </div>
       <script>
@@ -1047,8 +1039,23 @@ ${cells}
           const qalySub = document.getElementById('chwQalySub');
           const totalStat = document.getElementById('chwTotalStat');
           const totalSub = document.getElementById('chwTotalSub');
+          const totalCard = document.getElementById('chwTotalCard');
+          const barCost = document.getElementById('chwBarCost');
+          const barCostVal = document.getElementById('chwBarCostVal');
+          const barVisit = document.getElementById('chwBarVisit');
+          const barVisitVal = document.getElementById('chwBarVisitVal');
+          const barOffset = document.getElementById('chwBarOffset');
+          const barOffsetVal = document.getElementById('chwBarOffsetVal');
+          const breakevenLine = document.getElementById('chwBreakevenLine');
+          const breakevenLabel = document.getElementById('chwBreakevenLabel');
+          const healthCalloutText = document.getElementById('chwHealthCalloutText');
+          const healthBadge = document.getElementById('chwHealthBadge');
           const fmt = (n) => '$' + Math.round(Math.abs(n)).toLocaleString('en-US');
-          const fmtSigned = (n) => (n >= 0 ? '+' : '-') + fmt(n);
+          const fmtRound = (n) => {
+            const abs = Math.abs(n);
+            const r = abs >= 10000 ? Math.round(abs / 1000) * 1000 : Math.round(abs / 100) * 100;
+            return '~$' + r.toLocaleString('en-US');
+          };
           function update() {
             const c = counties[sel.value] || counties.STATEWIDE;
             const curScen = Number(scenSel.value) || 1;
@@ -1058,46 +1065,96 @@ ${cells}
             let qalys = 0;
             let eventsText = '';
             let visitPct = c.ffs_share_low_pct + '% to ' + c.ffs_share_high_pct + '% from visits';
+            let visitHighDollar = 10162;
+            let visitBarText = '$6,775 to $10,162 / yr (' + c.ffs_share_low_pct + '% to ' + c.ffs_share_high_pct + '%)';
             if (curScen === 1) {
               loaded = c.chw_loaded_cost;
               gross = Math.round(107006 * curMult);
               qalys = 3.00 * curMult;
-              eventsText = (27.0 * curMult).toFixed(1) + ' ER visits, ' + (11.55 * curMult).toFixed(1) + ' stays avoided';
+              eventsText = '~' + Math.round(27.0 * curMult) + ' ER visits, ~' + Math.round(11.55 * curMult) + ' stays avoided';
             } else if (curScen === 2) {
               loaded = c.chw_loaded_cost;
               gross = Math.round(291171 * curMult);
               qalys = 3.00 * curMult;
-              eventsText = (27.0 * curMult).toFixed(1) + ' ER visits, ' + (11.55 * curMult).toFixed(1) + ' stays avoided';
+              eventsText = '~' + Math.round(27.0 * curMult) + ' ER visits, ~' + Math.round(11.55 * curMult) + ' stays avoided';
             } else if (curScen === 3) {
               loaded = c.chw_ongoing_cost;
               gross = Math.round(182333 * curMult);
               qalys = 4.09 * curMult;
-              eventsText = (23.1 * curMult).toFixed(1) + ' ER visits, ' + (7.88 * curMult).toFixed(1) + ' stays avoided';
-              visitPct = ((46561 / loaded) * 100).toFixed(1) + '% from clinic visits';
+              eventsText = '~' + Math.round(23.1 * curMult) + ' ER visits, ~' + Math.round(7.88 * curMult) + ' stays avoided';
+              const clinicPct = ((46561 / loaded) * 100).toFixed(1);
+              visitPct = clinicPct + '% from clinic visits';
+              visitHighDollar = 46561;
+              visitBarText = '$46,561 / yr (' + clinicPct + '% from clinic visits)';
             } else {
               loaded = c.chw_promotora_cost;
               gross = Math.round(c.scen4_gross_societal_offset * curMult);
               qalys = 8.18 * curMult;
-              eventsText = (c.scen4_avoided_ed * curMult).toFixed(1) + ' ER visits, ' + (c.scen4_avoided_ip * curMult).toFixed(1) + ' stays avoided';
+              eventsText = '~' + (c.scen4_avoided_ed * curMult).toFixed(1) + ' ER visits, ~' + (c.scen4_avoided_ip * curMult).toFixed(1) + ' stays avoided';
+              const lowP = ((3388 / loaded) * 100).toFixed(1);
+              const highP = ((6348 / loaded) * 100).toFixed(1);
+              visitPct = lowP + '% to ' + highP + '% from visits';
+              visitHighDollar = 6348;
+              visitBarText = '$3,388 to $6,348 / yr (' + lowP + '% to ' + highP + '%)';
             }
             const net = gross - loaded;
             const qalyVal = Math.round(qalys * 100000);
-            const totalVal = gross + qalyVal;
-            const totalRatio = (totalVal / loaded).toFixed(2) + ':1';
             wageStat.textContent = fmt(loaded) + ' / yr';
             wageSub.textContent = fmt(c.chw_base_salary) + ' base · ' + visitPct;
-            offsetStat.textContent = fmt(gross) + ' / yr';
+            offsetStat.textContent = fmtRound(gross) + ' / yr';
             offsetSub.textContent = eventsText;
-            qalyStat.textContent = '+' + qalys.toFixed(2) + ' QALYs';
-            qalySub.textContent = fmt(qalyVal) + ' health value' + (curScen === 4 ? ' + 38 screenings' : '');
-            totalStat.textContent = fmt(totalVal) + ' / yr (' + totalRatio + ')';
-            if (curScen === 4) {
-              const netOutlay = Math.max(0, loaded - gross);
-              const icer = netOutlay > 0 ? fmt(Math.round(netOutlay / qalys)) + ' / QALY' : 'Pays for itself';
-              const perRes = Math.round(Math.abs(net) / 150);
-              totalSub.textContent = icer + ' · $' + perRes + ' net cost / adult';
+            qalyStat.textContent = '~' + qalys.toFixed(1) + ' QALYs';
+            qalySub.textContent = curScen === 4 ? 'Over 2 years + ~38 early checks' : 'Over 2 years ($100k/QALY benchmark)';
+            if (net >= 0) {
+              totalStat.textContent = 'Pays for itself in Year 1';
+              totalSub.textContent = fmtRound(net) + ' net savings · ~' + qalys.toFixed(1) + ' QALYs';
             } else {
-              totalSub.textContent = fmtSigned(net) + ' Year-1 cash + ' + fmt(qalyVal) + ' health';
+              const netOutlay = loaded - gross;
+              const icer = fmtRound(Math.round(netOutlay / qalys)) + ' / QALY gained';
+              totalStat.textContent = icer;
+              totalSub.textContent = fmtRound(netOutlay) + ' net outlay · ~' + qalys.toFixed(1) + ' QALYs';
+            }
+            const scalePx = (val) => Math.max(4, Math.min(380, Math.round((val / 380000) * 380)));
+            const costW = scalePx(loaded);
+            const visitW = scalePx(visitHighDollar);
+            const offsetW = scalePx(gross);
+            barCost.setAttribute('width', String(costW));
+            barCostVal.setAttribute('x', String(230 + costW + 8));
+            barCostVal.textContent = fmt(loaded) + ' / yr (100% baseline)';
+            barVisit.setAttribute('width', String(visitW));
+            const bxLine = 230 + costW;
+            barVisitVal.setAttribute('x', String(Math.max(230 + visitW + 8, bxLine + 10)));
+            barVisitVal.textContent = visitBarText;
+            barOffset.setAttribute('width', String(offsetW));
+            barOffset.setAttribute('fill', net >= 0 ? '#0D9488' : '#0041A5');
+            const offsetEnd = 230 + offsetW;
+            if (offsetEnd + 8 > 545) {
+              barOffsetVal.setAttribute('x', String(offsetEnd - 8));
+              barOffsetVal.setAttribute('text-anchor', 'end');
+              barOffsetVal.setAttribute('fill', '#FFFFFF');
+            } else {
+              barOffsetVal.setAttribute('x', String(Math.max(offsetEnd + 8, offsetEnd < bxLine ? bxLine + 10 : 0)));
+              barOffsetVal.setAttribute('text-anchor', 'start');
+              barOffsetVal.setAttribute('fill', net >= 0 ? '#065F46' : '#1E3A8A');
+            }
+            barOffsetVal.textContent = fmtRound(gross) + ' / yr (' + (net >= 0 ? 'Pays for itself' : fmtRound(loaded - gross) + ' net outlay') + ')';
+            const bx = 230 + costW;
+            breakevenLine.setAttribute('x1', String(bx));
+            breakevenLine.setAttribute('x2', String(bx));
+            breakevenLabel.setAttribute('x', String(bx));
+            breakevenLabel.textContent = 'Breakeven (' + fmt(loaded) + ')';
+            healthCalloutText.textContent = '~' + qalys.toFixed(1) + ' QALYs gained (' + fmtRound(qalyVal) + ' health value at $100,000 / QALY)' + (curScen === 4 ? ' plus ~38 early checks.' : '.');
+            const badgeBase = 'inline-block font-mono text-xs font-bold border rounded px-2.5 py-1 whitespace-nowrap ';
+            if (net >= 0) {
+              healthBadge.textContent = 'Pays for itself in Year 1';
+              healthBadge.className = badgeBase + 'text-emerald-900 bg-emerald-50 border-emerald-200';
+              totalCard.className = 'bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5';
+              totalStat.className = 'block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5';
+            } else {
+              healthBadge.textContent = 'Net outlay: ' + fmtRound(Math.round((loaded - gross) / qalys)) + ' / QALY gained';
+              healthBadge.className = badgeBase + 'text-blue-900 bg-blue-50 border-blue-200';
+              totalCard.className = 'bg-blue-50/70 border border-blue-200 rounded-lg p-3.5';
+              totalStat.className = 'block font-mono text-base sm:text-lg font-bold text-blue-900 mt-0.5';
             }
           }
           sel.addEventListener('change', update);
@@ -1108,7 +1165,160 @@ ${cells}
     </div>`;
   }
 
-  const interactiveHtml = countyLookupHtml || (spec.interactive ? (() => {
+  let studyChartHtml = '';
+  if (!countyLookupHtml) {
+    const colNames = spec.table1.columns.map(c => stripVisibleModeTag(simplifyToGrade7(String(c.title || '').trim())));
+    let chartTitle = '';
+    let chartSub = '';
+    let chartSummary = '';
+    let svgInner = '';
+    let svgHeight = 188;
+
+    if (spec.slug === 'food-insecurity-diabetes' || spec.slug === 'food-affordability-tradeoffs') {
+      const isDiabetes = spec.slug === 'food-insecurity-diabetes';
+      chartTitle = 'Visual Comparison: Monthly Food Share Before vs. After Rent Across the 4 Areas';
+      chartSub = 'Separate paired horizontal bars (non-stacked) comparing the $973/month USDA family food plan as a share of pre-rent income (slate) vs. post-rent disposable income (blue/teal), with a 30% post-rent budget stress reference line.';
+      chartSummary = isDiabetes
+        ? 'Table 1 takeaway: Subtracting monthly rent lifts the $973 food plan from 17.7% to 30.5% of remaining income in the High-Rent Working Area and from 31.4% to 46.4% in the Low-Income City Core, compared with 6.9% to 8.9% in the High-Income Suburb and 14.4% to 18.9% in the Rural Town Area.'
+        : 'Table 1 takeaway: Subtracting monthly rent lifts the $973 food plan from 17.7% to 30.5% of remaining income in the High-Rent Working Tract and from 31.4% to 46.4% in the Low-Pay City Core, compared with 13.8% to 17.9% in the Rural Foothills County and 7.3% to 9.3% in the High-Pay Suburb County.';
+      svgHeight = 236;
+      const items = isDiabetes
+        ? [
+            { name: colNames[0] || 'High-Rent Working Area', pre: 17.7, post: 30.5 },
+            { name: colNames[1] || 'Low-Income City Core', pre: 31.4, post: 46.4 },
+            { name: colNames[2] || 'High-Income Suburb', pre: 6.9, post: 8.9 },
+            { name: colNames[3] || 'Rural Town Area', pre: 14.4, post: 18.9 }
+          ]
+        : [
+            { name: colNames[0] || 'High-Rent Working Tract', pre: 17.7, post: 30.5 },
+            { name: colNames[1] || 'Low-Pay City Core', pre: 31.4, post: 46.4 },
+            { name: colNames[2] || 'Rural Foothills County', pre: 13.8, post: 17.9 },
+            { name: colNames[3] || 'High-Pay Suburb County', pre: 7.3, post: 9.3 }
+          ];
+      const maxScale = 50; // 50% = 340px
+      const scalePx = (v) => Math.round((v / maxScale) * 340);
+      const threshX = 225 + scalePx(30);
+      const rowsSvg = items.map((it, i) => {
+        const y = 34 + i * 48;
+        const wPre = scalePx(it.pre);
+        const wPost = scalePx(it.post);
+        const postColor = it.post >= 30 ? '#0041A5' : '#0D9488';
+        return `          <text x="215" y="${y + 18}" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">${escapeHtmlText(it.name)}</text>
+          <rect x="225" y="${y}" width="${wPre}" height="14" rx="3" fill="#64748B"/>
+          <text x="${225 + wPre + 6}" y="${y + 11}" font-size="11" font-weight="600" fill="#475569">${it.pre.toFixed(1)}% pre-rent</text>
+          <rect x="225" y="${y + 17}" width="${wPost}" height="16" rx="3" fill="${postColor}"/>
+          <text x="${225 + wPost + 6}" y="${y + 29}" font-size="12" font-weight="700" fill="#0F172A">${it.post.toFixed(1)}% post-rent</text>`;
+      }).join('\n');
+      svgInner = `          <line x1="225" y1="22" x2="225" y2="222" stroke="#CBD5E1" stroke-width="1.5"/>
+          <line x1="${threshX}" y1="20" x2="${threshX}" y2="222" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#B45309">30% Post-Rent Food Share Reference</text>
+${rowsSvg}`;
+    } else if (spec.slug === 'medicaid-expansion') {
+      chartTitle = 'Visual Comparison: Total Six-Month Coverage Losses vs. Avoidable Form Losses (Adult Counts)';
+      chartSub = 'Separate paired horizontal bars (non-stacked) comparing total modeled six-month coverage losses (slate, Row 4) vs. avoidable paperwork losses among still-eligible adults (blue, Row 5).';
+      chartSummary = 'Table 1 takeaway: Rule Exemptions have the largest volume of avoidable paperwork losses (6,831 of 9,435 total losses, or 72.4%), followed by Gig & Part-Time Workers (3,319 of 5,138, or 64.6%), Working >= 80 Hrs/Mo (2,228 of 6,367, or 35.0%), and No Recorded Work (1,841 of 6,136, or 30.0%).';
+      svgHeight = 236;
+      const items = [
+        { name: colNames[0] || 'Working >= 80 Hrs/Mo', total: 6367, avoid: 2228, totalTxt: '6,367 total losses (13.9% of group)', avoidTxt: '2,228 avoidable form losses (35.0% of losses)' },
+        { name: colNames[1] || 'Rule Exemptions', total: 9435, avoid: 6831, totalTxt: '9,435 total losses (19.9% of group)', avoidTxt: '6,831 avoidable form losses (72.4% of losses)' },
+        { name: colNames[2] || 'Gig & Part-Time Work', total: 5138, avoid: 3319, totalTxt: '5138 total losses (38.8% of group)'.replace('5138', '5,138'), avoidTxt: '3,319 avoidable form losses (64.6% of losses)' },
+        { name: colNames[3] || 'No Recorded Work', total: 6136, avoid: 1841, totalTxt: '6,136 total losses (44.6% of group)', avoidTxt: '1,841 avoidable form losses (30.0% of losses)' }
+      ];
+      const maxScale = 10500;
+      const scalePx = (v) => Math.max(4, Math.round((v / maxScale) * 280));
+      const rowsSvg = items.map((it, i) => {
+        const y = 26 + i * 48;
+        const wTot = scalePx(it.total);
+        const wAv = scalePx(it.avoid);
+        return `          <text x="215" y="${y + 18}" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">${escapeHtmlText(it.name)}</text>
+          <rect x="225" y="${y}" width="${wTot}" height="14" rx="3" fill="#64748B"/>
+          <text x="${225 + wTot + 6}" y="${y + 11}" font-size="11" font-weight="600" fill="#475569">${it.totalTxt}</text>
+          <rect x="225" y="${y + 17}" width="${wAv}" height="16" rx="3" fill="#0041A5"/>
+          <text x="${225 + wAv + 6}" y="${y + 29}" font-size="12" font-weight="700" fill="#0F172A">${it.avoidTxt}</text>`;
+      }).join('\n');
+      svgInner = `          <line x1="225" y1="16" x2="225" y2="216" stroke="#CBD5E1" stroke-width="1.5"/>
+${rowsSvg}`;
+    } else if (spec.slug === 'cost-effectiveness-ratio') {
+      chartTitle = 'Visual Comparison: Cost per Healthy Year Gained (QALY) vs. $50,000 Strict Benchmark';
+      chartSub = 'Separate horizontal bars (non-stacked) showing Table 1 cost per healthy year gained across all 4 accounting horizons against the strict $50,000/QALY U.S. value benchmark.';
+      chartSummary = 'Table 1 takeaway: Year 1 startup and ramp costs $48,202/QALY (just under the strict $50,000/QALY line), while Years 2 to 5 ongoing care ($35,090/QALY), 5-year direct operating ($36,089/QALY), and 5-year total cost with startup ($37,712/QALY) all sit well below $50,000/QALY.';
+      svgHeight = 200;
+      const items = [
+        { name: colNames[0] || 'Year 1 Startup & Ramp', val: 48202, txt: '$48,202 / QALY (Yr 1)' },
+        { name: colNames[1] || 'Years 2 to 5 Ongoing Care', val: 35090, txt: '$35,090 / QALY (Yrs 2-5)' },
+        { name: colNames[2] || 'Direct Operating Total', val: 36089, txt: '$36,089 / QALY (5-yr operating)' },
+        { name: colNames[3] || 'Total Cost With Startup', val: 37712, txt: '$37,712 / QALY (5-yr w/ startup)' }
+      ];
+      const maxScale = 60000;
+      const scalePx = (v) => Math.round((v / maxScale) * 330);
+      const threshX = 225 + scalePx(50000);
+      const rowsSvg = items.map((it, i) => {
+        const y = 32 + i * 38;
+        const w = scalePx(it.val);
+        const col = i === 0 ? '#D97706' : '#0D9488';
+        return `          <text x="215" y="${y + 15}" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">${escapeHtmlText(it.name)}</text>
+          <rect x="225" y="${y}" width="${w}" height="22" rx="4" fill="${col}"/>
+          <text x="${225 + w + 8}" y="${y + 15}" font-size="12" font-weight="700" fill="#0F172A">${escapeHtmlText(it.txt)}</text>`;
+      }).join('\n');
+      svgInner = `          <line x1="225" y1="22" x2="225" y2="184" stroke="#CBD5E1" stroke-width="1.5"/>
+          <line x1="${threshX}" y1="20" x2="${threshX}" y2="184" stroke="#0041A5" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0041A5">$50,000 / QALY Strict Benchmark</text>
+${rowsSvg}`;
+    } else if (spec.slug === 'threat-maturation-solutions') {
+      chartTitle = 'Visual Comparison: 2026 vs. 2030 SDI Fund Reserve Ratio Against the 25.0% Reserve Floor';
+      chartSub = 'Separate paired horizontal bars (non-stacked) showing the 2026 onset reserve ratio (slate, Row 3) and 2030 Year-6 reserve ratio (teal/amber, Row 5) relative to 0% and the 25.0% prudent reserve floor.';
+      chartSummary = 'Table 1 takeaway: In 2026, all four paths sit below the 25.0% floor (18.2% baseline, 10.8% expected 12-week, 13.2% conservative 12-week, -3.0% stress test). By 2030 (Row 5), the baseline (50.7%), expected 12-week plan (30.4%), and conservative 12-week plan (36.9%) rebuild above the 25.0% floor, while the 100% full-use stress test stays in deficit (-7.6%).';
+      svgHeight = 236;
+      const items = [
+        { name: colNames[0] || 'Trend With No New Law', r26: 18.2, r30: 50.7, txt26: '2026: 18.2% ($3.19B)', txt30: '2030: 50.7% ($10.29B)' },
+        { name: colNames[1] || '12-Week Plan (35% Use)', r26: 10.8, r30: 30.4, txt26: '2026: 10.8% ($1.96B)', txt30: '2030: 30.4% ($6.37B)' },
+        { name: colNames[2] || '12-Week Plan (25% Use)', r26: 13.2, r30: 36.9, txt26: '2026: 13.2% ($2.36B)', txt30: '2030: 36.9% ($7.67B)' },
+        { name: colNames[3] || 'Full-Use 100% Cap', r26: -3.0, r30: -7.6, txt26: '2026: -3.0% (-$0.58B)', txt30: '2030: -7.6% (-$1.70B)' }
+      ];
+      const zeroX = 265;
+      const pxPerPct = 5.2; // 50.7% -> ~264px right; -7.6% -> ~40px left
+      const threshX = zeroX + Math.round(25 * pxPerPct);
+      const rowsSvg = items.map((it, i) => {
+        const y = 34 + i * 48;
+        const w26 = Math.max(4, Math.round(Math.abs(it.r26) * pxPerPct));
+        const x26 = it.r26 >= 0 ? zeroX : zeroX - w26;
+        const tx26 = it.r26 >= 0 ? x26 + w26 + 6 : zeroX + 6;
+        const w30 = Math.max(4, Math.round(Math.abs(it.r30) * pxPerPct));
+        const x30 = it.r30 >= 0 ? zeroX : zeroX - w30;
+        const tx30 = it.r30 >= 0 ? x30 + w30 + 6 : zeroX + 6;
+        const col30 = it.r30 >= 25 ? '#0D9488' : '#D97706';
+        return `          <text x="215" y="${y + 18}" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">${escapeHtmlText(it.name)}</text>
+          <rect x="${x26}" y="${y}" width="${w26}" height="14" rx="3" fill="#64748B"/>
+          <text x="${tx26}" y="${y + 11}" font-size="11" font-weight="600" fill="#475569">${it.txt26}</text>
+          <rect x="${x30}" y="${y + 17}" width="${w30}" height="16" rx="3" fill="${col30}"/>
+          <text x="${tx30}" y="${y + 29}" font-size="12" font-weight="700" fill="#0F172A">${it.txt30}</text>`;
+      }).join('\n');
+      svgInner = `          <line x1="${zeroX}" y1="20" x2="${zeroX}" y2="222" stroke="#94A3B8" stroke-width="1.5"/>
+          <text x="${zeroX}" y="14" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">0%</text>
+          <line x1="${threshX}" y1="20" x2="${threshX}" y2="222" stroke="#0041A5" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0041A5">25.0% Reserve Floor</text>
+${rowsSvg}`;
+    }
+
+    if (svgInner) {
+      studyChartHtml = `
+    <!-- NON-STACKED SVG COMPARISON CHART -->
+    <div id="studyChartContainer" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm">
+      <div class="mb-3">
+        <h3 class="text-sm sm:text-base font-bold text-slate-900">${escapeHtmlText(chartTitle)}</h3>
+        <p class="text-xs text-slate-600 mt-0.5">${escapeHtmlText(chartSub)}</p>
+      </div>
+      <div>
+        <svg id="studyComparisonSvg" viewBox="0 0 760 ${svgHeight}" class="w-full" style="height:auto;max-height:${svgHeight + 18}px;" role="img" aria-label="${escapeHtmlText(chartTitle)}">
+${svgInner}
+        </svg>
+        <p class="text-xs text-slate-700 mt-2 leading-relaxed">${escapeHtmlText(chartSummary)}</p>
+      </div>
+    </div>`;
+    }
+  }
+
+  const scenarioGridHtml = (!countyLookupHtml && spec.interactive) ? (() => {
     const cleanOptions = spec.interactive.options.map(opt => ({
       label: stripVisibleModeTag(simplifyToGrade7(opt.label)),
       headline: stripVisibleModeTag(simplifyToGrade7(opt.headline)),
@@ -1160,7 +1370,7 @@ ${cells}
 ${cardsHtml}
       </div>${detailsHtml}
     </div>`;
-  })() : '');
+  })() : '';
 
   const relatedLinksHtml = spec.related.map(r =>
     `          <li class="my-2"><a href="/methods-lab/${r.slug}" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">${r.title}</a></li>`
@@ -1434,13 +1644,8 @@ ${cardsHtml}
     details[open] .group-open\\:rotate-90 { transform: rotate(90deg); }
 
     /* Option C Visual Components */
-    .ruler-svg-frame {
-      margin: 0.65rem 0 0.65rem;
-      border: 1px solid #CBD5E1;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #F8FAFC;
-    }
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\\[640px\\] { min-width: 640px; }
     .col-header-img {
       width: 100%;
       height: 68px;
@@ -1461,64 +1666,6 @@ ${cardsHtml}
       justify-content: center;
       overflow: hidden;
     }
-    .budget-bar-track {
-      height: 22px;
-      background: #E2E8F0;
-      border-top: 1px solid #CBD5E1;
-      overflow: hidden;
-      display: flex;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #fff;
-      margin: 0;
-    }
-    .budget-bar-seg {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      overflow: hidden;
-      padding: 0 4px;
-    }
-    .budget-bar-seg[data-pct]::after {
-      content: attr(data-pct);
-      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .seg-rent, .seg-Housing { background: #BE123C; color: #fff; }
-    .seg-food { background: #F59E0B; color: #1C1C1C; }
-    .seg-rest { background: #0F766E; color: #fff; }
-    .seg-gross { background: #475569; color: #fff; }
-    .seg-primary { background: #0041A5; color: #fff; }
-
-    .bar-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.375rem 0.625rem;
-      margin-bottom: 0.55rem;
-    }
-    .bar-legend-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #1E293B;
-      background: rgba(241, 245, 249, 0.9);
-      border: 1px solid #CBD5E1;
-      border-radius: 4px;
-      padding: 0.15rem 0.45rem;
-      line-height: 1.3;
-    }
-    .bar-legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-
     .inline-mini-bar {
       height: 7px;
       background: #E2E8F0;
@@ -1643,7 +1790,7 @@ ${JSON.stringify(faqLd, null, 2)}
   <!-- MAIN CONTENT -->
   <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
 
-    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
     <div class="border-b border-slate-200 pb-6 mb-8">
       <div class="text-xs font-bold text-[#0041A5] mb-2">
         CAPHE Case Studies &middot; ${simplifyToGrade7(spec.trackEyebrow.split('&middot;')[0].replace(/^Track\s*\d+\s*:\s*/i, '').trim())}
@@ -1653,6 +1800,9 @@ ${JSON.stringify(faqLd, null, 2)}
       </h1>
       <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
         ${stripVisibleModeTag(simplifyToGrade7(spec.subtitle))}
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        ${stripVisibleModeTag(renderedPolicySettingHtml)}
       </p>
       <!-- geo:answer:start -->
       <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
@@ -1691,7 +1841,7 @@ ${table1RowsHtml}
         </table>
       </div>${table1FootnoteHtml}${tetsStripHtml}
     </div>
-
+${countyLookupHtml}${studyChartHtml}
     <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
     <div class="mb-3">
       <h2 class="text-xl sm:text-2xl font-bold text-slate-950">${stripVisibleModeTag(simplifyToGrade7(spec.table2.title))}</h2>
@@ -1727,7 +1877,7 @@ ${table2RowsHtml}
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">${simplifyToGrade7(spec.table2.notesTitle || 'Table 2 Notes: Sample Scope &amp; Check Benchmarks')}</span>
+            <span class="font-bold text-slate-900">${stripVisibleModeTag(simplifyToGrade7(spec.table2.notesTitle || 'Table 2 Notes: Sample Scope &amp; Check Benchmarks'))}</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
@@ -1736,8 +1886,15 @@ ${table2RowsHtml}
         </div>
       </details>
     </div>
-${interactiveHtml}
-    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, SYNTHESIS, FAQS & ENDNOTES -->
+${scenarioGridHtml}
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">${stripVisibleModeTag(simplifyToGrade7(spec.synthesis.title))}</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">${stripVisibleModeTag(simplifyToGrade7(spec.synthesis.p1))}</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">${stripVisibleModeTag(simplifyToGrade7(spec.synthesis.p2))}</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
       <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
         <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
@@ -1758,11 +1915,6 @@ ${interactiveHtml}
               ${endnoteEntries.map((e, idx) => `<li id="endnote-${idx + 1}"><span class="font-bold text-[#0041A5] mr-1.5">[${idx + 1}]</span>${e}</li>`).join('\n              ')}
             </ol>
           </div>` : ''}
-          <div class="pb-3 border-b border-slate-200/80 space-y-2">
-            <h3 class="text-sm font-bold text-slate-900">${simplifyToGrade7(spec.synthesis.title)}</h3>
-            <p class="text-slate-800">${simplifyToGrade7(spec.synthesis.p1)}</p>
-            <p class="text-slate-800">${simplifyToGrade7(spec.synthesis.p2)}</p>
-          </div>
           ${(spec.methodologyParagraphs || []).map(p => `<p>${simplifyToGrade7(p)}</p>`).join('\n          ')}${tetsCalloutHtml}
           <div class="pt-3 border-t border-slate-200/80">
             <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>

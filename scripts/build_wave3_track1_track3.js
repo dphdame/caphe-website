@@ -10,7 +10,7 @@
  *  - #5 parallel-trends-power (member, Mode A: County DiD Pre-Trend Power & HonestDiD + LHA Splits)
  *  - #6 threat-maturation-solutions (member, Mode A: EDD PFL/SDI 2025 Actuals & 2026-2030 ITS)
  * Track 3:
- *  - #20 budget-impact (public, Mode B/A: CA LHA 125:1 ROI vs SDI Reserve Floor & Medi-Cal Admin Cash Flow)
+ *  - #20 budget-impact (public, Mode B/A: CA LHA 32:1 Annual / 59:1 Cumulative ROI vs SDI Reserve Floor & Medi-Cal Admin Cash Flow)
  *  - #21 comparator-choice (public, Mode A/B: SCC PHD CHW ACER vs Incremental ICER Across 4 Alternatives)
  *  - #22 measuring-health-common-unit (community, Mode B/A: CHW QALYs vs LHA HHS 2025 VSL Tiers)
  *  - #23 cost-effectiveness-ratio (community, Mode B/A: CHW ICER = $36,089/QALY & Net Monetary Benefit)
@@ -49,7 +49,8 @@ const wave3Modules = [
       '<strong>Base Pre-Trend Path:</strong> Billing providers grew +6,977 per year (+8.26%) from 2018 to 2019. Extending that straight line projects 119,307 providers in 2023 (-5,669 vs. actual) and 126,284 in 2024 (-24,306 vs. actual).',
       '<strong>Other Care Series &amp; Policy Rules:</strong> Other Medicaid care (101,905 in 2018, 109,087 in 2019, 129,492 in 2023, +18.71% growth from 2019 to 2023) and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.'
     ],
-    answerHtml: 'When auditing a telehealth rollout by comparing billing providers in 2019 against 2023, a two-year check mixes new pay rules with workforce growth that was already underway. Across <strong>84 months of Medicaid claims (2018 to 2024)</strong>, monthly billing providers for telehealth-eligible services grew from <strong>91,399 in 2019 to 113,638 in 2023 (+22,239 providers, or +24.33%)</strong> [1]. A modeled two-point check overstates the policy jump. That provider list was already adding <strong>6,977 billers per year (+8.26%)</strong> before 2020 [2]. Checking multi-year base slopes next to other care (<strong>+18.71%</strong>) keeps budget teams from over-funding routine trend growth [3].',
+    policySettingHtml: 'County and state Medi-Cal teams track monthly billing providers to judge whether telehealth pay rules expanded care access. However, clinic staffing and provider billing counts were already growing each year before 2020. Comparing one pre-policy year with one post-policy year blends that ongoing trend into the policy review.',
+    answerHtml: 'When auditing a telehealth rollout by comparing billing providers in 2019 against 2023, a modeled two-point check overstates the policy jump by mixing new pay rules with workforce growth that was already underway [1]. Across <strong>84 months of Medicaid claims (2018 to 2024)</strong>, monthly billing providers for telehealth-eligible services grew from <strong>91,399 in 2019 to 113,638 in 2023 (+22,239 providers, or +24.33%)</strong>, but that list was already adding <strong>6,977 billers per year (+8.26%)</strong> before 2020 [1,2]. Checking multi-year base slopes next to other care (<strong>+18.71%</strong>) keeps budget teams from over-funding routine trend growth [2,3].',
     block2: {
       title: 'Two Rulers on the Same Medicaid Series (2018 to 2024)',
       contextTag: 'Mode A Base-Trend Paths on HHS Medicaid Provider Spending (84 Months, Jan 2018 to Dec 2024)',
@@ -82,10 +83,10 @@ const wave3Modules = [
       cornerLabel: 'Trend Measure',
       footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Counts come from the HHS Medicaid Provider Spending file (84 months, Jan 2018 to Dec 2024). Mode A rows extend the 2018 to 2019 base pace (+6,977 per year or +8.26% per year) through 2023 and 2024.',
       columns: [
-        { tag: 'Base Window', tagHighlight: false, title: 'Pre-2020 Base', subtitle: 'Video Care, 2018 to 2019' },
-        { tag: 'Peak Window', tagHighlight: true, title: '2023 Peak Window', subtitle: 'Video Care, 2019 to 2023' },
-        { tag: 'Late Window', tagHighlight: true, title: '2024 Late Window', subtitle: 'Video Care, 2019 to 2024' },
-        { tag: 'Other Care', tagHighlight: false, title: 'Other Medicaid Care', subtitle: 'Non-Video Care, 2018 to 2024' }
+        { tag: 'Window 1: Base', tagHighlight: false, title: 'Pre-2020 Pace (2018-2019)', subtitle: 'Video Care, 2018 to 2019' },
+        { tag: 'Window 2: Peak', tagHighlight: true, title: '2019 to 2023 Rollout', subtitle: 'Video Care, 2019 to 2023' },
+        { tag: 'Window 3: Full', tagHighlight: true, title: '2019 to 2024 Span', subtitle: 'Video Care, 2019 to 2024' },
+        { tag: 'Comparison Line', tagHighlight: false, title: 'Other Medicaid Care', subtitle: 'Non-Video Care, 2018 to 2024' }
       ],
       rows: [
         {
@@ -98,7 +99,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Ruler 1: Raw Two-Point Change<span class="block text-xs font-normal text-slate-500">End mean minus start mean</span>',
+          label: 'Two-Point Provider Change<span class="block text-xs font-normal text-slate-500">End mean minus start mean</span>',
           cells: [
             { val: '+6,977 (+8.26%)' },
             { val: '+22,239 (+24.33%)' },
@@ -126,7 +127,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Ruler 2: Straight-Line Gap*<span class="block text-xs font-normal text-slate-500">Actual minus straight-line path</span>',
+          label: 'Net Gap vs. Pre-2020 Trend*<span class="block text-xs font-normal text-slate-500">Actual minus straight-line path</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -264,7 +265,8 @@ const wave3Modules = [
       '<strong>SB 951 Pay Tiers &amp; Tax Rules:</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; Gov. Code &sect; 12945.2)</a> sets 90% pay for low-wage workers starting Jan 1, 2025 and removes the SDI wage tax cap starting Jan 1, 2024. That yields a +$19.7M yearly net gain for Q1 workers and +$23.0M across Q1 and Q2.',
       '<strong>Expected Take-Up vs. Full-Use Cap:</strong> <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> models 35% added-week take-up at $623.7M in yearly gross cost and $422.0M in net worker pay after 30% employer offset, versus $1,910.0M at 100% take-up.'
     ],
-    answerHtml: 'When sizing a Paid Family Leave expansion from 8 to 12 weeks, using one statewide claim rate misprices fund reserves because low-wage and high-wage workers claim leave at different rates. Across California\'s <strong>18.5 million covered workers</strong>, pairing a 12-week cap with <strong>90% low-wage pay replacement</strong> delivers <strong>$422.0M per year in modeled net worker pay</strong> and a <strong>+$19.7M yearly net gain</strong> for the lowest-paid fifth of workers [1]. Assuming 100% of eligible claimants take every week overstates yearly fund outlays by <strong>3.1 times ($1,910.0M vs. $623.7M)</strong> because job rules and firm top-offs shape take-up [2]. Modeling take-up across all five wage groups prices the payroll tax shift at <strong>+0.045 percentage points</strong> [3].',
+    policySettingHtml: 'California funds Paid Family Leave through a statewide employee payroll tax on 18.5 million workers. When lawmakers weigh expanding paid leave from 8 to 12 weeks, workers in different wage tiers claim leave at different rates. Job protection rules and private employer top-off pay shape who uses the added weeks.',
+    answerHtml: 'When sizing a Paid Family Leave expansion from 8 to 12 weeks across California\'s <strong>18.5 million covered workers</strong>, pairing a 12-week cap with <strong>90% low-wage pay replacement</strong> delivers <strong>$422.0M per year in modeled net worker pay</strong> and a <strong>+$19.7M yearly net gain</strong> for the lowest-paid fifth of workers [1]. Assuming 100% of eligible claimants take every week overstates yearly fund outlays by <strong>3.1 times ($1,910.0M vs. $623.7M)</strong> because job rules and firm top-offs shape take-up [2]. Modeling take-up across all five wage groups prices the payroll tax shift at <strong>+0.045 percentage points</strong> [3].',
     block2: {
       title: 'Two Rulers on Leave Take-Up &amp; Fund Cost (8-to-12 Week PFL Expansion)',
       contextTag: 'Mode A Model on Observed Baselines: EDD 2025-2026 Claims &amp; ACS 5-Year Wage Groups (N = 18.5M Workers)',
@@ -485,7 +487,7 @@ const wave3Modules = [
         visibleLabel: 'Public Health Spending Regime Analysis',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
       }
     ],
     tier: 'community',
@@ -495,47 +497,48 @@ const wave3Modules = [
     h1: 'Multi-Year Pooled Baselines Separate Persistent Rural Mortality From Projected Small-County Bounce-Back',
     subtitle: 'Separating lasting county health gains from modeled regression to the mean after a one-year spike.',
     endnotes: [
-      '<strong>California 21-Year County Public Health Panel (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://wonder.cdc.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC WONDER</a> (57 counties, N = 1,197 county-years; -8.11 deaths/100K per $10/capita in small rural counties and -9.16 statewide).',
-      '<strong>Small-County Headcounts &amp; One-Year Swings:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance E-1 Population Estimates</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH County Health Status Profiles</a>. In Alpine County (1,204 residents), 1 death shifts the rate by 83.1 per 100,000, and 71.5% of a -28.4 per 100,000 post-spike drop is bounce-back to the multi-year mean.',
+      '<strong>California County Public Health Panel (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics</a> (57 counties, N = 943 pre-COVID county-years; -2.42 deaths/100K per $10/capita in smaller/rural counties, -2.38 statewide annual, and -4.32 over 13-year cumulative horizons).',
+      '<strong>Small-County Headcounts &amp; One-Year Swings:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance E-1 Population Estimates</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH County Health Status Profiles</a>. In Alpine County (1,204 residents), 1 death shifts the rate by 83.1 per 100,000, and 89.4% of a -22.7 per 100,000 post-spike drop is bounce-back to the multi-year mean.',
       '<strong>Pooled Means &amp; Grant Targeting Method:</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a> (3-to-5-year pooled baselines and Empirical Bayes shrinkage weights).'
     ],
-    answerHtml: 'When targeting multi-year rural health grants to whichever small counties had the highest one-year death rate, funding chases brief one-year spikes instead of lasting need. Across <strong>21 years of California county records (2003 to 2023)</strong>, steady public health funding averts <strong>8.11 deaths per 100,000 residents per $10 per person</strong> in small rural counties and <strong>9.16 statewide</strong> [1]. Ranking small counties on one year of data overstates next-year gains through modeled regression to the mean. Just <strong>1 death in Alpine County (1,204 residents)</strong> swings the rate by <strong>83.1 per 100,000</strong> and accounts for <strong>71%</strong> of a <strong>-28.4 per 100,000</strong> bounce-back [2]. Funding rural grants on 3-to-5-year pooled averages sends dollars to lasting local need [3].',
+    policySettingHtml: 'State health agencies award rural prevention grants to help small counties lower premature death rates. In counties with small populations, a few deaths in one year can swing the annual death rate sharply upward. Next year, that county rate often drops back toward its multi-year average on its own.',
+    answerHtml: 'When targeting multi-year rural health grants across <strong>17 pre-pandemic years of California county records (2003 to 2019, N = 943)</strong>, steady public health funding averts <strong>2.42 deaths per 100,000 residents per $10 per person</strong> in smaller and rural counties and <strong>2.38 statewide</strong> (rising to <strong>4.32 per 100,000</strong> over 13-year cumulative horizons) [1]. Ranking small counties on one year of data overstates next-year gains through modeled regression to the mean because just <strong>1 death in Alpine County (1,204 residents)</strong> swings the rate by <strong>83.1 per 100,000</strong> and accounts for <strong>89%</strong> of a <strong>-22.7 per 100,000</strong> bounce-back [2]. Funding rural grants on 3-to-5-year pooled averages sends dollars to lasting local need [3].',
     block2: {
-      title: 'Two Rulers After a Rural County Death-Rate Spike (One-Year Bounce-Back vs. 21-Year Panel)',
-      contextTag: 'Mode A Rate Noise &amp; Shrinkage on DOF County Headcounts; Source Estimates From the 57-County, 21-Year LHA Panel (2003-2023, N = 1,197)',
-      ariaLabel: 'Comparison of the raw post-spike one-year county death rate drop versus the 21-year, 57-county panel estimate',
+      title: 'Two Rulers After a Rural County Death-Rate Spike (One-Year Bounce-Back vs. Multi-Year Panel)',
+      contextTag: 'Mode A Rate Noise &amp; Shrinkage on DOF County Headcounts; Source Estimates From the 57-County LHA Panel (2003-2019, N = 943)',
+      ariaLabel: 'Comparison of the raw post-spike one-year county death rate drop versus the 57-county panel estimate',
       ruler1: {
         title: 'Ruler 1: Mode A Split of a 1-Year Drop After a Top-Decile Spike',
-        stat: '-28.4 / 100K (71% Noise)',
-        ariaLabel: 'Selecting small rural counties after a 90th-percentile spike shows an apparent -28.4 per 100,000 drop with 71% from mean reversion',
+        stat: '-22.7 / 100K (89% Noise)',
+        ariaLabel: 'Selecting small rural counties after a 90th-percentile spike shows an apparent -22.7 per 100,000 drop with 89% from mean reversion',
         segments: [
-          { cls: 'seg-food', width: 71, label: 'Mean Reversion: -20.3 / 100K (71.5%)' },
-          { cls: 'seg-primary', width: 29, label: 'Panel Effect -8.11' }
+          { cls: 'seg-food', width: 89, label: 'Mean Reversion: -20.3 / 100K (89.4%)' },
+          { cls: 'seg-primary', width: 11, label: 'Panel Effect -2.42' }
         ],
         desc: 'Small rural counties have small headcounts (Trinity 16,060; Mariposa 17,131; Colusa 22,280). Mode A 1-year binomial standard errors on the county rate reach <strong>&plusmn;57.9 to &plusmn;68.3 per 100,000</strong>. Picking counties right after a 90th-percentile spike builds in <strong>-20.3 per 100,000</strong> of automatic bounce-back.'
       },
       ruler2: {
-        title: 'Ruler 2: Observed 21-Year Panel Source Estimates',
-        stat: '-8.11 Small | -9.16 Full Panel',
-        ariaLabel: 'Published 21-year panel estimates: -8.11 deaths per 100,000 per $10 per capita in small counties and -9.16 across all 57 counties',
+        title: 'Ruler 2: Observed Multi-Year Panel Source Estimates',
+        stat: '-2.42 Small | -4.32 Cumulative',
+        ariaLabel: 'Published panel estimates: -2.42 deaths per 100,000 per $10 per capita in smaller counties, -2.38 statewide annual, and -4.32 over 13-year cumulative horizons',
         segments: [
-          { cls: 'seg-primary', width: 89, label: 'Small-County 21-Yr Panel: -8.11 / 100K' },
-          { cls: 'seg-rest', width: 11, label: 'Full 57-County: -9.16' }
+          { cls: 'seg-primary', width: 56, label: 'Small-County Annual Panel: -2.42 / 100K' },
+          { cls: 'seg-rest', width: 44, label: '13-Yr Cumulative: -4.32' }
         ],
-        desc: 'Observed source estimates come from the 57-county, 21-year panel (2003 to 2023, <strong>N = 1,197</strong> county-years). The model finds <strong>-8.11 deaths per 100,000</strong> per $10/person in small counties and <strong>-9.16</strong> statewide (&plusmn;1.11 margin). These figures are published panel results, not Mode A projections.'
+        desc: 'Observed source estimates come from the 57-county pre-pandemic panel (2003 to 2019, <strong>N = 943</strong> county-years). The model finds <strong>-2.42 deaths per 100,000</strong> per $10/person in smaller counties (p = 0.0136), <strong>-2.38</strong> statewide annual (&plusmn;0.78 margin), and <strong>-4.32</strong> over 13-year cumulative horizons.'
       }
     },
     table1: {
       title: 'Table 1. Rate Swings, Shrinkage Weights &amp; Panel Effects Across 4 County Groups',
-      subtitle: 'Observed county headcounts and 21-year panel estimates paired with modeled one-year rate swings and shrinkage weights.',
-      caption: 'Table 1 compares four California county size groups on single-death rate swings, shrinkage weights, and 21-year health effects.',
+      subtitle: 'Observed county headcounts and multi-year panel estimates paired with modeled one-year rate swings and shrinkage weights.',
+      caption: 'Table 1 compares four California county size groups on single-death rate swings, shrinkage weights, and multi-year health effects.',
       cornerLabel: 'Swing &amp; Panel Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Frontier and small rural rate swings and shrinkage weights are Mode A calculations on California DOF county headcounts. The small-county (-8.11, p &lt; 0.05) and full-panel (-9.16, SE = 1.11, p &lt; 0.001) results come from the 57-county, 21-year CAPHE LHA panel (N = 1,197 county-years, Lewbel 2012 IV). In the Full 57-County column, &plusmn;1.38 per 100K is the Mode A 1-year Poisson rate SD at 750 per 100,000 across 39,538,223 residents. The &plusmn;1.11 per 100K margin in the effect row is the panel SE of the -9.16 coefficient.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Frontier and small rural rate swings and shrinkage weights are Mode A calculations on California DOF county headcounts. The smaller-county (-2.42, SE = 0.98, p = 0.0136), statewide annual (-2.38, SE = 0.78, p = 0.0022), and 13-year cumulative (-4.32, SE = 1.54, p = 0.0052) results come from the 57-county CAPHE LHA panel (N = 943 pre-COVID county-years). In the Full 57-County column, &plusmn;1.38 per 100K is the Mode A 1-year Poisson rate SD at 750 per 100,000 across 39,538,223 residents. The &plusmn;0.78 per 100K margin in the effect row is the panel SE of the -2.38 per $10 coefficient.',
       columns: [
-        { tag: 'Observed Pop < 10K', tagHighlight: true, title: 'Frontier Rural Group', subtitle: 'Alpine (1,204) to Modoc (8,700)' },
-        { tag: 'Observed Pop 15K-25K', tagHighlight: false, title: 'Small Rural Group', subtitle: 'Trinity (16,060) to Colusa (22,280)' },
-        { tag: 'Small Stratum Panel', tagHighlight: true, title: 'Small-County 21-Yr Pool', subtitle: '21-Year Pooled Subsample' },
-        { tag: 'Full 57-County Panel', tagHighlight: false, title: 'Full 57-County Pool', subtitle: '39.5M Pop (2003 to 2023)' }
+        { tag: 'Under 10K Pop', tagHighlight: true, title: 'Frontier Rural Group', subtitle: 'Alpine (1,204) to Modoc (8,700)' },
+        { tag: '15K-25K Pop', tagHighlight: false, title: 'Small Rural Group', subtitle: 'Trinity (16,060) to Colusa (22,280)' },
+        { tag: 'Rural Stratum', tagHighlight: true, title: 'Smaller-County Pool', subtitle: 'Pop <= 500K Subsample (N = 671)' },
+        { tag: 'Statewide Panel', tagHighlight: false, title: 'All 57 Counties', subtitle: '39.5M Pop (2003 to 2019, N = 943)' }
       ],
       rows: [
         {
@@ -543,7 +546,7 @@ const wave3Modules = [
           cells: [
             { val: '1,204 (Alpine) to 8,700 (Modoc)' },
             { val: '16,060 (Trinity) to 22,280 (Colusa)' },
-            { val: '< 100,000 rural group' },
+            { val: '<= 500,000 smaller/rural group' },
             { val: '39,538,223 (57 counties)' }
           ]
         },
@@ -552,8 +555,8 @@ const wave3Modules = [
           cells: [
             { val: '11.49 to 83.06 per 100K' },
             { val: '4.49 to 6.23 per 100K' },
-            { val: '1.00 to 6.23 per 100K' },
-            { val: '0.01 (LA) to 0.05 (SCC)' }
+            { val: '0.20 to 6.23 per 100K' },
+            { val: '0.01 to 0.05 (large urban)' }
           ]
         },
         {
@@ -567,13 +570,13 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Shrinkage Weight to Mean (B_i)*<span class="block text-xs font-normal text-slate-500">Share pulled toward regional mean</span>',
+          label: 'Multi-Year Pooling Weight*<span class="block text-xs font-normal text-slate-500">Share pulled toward regional mean</span>',
           modeled: true,
           highlight: true,
           cells: [
             { val: '89.0% pulled (0.89)', barWidth: 89, barColor: '#E11D48', textColor: 'text-rose-800' },
             { val: '68.0% pulled (0.68)', barWidth: 68, barColor: '#F59E0B', textColor: 'text-amber-800' },
-            { val: '24.0% pulled (21-yr)', barWidth: 24, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '24.0% pulled (pooled)', barWidth: 24, barColor: '#0041A5', textColor: 'text-[#003080]' },
             { val: '6.0% pulled (weighted)', barWidth: 6, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
@@ -581,19 +584,19 @@ const wave3Modules = [
           label: 'Deaths Averted per $10/Person<span class="block text-xs font-normal text-slate-500">Deaths averted per 100,000 residents</span>',
           highlight: true,
           cells: [
-            { val: 'Unpowered in 1-yr cut', textColor: 'text-rose-800' },
+            { val: 'Suppressed <11 deaths/yr', textColor: 'text-rose-800' },
             { val: 'Noise swamps 1-yr cut', textColor: 'text-amber-800' },
-            { val: '-8.11 / 100K (21-yr pool)', barWidth: 89, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '-9.16 / 100K (±1.11 margin)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '-2.42 / 100K (smaller counties)', barWidth: 56, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '-2.38 yr | -4.32 13-yr', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Drop-One-County Shift<span class="block text-xs font-normal text-slate-500">Spread across 57 drop-one checks</span>',
+          label: 'Subgroup &amp; Bootstrap Stability<span class="block text-xs font-normal text-slate-500">Urban/rural &amp; wild cluster bootstrap</span>',
           cells: [
             { val: 'High 1-yr outlier swing' },
             { val: 'High 1-yr rank churn' },
-            { val: '±0.052 shift (57 checks)' },
-            { val: '±0.052 shift (46 of 47)' }
+            { val: 'Matches urban counties (-2.59)' },
+            { val: 'Cluster-robust across 57 counties' }
           ]
         }
       ]
@@ -609,8 +612,8 @@ const wave3Modules = [
           cells: [
             { val: 'In frontier counties (1,204 to 8,700 residents), one crash or flu cluster shifts the rate by 11 to 83 per 100K.' },
             { val: 'Small rural counties (16,060 to 22,280 residents) record 120 to 170 total deaths per year.' },
-            { val: 'Small counties pooled across 21 budget years rely on public health staff as the main care net.' },
-            { val: 'All 57 county health departments are tracked across 21 years (1,197 county-years).' }
+            { val: 'Smaller counties (<=500,000 residents, N = 671) rely on public health staff as the main prevention net.' },
+            { val: 'All 57 county health departments are tracked across 2003-2019 pre-COVID years (N = 943).' }
           ]
         },
         {
@@ -618,8 +621,8 @@ const wave3Modules = [
           cells: [
             { val: 'Pooled baselines keep tiny counties from flipping between top-spike and top-drop ranks each year.' },
             { val: 'A multi-year mean sets the base rate, so a +60/100K one-year jump is weighed against history.' },
-            { val: 'Pooling years spots the -8.11 effect that one-year noise (±58 to ±250) swamps.' },
-            { val: 'Raw cross-county averages (+0.18) mix long-run illness load with outbreak grants.' }
+            { val: 'Pooling years spots the -2.42 effect that one-year noise (±58 to ±250) swamps.' },
+            { val: 'Separating 2020-2023 emergency COVID-19 grants (+2.47) isolates routine prevention (-2.38).' }
           ]
         },
         {
@@ -627,7 +630,7 @@ const wave3Modules = [
           cells: [
             { val: 'Tying base grants to 1-year death ranks destabilizes rural staff after a normal bounce-back.' },
             { val: 'Cutting a rural program after 2 or 3 extra deaths in one year disrupts clinic teams.' },
-            { val: 'Small counties gain nearly the same life-saving return (-8.11) as the state (-9.16) over time.' },
+            { val: 'Smaller counties gain slightly larger annual returns (-2.42) than the state baseline (-2.38).' },
             { val: 'State grant rules can pair per-person funds with a fixed base floor for small counties.' }
           ]
         },
@@ -637,26 +640,26 @@ const wave3Modules = [
           cells: [
             { headline: 'Use 5-Year Means &amp; Shrinkage', detail: 'Pull 1-year frontier rates by 0.89 toward regional medians before ranking counties for grants.' },
             { headline: 'Compare Multi-Year Rural Pools', detail: 'Score small rural grants on 3-to-5-year pooled rates matched against rural peers.' },
-            { headline: 'Anchor Rural Cases to -8.11', detail: 'Use the 21-year small-county estimate (-8.11 deaths/100K per $10/person) in board briefs.' },
-            { headline: 'Fund Core Staff Over 1-Year Spikes', detail: 'Use the full-panel -9.16 estimate ($109,000/life saved, 125:1 return) for multi-year base budgets.' }
+            { headline: 'Anchor Rural Cases to -2.42', detail: 'Use the smaller-county estimate (-2.42 deaths/100K per $10/person) in rural board briefs.' },
+            { headline: 'Fund Core Staff Over Multi-Year Horizons', detail: 'Pair the -2.38 annual ($420,168/life, 32:1) and -4.32 cumulative ($231,481/life, 59:1) estimates.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Rate Noise Formula &amp; Drop-One-County Check',
+      notesTitle: 'Table 2 Notes: Rate Noise Formula &amp; Subgroup Stability Check',
       notesBullets: [
         '<strong>Small-County Noise Math (Mode A on DOF Populations):</strong> At a base death rate of &mu; = 750 per 100,000 (0.0075), the 1-year Poisson SD per 100,000 is &sigma; = 100,000 &times; &radic;(0.0075 / N_pop). That equals &plusmn;249.6 per 100,000 in Alpine (N = 1,204), &plusmn;92.9 in Modoc (N = 8,700), and &plusmn;68.3 in Trinity (N = 16,060).',
-        '<strong>Drop-One-County Check (Observed Source Estimates):</strong> Across all 57 counties over 2003 to 2023 (N = 1,197), dropping one county at a time yields a slope SD of just <strong>0.052</strong>. Rural outliers do not skew the <strong>-9.16</strong> panel result (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>).',
-        '<strong>Panel Model Source:</strong> The -8.11 (small-county group) and -9.16 (full 57-county panel) estimates come from the CAPHE LHA panel using <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel (2012)</a> instruments over 2003 to 2023 (N = 1,197 county-years). They are reported here as published source estimates.'
+        '<strong>Urban &amp; Rural Subgroup Stability (Observed Source Estimates):</strong> Across all 57 counties over 2003 to 2019 (N = 943), routine public health spending is statistically significant in both smaller/rural counties (&le;500,000 residents: <strong>-2.42</strong> per $10, p = 0.0136) and large urban counties (&gt;500,000 residents: <strong>-2.59</strong> per $10, p &lt; 0.0001) (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>).',
+        '<strong>Panel Model Source:</strong> The -2.42 (smaller-county group), -2.38 (statewide annual TWFE OLS, N = 943), and -4.32 (13-year cumulative long-difference OLS, N = 57) estimates come from the CAPHE LHA panel over 2003 to 2019 (with Long-Difference <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel (2012)</a> 2SLS yielding -5.31, F = 111.20). They are reported here as published source estimates.'
       ]
     },
     synthesis: {
       title: 'Why Base Funding Beats Chasing One-Year Spikes',
-      p1: 'Regression to the mean is a common hurdle in county grant design. Suppose an agency ranks California\'s 58 counties on one year of death data and sends short-term grants to the top tenth. Small rural counties under 25,000 residents top the list when a few random deaths swing their rate per 100,000 by 50 to 250 points. Next year, the rate drops back toward its long-run mean (-28.4 per 100,000) even without a program effect.',
-      p2: 'Health economics fixes this funding problem in two steps. First, for grant targeting, Empirical Bayes shrinkage and 3-to-5-year pooled means pull noisy small-county rates toward regional norms. Second, for impact review, 21-year panel models across all 57 counties (N = 1,197 county-years) show that steady public health funding in small counties averts 8.11 deaths per 100,000 per $10/person, close to the statewide 9.16 result.'
+      p1: 'Regression to the mean is a common hurdle in county grant design. Suppose an agency ranks California\'s 58 counties on one year of death data and sends short-term grants to the top tenth. Small rural counties under 25,000 residents top the list when a few random deaths swing their rate per 100,000 by 50 to 250 points. Next year, the rate drops back toward its long-run mean (-22.7 per 100,000) even without a program effect.',
+      p2: 'Health economics fixes this funding problem in two steps. First, for grant targeting, Empirical Bayes shrinkage and 3-to-5-year pooled means pull noisy small-county rates toward regional norms. Second, for impact review, multi-year panel models across all 57 counties (N = 943 pre-COVID county-years) show that steady public health funding in smaller counties averts 2.42 deaths per 100,000 per $10/person annually, matching the statewide 2.38 annual result and building to 4.32 per 100,000 over 13-year cumulative horizons.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A on County Headcounts + Observed Panel Estimates):</strong> County resident counts (Alpine 1,204 to Los Angeles 9,721,138), the small-county IV estimate (-8.11), the full-panel IV estimate (-9.16, SE = 1.11, N = 1,197), and the drop-one-county SD (0.052) are observed values in the CAPHE LHA corpus. One-year Poisson noise SDs, the bounce-back share, and shrinkage weights (B_i) are Mode A calculations on those county headcounts.',
-      '<strong>Primary Data Sources:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>, <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics Death Statistical Master Files (2003-2023)</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller\'s Office County Financial Transactions Reports</a>, and <a href="https://doi.org/10.1002/hec.2953" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014, Health Economics)</a>.'
+      '<strong>Mode Classification (Mode A on County Headcounts + Observed Panel Estimates):</strong> County resident counts (Alpine 1,204 to Los Angeles 9,721,138), the smaller-county estimate (-2.42, SE = 0.98, N = 671), the statewide annual estimate (-2.38, SE = 0.78, N = 943), and the 13-year cumulative estimate (-4.32, SE = 1.54, N = 57) are observed values in the CAPHE LHA corpus. One-year Poisson noise SDs, the bounce-back share, and shrinkage weights (B_i) are Mode A calculations on those county headcounts.',
+      '<strong>Primary Data Sources:</strong> <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>, <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics Death Statistical Master Files (2003-2023)</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller\'s Office County Financial Transactions Reports</a>, and <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014, Economics &amp; Human Biology)</a>.'
     ],
     faqs: [
       {
@@ -668,13 +671,13 @@ const wave3Modules = [
         answer: 'When counties get grants because they had a top-decile death spike in Year 1, that peak includes random upward noise. In Year 2, the random error averages zero and creates a modeled -20.3 per 100,000 bounce-back even with zero program effect.'
       },
       {
-        question: 'What does the 57-county panel show for public health funding in small counties?',
-        answer: 'Across 21 years (2003 to 2023), the published IV panel model links every $10 per person in local public health funding to 8.11 fewer deaths per 100,000 in small counties, compared with 9.16 statewide.'
+        question: 'What does the 57-county panel show for public health funding in smaller counties?',
+        answer: 'Across the 2003 to 2019 pre-pandemic panel (N = 943), every $10 per person in local public health funding is linked to 2.42 fewer deaths per 100,000 in smaller and rural counties (p = 0.0136), compared with 2.38 statewide annually and 4.32 over 13-year cumulative horizons.'
       }
     ],
     related: [
       { slug: 'p-hacking-multiple-testing', title: 'Multiple Testing & Small-Group Swings', note: 'Case study on why small county cells trigger false alerts' },
-      { slug: 'observational-to-experimental', title: 'From Simple Avg (+0.18) to 21-Year Budget Model (-9.16)', note: 'Case study on the 57-county California public health panel' },
+      { slug: 'observational-to-experimental', title: 'From Pandemic Surge (+2.47) to Routine Prevention (-2.38 Annual / -4.32 Cumulative)', note: 'Case study on the 57-county California public health panel' },
       { slug: 'before-after-trap', title: 'Evaluating Pre-Post Changes vs. Base Trends', note: 'Case study on the 2018-2019 base trend in Medicaid billing providers' }
     ]
   },
@@ -709,7 +712,8 @@ const wave3Modules = [
       '<strong>Pre-2020 Base Trend Check (2018-2019):</strong> Billing providers for video care grew +8.26% (84,422 to 91,399) versus +7.05% (101,905 to 109,087) for other care, a +1.21 pp yearly pre-2020 gap.',
       '<strong>Medicaid Continuous Coverage &amp; Telehealth Rules:</strong> <a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS T-MSIS Analytic Files Documentation</a> and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Telehealth Policy Guidance</a>.'
     ],
-    answerHtml: 'When evaluating a county Medi-Cal service rollout by tracking only enrolled clinics, a single-group review credits statewide enrollment waves to the local pilot. Comparing telehealth-eligible Medicaid services against other Medicaid care across <strong>84 months (2018 to 2024)</strong> isolates a modeled net <strong>+5.62 percentage point provider gain through 2023</strong> and <strong>+4.60 percentage points through 2024</strong> [1]. A single-group pre-post check credits all <strong>+24.33%</strong> growth to telehealth without subtracting the <strong>+18.71%</strong> enrollment wave that lifted other care at the same time [2]. Pairing the two-group check with the <strong>+1.21-point</strong> pre-2020 base gap bounds the budget forecast [3].',
+    policySettingHtml: 'Medicaid agencies evaluate new service rules during periods when statewide enrollment and renewal policies also shift. Between 2019 and 2024, continuous coverage rules lifted patient volume across almost all Medicaid care lines at once. Reviewing one treated service line alone mixes those system-wide waves with the program effect.',
+    answerHtml: 'When evaluating a Medi-Cal service rollout across <strong>84 months (2018 to 2024)</strong>, comparing telehealth-eligible care against other Medicaid care isolates a modeled net <strong>+5.62 percentage point provider gain through 2023</strong> and <strong>+4.60 percentage points through 2024</strong> [1]. A single-group pre-post check credits all <strong>+24.33%</strong> growth to telehealth without subtracting the <strong>+18.71%</strong> enrollment wave that lifted other care at the same time [2]. Pairing the two-group check with the <strong>+1.21-point</strong> pre-2020 base gap bounds the budget forecast [3].',
     block2: {
       title: 'Two Rulers on Billing Provider Growth (2019 Base vs. 2023 Peak)',
       contextTag: 'Mode A Two-Group Check on HHS Medicaid Provider Spending (84 Months, Jan 2018 to Dec 2024)',
@@ -758,7 +762,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Video Care Change (Ruler 1)<span class="block text-xs font-normal text-slate-500">Single-group pre-post change</span>',
+          label: 'Video Care Provider Change<span class="block text-xs font-normal text-slate-500">Single-group pre-post change</span>',
           cells: [
             { val: '+6,977 (+8.26%)' },
             { val: '+22,239 (+24.33%)' },
@@ -785,7 +789,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Ruler 2: Net Two-Group Gap*<span class="block text-xs font-normal text-slate-500">Video % minus Other %</span>',
+          label: 'Net Two-Group Gap*<span class="block text-xs font-normal text-slate-500">Video % minus Other %</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -924,9 +928,10 @@ const wave3Modules = [
     endnotes: [
       '<strong>Multi-State 1,408-County Event-Study Panel:</strong> <a href="https://www.ers.usda.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA SNAP Retailer Historical Database</a> and <a href="https://www.fdic.gov/resources/resolutions/bank-failures/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">FDIC Bank Failures &amp; Branch Panel</a> (N = 1,408 counties; base post-policy estimate -0.47 pp, SE = 0.22, p = 0.036; pre-policy leads -0.056, -0.030, 0.000 with 95% CIs from -1.27 to +1.16 pp).',
       '<strong>Methodological reference: <a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Roth, J. (2022), <em>AER: Insights</em></a> and <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Rambachan, A., &amp; Roth, J. (2023), <em>Review of Economic Studies</em></a>. CAPHE case-study sensitivity calculation (1,408-county panel): post-policy trend drift limit M* = 0.35, where the 95% robust CI hits [-0.96, 0.00] pp.',
-      '<strong>California 57-County LHA Panel Comparison (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> (N = 1,197 county-years; -9.16 deaths/100K per $10/person across 46 of 47 models; -3.07 pre-ACA vs. -8.93 post-ACA).'
+      '<strong>California 57-County LHA Panel Comparison (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> (N = 943 pre-COVID county-years; -2.38 deaths/100K per $10/person annually, -4.32 over 13-year cumulative horizons, and -5.31 in Long-Difference Lewbel 2SLS with F = 111.20).'
     ],
-    answerHtml: 'When auditing a county panel study that passes a pre-policy trend check, budget teams still face risk if wide pre-period noise bands let slow county drift pass unseen. In California\'s <strong>57-county public health panel (1,197 county-years)</strong>, the <strong>9.16 fewer deaths per 100,000</strong> finding holds across <strong>46 of 47</strong> model checks [1]. In a shorter <strong>1,408-county panel</strong>, a <strong>-0.47 percentage point</strong> result holds up only if modeled post-policy drift stays below <strong>35% (M* = 0.35)</strong> of pre-policy swing [2]. Passing a pre-trend check alone leaves a <strong>&plusmn;1.27 percentage point</strong> noise band (<strong>2.5 times</strong> the effect) unexamined, so reporting drift limits shows which findings can guide capital budgets [3].',
+    policySettingHtml: 'Analysts use multi-year county records to measure how public health budgets and local policy changes affect community outcomes. Before trusting a two-group comparison, teams check whether treated and comparison counties followed similar paths before the policy began. Short pre-policy windows with wide year-to-year swings can let slow county drift pass that check.',
+    answerHtml: 'When auditing California\'s <strong>57-county public health panel (N = 943 pre-COVID county-years)</strong>, the <strong>2.38 fewer deaths per 100,000</strong> annual finding (building to <strong>4.32</strong> over 13-year cumulative horizons) holds across urban and rural strata and wild cluster bootstrap checks (<em>p</em> = 0.007) [1]. In a shorter <strong>1,408-county panel</strong>, a <strong>-0.47 percentage point</strong> result holds up only if modeled post-policy drift stays below <strong>35% of the pre-policy swing</strong> [2]. Passing a pre-trend check alone leaves a <strong>&plusmn;1.27 percentage point</strong> noise band (<strong>2.5 times</strong> the effect) unexamined, so reporting drift limits shows which findings can guide capital budgets [3].',
     block2: {
       title: 'Two Rulers on Parallel Trends Power (1,408-County Panel &amp; 57-County LHA Splits)',
       contextTag: 'Mode A Drift Bounds on Stated Event-Study Inputs (N = 1,408 Counties); Pre-Test Power &amp; Drift Limits',
@@ -957,12 +962,12 @@ const wave3Modules = [
       subtitle: 'Stated event-study inputs from the 1,408-county panel with modeled drift bounds and California 57-county panel benchmarks.',
       caption: 'Table 1 compares the base event study, pre-period noise band, drift bounds, and county slope controls.',
       cornerLabel: 'Trend-Check Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Exact statistics behind the plain cells (stated base inputs, N = 1,408-county DiD panel). <strong>Base TWFE:</strong> -0.47 pp, SE = 0.22 pp, 95% CI [-0.91, -0.03], p = 0.036 at M = 0. <strong>Pre-period leads:</strong> SE = 0.620 (e = -3), SE = 0.582 (e = -2), SE = 0.549 (e = -1); joint pre-trend test Pre-F p = 0.9997 (low power). <strong>Rambachan-Roth bounds:</strong> robust sets fold in pre-trend SE; M* = 0.35 is a Mode A calculation. <strong>County linear slopes:</strong> +0.003 pp, SE = 0.016 pp, p = 0.87; placebo date test p = 0.04. <strong>California LHA panel (57 counties, N = 1,197 county-years):</strong> Full Panel IV -9.16 deaths per 100,000 per $10/person, SE = 1.11; first-stage F = 314.1.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Exact statistics behind the plain cells (stated base inputs, N = 1,408-county DiD panel). <strong>Base TWFE:</strong> -0.47 pp, SE = 0.22 pp, 95% CI [-0.91, -0.03], p = 0.036 at M = 0. <strong>Pre-period leads:</strong> SE = 0.620 (e = -3), SE = 0.582 (e = -2), SE = 0.549 (e = -1); joint pre-trend test Pre-F p = 0.9997 (low power). <strong>Rambachan-Roth bounds:</strong> robust sets fold in pre-trend SE; M* = 0.35 is a Mode A calculation. <strong>County linear slopes:</strong> +0.003 pp, SE = 0.016 pp, p = 0.87; placebo date test p = 0.04. <strong>California LHA panel (57 counties, N = 943 pre-COVID county-years):</strong> Annual TWFE OLS -2.38 deaths per 100,000 per $10/person (SE = 0.78, p = 0.0022), 13-year cumulative OLS -4.32 (SE = 1.54, p = 0.0052), and Long-Difference Lewbel 2SLS -5.31 (first-stage F = 111.20).',
       columns: [
-        { tag: 'Stated Input: Zero Drift', tagHighlight: false, title: 'Base Event Study', subtitle: 'Assumes Zero Post-Trend Gap' },
-        { tag: 'Stated Input: Noise Band', tagHighlight: true, title: 'Pre-Trend Noise Band', subtitle: '3-Year Pre-Policy Noise Check' },
-        { tag: 'Drift Limit Bound', tagHighlight: true, title: 'Trend-Drift Bounds', subtitle: '35% Drift Limit vs. 2.0x Drift' },
-        { tag: 'Stated Input: County Slopes', tagHighlight: false, title: 'County Linear Slopes', subtitle: 'County-Specific Slope Control' }
+        { tag: 'Model 1: Zero Drift', tagHighlight: false, title: 'Base Event Study', subtitle: 'Assumes Zero Post-Trend Gap' },
+        { tag: 'Model 2: Noise Check', tagHighlight: true, title: 'Pre-Trend Noise Band', subtitle: '3-Year Pre-Policy Noise Check' },
+        { tag: 'Model 3: Drift Bound', tagHighlight: true, title: 'Post-Policy Drift Limit', subtitle: '35% Drift Limit vs. 2.0x Drift' },
+        { tag: 'Model 4: Slope Check', tagHighlight: false, title: 'County Linear Slopes', subtitle: 'County-Specific Slope Control' }
       ],
       rows: [
         {
@@ -1014,12 +1019,12 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'CA 57-County Panel Benchmark<span class="block text-xs font-normal text-slate-500">57 counties, 21 years (Cholette et al., 2026)</span>',
+          label: 'CA 57-County Panel Benchmark<span class="block text-xs font-normal text-slate-500">57 counties, 2003-2019 (Cholette et al., 2026)</span>',
           cells: [
-            { val: 'Full panel: 9.16 fewer deaths' },
-            { val: 'Large-county cut: low power' },
-            { val: 'Pre-ACA -3.07 vs Post -8.93' },
-            { val: '21-Year Model (46 of 47 checks)' }
+            { val: 'Annual panel: 2.38 fewer deaths' },
+            { val: '13-yr cumulative: 4.32 fewer' },
+            { val: '2003-2016 single-regime: -2.62' },
+            { val: '13-yr routine-budget IV: -5.31 / 100K' }
           ]
         }
       ]
@@ -1033,9 +1038,9 @@ const wave3Modules = [
         {
           label: 'Core Trend Assumption',
           cells: [
-            { val: 'Post-policy paths stay 100% parallel across treated and comparison counties (M = 0).' },
+            { val: 'Post-policy paths stay 100% parallel across treated and comparison counties (zero drift).' },
             { val: 'A passing pre-policy trend check is read as proof that post-policy paths stay parallel.' },
-            { val: 'Allows post-policy trend drift up to M times the max slope shift between pre-policy years.' },
+            { val: 'Allows post-policy trend drift up to a chosen multiple of the largest pre-policy slope shift.' },
             { val: 'Fits a straight-line time slope for each county using only 3 pre-policy years.' }
           ]
         },
@@ -1044,17 +1049,17 @@ const wave3Modules = [
           cells: [
             { val: 'Bounds fold pre-period lead noise into the post-policy range that [-0.91, -0.03] omits.' },
             { val: 'With ±0.62 pp pre-noise, a 1.0 pp/yr drift passes the check yet accounts for the -0.47 pp drop.' },
-            { val: 'A drift limit of M* = 0.35 (below the 1.0 benchmark) shows how little drift crosses zero.' },
+            { val: 'A 35% drift limit (0.35x pre-period swing, below the 1.0x benchmark) shows how little drift crosses zero.' },
             { val: 'Fitting 1,408 county slopes on 3 pre-years overfits noise and absorbs real phased-in gains.' }
           ]
         },
         {
           label: 'Lesson for County Studies',
           cells: [
-            { val: 'The 57-county LHA panel has high power across 21 years, while a big-city cut has too few groups.' },
-            { val: 'When a small-count urban cut gives wide ranges, teams should not read low power as zero effect.' },
-            { val: 'Big policy shifts like the 2014 ACA expansion (-3.07 to -8.93) shift flat trend lines.' },
-            { val: 'Long 21-year panels with routine-budget models beat fitting county slopes on 3 pre-years.' }
+            { val: 'The 57-county LHA panel has high power across 17 pre-COVID years, holding in urban and rural strata.' },
+            { val: 'When a short 3-year pre-window gives wide ranges, teams should not read low power as zero drift.' },
+            { val: 'Regime shifts like the 2020-2023 COVID-19 grant surge (+2.47 vs. -2.38) require separate windows.' },
+            { val: 'Long multi-year panels and 13-year cumulative models (-4.32) beat fitting county slopes on 3 pre-years.' }
           ]
         },
         {
@@ -1063,44 +1068,44 @@ const wave3Modules = [
           cells: [
             { headline: 'Never Report Zero-Drift Alone', detail: 'Pair base event-study numbers with pre-period noise widths and drift bounds.' },
             { headline: 'Show the Pre-Trend Noise Band', detail: 'Report the pre-period band (-1.27 to +1.16 pp) beside any pre-policy trend check.' },
-            { headline: 'Check M* >= 1.0 for Capital Shifts', detail: 'If the drift limit sits below 1.0 (here 0.35), pair the study with a routine-budget model.' },
+            { headline: 'Check 1.0x Drift for Capital Shifts', detail: 'If the drift limit sits below 1.0x (here 0.35x), pair the study with a multi-year panel model.' },
             { headline: 'Use 6+ Pre-Years for County Slopes', detail: 'Skip county linear slopes in 3-year pre-panels and lengthen the pre-policy window instead.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Roth (2022) Pre-Test Power &amp; Rambachan-Roth (2023) M* Bounds',
+      notesTitle: 'Table 2 Notes: Roth (2022) Pre-Test Power &amp; Rambachan-Roth (2023) Drift Bounds',
       notesBullets: [
         '<strong>Pre-Period Noise vs. Signal (Stated Base Inputs, N = 1,408 Counties):</strong> At lead e = -3, the point is -0.056 pp with SE = 0.620 (95% CI: [-1.27, +1.16]). At e = -2, it is -0.030 pp with SE = 0.582 ([-1.17, +1.11]). At e = -1, it is 0.000 pp with SE = 0.549 ([-1.08, +1.08]). The pre-period CIs are 2.5x wider than the -0.47 pp ATT, so the joint test (p = 0.9997) has low power (<a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Roth, 2022, AER: Insights</a>).',
-        '<strong>HonestDiD Drift Limit (Mode A Calculation, M* = 0.35):</strong> Under <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023, Review of Economic Studies)</a>, M = 1.0 allows post-policy trend drift up to 100% of the max pre-period slope shift. Here, the 95% robust range hits 0.00 at M* = 0.35 ([-0.96, 0.00] pp) and widens to [-1.08, +0.15] pp at M = 2.0.',
-        '<strong>Unit Rules:</strong> The ATT, leads, SEs, and M* bounds come from the 1,408-county panel (percentage points). The -9.16, -3.07, -8.93, and F = 314.1 figures come from the separate 57-county California LHA panel (deaths per 100,000 per $10/person; N = 1,197 county-years, N = 969 in model).'
+        '<strong>HonestDiD Drift Limit (M* = 0.35):</strong> Under <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023, Review of Economic Studies)</a>, M = 1.0 allows post-policy trend drift up to 100% of the max pre-period slope shift. Here, the 95% robust range hits 0.00 at M* = 0.35 ([-0.96, 0.00] pp) and widens to [-1.08, +0.15] pp at M = 2.0.',
+        '<strong>Unit Rules:</strong> The ATT, leads, SEs, and M* bounds come from the 1,408-county panel (percentage points). The -2.38 annual, -2.62 single-regime, -4.32 cumulative, and -5.31 Long-Difference 2SLS (F = 111.20) figures come from the separate 57-county California LHA panel (deaths per 100,000 per $10/person; N = 943 pre-COVID county-years).'
       ]
     },
     synthesis: {
       title: 'Why Passing a Pre-Trend Check Is Only the First Step',
       p1: 'In county program reviews, analysts check that pre-policy lead points cross zero and cite a high joint p-value (such as p = 0.9997). Yet wide pre-period noise bands can let slow county drift pass that check. The smaller the sample or the wider the pre-period margin, the easier it is to pass a pre-trend check while an unseen slope accounts for the post-policy gap.',
-      p2: 'Modern health economics pairs pre-trend checks with explicit drift bounds. Reporting the Rambachan-Roth drift limit (M* = 0.35, a Mode A bound) and comparing short panels against 21-year models (such as the 57-county California LHA panel, N = 1,197 county-years, where F = 314.1 and 46 of 47 models hold) shows leaders how much trend drift a finding can take.'
+      p2: 'Modern health economics pairs pre-trend checks with explicit drift bounds. Reporting the Rambachan-Roth drift limit (35% of the pre-period swing) and comparing short panels against multi-year models (such as the 57-county California LHA panel, N = 943 pre-COVID county-years, where the annual county panel yields -2.38 and 13-year cumulative differences yield -4.32) shows leaders how much trend drift a finding can take.'
     },
     interactive: {
       badge: 'Trend-Drift Bound Check',
-      title: 'Compare How Allowing Post-Policy Drift (M) Shifts the Plausible Effect Range',
+      title: 'Compare How Allowing Post-Policy Drift Shifts the Plausible Effect Range',
       subtitle: 'Comparing the zero-drift base model against drift limits and county linear slopes across 1,408 counties.',
       options: [
         {
           label: 'Bound 1 · Exact Parallel Trends',
-          headline: 'Zero Post-Policy Drift (M = 0)',
-          metric: 'ATT = -0.47 pp | [-0.91, -0.03] pp',
+          headline: 'Zero Post-Policy Drift (0.0x)',
+          metric: 'Effect = -0.47 pp | [-0.91, -0.03] pp',
           desc: 'Assuming post-policy county paths stay 100% parallel passes the pre-policy trend check and yields a clear drop.'
         },
         {
-          label: 'Bound 2 · Drift Limit (M* = 0.35)',
-          headline: 'Post Drift <= 35% of Pre-Period Drift',
-          metric: 'M* = 0.35 | [-0.96, 0.00] pp',
+          label: 'Bound 2 · 35% Drift Limit',
+          headline: 'Post Drift <= 35% of Pre-Period Swing',
+          metric: '0.35x Limit | [-0.96, 0.00] pp',
           desc: 'Allowing post-policy drift equal to 35% of the max pre-period slope shift brings the top of the range to zero.'
         },
         {
           label: 'Bound 3 · County Linear Slopes',
           headline: 'County Slopes (Year x County)',
-          metric: 'ATT = +0.003 pp | [-0.028, +0.034] pp',
+          metric: 'Effect = +0.003 pp | [-0.028, +0.034] pp',
           desc: 'Fitting county linear slopes across three pre-policy years shifts the point estimate to near zero (+0.003 pp).'
         }
       ],
@@ -1112,7 +1117,7 @@ const wave3Modules = [
       ]
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Drift Bounds on Stated Base Inputs):</strong> Event-study pre-trend leads (-0.056, -0.030, 0.000), standard errors (0.620, 0.582, 0.549), and the base ATT (-0.47 pp, SE = 0.22, p = 0.036) are stated inputs from the 1,408-county DiD panel. The Rambachan-Roth limit (M* = 0.35) and its robust ranges are Mode A calculations on those inputs. California LHA splits (Pre-ACA -3.07 vs. Post-ACA -8.93; base-funding -4.56 vs. Full -9.16) come from the separate 57-county LHA panel (N = 1,197 county-years; N = 969 in model).',
+      '<strong>Mode Classification (Mode A Drift Bounds on Stated Base Inputs):</strong> Event-study pre-trend leads (-0.056, -0.030, 0.000), standard errors (0.620, 0.582, 0.549), and the base ATT (-0.47 pp, SE = 0.22, p = 0.036) are stated inputs from the 1,408-county DiD panel. The Rambachan-Roth limit (M* = 0.35) and its robust ranges are Mode A calculations on those inputs. California LHA benchmarks (-2.38 annual TWFE, -2.62 single-regime, -4.32 13-year cumulative, and -5.31 Long-Difference 2SLS) come from the separate 57-county LHA panel (N = 943 pre-COVID county-years).',
       '<strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Rambachan &amp; Roth (2023), "A More Credible Approach to Parallel Trends," Review of Economic Studies</a>; <a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Roth (2022), "Pretest with Caution: Event-Study Estimates after Testing for Parallel Trends," AER: Insights</a>; <a href="https://www.ers.usda.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA SNAP Retailer Historical Database</a>; and <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions (2003-2023)</a>.'
     ],
     faqs: [
@@ -1125,14 +1130,14 @@ const wave3Modules = [
         answer: 'If post-policy trend drift exceeds 35% of the max slope change seen in the pre-period, the 95% robust range crosses zero and the finding is no longer statistically clear.'
       },
       {
-        question: 'Why do big-county splits in California often look statistically noisy?',
-        answer: 'California has only a small count of very large urban counties. Restricting a county panel model to big cities cuts the cluster count, widens standard errors, and lowers statistical power even when the true effect is present.'
+        question: 'How does the California 57-county LHA panel test stability across county size strata?',
+        answer: 'Across the 2003 to 2019 pre-pandemic window (N = 943), the mortality reduction is statistically significant in both large urban counties (-2.59 per $10, p < 0.0001) and smaller/rural counties (-2.42 per $10, p = 0.0136), with a wild cluster bootstrap p-value of 0.007.'
       }
     ],
     related: [
       { slug: 'threat-history-solutions', title: 'Two-Group Comparisons Across Medicaid Care Lines', note: 'Case study applying DiD to video vs. other Medicaid care' },
-      { slug: 'observational-to-experimental', title: 'Comparing Simple Avg & 21-Year Budget Models (-9.16)', note: 'Case study on the 57-county LHA mortality panel' },
-      { slug: 'reverse-causation-feedback', title: 'Outbreak Spending & Routine Prevention Returns', note: 'Case study on outbreak spending mix and stability across 47 checks' }
+      { slug: 'observational-to-experimental', title: 'Comparing Pandemic Surges & Routine Prevention (-2.38 Annual / -4.32 Cumulative)', note: 'Case study on the 57-county LHA mortality panel' },
+      { slug: 'reverse-causation-feedback', title: 'Outbreak Spending & Routine Prevention Returns', note: 'Case study on pandemic grant surges and multi-horizon prevention returns' }
     ]
   },
 
@@ -1149,24 +1154,25 @@ const wave3Modules = [
     h1: 'Multi-Year Trend Splits Separate Ongoing Workforce Growth From Projected State-Law Benefit Jumps',
     subtitle: 'Separating steady yearly payroll growth from modeled level and slope shifts after state paid-leave laws.',
     endnotes: [
-      '<strong>California EDD Paid Family Leave &amp; SDI Actuals and Forecast (2025-2026):</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> (325,055 actual 2025 PFL claims, $1,090 weekly pay, $15.892B SDI payouts; projected 2026 base of 330,000 claims, $1,165 weekly pay, and $17.527B SDI payouts).',
+      '<strong>California EDD Paid Family Leave &amp; SDI Actuals and Forecast (2025-2026):</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> (325,055 actual 2025 PFL claims, $1,090 weekly pay, $15.892B SDI outlays; projected 2026 base of 330,000 claims, $1,165 weekly pay, and $17.527B SDI outlays).',
       '<strong>State-Law Shifts Under SB 951 &amp; 12-Week Plans:</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; &sect; 984)</a> and <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> (+39,600 added yearly claims to 369,600 and +$623.7M/yr gross outlay above the base slope).',
       '<strong>Multi-Year Reserve Path (2025-2030):</strong> Projected yearly SDI fund balance at 35% take-up dips from 18.2% ($3.19B) to 10.8% ($1.96B) in 2026, then rebuilds to 30.4% ($6.37B, above the 25.0% floor) by 2030.'
     ],
-    answerHtml: 'When evaluating a statewide Paid Family Leave pay increase without a multi-year base trend, a one-year review mixes routine yearly claim growth into the first-year policy jump. In California Paid Family Leave, multi-year trend modeling projects <strong>+39,600 added yearly claims</strong> and <strong>+$623.7M per year in gross outlays</strong> from a 12-week plan while reserves rebuild to <strong>30.4% ($6.37B) by 2030</strong> [1]. Raw year-to-year spending checks mix that policy jump with <strong>+$1.635B</strong> in routine wage and workforce growth (325,055 to 330,000 base claims and $1,090 to $1,165 weekly pay) [2]. Tracking both the Year-1 level shift and the 5-year reserve slope keeps payroll tax rates steady [3].',
+    policySettingHtml: 'California enacted Senate Bill 951 on one statewide schedule, removing the payroll tax cap in 2024 and raising low-wage leave pay to 90% in 2025. At the same time, statewide wages and baseline claim counts grow every year. Multi-year fund forecasts separate routine payroll growth from statutory benefit jumps.',
+    answerHtml: 'When evaluating California Paid Family Leave with multi-year trend modeling, a 12-week plan projects <strong>+39,600 added yearly claims</strong> and <strong>+$623.7M per year in gross outlays</strong> while reserves rebuild to <strong>30.4% ($6.37B) by 2030</strong> [1]. Raw year-to-year spending checks mix that policy jump with <strong>+$1.635B</strong> in routine wage and workforce growth (325,055 to 330,000 base claims and $1,090 to $1,165 weekly pay) [2]. Tracking both the Year-1 level shift and the 5-year reserve slope keeps payroll tax rates steady [3].',
     block2: {
       title: 'Two Rulers on 2025-to-2026 SDI/PFL Growth (Base Trend Slope vs. Modeled 12-Week Jump)',
       contextTag: 'Mode A 2026-2030 Projections on Observed EDD Baselines (2025 Actuals as Inputs)',
-      ariaLabel: 'Comparison of projected base growth in yearly PFL claims and SDI payouts versus a modeled 12-week expansion jump',
+      ariaLabel: 'Comparison of projected base growth in yearly PFL claims and SDI outlays versus a modeled 12-week expansion jump',
       ruler1: {
         title: 'Ruler 1: Base Trend Growth (No New 2026 Law)',
         stat: '+4,945 Claims | +$1.635B SDI',
-        ariaLabel: 'Projected without a 12-week plan, yearly PFL claims grow +4,945 (+1.52%), weekly pay grows +$75 (+6.88%), and yearly SDI payouts grow +$1.635B (+10.29%)',
+        ariaLabel: 'Projected without a 12-week plan, yearly PFL claims grow +4,945 (+1.52%), weekly pay grows +$75 (+6.88%), and yearly SDI outlays grow +$1.635B (+10.29%)',
         segments: [
-          { cls: 'seg-gross', width: 90, label: '2025 Actual SDI Payouts: $15.892B (325,055 PFL Claims)' },
+          { cls: 'seg-gross', width: 90, label: '2025 Actual SDI Outlays: $15.892B (325,055 PFL Claims)' },
           { cls: 'seg-food', width: 10, label: '+$1.635B Base Growth' }
         ],
-        desc: 'Observed inputs are 2025 EDD actuals, and 2026 values are Mode A base projections. Workforce growth (<strong>+1.52%</strong> in yearly claims to <strong>330,000</strong>) and wage growth (weekly pay from <strong>$1,090 to $1,165</strong>, +6.88%) lift projected SDI payouts from <strong>$15.892B to $17.527B (+$1.635B)</strong> with no new law.'
+        desc: 'Observed inputs are 2025 EDD actuals, and 2026 values are Mode A base projections. Workforce growth (<strong>+1.52%</strong> in yearly claims to <strong>330,000</strong>) and wage growth (weekly pay from <strong>$1,090 to $1,165</strong>, +6.88%) lift projected SDI outlays from <strong>$15.892B to $17.527B (+$1.635B)</strong> with no new law.'
       },
       ruler2: {
         title: 'Ruler 2: Mode A 12-Week Level Jump (Expected 35% Case)',
@@ -1184,16 +1190,16 @@ const wave3Modules = [
       subtitle: 'Observed 2025 EDD actuals paired with modeled 2026-to-2030 base and expansion fund paths.',
       caption: 'Table 1 compares California Paid Family Leave and SDI fund paths across base trend, expected, low-bound, and cap scenarios from 2025 to 2030.',
       cornerLabel: 'Time-Series Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Year 2025 inputs (325,055 PFL claims, $1,090 weekly pay, $15.892B SDI payouts, $3.011B fund balance) are observed EDD actuals. Years 2026 to 2030 are Mode A projections calibrated on the EDD May 2026 DI Fund Forecast.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Year 2025 inputs (325,055 PFL claims, $1,090 weekly pay, $15.892B SDI outlays, $3.011B fund balance) are observed EDD actuals. Years 2026 to 2030 are Mode A projections calibrated on the EDD May 2026 DI Fund Forecast.',
       columns: [
-        { tag: 'Projected Base', tagHighlight: false, title: 'Trend With No New Law', subtitle: '8-Wk Base (Post-SB 951)' },
-        { tag: 'Expected Jump', tagHighlight: true, title: 'Expected 12-Wk Plan', subtitle: '35% Take-Up | 12% New Claims' },
-        { tag: 'Low Bound', tagHighlight: false, title: 'Low-Bound 12-Wk Plan', subtitle: '25% Take-Up | 5% New Claims' },
+        { tag: 'Baseline Path', tagHighlight: false, title: 'Trend With No New Law', subtitle: '8-Wk Base (Post-SB 951)' },
+        { tag: 'Expected Case', tagHighlight: true, title: '12-Week Plan (35% Use)', subtitle: '35% Take-Up | 12% New Claims' },
+        { tag: 'Conservative Case', tagHighlight: false, title: '12-Week Plan (25% Use)', subtitle: '25% Take-Up | 5% New Claims' },
         { tag: 'Stress Test', tagHighlight: false, title: 'Full-Use 100% Cap', subtitle: '100% Take-Up | 20% New Claims' }
       ],
       rows: [
         {
-          label: '2025 Onset Fund Balance*<span class="block text-xs font-normal text-slate-500">325,055 claims, $1,090/wk pay, $15.892B SDI payouts</span>',
+          label: '2025 Onset Fund Balance*<span class="block text-xs font-normal text-slate-500">325,055 claims, $1,090/wk pay, $15.892B SDI outlays</span>',
           modeled: true,
           cells: [
             { val: '$2.88B bal (18.1% ratio)' },
@@ -1275,7 +1281,7 @@ const wave3Modules = [
           cells: [
             { val: 'A base slope separates +$1.635B in routine wage and claim growth from any new law.' },
             { val: 'The slope term shows the post-2024 rebuild to 30.4% ($6.37B) that a 2026 snapshot (10.8%) omits.' },
-            { val: 'Separate markers for the 2024 tax-cap repeal and 2025 90% pay tier keep tax and payout shifts distinct.' },
+            { val: 'Separate markers for the 2024 tax-cap repeal and 2025 90% pay tier keep tax and benefit shifts distinct.' },
             { val: 'Modeling the post-2024 uncapped tax base on its own slope captures full reserve rebuilding speed.' }
           ]
         },
@@ -1311,7 +1317,7 @@ const wave3Modules = [
       p2: 'Splitting the base slope (+1.52% claim growth, +6.88% weekly wage growth, and the post-2024 uncapped tax slope that lifts base reserves from 18.1% to 50.7%) from the modeled 12-week jump (+39,600 claims, +$623.7M/yr outlay) clarifies the budget choice. A 1-year view in 2026 shows the reserve ratio dipping to 10.8% ($1.96B balance). Yet the post-shift slope through 2030 shows the uncapped wage base rebuilding the fund to $6.37B (30.4%, above EDD\'s 25% floor) without going negative.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Projections on Observed EDD Baselines):</strong> Year 2025 figures (325,055 PFL claims, $1,090.00 weekly pay, $15.892B SDI payouts, $3.011B fund balance, 18.9% reserve ratio) are observed EDD actuals. Years 2026 to 2030 base and expansion series, including the level-and-slope split, are Mode A projections from /public/tools/pfl-simulator/data/pfl_model_data.json anchored to the EDD May 2026 DI Fund Forecast.',
+      '<strong>Mode Classification (Mode A Projections on Observed EDD Baselines):</strong> Year 2025 figures (325,055 PFL claims, $1,090.00 weekly pay, $15.892B SDI outlays, $3.011B fund balance, 18.9% reserve ratio) are observed EDD actuals. Years 2026 to 2030 base and expansion series, including the level-and-slope split, are Mode A projections from /public/tools/pfl-simulator/data/pfl_model_data.json anchored to the EDD May 2026 DI Fund Forecast.',
       '<strong>Primary Data Sources:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD Disability Insurance (DI) Fund Forecast (May 2026 Report)</a>, <a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD Paid Family Leave Monthly Data Series (July 2004 to Feb 2026)</a>, <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Unemployment Insurance Code §§ 984 &amp; 3300 (SB 951)</a>, and <a href="https://lao.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Legislative Analyst\'s Office (LAO) Fiscal Outlooks</a>.'
     ],
     faqs: [
@@ -1321,7 +1327,7 @@ const wave3Modules = [
       },
       {
         question: 'Why does the California SDI reserve ratio rise from 18.1% in 2025 to 50.7% by 2030 in the base forecast?',
-        answer: 'SB 951 removed the wage tax cap on SDI employee taxes starting January 1, 2024 (taxing all wages across a $1,371.5B base). Weekly benefit payouts stay capped ($1,765/wk in 2026), so base tax revenue grows faster than base payouts.'
+        answer: 'SB 951 removed the wage tax cap on SDI employee taxes starting January 1, 2024 (taxing all wages across a $1,371.5B base). Weekly benefit payments stay capped ($1,765/wk in 2026), so base tax revenue grows faster than base benefit outlays.'
       },
       {
         question: 'What happens to the SDI fund reserve under the Expected 12-week PFL plan?',
@@ -1345,34 +1351,35 @@ const wave3Modules = [
         visibleLabel: 'Public Health Spending Regime Analysis',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'From 1992 to 2019 across 3,142 US counties, each 10 dollars per capita reduces Years of Potential Life Lost by 0.78 per 100,000 residents, versus +1.52 from 2020 to 2022.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
       }
     ],
     tier: 'public',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; Cash Flow &amp; Reserve Floors (Mode A Fiscal Scenarios)',
     pageTitle: 'Budget Impact vs. ROI in Public Health | CAPHE',
-    metaDescription: 'Understand why high-ROI California health investments (125:1 LHA return, PFL expansion, Medi-Cal navigation) still require annual cash-flow analysis.',
+    metaDescription: 'Understand why high-ROI California health investments (32:1 to 59:1 LHA return, PFL expansion, Medi-Cal navigation) still require annual cash-flow analysis.',
     h1: 'Multi-Year Return Models Require Year-One Cash-Flow and Reserve Schedules for Budget Approval',
     subtitle: 'Pairing modeled long-run returns with yearly cash outlays, reserve floors, and budget line rules.',
     endnotes: [
-      '<strong>Multi-Year Returns Across State Programs:</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>. It shows -9.16 deaths per 100K per $10 spent. Cost per life saved is $109,000. The return ratio is 125:1 at a $13.6M life value. A 42% Year 1 share gives a 52:1 return. Santa Clara renewal aid costs $35 to $140 per person-year.',
+      '<strong>Multi-Year Returns Across State Programs:</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>. It shows -2.38 deaths per 100K per $10 spent in Year 1 ($420,168 per life saved, 32:1 return at $13.6M VSL) and -4.32 over 13-year cumulative horizons ($231,481 per life saved, 59:1 return, or 55% in Year 1 vs. full cumulative maturity). County Medi-Cal renewal aid costs $35 to $140 per person-year.',
       '<strong>State SDI and PFL Cash Flow (2025-2030):</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a>. A $422.0M net worker gain after 30% firm offset needs $623.7M in 2026 cash. This drops the reserve to 10.8% ($1.96B) vs. the 25.0% ($4.38B) goal. Reserves rebuild to 30.4% ($6.37B) by 2030.',
       '<strong>FY 2026-27 Medi-Cal Budget Lines:</strong> <a href="https://ebudget.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance Enacted Budget Summary</a>. It sets $709M total ($196.8M General Fund) for county staff within $3.3B for county admin. Meanwhile, $20M AB 102 and $59.8M DHCS outreach grants ended June 30, 2025.'
     ],
-    answerHtml: 'Hiring full-time Community Health Workers or expanding leave benefits creates a Year 1 cash gap when pay bills arrive before multi-year care savings. In California, county prevention spending yields a <strong>125:1 multi-year return</strong> and a modeled <strong>52:1 return in Year 1</strong>, while Paid Family Leave expansion brings a projected <strong>$422.0M per year in net worker pay</strong> [1]. Long-run return ratios omit single-year cash rules because leave expansion needs <strong>$623.7M in projected 2026 cash</strong>, dipping the state reserve to <strong>10.8% ($1.96B)</strong> against a <strong>25.0% ($4.38B)</strong> goal [2]. Pairing multi-year return models with a 6-year cash schedule (+0.045 rate points) gives budget staff a full funding plan [3].',
+    policySettingHtml: 'Public health prevention and paid leave expansions generate strong multi-year health and worker gains across California. Yet county budget offices and state fund actuaries balance cash ledgers one fiscal year at a time. Upfront payroll outlays and reserve floor rules arrive in Year 1 before multi-year savings mature.',
+    answerHtml: 'Hiring full-time Community Health Workers or expanding leave benefits creates a Year 1 cash gap even though California county prevention yields a <strong>59:1 multi-year cumulative return</strong> (<strong>32:1 in Year 1</strong>) and Paid Family Leave expansion brings a projected <strong>$422.0M per year in net worker pay</strong> [1]. Long-run return ratios omit single-year cash rules because leave expansion needs <strong>$623.7M in projected 2026 cash</strong>, dipping the state reserve to <strong>10.8% ($1.96B)</strong> against a <strong>25.0% ($4.38B)</strong> goal [2]. Pairing multi-year return models with a 6-year cash schedule (+0.045 rate points) gives budget staff a full funding plan [3].',
     block2: {
       title: 'Two Fiscal Rulers: Long-Run Value vs. Year-1 Cash &amp; Reserve Rules',
-      contextTag: 'Mode A Cash-Flow, Reserve &amp; Lag Scenarios on FY 2026-27 Budgets',
+      contextTag: 'Mode A Cash-Flow, Reserve &amp; Exposure-Horizon Scenarios on FY 2026-27 Budgets',
       ariaLabel: 'Comparison of multi-year benefit-cost ratios versus annual cash-flow and reserve-floor rules',
       ruler1: {
         title: 'Ruler 1: Multi-Year Return (Social Value)',
-        stat: '125:1 LHA | $35-$140 / PY',
-        ariaLabel: 'County public health spending yields 125:1 return and Medi-Cal renewal aid costs $35 to $140 per retained person-year',
+        stat: '59:1 Cumulative (32:1 Yr 1) | $35-$140 / PY',
+        ariaLabel: 'County public health spending yields 59:1 cumulative return (32:1 annual) and Medi-Cal renewal aid costs $35 to $140 per retained person-year',
         segments: [
-          { cls: 'seg-rest', width: 85, label: 'Social Value & Avoided Care (125:1 BCR / $422M Net PFL)' },
+          { cls: 'seg-rest', width: 85, label: 'Social Value & Avoided Care (59:1 Cumulative / 32:1 Yr 1 / $422M Net PFL)' },
           { cls: 'seg-primary', width: 15, label: 'Direct Cost' }
         ],
-        desc: 'On a multi-year ruler, public health spending saves lives at <strong>$109,000 per life</strong> (<strong>125:1 return</strong> at the <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS $13.6M value</a>). Renewal aid keeps care at <strong>$35 to $140 per person-year</strong>. PFL expansion adds <strong>$422.0M per year</strong> in net worker pay.'
+        desc: 'On a multi-year ruler, public health spending saves lives at <strong>$420,168 per life annually (32:1 return)</strong> and <strong>$231,481 per life over 13-year cumulative horizons (59:1 return</strong> at the <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS $13.6M value</a>). Renewal aid keeps care at <strong>$35 to $140 per person-year</strong>. PFL expansion adds <strong>$422.0M per year</strong> in net worker pay.'
       },
       ruler2: {
         title: 'Ruler 2: Year-1 Cash Outlay &amp; Reserve Floor',
@@ -1386,70 +1393,76 @@ const wave3Modules = [
       }
     },
     table1: {
-      title: 'Table 1. Long-Run Return (Ruler 1) vs. Yearly Cash &amp; Reserve Rules (Ruler 2)',
-      subtitle: 'Comparing four state fiscal cases across separate budget ledgers that do not add together.',
+      title: 'Table 1. Multi-Year Net Return vs. Yearly Cash &amp; Reserve Rules Across 4 Programs',
+      subtitle: 'Comparing four state fiscal cases across separate analytic perspectives and budget ledgers that do not add together.',
       caption: 'Comparison of four state health programs by return ratio, yearly cash cost, reserve floor, and budget line rules.',
       cornerLabel: 'Fiscal Metric',
       columns: [
-        { tag: 'State SDI Fund: Base', tagHighlight: true, title: 'PFL 12-Wk Plan (35%)', subtitle: '369,600 Claims | 30% Offset' },
-        { tag: 'State SDI Fund: Ceiling', tagHighlight: false, title: 'PFL 12-Wk Cap (100%)', subtitle: '396,000 Claims | 0% Offset' },
-        { tag: 'Santa Clara Renewal Aid', tagHighlight: true, title: 'SCC Medi-Cal Aid Tool', subtitle: '120,239 Adult Enrollees' },
-        { tag: '57-County LHA Panel', tagHighlight: false, title: 'County LHA Spending', subtitle: '+$10 / Person ($19.36M SCC)' }
+        { tag: 'State SDI Fund: Base', tagHighlight: true, title: 'PFL 12-Wk Plan (35%)', subtitle: 'State Insurance Fund' },
+        { tag: 'State SDI Fund: Ceiling', tagHighlight: false, title: 'PFL 12-Wk Cap (100%)', subtitle: 'State Insurance Fund' },
+        { tag: 'County Renewal Aid', tagHighlight: true, title: 'County Medi-Cal Navigation', subtitle: 'County Medicaid Agency' },
+        { tag: '57-County Panel', tagHighlight: false, title: 'County Public Health Spending', subtitle: 'Public Health &amp; Societal' }
       ],
       rows: [
         {
-          label: 'Budget Ledger<span class="block text-xs font-normal text-slate-500">Whose fund pays the bill</span>',
+          label: 'Assumed Scope &amp; Budget Ledger (Model Input)<span class="block text-xs font-normal text-slate-500">Whose fund pays the bill</span>',
+          modeled: false,
           cells: [
-            { val: 'State SDI reserve fund (EDD); 2025 actuals and 2026-2030 projections at 35% use' },
-            { val: 'State SDI reserve fund (EDD); same cash model at a 100% use ceiling' },
-            { val: 'Santa Clara Medi-Cal admin; renewal aid model on 120,239 adults' },
-            { val: '57-county LHA panel (-9.16/100K, 5-yr lag) in SCC at $10 per person' }
+            { val: 'State SDI reserve fund (EDD); 369,600 claims at 35% use and 30% offset' },
+            { val: 'State SDI reserve fund (EDD); 396,000 claims at a 100% use ceiling' },
+            { val: 'County Medi-Cal admin; assumed renewal tool on a 120,239-adult county cohort' },
+            { val: '57-county LHA panel (-2.38/100K yr, -4.32 cumulative) at +$10 per resident' }
           ]
         },
         {
-          label: 'Long-Run Value (Ruler 1)<span class="block text-xs font-normal text-slate-500">Net social gain or cost per unit</span>',
+          label: 'Multi-Year Net Return*<span class="block text-xs font-normal text-slate-500">Net social gain or cost per unit</span>',
+          modeled: true,
           cells: [
             { val: '$422.0M/yr net (+$19.7M low-wage)' },
             { val: '$1,845.4M/yr net worker gain' },
             { val: '$35 to $140 / kept person-yr' },
-            { val: '125:1 BCR ($109,000 / life)' }
+            { val: '59:1 Cumulative (32:1 Annual)' }
           ]
         },
         {
-          label: 'Year-1 Cash Outlay (Ruler 2)<span class="block text-xs font-normal text-slate-500">Upfront cash needed in Year 1</span>',
+          label: 'Assumed Year-1 Cash Outlay<span class="block text-xs font-normal text-slate-500">Upfront cash needed in Year 1</span>',
+          modeled: false,
           cells: [
             { val: '$623.7M / yr in 2026' },
             { val: '$1,910.0M / yr in 2026' },
             { val: '$150K to $600K / yr operating' },
-            { val: '$19.36M / yr (SCC $10/person)' }
+            { val: '$395.4M / yr ($10/resident state)' }
           ]
         },
         {
-          label: 'Multi-Year Cash Total<span class="block text-xs font-normal text-slate-500">4-to-6 year total cash bill</span>',
+          label: 'Multi-Year Cash Total*<span class="block text-xs font-normal text-slate-500">4-to-6 year total cash bill</span>',
+          modeled: true,
           cells: [
             { val: '$4.013B (6-yr 2025-2030)' },
             { val: '$12.286B (6-yr 2025-2030)' },
             { val: '$0.6M to $2.4M (4-yr 2027-30)' },
-            { val: '$96.8M (5-yr SCC total)' }
+            { val: '$1.98B (5-yr statewide total)' }
           ]
         },
         {
-          label: 'Year-1 Reserve or Lag Limit<span class="block text-xs font-normal text-slate-500">Short-run cash vs. rule floor</span>',
+          label: 'Year-1 Reserve or Lag Limit*<span class="block text-xs font-normal text-slate-500">Short-run cash vs. rule floor</span>',
+          modeled: true,
           highlight: true,
           cells: [
             { val: '10.8% Reserve ($1.96B)', barWidth: 11, barColor: '#F59E0B', textColor: 'text-amber-800' },
             { val: '-3.0% Deficit (-$0.58B)', barWidth: 3, barColor: '#E11D48', textColor: 'text-rose-800' },
             { val: '$0 Enacted CBO Line', textColor: 'text-rose-800' },
-            { val: '42% Yr 1 Lag (52:1)', barWidth: 42, barColor: '#0041A5', textColor: 'text-[#003080]' }
+            { val: '55% Yr 1 Share (32:1)', barWidth: 55, barColor: '#0041A5', textColor: 'text-[#003080]' }
           ]
         },
         {
-          label: 'Year 3-5 Solvency Path<span class="block text-xs font-normal text-slate-500">Reserve rebound or lag share</span>',
+          label: 'Multi-Year Solvency &amp; Horizon Path*<span class="block text-xs font-normal text-slate-500">Reserve rebound or cumulative build</span>',
+          modeled: true,
           cells: [
             { val: '30.4% ($6.37B) by 2030' },
             { val: '-7.6% (-$1.70B) in 2030' },
             { val: '11,804 py (tool) / 54,976 (both)' },
-            { val: '82% Yr 3 (102:1) | 100% Yr 5' }
+            { val: '100% 13-Yr (59:1) | 16-Yr (80:1)' }
           ]
         },
         {
@@ -1470,12 +1483,21 @@ const wave3Modules = [
       cornerLabel: 'Decision Choice',
       rows: [
         {
+          label: 'Where the Return Shows Up',
+          cells: [
+            { val: 'Low-wage families gain net leave pay while the state SDI fund pays gross claims.' },
+            { val: 'Workers receive full-use leave pay while the state SDI reserve absorbs the cash draw.' },
+            { val: 'Managed care plans keep monthly member capitation while counties fund admin staff.' },
+            { val: 'Communities gain saved lives over 13 years while counties pay Year 1 staff wages.' }
+          ]
+        },
+        {
           label: 'Why High-Value Plans Hit Budget Limits',
           cells: [
             { val: 'The 2026 reserve dips to 10.8% ($1.96B), below the 25.0% ($4.38B) goal.' },
             { val: 'A 100% claim surge pushes the fund into a -$0.58B Year 1 deficit.' },
             { val: 'State funds ($709M) pay county staff while $20M AB 102 grants ended.' },
-            { val: 'Counties pay full Year 1 wages while health gains build over 5 years.' }
+            { val: 'Counties pay full Year 1 wages while chronic-disease prevention compounds over 4 to 16 years.' }
           ]
         },
         {
@@ -1484,16 +1506,16 @@ const wave3Modules = [
             { val: 'Net worker gains ($422.0M) do not cut the $623.7M gross cash bill.' },
             { val: 'High worker gains ($1,845.4M) still drain cash if tax rates stay at 1.30%.' },
             { val: 'Low unit costs ($35-$140) still need a legal line item for outside tools.' },
-            { val: 'Valuing lives at $13.6M (125:1) does not put cash into county funds.' }
+            { val: 'Valuing lives at $13.6M (32:1 annual, 59:1 cumulative) does not put cash into county funds.' }
           ]
         },
         {
           label: 'Funding Tradeoff',
           cells: [
-            { val: 'A +0.045 point rate lift ($45.48 per $100K pay) covers the $4.013B bill.' },
+            { val: 'A +0.045 point rate lift (~$45 per $100K pay) covers the ~$4.0B 6-yr bill.' },
             { val: 'Pricing taxes for a 100% cap (+0.139 points) overcharges workers at 35% use.' },
-            { val: 'State data matching keeps 14,862 person-years per year compared to 2,951 for local tools.' },
-            { val: 'Cutting county health funds loses a 52:1 Year 1 and 125:1 5-year return.' }
+            { val: 'State data matching keeps ~14,900 person-years per year vs. ~3,000 for local tools.' },
+            { val: 'Cutting county health funds loses a 32:1 Year 1 and 59:1 13-year cumulative return.' }
           ]
         },
         {
@@ -1503,23 +1525,23 @@ const wave3Modules = [
             { headline: 'Pair Leave Expansion with +0.045 Rate Lift', detail: 'Pair the 6-year reserve table with a +0.045 point (1.345%) rate lift.' },
             { headline: 'Use Reserve Floor Rate Triggers', detail: 'Trigger a 0.03-0.05 point rate lift only if reserves dip below 12%.' },
             { headline: 'Partner with Managed Care Plans', detail: 'Fund local renewal aid through health plans that keep monthly member fees.' },
-            { headline: 'Lock In 3-to-5-Year County Budgets', detail: 'Use the Year 3 lag share (82%, 102:1 return) to set multi-year budgets.' }
+            { headline: 'Lock In Multi-Year County Budgets', detail: 'Pair the Year 1 return (32:1, $420,168/life) with 13-year cumulative returns (59:1, $231,481/life).' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Enacted FY 2026-27 Medi-Cal Budget Lines &amp; 5-Year Lag Schedule',
+      notesTitle: 'Table 2 Notes: Enacted FY 2026-27 Medi-Cal Budget Lines &amp; Exposure-Horizon Schedule',
       notesBullets: [
         '<strong>Enacted State Medi-Cal Admin Figures (Mode B):</strong> The FY 2026-27 state budget sets <strong>$709M total ($196.8M General Fund)</strong> for county Medi-Cal staff within a <strong>$3.3B</strong> county admin pool. Meanwhile, outside outreach grants (<strong>$20M AB 102</strong> and <strong>$59.8M DHCS</strong>) ended on June 30, 2025.',
-        '<strong>5-Year Koyck Lag Schedule (Mode A Schedule on Mode B -9.16 Slope):</strong> We apply a 5-year Koyck lag ([0.42, 0.67, 0.82, 0.91, 1.00]; scripts/build_value_of_public_health_deck.py:L304, public/tools/lha-calculator/methodology.html:L221-358) to the Mode B -9.16 5-year slope (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">Cholette, Patton &amp; Zarate-Gomez, 2026</a>). This gives <strong>42% in Year 1</strong> (-3.85 deaths per 100K, 52:1 return), <strong>67% in Year 2</strong> (-6.14), <strong>82% in Year 3</strong> (-7.51, 102:1 return), <strong>91% in Year 4</strong> (-8.34), and <strong>100% in Year 5</strong> (-9.16, 125:1 return).'
+        '<strong>Annual vs. Multi-Year Exposure Horizons (Mode B):</strong> In the 57-county LHA panel (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">Cholette, Patton &amp; Zarate-Gomez, 2026</a>), the annual pre-pandemic TWFE OLS slope is <strong>-2.38 deaths per 100,000 per $10/capita</strong> ($420,168 per life saved, <strong>32.4:1 [~32:1] return</strong> at $13.6M VSL), which represents <strong>55.1%</strong> of the 13-year cumulative long-difference effect of <strong>-4.32 deaths per 100,000</strong> ($231,481 per life saved, <strong>58.8:1 [~59:1] return</strong>) and builds further to <strong>-5.91</strong> over 16 years ($169,205 per life, <strong>80.4:1 [~80:1] return</strong>).'
       ]
     },
     synthesis: {
       title: 'Why Analysts Pair Return Ratios with a Multi-Year Cash Table',
-      p1: 'A frequent gap between long-run value models and yearly county budgets happens when an analyst shows a high social return (such as 125:1 for county health spending or $422M in net worker pay for Paid Family Leave) without a Year 1 cash and reserve schedule. Budget staff and fund actuaries do not doubt the social value. They pause because they must balance a 1-year cash ledger, hold reserve floors (such as the 25% EDD goal), and follow strict line-item rules.',
+      p1: 'A frequent gap between long-run value models and yearly county budgets happens when an analyst shows a high social return (such as 32:1 annually and 59:1 over cumulative horizons for county health spending, or $422M in net worker pay for Paid Family Leave) without a Year 1 cash and reserve schedule. Budget staff and fund actuaries do not doubt the social value. They pause because they must balance a 1-year cash ledger, hold reserve floors (such as the 25% EDD goal), and follow strict line-item rules.',
       p2: 'Showing both rulers side by side turns a budget dispute into a clear funding plan. Analysts can show how much gross cash is needed in Year 1 ($623.7M for PFL, or $150K-$600K for local renewal aid), when reserves dip (2026 at 10.8%) and rebuild (2030 at 30.4%), and which group holds the cash savings. Leaders can then set the exact payroll rate lift (+0.045 points) or plan transfer needed to pay the bill.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode B Enacted Budgets &amp; Slopes + Mode A Cash-Flow &amp; Lag Models):</strong> Enacted FY 2026-27 state Medi-Cal budget lines ($709M total / $196.8M GF, $3.3B county admin, ended $20M AB 102 grants), 2025 SDI actuals ($3.011B balance, 18.9% ratio), and the 5-year LHA slope (-9.16, -4.56 base split) are Mode B facts. Multi-year 2026-2030 SDI reserve paths, county renewal tool budgets ($150K-$600K per year), and the 5-year Koyck lag weights (0.42, 0.67, 0.82, 0.91, 1.00) are Mode A projections.',
+      '<strong>Mode Classification (Mode B Enacted Budgets &amp; Slopes + Mode A Cash-Flow Models):</strong> Enacted FY 2026-27 state Medi-Cal budget lines ($709M total / $196.8M GF, $3.3B county admin, ended $20M AB 102 grants), 2025 SDI actuals ($3.011B balance, 18.9% ratio), and the LHA slopes (-2.38 annual TWFE OLS, -4.32 13-year cumulative OLS, -5.91 16-year cumulative OLS) are Mode B facts. Multi-year 2026-2030 SDI reserve paths and county renewal tool budgets ($150K-$600K per year) are Mode A projections.',
       '<strong>Primary Data Sources:</strong> See the <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> and the <a href="https://ebudget.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance Enacted Budget Summary</a>. We also use <a href="https://www.dhcs.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS Medi-Cal Local Assistance Estimates</a> and <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS ASPE Guidelines for Regulatory Impact Analysis (2025 VSL)</a>.'
     ],
     faqs: [
@@ -1532,8 +1554,8 @@ const wave3Modules = [
         answer: 'A 30% private firm offset trims the net new pay gain for workers ($422.0M vs. $602.8M gross claims) when firms reduce their own top-off pay. However, the state SDI fund must still pay the full $602.8M in claims plus $21.1M in admin ($623.7M total).'
       },
       {
-        question: 'How fast do the death reductions from county public health spending arrive?',
-        answer: 'Under the 5-year Koyck lag in the 57-county CAPHE LHA model, 42% of the drop (-3.85 deaths per 100,000, a 52:1 return) arrives in Year 1. It rises to 67% in Year 2, 82% in Year 3 (102:1 return), 91% in Year 4, and 100% (-9.16 deaths per 100,000, 125:1 return) in Year 5.'
+        question: 'How do annual and multi-year cumulative returns compare for county public health spending?',
+        answer: 'In the 57-county CAPHE LHA model, the Year 1 annual baseline averts 2.38 deaths per 100,000 per $10/capita ($420,168 per life saved, 32:1 return at $13.6M VSL), which is 55% of the 13-year cumulative reduction of 4.32 deaths per 100,000 ($231,481 per life saved, 59:1 return) and builds to 5.91 deaths per 100,000 over 16 years (80:1 return).'
       }
     ],
     related: [
@@ -1553,7 +1575,7 @@ const wave3Modules = [
         visibleLabel: 'Statewide CHW Reimbursement Analysis',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
       }
     ],
     tier: 'community',
@@ -1563,70 +1585,74 @@ const wave3Modules = [
     h1: 'Standardized Healthy Life-Years and Federal Life Valuations Place Modeled Programs on Comparable Ledgers',
     subtitle: 'Putting modeled chronic care, mental health aid, and saved lives into shared budget units.',
     endnotes: [
-      '<strong>Healthy Life-Year Gains (QALYs):</strong> <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Second Panel on Cost-Effectiveness in Health and Medicine</a>. We use a 3% yearly discount rate across 750 Santa Clara clients under <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a>. A weighted health lift of +0.0275 per year over 2 years gives 0.0534 QALYs per client. That totals 40.04 QALYs per year, worth $4.00M at $100K per QALY.',
+      '<strong>Healthy Life-Year Gains (QALYs):</strong> <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Second Panel on Cost-Effectiveness in Health and Medicine</a>. We use a 3% yearly discount rate across an assumed 750-client California county cohort under <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a>. A weighted health lift of +0.0275 per year over 2 years gives 0.0534 QALYs per client. That totals 40.04 QALYs per year, worth $4.00M at $100K per QALY.',
       '<strong>Caseload Share Split (Mode A Scenario Assumptions):</strong> Each client gets one main weight in this illustrative cohort scenario: 50% chronic care (+0.025/yr = 18.21 QALYs/yr), 30% mental health (+0.040/yr = 17.49 QALYs/yr), and 20% social needs (+0.020/yr = 4.34 QALYs/yr).',
-      '<strong>Federal Life Value Tiers (HHS 2025 VSL):</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS ASPE 2025 VSL Schedule</a>. Values are $6.3M Low (58:1 return), $13.6M Central (125:1 return), and $20.7M High (190:1 return) at $109,000 per life saved.'
+      '<strong>Federal Life Value Tiers (HHS 2025 VSL):</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS ASPE 2025 VSL Schedule</a>. Values are $6.3M Low (15:1 annual / 27:1 cumulative return), $13.6M Central (32:1 annual / 59:1 cumulative return), and $20.7M High (49:1 annual / 89:1 cumulative return) at $420,168 annual and $231,481 cumulative per life saved.'
     ],
-    answerHtml: 'Comparing county funding plans across blood sugar clinics, mental health aid, and disease control on separate chart scores leaves budget staff without a shared unit to rank health gains. Putting outcomes into common units shows that a modeled <strong>750-client Santa Clara Community Health Worker cohort</strong> produces <strong>40.04 healthy life-years per year ($4.00M at $100K per year)</strong>, while county prevention saves lives at <strong>$109,000 each (125:1 return at $13.6M per life)</strong> [1]. Relying only on lab tests undervalues mental health and social aid, which have no blood test yet bring <strong>54.5% (21.83 of 40.04 healthy years)</strong> of modeled gains [2]. Keeping healthy years and saved-life values on separate ledgers avoids double-counting [3].',
+    policySettingHtml: 'County budget teams compare funding requests from diabetes clinics, mental health teams, and community health worker programs. Each program tracks different chart measures, from blood sugar lab scores to hospital stays and prevented deaths. Translating those outcomes into shared health and life-value units lets leaders compare programs on parallel ledgers.',
+    answerHtml: 'Putting county program outcomes into common units shows that an assumed <strong>750-client California Community Health Worker cohort</strong> produces <strong>~40 healthy life-years per year (~$4.0M at $100K per QALY)</strong>, while county prevention saves lives at <strong>~$420,000 each annually (32:1 return)</strong> and <strong>~$231,000 each over 13-year cumulative horizons (59:1 return at $13.6M per life)</strong> [1]. Relying only on lab tests undervalues mental health and social aid, which have no blood test yet bring <strong>~55% (~22 of 40 healthy life-years)</strong> of modeled gains [2]. Keeping healthy years and saved-life values on separate ledgers avoids double-counting [3].',
     block2: {
       title: 'Two Common-Unit Rulers: Healthy Life-Years (QALYs) vs. Saved-Life Value (HHS 2025 VSL)',
-      contextTag: 'Mode A: Two Parallel Scales, Cohort QALYs (N = 750) and Population VSL (1.94M), Never Summed',
+      contextTag: 'Mode A: Two Parallel Scales, Assumed Cohort QALYs (N = 750) and 57-County Population VSL (39.5M), Never Summed',
       ariaLabel: 'Comparison of healthy life-year gains per client versus saved-life values under HHS 2025 VSL tiers',
       ruler1: {
         title: 'Ruler 1: Daily Health Ruler (Discounted QALYs)',
-        stat: '0.0534 QALYs / Client ($4.0M Cohort)',
-        ariaLabel: 'Weighted health gain of +0.0275 per year over 2 years discounted at 3% equals 0.0534 QALYs per client or 40.04 QALYs per year across 750 clients',
+        stat: '0.0534 QALYs / Client (~$4.0M Cohort)',
+        ariaLabel: 'Weighted health gain of +0.0275 per year over 2 years discounted at 3% equals 0.0534 QALYs per client or ~40 QALYs per year across an assumed 750-client cohort',
         segments: [
           { cls: 'seg-primary', width: 45, label: 'Chronic Care 18.21 QALYs (45.5%)' },
           { cls: 'seg-rest', width: 44, label: 'Mental Health 17.49 QALYs (43.7%)' },
           { cls: 'seg-food', width: 11, label: 'SDOH 4.34' }
         ],
-        desc: 'From a <strong>0.74</strong> base health score (0 = dead, 1 = full health), weighted yearly gains (50% chronic at <strong>+0.025</strong>, 30% mental health at <strong>+0.040</strong>, 20% social needs at <strong>+0.020</strong> = <strong>+0.0275/yr</strong>) over 2 years (3% discount) yield <strong>40.04 QALYs/yr</strong> (worth <strong>$4.00M</strong> at $100K/QALY).'
+        desc: 'From a <strong>0.74</strong> base health score (0 = dead, 1 = full health), assumed yearly gains (50% chronic at <strong>+0.025</strong>, 30% mental health at <strong>+0.040</strong>, 20% social needs at <strong>+0.020</strong> = <strong>+0.0275/yr</strong>) over 2 years (3% discount) yield <strong>~40 QALYs/yr</strong> (worth <strong>~$4.0M</strong> at $100K/QALY).'
       },
       ruler2: {
         title: 'Ruler 2: Saved-Life Value Ruler (HHS 2025 VSL Tiers)',
-        stat: '$13.6M Central VSL (125:1 BCR)',
-        ariaLabel: 'HHS 2025 central VSL of $13.6M per life saved yields a 125:1 benefit-cost ratio at $109,000 cost per life saved',
+        stat: '$13.6M Central VSL (32:1 Yr / 59:1 Cumul.)',
+        ariaLabel: 'HHS 2025 central VSL of $13.6M per life saved yields a 32:1 annual and 59:1 cumulative benefit-cost ratio',
         segments: [
-          { cls: 'seg-gross', width: 30, label: 'Low $6.3M (58:1)' },
-          { cls: 'seg-primary', width: 36, label: 'Central $13.6M (125:1)' },
-          { cls: 'seg-rest', width: 34, label: 'High $20.7M (190:1)' }
+          { cls: 'seg-gross', width: 30, label: 'Low $6.3M (15:1 / 27:1)' },
+          { cls: 'seg-primary', width: 36, label: 'Central $13.6M (32:1 / 59:1)' },
+          { cls: 'seg-rest', width: 34, label: 'High $20.7M (49:1 / 89:1)' }
         ],
-        desc: 'For county deaths (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">Cholette et al., 2026</a>: <strong>-9.16 deaths/100K per $10/person</strong> = <strong>$109,000/life saved</strong>), <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS 2025 VSL</a> tiers value each saved life at <strong>$6.3M (58:1)</strong>, <strong>$13.6M (125:1)</strong>, or <strong>$20.7M (190:1)</strong>.'
+        desc: 'For county deaths (<a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">Cholette et al., 2026</a>: <strong>-2.38 annual / -4.32 cumulative deaths/100K per $10/person</strong> = <strong>~$420,000 / ~$231,000 per life saved</strong>), <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS 2025 VSL</a> tiers value each saved life at <strong>$6.3M (15:1 / 27:1)</strong>, <strong>$13.6M (32:1 / 59:1)</strong>, or <strong>$20.7M (49:1 / 89:1)</strong>.'
       }
     },
     table1: {
       title: 'Table 1. Turning Clinic &amp; Public Health Scores into Shared Budget Units',
-      subtitle: 'Mapping four county health streams from clinic chart scores into parallel QALY and VSL units.',
-      caption: 'Comparison of four health streams from natural clinic scores into health weights, QALYs, VSL dollars, and return ratios.',
+      subtitle: 'Mapping four health streams across analytic perspectives from clinic chart scores into parallel QALY and federal life-value (Value of a Statistical Life, VSL) units.',
+      caption: 'Comparison of four health streams from natural clinic scores into health weights, QALYs, federal life-value dollars, and return ratios.',
       cornerLabel: 'Valuation Step',
       columns: [
-        { tag: 'Stream 1: Care (50%)', tagHighlight: false, title: 'Chronic Care Control', subtitle: '375 of 750 CHW Clients / Yr' },
-        { tag: 'Stream 2: Care (50%)', tagHighlight: true, title: 'Mental &amp; Social Aid', subtitle: '225 MH + 150 SDOH Clients / Yr' },
-        { tag: 'Stream 3: Full Cohort', tagHighlight: true, title: 'Full 750-Client Panel', subtitle: 'Health Lift + Bed Offsets' },
-        { tag: 'Stream 4: Deaths (LHA)', tagHighlight: false, title: 'County Death Drop', subtitle: '1.94M Santa Clara Pop ($10/cap)' }
+        { tag: 'Stream 1: Care (50%)', tagHighlight: false, title: 'Chronic Care Control', subtitle: 'Healthcare &amp; Plan' },
+        { tag: 'Stream 2: Care (50%)', tagHighlight: true, title: 'Mental &amp; Social Aid', subtitle: 'Healthcare &amp; Plan' },
+        { tag: 'Stream 3: Full Cohort', tagHighlight: true, title: 'Full 750-Client Panel', subtitle: 'Healthcare &amp; Societal' },
+        { tag: 'Stream 4: Prevention', tagHighlight: false, title: 'Statewide Death Drop', subtitle: 'Public Health &amp; Societal' }
       ],
       rows: [
         {
-          label: 'Valuation Rule &amp; Group<span class="block text-xs font-normal text-slate-500">CEA (QALY) and CBA (VSL) stay on separate ledgers</span>',
+          label: 'Assumed Cohort Scope &amp; Valuation Rule (Model Input)<span class="block text-xs font-normal text-slate-500">Healthy years (QALYs) and saved-life values (VSL) stay on separate ledgers</span>',
+          modeled: false,
           cells: [
-            { val: 'CEA: QALYs at $50K/$100K/$150K; 375 chronic care clients/yr' },
-            { val: 'CEA: QALYs at $50K/$100K/$150K; 225 MH + 150 SDOH = 375 clients/yr' },
-            { val: 'CEA: QALYs at $50K/$100K/$150K; 750-client CHW panel/yr' },
-            { val: 'CBA: HHS 2025 VSL $6.3M / $13.6M / $20.7M; 1.94M SCC residents' }
+            { val: 'QALYs at $50K/$100K/$150K; assumed 375 chronic care clients/yr' },
+            { val: 'QALYs at $50K/$100K/$150K; assumed 225 mental + 150 social = 375 clients/yr' },
+            { val: 'QALYs at $50K/$100K/$150K; assumed 750-client CHW panel/yr' },
+            { val: 'Federal life value $6.3M / $13.6M / $20.7M; 57-county CA panel ($10/cap)' }
           ]
         },
         {
           label: 'Natural Clinic Score<span class="block text-xs font-normal text-slate-500">Raw program chart metric</span>',
+          modeled: false,
           cells: [
             { val: 'HbA1c %, BP mmHg, +25% screening' },
             { val: 'PHQ-9 mood &amp; Z55-Z65 social codes' },
             { val: '-22% ED, -30% IP, -23% Readmit' },
-            { val: '-9.16 deaths / 100K per $10/cap' }
+            { val: '-2.38 yr / -4.32 cumul. per $10/cap' }
           ]
         },
         {
-          label: 'Base Health Score (0 to 1)<span class="block text-xs font-normal text-slate-500">0.00 = Dead | 0.40 = In Bed | 1.00 = Full Health</span>',
+          label: 'Assumed Base Health Score (0 to 1)<span class="block text-xs font-normal text-slate-500">0.00 = Dead | 0.40 = In Bed | 1.00 = Full Health</span>',
+          modeled: false,
           cells: [
             { val: '0.74 to 0.75 chronic base' },
             { val: '0.74 high-need Medi-Cal base' },
@@ -1635,25 +1661,28 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Yearly Health Lift or Lives Saved<span class="block text-xs font-normal text-slate-500">Per-person gain or county lives saved</span>',
+          label: 'Modeled Yearly Health Gain or Lives Saved*<span class="block text-xs font-normal text-slate-500">Per-person gain or statewide lives saved</span>',
+          modeled: true,
           cells: [
             { val: '+0.025 QALY / yr per client' },
             { val: '+0.040 (MH) &amp; +0.020 (SDOH) / yr' },
             { val: '+0.0275 / yr weighted mean' },
-            { val: '17.74 lives / yr (per $19.36M SCC)' }
+            { val: '941 yr / 1,708 cumul. lives (state $10)' }
           ]
         },
         {
-          label: 'Discounted Multi-Year Unit<span class="block text-xs font-normal text-slate-500">2-yr window at 3% discount (1.9417)</span>',
+          label: 'Discounted Multi-Year Unit*<span class="block text-xs font-normal text-slate-500">2-yr window at 3% discount (1.9417)</span>',
+          modeled: true,
           cells: [
             { val: '0.0486/client (18.21 QALYs/yr)' },
             { val: '0.0777 MH / 0.0389 SDOH (21.83/yr)' },
             { val: '0.0534/client (40.04 QALYs/yr)' },
-            { val: '9.16 lives / 100K ($109K / life)' }
+            { val: '2.38 yr ($420K) | 4.32 cumul ($231K)' }
           ]
         },
         {
-          label: 'Dollar Value<span class="block text-xs font-normal text-slate-500">λ = $100K/QALY vs. HHS $13.6M VSL</span>',
+          label: 'Dollar Value*<span class="block text-xs font-normal text-slate-500">At $100K/QALY vs. HHS $13.6M per life saved</span>',
+          modeled: true,
           highlight: true,
           cells: [
             { val: '$1,821,046 / yr QALY Val.', barWidth: 13, barColor: '#0041A5', textColor: 'text-[#003080]' },
@@ -1663,12 +1692,13 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Value-to-Cost Ratio<span class="block text-xs font-normal text-slate-500">At $1,800/client cost or $109K/life</span>',
+          label: 'Value-to-Cost Ratio*<span class="block text-xs font-normal text-slate-500">At $1,800/client cost or $420K/$231K/life</span>',
+          modeled: true,
           cells: [
-            { val: '2.70 : 1 (at λ = $100K/QALY)' },
-            { val: '3.23 : 1 (at λ = $100K/QALY)' },
+            { val: '2.70 : 1 (at $100K/QALY)' },
+            { val: '3.23 : 1 (at $100K/QALY)' },
             { val: '2.85 : 1 QALY (2.58:1 HCUP)' },
-            { val: '125 : 1 (58:1 Low to 190:1 High)' }
+            { val: '32:1 Yr (15-49) | 59:1 Cumul (27-89)' }
           ]
         }
       ]
@@ -1680,12 +1710,21 @@ const wave3Modules = [
       cornerLabel: 'Decision Choice',
       rows: [
         {
+          label: 'Where the Return Shows Up',
+          cells: [
+            { val: 'Patients gain daily chronic-care health while health plans capture lower clinic bills.' },
+            { val: 'Clients gain mental health and social stability across non-lab care pathways.' },
+            { val: 'Patients gain 40 healthy life-years while hospitals and plans save bed days.' },
+            { val: 'Communities gain prevented premature deaths valued on the federal VSL ledger.' }
+          ]
+        },
+        {
           label: 'Why Shared Units Aid Budget Choices',
           cells: [
             { val: 'Lets clinics compare a 0.5% HbA1c drop against asthma or blood pressure care.' },
             { val: 'Mental health aid (+0.040/yr) brings 43.7% of cohort QALYs despite no lab test.' },
-            { val: 'Places daily health gains (40.04 QALYs/yr) beside avoided hospital bed days.' },
-            { val: 'Turns death drops (-9.16 per 100K) into dollar returns ($125 per $1 spent).' }
+            { val: 'Places daily health gains (~40 QALYs/yr) beside avoided hospital bed days.' },
+            { val: 'Turns death drops (-2.38 yr / -4.32 cumul per 100K) into dollar returns ($32 to $59 per $1).' }
           ]
         },
         {
@@ -1703,33 +1742,33 @@ const wave3Modules = [
             { val: 'Varying the assumed chronic weight from +0.015 to +0.035 shifts QALYs by ±40%.' },
             { val: 'Health gains last 2.0 years in the base run (1.0 to 3.0 years in range checks).' },
             { val: 'Hospital stays cut the health score from 0.75 to 0.40 (-0.35 acute drop).' },
-            { val: 'Federal life values span $6.3M (58:1), $11.2M EPA (103:1), and $20.7M (190:1).' }
+            { val: 'Federal life values span $6.3M (15:1 yr / 27:1 cumul), $13.6M (32:1 / 59:1), and $20.7M (49:1 / 89:1).' }
           ]
         },
         {
           label: 'Recommended Policy Use',
           policyFit: true,
           cells: [
-            { headline: 'Clinic &amp; Health Plan Quality Teams', detail: 'Use chronic QALYs (+0.025/yr, $4,859 value) to support CPT 98960 staffing.' },
+            { headline: 'Clinic &amp; Health Plan Quality Teams', detail: 'Use chronic QALYs (+0.025/yr, ~$4,900 value) to support CPT 98960 staffing.' },
             { headline: 'CalAIM &amp; Mental Health Programs', detail: 'Use mental (+0.040/yr) and social (+0.020/yr) weights for G0019/G0022 aid.' },
-            { headline: 'Hospital &amp; Health System Leaders', detail: 'Show cohort QALY value ($4.00M/yr) beside HCUP bed savings ($2.91M/yr).' },
-            { headline: 'County Boards &amp; State Lawmakers', detail: 'Use HHS VSL tiers ($6.3M to $20.7M, 58:1 to 190:1) to support base budgets.' }
+            { headline: 'Hospital &amp; Health System Leaders', detail: 'Show cohort QALY value (~$4.0M/yr) beside HCUP bed savings (~$2.9M/yr).' },
+            { headline: 'County Boards &amp; State Lawmakers', detail: 'Use HHS VSL tiers ($6.3M to $20.7M, 15:1 to 89:1) to support base budgets.' }
           ]
         }
       ],
       notesTitle: 'Table 2 Notes: Weighted QALY Math &amp; HHS 2025 VSL Tiers',
       notesBullets: [
-        '<strong>Weighted QALY Math (Mode A Scenario Assumptions):</strong> Across 750 clients, the three illustrative cohort streams yield <strong>18.21 QALYs per year</strong> (375 chronic care clients at +0.025/yr), <strong>17.49 QALYs per year</strong> (225 mental health clients at +0.040/yr), and <strong>4.34 QALYs per year</strong> (150 social needs clients at +0.020/yr). Discounted over 2 years at 3.0% per year (factor 1.9417 on a +0.0275 yearly lift), this gives <strong>0.0534 QALYs per client</strong>, or <strong>40.0404252 QALYs per year (40.04 rounded)</strong> across 750 clients.',
-        '<strong>HHS 2025 VSL &amp; LHA Death Math (Mode B):</strong> At -9.16 deaths per 100,000 per $10 spent (-0.9158 per $1), the cost per saved life is $10 / (9.158 / 100,000) = <strong>$109,170 ($109,000 rounded)</strong>. This gives return ratios of <strong>58:1 ($6.3M Low)</strong>, <strong>125:1 ($13.6M Central)</strong>, and <strong>190:1 ($20.7M High)</strong>.'
+        '<strong>Weighted QALY Math (Mode A Scenario Assumptions):</strong> Across an assumed 750-client cohort, the three illustrative cohort streams yield <strong>18.21 QALYs per year</strong> (375 chronic care clients at +0.025/yr), <strong>17.49 QALYs per year</strong> (225 mental health clients at +0.040/yr), and <strong>4.34 QALYs per year</strong> (150 social needs clients at +0.020/yr). Discounted over 2 years at 3.0% per year (factor 1.9417 on a +0.0275 yearly lift), this gives <strong>0.0534 QALYs per client</strong>, or <strong>40.0404252 QALYs per year (40.04 rounded)</strong> across 750 clients.',
+        '<strong>HHS 2025 VSL &amp; LHA Death Math (Mode B):</strong> At -2.38 deaths per 100,000 per $10 spent annually (-0.238 per $1), the cost per saved life is $10 / (2.38 / 100,000) = <strong>$420,168</strong>, giving return ratios of <strong>15.0:1 [15:1] ($6.3M Low)</strong>, <strong>32.4:1 [32:1] ($13.6M Central)</strong>, and <strong>49.3:1 [49:1] ($20.7M High)</strong>. Over the 13-year cumulative horizon (-4.32 per 100,000 per $10), cost per life saved is <strong>$231,481</strong>, yielding <strong>27.2:1 [27:1] Low</strong>, <strong>58.8:1 [59:1] Central</strong>, and <strong>89.4:1 [89:1] High</strong>.'
       ]
     },
     synthesis: {
       title: 'How Shared Units Keep Upstream Care from Being Priced at Zero',
       p1: 'In county health budgets, services with direct billing codes or lab blood tests easily win funding because their outputs are simple to count. Meanwhile, mental health aid, social-needs outreach, and countywide disease tracking face an uphill case. Without a shared unit, a budget office has no clear way to weigh a 20-person depression outreach team against a diabetes clinic or an environmental health unit.',
-      p2: 'Turning daily health gains into QALYs and saved lives into HHS Value of a Statistical Life (VSL) tiers levels the playing field. It shows that mental health and social outreach bring more than half (54.5%, or 21.83 of 40.04 QALYs/yr) of a CHW cohort\'s total quality-of-life gain. At the same time, countywide public health spending saves lives at $109,000 each, returning $58 to $190 in social value per $1 spent.'
+      p2: 'Turning daily health gains into QALYs and saved lives into HHS Value of a Statistical Life (VSL) tiers levels the playing field across analytic perspectives. It shows that mental health and social outreach bring more than half (~55%, or ~22 of 40 QALYs/yr) of an assumed CHW cohort\'s total quality-of-life gain. At the same time, countywide public health spending saves lives at ~$420,000 each annually and ~$231,000 over cumulative horizons, returning $15 to $89 in social value per $1 spent.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode B Federal Schedules &amp; LHA Slopes + Mode A Cohort QALY Scenario):</strong> HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M), U.S. value benchmarks ($50K / $100K / $150K per QALY), and the CAPHE LHA death slope (-9.16 per 100K per $10 spent) are Mode B facts. Cohort QALY parameters (+0.025/yr chronic, +0.040/yr mental health, +0.020/yr social needs across a 50%/30%/20% split at $1,800/client ongoing cost) and totals (40.04 QALYs/yr across 750 clients, or 0.0534 QALYs/client over 2 years at 3% discounting) are illustrative Mode A scenario assumptions.',
+      '<strong>Mode Classification (Mode B Federal Schedules &amp; LHA Slopes + Mode A Cohort QALY Scenario):</strong> HHS 2025 VSL tiers ($6.3M / $13.6M / $20.7M), U.S. value benchmarks ($50K / $100K / $150K per QALY), and the CAPHE LHA death slopes (-2.38 annual and -4.32 cumulative per 100K per $10 spent) are Mode B facts. Cohort QALY parameters (+0.025/yr chronic, +0.040/yr mental health, +0.020/yr social needs across a 50%/30%/20% split at $1,800/client ongoing cost) and totals (40.04 QALYs/yr across 750 clients, or 0.0534 QALYs/client over 2 years at 3% discounting) are illustrative Mode A scenario assumptions.',
       '<strong>Primary References &amp; Data Sources:</strong> See <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Department of Health and Human Services (HHS) ASPE Guidelines for Regulatory Impact Analysis (2025 VSL Schedule)</a> and <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. EPA Mortality Risk Valuation ($11.2M VSL)</a>. We also use the <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Second Panel on Cost-Effectiveness in Health and Medicine (3% discount standard)</a> and <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a>.'
     ],
     faqs: [
@@ -1748,7 +1787,7 @@ const wave3Modules = [
     ],
     related: [
       { slug: 'cost-effectiveness-ratio', title: 'Calculating ICERs & Net Monetary Benefit', note: 'Case study applying $50K/$100K/$150K per QALY thresholds to CHW cohorts' },
-      { slug: 'sensitivity-analysis-cea', title: 'Multi-Way VSL & CI Sensitivity Analysis', note: 'Case study stress-testing the 125:1 LHA benefit-cost ratio across VSL tiers' },
+      { slug: 'sensitivity-analysis-cea', title: 'Multi-Way VSL & CI Sensitivity Analysis', note: 'Case study stress-testing the 32:1 annual and 59:1 cumulative LHA return across VSL tiers' },
       { slug: 'budget-impact', title: 'Budget Impact vs. Long-Run ROI', note: 'Case study on annual cash-flow versus multi-year societal returns' }
     ]
   },
@@ -1763,7 +1802,7 @@ const wave3Modules = [
         visibleLabel: 'Statewide CHW Reimbursement Analysis',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
       }
     ],
     tier: 'community',
@@ -1773,25 +1812,26 @@ const wave3Modules = [
     h1: 'Multi-Year Cost-Effectiveness Models Spread Year-One Startup Costs Across Ongoing Health Gains',
     subtitle: 'Scoring modeled county care teams across startup and ongoing years using cost per healthy year and net value.',
     endnotes: [
-      '<strong>Santa Clara 5-Year CHW Value Scenario (Mode A):</strong> <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a> illustrative cohort scenario. Serving 750 clients per year over 5 years gives 200.20 discounted QALYs (40.04 QALYs/yr). Direct operating cost is $7,225,000 ($36,089/QALY), or $7,550,000 with $325,000 in startup ($37,712/QALY).',
+      '<strong>California 5-Year CHW Value Scenario (Mode A):</strong> <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a> illustrative cohort scenario. Serving an assumed 750 clients per year over 5 years gives 200.20 discounted QALYs (40.04 QALYs/yr). Direct operating cost is $7,225,000 ($36,089/QALY), or $7,550,000 with $325,000 in startup ($37,712/QALY).',
       '<strong>Startup vs. Ongoing Years (Mode A):</strong> In this illustrative scenario, Year 1 cost per healthy year is $48,202/QALY ($1,930,000 for 40.04 QALYs: $2,500/client + $55,000 amortized startup). It drops to $35,090/QALY in Years 2 to 5 ($1,405,000/yr for 40.04 QALYs/yr: $1,800/client + $55,000 startup).',
       '<strong>Net Value &amp; Hospital Offset Benchmarks:</strong> <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ICER Valuation Benchmarks</a>. Five-year operating net value is +$2.79M at $50K/QALY, +$12.80M at $100K/QALY, and +$22.81M at $150K/QALY (+$2.46M, +$12.47M, and +$22.48M with full startup). In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">IMPaCT CHW RCT (Kangovi et al., 2020)</a>, acute-care savings yielded $2.47 per $1 invested.'
     ],
-    answerHtml: 'Judging a multi-year care team on Year 1 unit costs alone overstates the ongoing price of services that pay one-time training bills before steady health gains arrive. Across Santa Clara County\'s modeled <strong>5-year, 750-client-per-year CHW program</strong>, direct operations produce <strong>200.20 healthy life-years at $36,089 per healthy year</strong> and create <strong>+$12.80M in net value</strong> at the standard <strong>$100,000 benchmark</strong> [1]. Judging the team on Year 1 alone raises the unit cost to <strong>$48,202 per healthy year</strong> because <strong>$325,000 in startup costs</strong> lands before ongoing costs drop to <strong>$35,090</strong> [2]. Even with full startup included (<strong>$7,550,000 total, or $37,712 per healthy year</strong>), the 5-year model clears the strict <strong>$50,000 benchmark (+$2.46M net value)</strong> [3].',
+    policySettingHtml: 'Launching a county Community Health Worker team requires upfront spending on staff hiring, training, and data tools in Year 1. Ongoing operating costs then settle into a lower annual rate in Years 2 through 5. Multi-year cost-effectiveness models compare those startup and ongoing costs against cumulative patient health gains.',
+    answerHtml: 'Across an assumed <strong>5-year, 750-client-per-year California CHW program</strong>, our modeled analysis shows that direct operations produce <strong>~200 healthy life-years at ~$36,100 per QALY</strong> and create <strong>+$12.80M in net value</strong> at the standard <strong>$100,000 benchmark</strong> [1]. Judging the team on Year 1 alone raises the unit cost to <strong>~$48,200 per QALY</strong> because <strong>$325,000 in startup costs</strong> lands before ongoing costs drop to <strong>~$35,100</strong> [2]. Even with full startup included (<strong>$7,550,000 total, or ~$37,700 per QALY</strong>), the 5-year model clears the strict <strong>$50,000 benchmark (+$2.46M net value)</strong> [3].',
     block2: {
       title: 'Two Decision Rulers: Cost per QALY (ICER) vs. Net Dollar Value (NMB at λ = $100K/QALY)',
-      contextTag: 'Mode A 5-Year Cohort Horizons ($36,089 Operating vs. $37,712 With Startup)',
+      contextTag: 'Mode A 5-Year Cohort Horizons (~$36,100 Operating vs. ~$37,700 With Startup)',
       ariaLabel: 'Comparison of Incremental Cost-Effectiveness Ratio in dollars per QALY versus 5-year Net Monetary Benefit across benchmarks',
       ruler1: {
         title: 'Ruler 1: Cost per Healthy Year (ICER = ΔC / ΔE)',
-        stat: '$36,089 Oper. | $37,712 Total',
-        ariaLabel: '5-year operating ICER is $36,089/QALY and 5-year total ICER with startup is $37,712/QALY',
+        stat: '~$36,100 Oper. | ~$37,700 Total',
+        ariaLabel: '5-year operating ICER is ~$36,100/QALY and 5-year total ICER with startup is ~$37,700/QALY',
         segments: [
           { cls: 'seg-rest', width: 35, label: 'Yrs 2-5 $35.1K' },
           { cls: 'seg-primary', width: 37, label: '5-Yr $36.1K-$37.7K / QALY' },
           { cls: 'seg-gross', width: 28, label: 'Gap Below $50K' }
         ],
-        desc: 'Dividing 5-year direct operating cost (<strong>$7,225,000</strong>) by <strong>200.20 QALYs</strong> gives <strong>$36,089/QALY</strong>, while dividing full cost with startup (<strong>$7,550,000</strong>) by <strong>200.20 QALYs</strong> gives <strong>$37,712/QALY</strong>. Both sit well below the <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ICER</a> <strong>$50,000/QALY</strong> benchmark.'
+        desc: 'Dividing 5-year assumed operating cost (<strong>$7,225,000</strong>) by <strong>~200 QALYs</strong> gives <strong>~$36,100/QALY</strong>, while dividing full cost with startup (<strong>$7,550,000</strong>) by <strong>~200 QALYs</strong> gives <strong>~$37,700/QALY</strong>. Both sit well below the <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ICER</a> <strong>$50,000/QALY</strong> benchmark.'
       },
       ruler2: {
         title: 'Ruler 2: 5-Year Net Dollar Value (NMB = λ·ΔE − ΔC)',
@@ -1802,23 +1842,24 @@ const wave3Modules = [
           { cls: 'seg-primary', width: 40, label: '+$12.80M Net Value (at λ = $100K/QALY)' },
           { cls: 'seg-rest', width: 45, label: '+$22.81M (at λ = $150K)' }
         ],
-        desc: 'Valuing <strong>200.20 QALYs</strong> in dollars (NMB = λ·ΔE − ΔC) gives a positive net gain at every U.S. benchmark: <strong>+$2.79M</strong> at &lambda; = $50K, <strong>+$12.80M</strong> at &lambda; = $100K, and <strong>+$22.81M</strong> at &lambda; = $150K (<strong>+$12.47M</strong> at $100K with startup).'
+        desc: 'Valuing <strong>~200 QALYs</strong> in dollars (NMB = λ·ΔE − ΔC) gives a positive net gain at every U.S. benchmark: <strong>+$2.79M</strong> at &lambda; = $50K, <strong>+$12.80M</strong> at &lambda; = $100K, and <strong>+$22.81M</strong> at &lambda; = $150K (<strong>+$12.47M</strong> at $100K with startup).'
       }
     },
     table1: {
       title: 'Table 1. Cost per QALY &amp; Net Value Across 4 Accounting Horizons',
-      subtitle: 'Comparing Year 1 launch, Years 2-5 ongoing care, 5-year operating totals, and 5-year full startup totals.',
+      subtitle: 'Comparing Year 1 launch, Years 2-5 ongoing care, 5-year operating totals, and 5-year full startup totals across analytic perspectives.',
       caption: 'Comparison of Cost-Effectiveness Ratios and Net Monetary Benefits across Year 1, Years 2-5, 5-year operating, and 5-year full startup horizons.',
-      cornerLabel: 'CEA &amp; NMB Metric',
+      cornerLabel: 'Cost &amp; Value Measure',
       columns: [
-        { tag: 'Mode A: Year 1 Ramp', tagHighlight: false, title: 'Year 1 Launch', subtitle: '$2,500/Client + $55K Startup' },
-        { tag: 'Mode A: Years 2 to 5', tagHighlight: true, title: 'Ongoing Care', subtitle: '$1,800/Client + $55K Startup' },
-        { tag: 'Mode A: 5-Yr Operating', tagHighlight: true, title: '5-Year Direct Run', subtitle: '3,750 Client-Years (Excl. Startup)' },
-        { tag: 'Mode A: 5-Yr Total', tagHighlight: false, title: '5-Year With Startup', subtitle: '$7.225M Operating + $325K Startup' }
+        { tag: 'Phase 1: Launch', tagHighlight: false, title: 'Year 1 Startup &amp; Ramp', subtitle: 'Program Operator' },
+        { tag: 'Phase 2: Steady State', tagHighlight: true, title: 'Years 2 to 5 Ongoing Care', subtitle: 'Program Operator' },
+        { tag: '5-Yr Operating', tagHighlight: true, title: 'Direct Operating Total', subtitle: 'Program &amp; Societal' },
+        { tag: '5-Yr Full Cost', tagHighlight: false, title: 'Total Cost With Startup', subtitle: 'Program &amp; Societal' }
       ],
       rows: [
         {
-          label: 'Program Cost (ΔC)<span class="block text-xs font-normal text-slate-500">Gross outlay vs. usual care (before billing or bed offsets)</span>',
+          label: 'Assumed Program Cost Input<span class="block text-xs font-normal text-slate-500">Gross outlay vs. usual care (before billing or bed offsets)</span>',
+          modeled: false,
           cells: [
             { val: '$1,930,000 (Yr 1)' },
             { val: '$1,405,000 / yr (Yrs 2-5)' },
@@ -1827,7 +1868,8 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Health Gain (ΔE in QALYs)<span class="block text-xs font-normal text-slate-500">Discounted at 3.0%/yr over 2-yr window</span>',
+          label: 'Modeled Health Gain (QALYs)*<span class="block text-xs font-normal text-slate-500">Discounted at 3.0%/yr over 2-yr window</span>',
+          modeled: true,
           cells: [
             { val: '40.04 QALYs (Yr 1)' },
             { val: '40.04 QALYs / yr (Yrs 2-5)' },
@@ -1836,7 +1878,8 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Ruler 1: ICER (ΔCost / ΔQALYs)<span class="block text-xs font-normal text-slate-500">Price per healthy life-year gained</span>',
+          label: 'Cost per Healthy Year Gained*<span class="block text-xs font-normal text-slate-500">Price per healthy life-year gained</span>',
+          modeled: true,
           highlight: true,
           cells: [
             { val: '$48,202 / QALY (Yr 1)', barWidth: 96, barColor: '#F59E0B', textColor: 'text-amber-800' },
@@ -1846,7 +1889,8 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'NMB at λ = $50,000 / QALY<span class="block text-xs font-normal text-slate-500">Strict Value Benchmark</span>',
+          label: 'Net Value at $50,000 / QALY*<span class="block text-xs font-normal text-slate-500">Strict Value Benchmark</span>',
+          modeled: true,
           cells: [
             { val: '+$72,021 (Yr 1 net)' },
             { val: '+$597,021 / yr' },
@@ -1855,7 +1899,8 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'NMB at λ = $100,000 / QALY<span class="block text-xs font-normal text-slate-500">Standard benchmark: $100,000 × ΔE − gross ΔC</span>',
+          label: 'Net Value at $100,000 / QALY*<span class="block text-xs font-normal text-slate-500">Standard benchmark: $100,000 per QALY minus cost</span>',
+          modeled: true,
           cells: [
             { val: '+$2,074,043 (Yr 1 net)' },
             { val: '+$2,599,043 / yr' },
@@ -1864,7 +1909,8 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'NMB at λ = $150,000 / QALY<span class="block text-xs font-normal text-slate-500">Upper U.S. Value Benchmark</span>',
+          label: 'Net Value at $150,000 / QALY*<span class="block text-xs font-normal text-slate-500">Upper U.S. Value Benchmark</span>',
+          modeled: true,
           cells: [
             { val: '+$4,076,064 (Yr 1 net)' },
             { val: '+$4,601,064 / yr' },
@@ -1876,35 +1922,44 @@ const wave3Modules = [
     },
     table2: {
       title: 'Table 2. Benchmark Math, Cost-Saving Terms &amp; Policy Rules',
-      subtitle: 'Why analysts pair Net Monetary Benefit with cost ratios and separate cost-effective from cost-saving.',
-      caption: 'Comparison of ICER vs NMB math, cost-saving terms, benchmark sensitivity, and policy rules.',
+      subtitle: 'Why analysts pair Net Dollar Value with cost per healthy year and separate cost-effective from cost-saving.',
+      caption: 'Comparison of cost per QALY vs net value math, cost-saving terms, benchmark sensitivity, and policy rules.',
       cornerLabel: 'Decision Choice',
       rows: [
         {
-          label: 'How ICER and NMB Behave',
+          label: 'Where the Return Shows Up',
           cells: [
-            { val: 'Year 1 cost ($48,202/QALY) sits near $50K, giving +$72,021 net value.' },
-            { val: 'Cutting unit cost to $1,800 saves $525,000/yr and lowers ICER by $13,112.' },
+            { val: 'The county agency pays Year 1 training bills as patient health gains start.' },
+            { val: 'Ongoing county operating costs drop while annual patient QALY gains hold steady.' },
+            { val: 'Patients gain 200 healthy life-years over 5 years against direct operating outlays.' },
+            { val: 'Five-year net value stays positive after spreading Year 1 startup across all 5 years.' }
+          ]
+        },
+        {
+          label: 'How Cost Ratios and Net Value Behave',
+          cells: [
+            { val: 'Year 1 cost (~$48,200/QALY) sits near $50K, giving ~$72,000 net value.' },
+            { val: 'Cutting unit cost to $1,800 saves $525,000/yr and lowers cost per QALY by ~$13,100.' },
             { val: 'Five-year operating net value scales from +$2.79M ($50K) to +$22.81M ($150K).' },
-            { val: 'Adding $325,000 startup lifts the 5-year ratio from $36,089 to $37,712/QALY.' }
+            { val: 'Adding $325,000 startup lifts the 5-year ratio from ~$36,100 to ~$37,700/QALY.' }
           ]
         },
         {
           label: 'Cost-Effective vs. Cost-Saving',
           cells: [
-            { val: 'A gross ICER of $48,202/QALY (ΔC > 0, ΔE > 0) is cost-effective, not cost-saving.' },
-            { val: 'The term "dominant" (cost-saving) applies only when net ΔCost < 0 and ΔE > 0.' },
-            { val: 'Counting modeled bed savings ($1,823,330/yr) makes net cost -$418,330/yr (cost-saving).' },
+            { val: 'A gross cost of ~$48,200/QALY (added cost with positive health gain) is cost-effective, not cost-saving.' },
+            { val: 'The term "dominant" (cost-saving) applies only when a program both lowers net spending and improves health.' },
+            { val: 'Counting modeled bed offsets (~$1.82M/yr) saves ~$418,000/yr net (cost-saving).' },
             { val: 'In the IMPaCT RCT (Kangovi et al., 2020), hospital savings returned $2.47 per $1 spent.' }
           ]
         },
         {
           label: 'Budget Tradeoff',
           cells: [
-            { val: 'Judging a team only on Year 1 costs ($48,202) over-weights one-time training.' },
-            { val: 'Setting ongoing contracts at $35,090/QALY ($1,800/client) keeps costs on track.' },
+            { val: 'Judging a team only on Year 1 costs (~$48,200) over-weights one-time training.' },
+            { val: 'Setting ongoing contracts at ~$35,100/QALY ($1,800/client) keeps costs on track.' },
             { val: 'Using only a $50K benchmark omits $10.01M in value at the $100K standard.' },
-            { val: 'Spreading $325,000 startup over 5 years adds just $1,623/QALY to the 5-year ratio.' }
+            { val: 'Spreading $325,000 startup over 5 years adds just ~$1,600/QALY to the 5-year ratio.' }
           ]
         },
         {
@@ -1912,44 +1967,44 @@ const wave3Modules = [
           policyFit: true,
           cells: [
             { headline: 'Score Pilots Over a 3-to-5-Year Contract', detail: 'Spread Year 1 training ($2,500/client + startup) over a multi-year contract.' },
-            { headline: 'Report Both Gross ICER and Net Bed Savings', detail: 'Show gross ICER ($35.1K-$37.7K/QALY) beside net bed savings (-$418K/yr).' },
+            { headline: 'Report Both Gross Cost and Net Bed Savings', detail: 'Show gross cost per QALY ($35.1K-$37.7K) beside net bed savings (-$418K/yr).' },
             { headline: 'Rank County Programs by Net Value at $100K', detail: 'Use 5-year net value (+$12.80M operating, +$12.47M w/ startup) to rank programs.' },
-            { headline: 'Compare Both Operating and Full-Startup Ledgers', detail: 'Report both $36,089/QALY (operating) and $37,712/QALY (with $325K startup).' }
+            { headline: 'Compare Both Operating and Full-Startup Ledgers', detail: 'Report both ~$36,100/QALY (operating) and ~$37,700/QALY (with $325K startup).' }
           ]
         }
       ],
       notesTitle: 'Table 2 Notes: Exact 5-Year Horizon Math &amp; Trial Benchmarks',
       notesBullets: [
-        '<strong>Exact 5-Year Horizon Arithmetic (Mode A Scenario Assumptions):</strong> Under the illustrative cohort assumptions (750 clients/yr, +0.0275/yr weighted lift over 2 years at 3.0% discount), each cohort year yields <strong>40.0404252 QALYs/yr</strong> (<strong>200.202126 QALYs</strong> over 5 years, displayed as 40.04 and 200.20). Dividing <strong>$1,930,000</strong> (Year 1: 750 &times; $2,500 + $55,000 amortized startup) by 40.0404252 gives <strong>$48,202/QALY</strong>; dividing <strong>$1,405,000/yr</strong> (Years 2 to 5: 750 &times; $1,800 + $55,000 startup) by 40.0404252 gives <strong>$35,090/QALY</strong>. Over 5 years, dividing <strong>$7,225,000</strong> (operating excluding $325,000 total startup) by 200.202126 gives <strong>$36,089/QALY</strong>, and dividing <strong>$7,550,000</strong> ($1,930,000 + 4 &times; $1,405,000, or $7,225,000 + $325,000 startup) by 200.202126 gives <strong>$37,712/QALY</strong>.',
-        '<strong>Hospital Offset &amp; Trial Context:</strong> In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">IMPaCT randomized trial (Kangovi et al., 2020, Health Affairs)</a> and <a href="https://www.cdc.gov/diabetes/php/toolkits/chw.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC Community Health Worker Evidence Base</a>, acute-care savings offset program outlays ($2.47 returned per $1 in IMPaCT). In our Mode A scenario, applying an illustrative $1,823,330/yr hospital bed offset against $1,405,000/yr ongoing cost yields a net saving of -$418,330/yr (dominant).'
+        '<strong>Exact 5-Year Horizon Arithmetic:</strong> Under the illustrative cohort assumptions (750 clients/yr, +0.0275/yr weighted lift over 2 years at 3.0% discount), each cohort year yields <strong>40.0404252 QALYs/yr</strong> (<strong>200.202126 QALYs</strong> over 5 years, displayed as 40.04 and 200.20). Dividing <strong>$1,930,000</strong> (Year 1: 750 &times; $2,500 + $55,000 amortized startup) by 40.0404252 gives <strong>$48,202/QALY</strong>; dividing <strong>$1,405,000/yr</strong> (Years 2 to 5: 750 &times; $1,800 + $55,000 startup) by 40.0404252 gives <strong>$35,090/QALY</strong>. Over 5 years, dividing <strong>$7,225,000</strong> (operating excluding $325,000 total startup) by 200.202126 gives <strong>$36,089/QALY</strong>, and dividing <strong>$7,550,000</strong> ($1,930,000 + 4 &times; $1,405,000, or $7,225,000 + $325,000 startup) by 200.202126 gives <strong>$37,712/QALY</strong>.',
+        '<strong>Hospital Offset &amp; Trial Context:</strong> In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">IMPaCT randomized trial (Kangovi et al., 2020, Health Affairs)</a> and <a href="https://www.cdc.gov/diabetes/php/toolkits/chw.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC Community Health Worker Evidence Base</a>, acute-care savings offset program outlays ($2.47 returned per $1 in IMPaCT). Applying an illustrative $1,823,330/yr hospital bed offset against $1,405,000/yr ongoing cost yields a net saving of -$418,330/yr (dominant).'
       ]
     },
     synthesis: {
       title: 'Why Net Dollar Value Pairs with the Cost Ratio in County Budgets',
-      p1: 'When analysts report a cost ratio ($36,089 per QALY operating, or $37,712 per QALY with startup), two practical questions arise from county leaders. First, how do we know whether $36,089 to $37,712 per QALY is a good value? Second, how do we compare a small team with a low ratio against a larger program with a slightly higher ratio? Value benchmarks ($50,000, $100,000, and $150,000 per QALY) answer the first question. Net Monetary Benefit (NMB = λ·ΔE − ΔC) answers the second.',
-      p2: 'Valuing health gains in dollars at the $100,000 per QALY benchmark and subtracting program bills shows that a 10-CHW team creates +$12.80 million in operating net value over 5 years (+$12.47M with startup, and +$2.46M to +$2.79M even at the strict $50,000 benchmark). Pairing Year 1 startup tables with 5-year cumulative ledgers shows county boards that the program stays high-value across every U.S. threshold.'
+      p1: 'When analysts report a cost ratio (~$36,100 per QALY operating, or ~$37,700 per QALY with startup), two practical questions arise from county leaders. First, how do we know whether ~$36,100 to ~$37,700 per QALY is a good value? Second, how do we compare a small team with a low ratio against a larger program with a slightly higher ratio? Value benchmarks ($50,000, $100,000, and $150,000 per QALY) answer the first question. Net Dollar Value (healthy years times benchmark value, minus program cost) answers the second.',
+      p2: 'Valuing health gains in dollars at the $100,000 per QALY benchmark and subtracting program bills shows that an assumed 10-CHW team creates +$12.80 million in operating net value over 5 years (+$12.47M with startup, and +$2.46M to +$2.79M even at the strict $50,000 benchmark). Pairing Year 1 startup tables with 5-year cumulative ledgers shows county boards that the program stays high-value across every U.S. threshold.'
     },
     interactive: {
       badge: 'Value Benchmark Check',
-      title: 'Compare 5-Year Net Value Across Benchmarks (λ)',
+      title: 'Compare 5-Year Net Value Across U.S. Benchmarks',
       subtitle: 'Comparing modeled 5-year net value (operating and full startup) across three U.S. health value benchmarks.',
       options: [
         {
           label: 'Benchmark 1 · Strict',
-          headline: 'λ = $50,000 per QALY',
-          metric: '5-Yr NMB = +$2,785,106 (+$2.46M w/ Startup)',
-          desc: 'Even at the strictest $50,000 benchmark, both the operating ($36,089/QALY) and full-startup ($37,712/QALY) ledgers give positive net value.'
+          headline: '$50,000 per QALY Benchmark',
+          metric: '5-Yr Net Value = +$2.79M (+$2.46M w/ Startup)',
+          desc: 'Even at the strictest $50,000 benchmark, both the operating (~$36,100/QALY) and full-startup (~$37,700/QALY) ledgers give positive net value.'
         },
         {
           label: 'Benchmark 2 · U.S. Standard',
-          headline: 'λ = $100,000 per QALY',
-          metric: '5-Yr NMB = +$12,795,213 (+$12.47M w/ Startup)',
-          desc: 'At the standard U.S. benchmark, the 10-CHW team creates +$12.80 million in modeled 5-year operating net value (+$12.47M with startup).'
+          headline: '$100,000 per QALY Benchmark',
+          metric: '5-Yr Net Value = +$12.80M (+$12.47M w/ Startup)',
+          desc: 'At the standard U.S. benchmark, the assumed 10-CHW team creates +$12.80 million in modeled 5-year operating net value (+$12.47M with startup).'
         },
         {
           label: 'Benchmark 3 · Upper Bound',
-          headline: 'λ = $150,000 per QALY',
-          metric: '5-Yr NMB = +$22,805,319 (+$22.48M w/ Startup)',
+          headline: '$150,000 per QALY Benchmark',
+          metric: '5-Yr Net Value = +$22.81M (+$22.48M w/ Startup)',
           desc: 'At the upper benchmark for high-need chronic care, modeled 5-year operating net value reaches +$22.81 million (+$22.48M with startup).'
         }
       ],
@@ -1968,7 +2023,7 @@ const wave3Modules = [
     faqs: [
       {
         question: 'What is the difference between a "cost-effective" program and a "dominant (cost-saving)" program?',
-        answer: 'A program is cost-effective when it improves health (ΔE > 0) at an added cost (ΔC > 0) whose ratio (ICER = ΔC / ΔE) stays below the value benchmark (such as $36,089 to $37,712/QALY vs. $100,000/QALY). A program is dominant (cost-saving) only when it both improves health (ΔE > 0) and cuts net spending (ΔC < 0).'
+        answer: 'A program is cost-effective when it improves health (ΔE > 0) at an added cost (ΔC > 0) whose ratio (ICER = ΔC / ΔE) stays below the value benchmark (such as ~$36,100 to ~$37,700/QALY vs. $100,000/QALY). A program is dominant (cost-saving) only when it both improves health (ΔE > 0) and cuts net spending (ΔC < 0).'
       },
       {
         question: 'Why do analysts report Net Monetary Benefit (NMB) alongside the ICER?',
@@ -1976,11 +2031,11 @@ const wave3Modules = [
       },
       {
         question: 'How much does Year 1 startup training change the 5-year cost per QALY?',
-        answer: 'In Year 1 alone, startup and ramp-up costs raise the ratio to $48,202 per QALY ($1,930,000 for 40.04 QALYs). Spread across the full 5-year horizon (200.20 QALYs), adding $325,000 in startup moves the ratio from $36,089/QALY ($7,225,000 operating) to $37,712/QALY ($7,550,000 total), well below the $50,000/QALY benchmark.'
+        answer: 'In Year 1 alone, startup and ramp-up costs raise the ratio to ~$48,200 per QALY ($1,930,000 for ~40 QALYs). Spread across the full 5-year horizon (~200 QALYs), adding $325,000 in startup moves the ratio from ~$36,100/QALY ($7,225,000 operating) to ~$37,700/QALY ($7,550,000 total), well below the $50,000/QALY benchmark.'
       }
     ],
     related: [
-      { slug: 'chw-health-outcomes', title: 'CHW Program Impact & Acute-Care Cost Offsets', note: 'CHW case study Case Study on Medi-Cal DRG vs. societal HCUP savings' },
+      { slug: 'chw-health-outcomes', title: 'CHW Program Impact & Acute-Care Cost Offsets', note: 'Flagship case study on Medi-Cal plan vs. hospital system savings' },
       { slug: 'measuring-health-common-unit', title: 'Measuring Health in QALYs & HHS 2025 VSL Tiers', note: 'Case study on utility weights and mortality valuation' },
       { slug: 'sensitivity-analysis-cea', title: 'Multi-Way Sensitivity Analysis in CEA & CBA', note: 'Case study on stress-testing economic conclusions' }
     ]

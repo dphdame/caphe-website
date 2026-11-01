@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Internal CAPHE prototype comparing analytic perspectives and input-versus-finding separation across public health economics case studies.">
+  <title>Prototype: Analytic Perspectives &amp; Input-vs-Finding Separation | CAPHE Case Studies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-bg: #FFFFFF;
+      --color-bg-subtle: #F8FAFC;
+      --color-text: #0F172A;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.58;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      text-wrap: balance;
+      margin-top: 0;
+    }
+
+    p, li, td, th {
+      text-wrap: pretty;
+    }
+
+    /* Prototype Switcher Banner */
+    .proto-bar {
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      border-bottom: 2px solid #0041A5;
+    }
+
+    .proto-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .proto-label {
+      font-family: var(--font-heading);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #93C5FD;
+    }
+
+    .proto-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .proto-tab {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #1E293B;
+      color: #E2E8F0;
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .proto-tab.active {
+      background: #0041A5;
+      border-color: #60A5FA;
+      color: #FFFFFF;
+    }
+
+    .proto-view {
+      display: none;
+    }
+
+    .proto-view.active {
+      display: block;
+    }
+
+    .container-wide {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .container-narrow {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Annotation Callouts showing governance rules */
+    .pho-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #EFF6FF;
+      color: #1E3A8A;
+      border: 1px solid #93C5FD;
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Case Study Header */
+    .cs-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .cs-h1 {
+      font-size: 2rem;
+      line-height: 1.22;
+      color: var(--color-primary-dark);
+      margin-bottom: 0.5rem;
+      max-width: 900px;
+    }
+
+    .cs-subtitle {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #1E293B;
+      margin: 0 0 0.85rem 0;
+      max-width: 860px;
+    }
+
+    .cs-answer {
+      font-size: 1.05rem;
+      color: #334155;
+      max-width: 880px;
+      margin: 0 0 1.5rem 0;
+    }
+
+    /* 4-Dimension Analytic Strip */
+    .four-lens-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      margin: 1.25rem 0 2rem;
+    }
+
+    .lens-card {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-top: 3px solid var(--color-primary);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+    }
+
+    .lens-card.lens-in {
+      border-top-color: #0D9488;
+      background: #F0FDFA;
+    }
+
+    .lens-card.lens-humans {
+      border-top-color: #0284C7;
+    }
+
+    .lens-card.lens-equity {
+      border-top-color: #B45309;
+      background: #FFFBEB;
+    }
+
+    .lens-kicker {
+      font-family: var(--font-heading);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      margin-bottom: 0.25rem;
+    }
+
+    .lens-stat {
+      font-family: var(--font-heading);
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.25;
+      margin-bottom: 0.35rem;
+    }
+
+    .lens-detail {
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.42;
+      margin: 0;
+    }
+
+    /* Tables */
+    .section-head {
+      margin-bottom: 0.65rem;
+    }
+
+    .section-head h2 {
+      font-size: 1.35rem;
+      color: #0F172A;
+      margin-bottom: 0.2rem;
+    }
+
+    .section-head p {
+      font-size: 0.94rem;
+      color: #475569;
+      margin: 0;
+    }
+
+    .table-card {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    table.cs-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .cs-table th, .cs-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: top;
+    }
+
+    .cs-table thead th {
+      background: #F8FAFC;
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      color: #0F172A;
+      border-bottom: 2px solid #CBD5E1;
+    }
+
+    .col-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.12rem 0.45rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.25rem;
+    }
+
+    .col-persp {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 0.2rem;
+    }
+
+    .row-label {
+      font-weight: 700;
+      color: #0F172A;
+      width: 22%;
+      background: #FAFAF9;
+    }
+
+    .row-offset {
+      background: #F0FDFA;
+    }
+
+    .row-offset .row-label {
+      background: #CCFBF1;
+      color: #065F46;
+    }
+
+    .persp-pill {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      margin-right: 0.25rem;
+    }
+
+    .pill-plan { background: #DBEAFE; color: #1E40AF; }
+    .pill-hosp { background: #D1FAE5; color: #065F46; }
+    .pill-pub { background: #FEF3C7; color: #92400E; }
+
+    .table-footnote {
+      padding: 0.85rem 1rem;
+      background: #F8FAFC;
+      font-size: 0.82rem;
+      color: #475569;
+      border-top: 1px solid #CBD5E1;
+    }
+
+    /* Hub View Styles */
+    .page-header {
+      padding: 2.5rem 0 1.75rem;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-subtle);
+    }
+
+    .page-kicker {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-lead {
+      font-size: 1.08rem;
+      color: var(--color-text-secondary);
+      max-width: 760px;
+      margin: 0 0 1rem 0;
+    }
+
+    /* Scoping Timetable Strip */
+    .scoping-strip {
+      background: #FFFFFF;
+      border: 1px solid #BFDBFE;
+      border-left: 4px solid var(--color-primary);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+    }
+
+    .scoping-strip summary {
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+    }
+
+    .scoping-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid #E2E8F0;
+      font-size: 0.88rem;
+    }
+
+    .controls-bar {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--color-border);
+      background: #FFFFFF;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .lens-mode-switch {
+      display: inline-flex;
+      background: #F1F5F9;
+      padding: 0.2rem;
+      border-radius: 7px;
+      border: 1px solid #CBD5E1;
+    }
+
+    .mode-btn {
+      padding: 0.35rem 0.75rem;
+      border: none;
+      background: transparent;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: #FFFFFF;
+      color: var(--color-primary);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .topic-pills {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-top: 0.65rem;
+    }
+
+    .topic-btn {
+      padding: 0.38rem 0.8rem;
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .topic-btn.active {
+      background: #EFF6FF;
+      color: var(--color-primary);
+      border-color: #93C5FD;
+    }
+
+    .topic-section {
+      margin: 2.25rem 0 2.75rem;
+    }
+
+    .topic-header {
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--color-text);
+    }
+
+    .topic-title {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .topic-summary {
+      font-size: 0.92rem;
+      color: #475569;
+      margin: 0.2rem 0 0 0;
+    }
+
+    .case-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 2.25rem;
+      padding-top: 0.75rem;
+    }
+
+    .case-item {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .item-meta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #0D9488;
+      margin-bottom: 0.2rem;
+    }
+
+    .item-title {
+      font-family: var(--font-heading);
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #0F172A;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-contrast {
+      font-size: 0.88rem;
+      color: #475569;
+      margin: 0;
+    }
+
+    @media (max-width: 860px) {
+      .four-lens-grid, .scoping-grid, .case-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Prototype Mode Switcher -->
+  <div class="proto-bar">
+    <div class="proto-inner">
+      <div class="proto-label">CAPHE Copy Architecture, Ledger Purity &amp; Subtle Incidence Prototype</div>
+      <div class="proto-tabs">
+        <button class="proto-tab active" id="tab-btn-cs" onclick="switchProtoTab('cs')">Prototype 1: Class A Multi-Payer Module (chw-health-outcomes)</button>
+        <button class="proto-tab" id="tab-btn-hub" onclick="switchProtoTab('hub')">Prototype 2: Class C Methodological Modules (before-after-trap &amp; p-hacking)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: PROTOTYPE 1 — CLASS A (chw-health-outcomes)                   -->
+  <!-- ===================================================================== -->
+  <div class="proto-view active" id="view-cs">
+    <main class="container-wide">
+
+      <div class="cs-eyebrow">CAPHE Case Studies &middot; Program Impact &middot; Class A Multi-Payer Financing &amp; CEA</div>
+      <h1 class="cs-h1">Per-Visit Medi-Cal Rates Cover Only a Small Fraction of County Living-Wage CHW Salaries</h1>
+      <p class="cs-subtitle">How flat Medi-Cal visit pay compares with county worker pay, modeled care savings, and added healthy years.</p>
+
+      <div class="pho-badge">Two-Part Executive Opening &middot; Paragraph 1: The Policy Setting &middot; Paragraph 2: Analytical Setup &amp; Headline Takeaway</div>
+      <p class="policy-setting cs-answer" style="margin-bottom:0.75rem;">
+        Community Health Workers and Promotoras help California families manage chronic illness, schedule clinic care, and avoid emergency room trips. In 2022, Medi-Cal added a statewide per-visit billing benefit to help counties and clinics fund these workers.
+      </p>
+      <p class="answer-block cs-answer">
+        When sizing a county Community Health Worker team, relying only on Medi-Cal visit billing leaves an 89% to 94% pay gap because one full-time CHW costs <strong>$92,684 to $122,102</strong> per year across all 58 state counties while Medi-Cal pays a flat <strong>$31.74</strong> per 30-minute visit.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true">[2]</a></sup> In our four-model comparison, hospital and clinic models offset <strong>~$107,000 to $291,000</strong> in modeled Year-1 care costs.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true">[3]</a></sup> Neighborhood outreach gains <strong>~8.2 healthy life-years</strong> over two years at a modeled net cost of <strong>~$7,800 per QALY</strong>.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true">[3]</a><a href="#endnote-4" onclick="document.getElementById('data-sources-endnotes').open=true">[4]</a></sup>
+      </p>
+
+      <div class="pho-badge">Rule V1–V3 &middot; Paired Horizontal Cost-vs-Offset Bar Chart (Separate Bars on Shared Dollar Scale, Zero Stacked Bars)</div>
+      <div class="table-card" style="padding:1.25rem;margin-bottom:2rem;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;margin-bottom:0.5rem;">
+          <h3 style="font-size:1rem;margin:0;color:#0F172A;">Year-1 Dollar Comparison: Worker Cost vs. Visit Pay &amp; Hospital Savings</h3>
+          <span style="font-size:0.8rem;color:#475569;">Shared annual dollar scale ($0 to $380,000) &middot; Dashed line marks worker cost breakeven</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <svg id="chwCostOffsetSvg" style="width:100%;min-width:640px;" viewBox="0 0 760 198" role="img" aria-labelledby="chwCostOffsetTitle chwCostOffsetDesc" xmlns="http://www.w3.org/2000/svg">
+            <title id="chwCostOffsetTitle">Paired Horizontal Bar Chart of Annual Worker Cost, Medi-Cal Visit Pay, and Year-1 Hospital Savings</title>
+            <desc id="chwCostOffsetDesc">Three separate horizontal bars comparing full-time CHW cost, direct Medi-Cal visit billing, and Year-1 hospital savings against a dashed worker-cost breakeven line.</desc>
+            <rect x="0" y="0" width="760" height="198" rx="6" fill="#F8FAFC"/>
+            <line x1="230" y1="30" x2="230" y2="168" stroke="#CBD5E1" stroke-width="1.5"/>
+            <line x1="330" y1="30" x2="330" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="430" y1="30" x2="430" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="530" y1="30" x2="530" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <line x1="610" y1="30" x2="610" y2="168" stroke="#E2E8F0" stroke-width="1"/>
+            <text x="230" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$0</text>
+            <text x="330" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$100K</text>
+            <text x="430" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$200K</text>
+            <text x="530" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$300K</text>
+            <text x="610" y="185" text-anchor="middle" fill="#475569" font-size="11" font-weight="600">$380K</text>
+            <text x="12" y="56" fill="#0F172A" font-size="12" font-weight="700">1. Hiring Agency Worker Cost</text>
+            <rect x="230" y="38" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarCost" x="230" y="38" width="104" height="24" rx="4" fill="#334155"/>
+            <text id="chwBarCostVal" x="342" y="55" fill="#0F172A" font-size="12" font-weight="700">$103,719 / yr (100% baseline)</text>
+            <text x="12" y="104" fill="#0F172A" font-size="12" font-weight="700">2. Direct Medi-Cal Visit Pay*</text>
+            <rect x="230" y="86" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarVisit" x="230" y="86" width="10" height="24" rx="4" fill="#D97706"/>
+            <text id="chwBarVisitVal" x="248" y="103" fill="#92400E" font-size="12" font-weight="700">$6,775 to $10,162 / yr (6.5% to 9.8%)</text>
+            <text x="12" y="152" fill="#0F172A" font-size="12" font-weight="700">3. Year-1 Hospital Savings*</text>
+            <rect x="230" y="134" width="380" height="24" rx="4" fill="#E2E8F0"/>
+            <rect id="chwBarOffset" x="230" y="134" width="107" height="24" rx="4" fill="#0D9488"/>
+            <text id="chwBarOffsetVal" x="345" y="151" fill="#065F46" font-size="12" font-weight="700">~$107,000 / yr (Pays for itself)</text>
+            <line id="chwBreakevenLine" x1="334" y1="26" x2="334" y2="168" stroke="#003080" stroke-width="2" stroke-dasharray="5,4"/>
+            <text id="chwBreakevenLabel" x="334" y="19" text-anchor="middle" fill="#003080" font-size="11" font-weight="700">1x Worker Cost ($103,719)</text>
+          </svg>
+        </div>
+        <div id="chwHealthCallout" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid #E2E8F0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;font-size:0.88rem;color:#1E293B;">
+          <div>
+            <strong style="color:#022C22;">Separate Two-Year Health Ledger (Not Added to Cash Bars):</strong>
+            <span>~3.0 to ~8.2 QALYs gained (~$300,000 to ~$818,000 health value at $100,000 / QALY).</span>
+          </div>
+          <span style="font-weight:700;color:#065F46;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:4px;padding:0.2rem 0.6rem;">Pays for itself in Scenarios 1–3 &middot; ~$7,800 / QALY in Scenario 4</span>
+        </div>
+      </div>
+
+      <!-- TABLE 1 -->
+      <div class="section-head">
+        <div class="pho-badge">Ledger &amp; Unit Purity &middot; Disaggregated Cash &amp; Health Ledgers &middot; Zero Mixed Cash+QALY Sum</div>
+        <h2>Table 1. Costs, Hospital Savings &amp; Health Gains Across 4 Program Models</h2>
+        <p>One full-time worker serves an assumed cohort in each model across separate cost and health ledgers.</p>
+      </div>
+
+      <div class="table-card">
+        <table class="cs-table">
+          <thead>
+            <tr>
+              <th>Program Measure</th>
+              <th scope="col">
+                <span class="col-tag">Scenario 1</span><br>
+                Hospital Care
+              </th>
+              <th scope="col">
+                <span class="col-tag">Scenario 2</span><br>
+                Hospital Care
+              </th>
+              <th scope="col">
+                <span class="col-tag">Scenario 3</span><br>
+                Clinic Chronic Care
+              </th>
+              <th scope="col">
+                <span class="col-tag">Scenario 4</span><br>
+                Neighborhood Outreach
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="row-label">Assumed Annual Caseload (Model Input)</th>
+              <td><strong>55 Medi-Cal patients (assumed)</strong></td>
+              <td><strong>55 hospital patients (assumed)</strong></td>
+              <td><strong>75 clinic patients (assumed)</strong></td>
+              <td><strong>150 local adults (assumed)</strong></td>
+            </tr>
+            <tr>
+              <th scope="row" class="row-label">Annual Worker Cost</th>
+              <td><strong>$103,719</strong></td>
+              <td><strong>$103,719</strong></td>
+              <td><strong>$101,369</strong></td>
+              <td><strong>$98,469</strong></td>
+            </tr>
+            <tr>
+              <th scope="row" class="row-label">Annual Per-Visit Medi-Cal Pay *</th>
+              <td><strong>6.5% to 9.8%</strong> ($6,775 to $10,162)</td>
+              <td><strong>6.5% to 9.8%</strong> ($6,775 to $10,162)</td>
+              <td><strong>45.9%</strong> ($46,561)</td>
+              <td><strong>3.4% to 6.4%</strong> ($3,388 to $6,348)</td>
+            </tr>
+            <tr class="row-offset">
+              <th scope="row" class="row-label">Year-1 Hospital Savings *</th>
+              <td><strong>$107,006</strong><br><span style="font-size:0.82rem;color:#475569;">27 ER, 11.6 stays (plan claims)</span></td>
+              <td><strong>$291,171</strong><br><span style="font-size:0.82rem;color:#475569;">27 ER, 11.6 stays (bed costs)</span></td>
+              <td><strong>$182,333</strong><br><span style="font-size:0.82rem;color:#475569;">23 ER, 7.9 stays</span></td>
+              <td><strong>$34,900</strong><br><span style="font-size:0.82rem;color:#475569;">6.6 ER, 1.1 stays</span></td>
+            </tr>
+            <tr>
+              <th scope="row" class="row-label">Added Healthy Years (2-Yr Horizon) *</th>
+              <td><strong>+3.00 QALYs</strong> ($300,000)</td>
+              <td><strong>+3.00 QALYs</strong> ($300,000)</td>
+              <td><strong>+4.09 QALYs</strong> ($409,000)</td>
+              <td><strong>+8.18 QALYs</strong> ($818,000)</td>
+            </tr>
+            <tr class="row-offset">
+              <th scope="row" class="row-label">Net Cost per Healthy Year Gained *</th>
+              <td><strong>Pays for itself</strong> (+$3,287 net cash)</td>
+              <td><strong>Pays for itself</strong> (+$187,452 net cash)</td>
+              <td><strong>Pays for itself</strong> (+$80,964 net cash)</td>
+              <td><strong>$7,771 / QALY</strong> ($63,569 net outlay)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footnote">
+          <strong>Table 1 Notes &amp; * Modeled Estimates:</strong> Row 1 caseloads are assumed model inputs. Row 2 uses 2024 BLS QCEW 58-county wages ($103,719 statewide baseline; $92,684 to $122,102). Rows 3–6 (*) keep Year-1 cash flows and two-year QALY valuations ($100,000/QALY) on separate ledgers and report Net Cost per Healthy Year Gained rather than summing cash offsets and QALYs.
+        </div>
+      </div>
+
+      <!-- TABLE 2 -->
+      <div class="section-head">
+        <div class="pho-badge">Subtle Class A Incidence &middot; "Where the Return Shows Up" Row in Table 2</div>
+        <h2>Table 2. When Each Model Works Best &amp; How to Fund It</h2>
+        <p>How each CHW model fits a clear health goal, budget holder, and steady county funding mix.</p>
+      </div>
+
+      <div class="table-card">
+        <table class="cs-table">
+          <thead>
+            <tr>
+              <th>Decision Guide</th>
+              <th>Hospital Care (Plan Claims)</th>
+              <th>Hospital Care (Bed Costs)</th>
+              <th>Clinic Chronic Care</th>
+              <th>Neighborhood Outreach</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="row-label">When This Model Works Best</th>
+              <td>Cutting Year-1 Medi-Cal claims for frequent care users.</td>
+              <td>Freeing hospital beds and cutting unpaid care costs.</td>
+              <td>Bringing steady clinic visit fees for diabetes and asthma.</td>
+              <td>Growing early health checks in high-need ZIP codes.</td>
+            </tr>
+            <tr class="row-offset">
+              <th scope="row" class="row-label">Where the Return Shows Up</th>
+              <td>Managed care plan claims budget in Year 1.</td>
+              <td>Hospital bed capacity and unpaid care budget.</td>
+              <td>Clinic visit revenue plus health plan hospital claims.</td>
+              <td>Two-year resident health gains across high-need ZIP codes.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="row-label">Key Operational Limit</th>
+              <td>Field trips cannot bill enough visits to pay full wages.</td>
+              <td>Assumed 55-patient loads reach fewer total county adults.</td>
+              <td>Needs patients who already see a regular clinic doctor.</td>
+              <td>Health gains build over two years past Year-1 bills.</td>
+            </tr>
+            <tr>
+              <th scope="row" class="row-label">How to Pay for This Model</th>
+              <td><strong>Monthly Health Plan Contract.</strong> Pair visit fees with monthly CalAIM care plan pay.</td>
+              <td><strong>County Hospital Savings Pool.</strong> Fund roles from hospital budgets as beds open up.</td>
+              <td><strong>Clinic Visit Pay + Quality Bonus.</strong> Blend set 30-minute visit fees with care bonuses.</td>
+              <td><strong>Public Health Grant + Hospital Credit.</strong> Blend Year-1 bed credits with public health grants.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: PROTOTYPE 2 — CLASS C METHODOLOGICAL MODULES                  -->
+  <!-- ===================================================================== -->
+  <div class="proto-view" id="view-hub">
+    <main class="container-wide">
+      <div class="cs-eyebrow">CAPHE Case Studies &middot; Class C Measurement &amp; Econometric Identification (15 of 24 Modules)</div>
+      <h1 class="cs-h1">Zero Payer-Perspective Framing on Pure Identification &amp; Statistical Modules</h1>
+      <p class="cs-subtitle">How Class C modules use the Two-Part Executive Opening to orient readers to the policy setting first and the empirical method second.</p>
+
+      <div class="pho-badge">Class C Example 1 &middot; before-after-trap (Evaluating Pre-Post Changes Against Baseline Trends)</div>
+      <div class="table-card" style="padding:1.25rem;margin-bottom:2rem;">
+        <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.4rem;">Evaluating Pre-Post Changes Against Baseline Trends in Pre-Policy Drift</h2>
+        <p class="policy-setting" style="font-size:1rem;color:#334155;margin-bottom:0.65rem;">
+          County Medi-Cal offices track monthly enrollment to see how new state or federal eligibility rules affect local coverage. When enrollment drops over a 12-month window, staff check how much of that change started before the new policy took effect.
+        </p>
+        <p class="answer-block" style="font-size:1rem;color:#334155;margin:0;">
+          When judging a program with a two-point before-and-after check, analysts can confuse an ongoing baseline trend with a new policy effect.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true">[3]</a></sup> Across a large urban California county's 134-month Medi-Cal series (June 2015 to July 2026), expansion enrollment fell <strong>-12.31%</strong> (<strong>-14,803 adults</strong>) between June 2025 and June 2026 during routine post-unwinding renewals before any federal work rule began.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true">[2]</a></sup> Splitting the multi-year series separates that pre-existing renewal drift from new policy effects.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true">[3]</a></sup>
+        </p>
+      </div>
+
+      <div class="pho-badge">Class C Example 2 &middot; p-hacking-multiple-testing (Testing Subgroup Drops With Multiple-Group Checks)</div>
+      <div class="table-card" style="padding:1.25rem;margin-bottom:2rem;">
+        <h2 style="font-size:1.25rem;color:#003080;margin-bottom:0.4rem;">Testing Subgroup Drops With Multiple-Group Checks Across 20 Language Groups</h2>
+        <p class="policy-setting" style="font-size:1rem;color:#334155;margin-bottom:0.65rem;">
+          County Medi-Cal outreach teams track monthly enrollment across 20 written language groups to place bilingual renewal navigators where families face the greatest coverage losses. In tiny language groups with fewer than 50 members, a few families moving can create huge percentage swings.
+        </p>
+        <p class="answer-block" style="font-size:1rem;color:#334155;margin:0;">
+          When ranking 20 language groups by raw percentage drop alone, small-denominator swings can pull bilingual staff away from the largest member losses.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true">[2]</a></sup> In a multilingual California county's DHCS enrollment data (472,014 to 411,722 members, -60,292 total), Samoan (-34.04%, -16 members) and Chuukese (-25.00%, -1 member) show the steepest percentage drops.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a></sup> Applying a multiple-group reliability check and minimum-volume floor directs bilingual outreach to Spanish (-24,880), English (-24,877), Vietnamese (-6,344), and Mandarin (-1,467), which account for 95.5% of county losses.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true">[3]</a></sup>
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <!-- SHARED FOOTER: ENUMERATED ENDNOTES VISIBLE ACROSS ALL TABS -->
+  <footer class="container-wide" style="padding: 0 24px 48px;">
+    <details id="data-sources-endnotes" style="margin-top:1.5rem;padding:1rem;background:#F8FAFC;border:1px solid #CBD5E1;border-radius:8px;">
+      <summary style="font-weight:700;color:#0F172A;cursor:pointer;">Enumerated Endnotes &amp; Primary Sources</summary>
+      <ol class="endnote-list" style="margin-top:0.75rem;padding-left:1.25rem;font-size:0.85rem;color:#334155;">
+        <li id="endnote-1"><a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer">California DHCS SPA 22-0001 &amp; Medi-Cal Certified Eligibles</a></li>
+        <li id="endnote-2"><a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer">U.S. BLS QCEW (2024) &amp; California HCAI Prevention Quality Indicators</a></li>
+        <li id="endnote-3"><a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer">Kangovi et al. (2020), Health Affairs &amp; Benjamini &amp; Hochberg (1995), JRSS-B</a></li>
+        <li id="endnote-4"><a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer">Neumann, Cohen &amp; Weinstein (2014), NEJM ($100,000/QALY benchmark)</a></li>
+      </ol>
+    </details>
+  </footer>
+
+  <script>
+    function switchProtoTab(which) {
+      document.getElementById('view-cs').classList.toggle('active', which === 'cs');
+      document.getElementById('view-hub').classList.toggle('active', which === 'hub');
+      document.getElementById('tab-btn-cs').classList.toggle('active', which === 'cs');
+      document.getElementById('tab-btn-hub').classList.toggle('active', which === 'hub');
+    }
+    function setHubMode(mode) {
+      document.getElementById('mode-decision').classList.toggle('active', mode === 'decision');
+      document.getElementById('mode-topic').classList.toggle('active', mode === 'topic');
+    }
+  </script>
+</body>
+</html>

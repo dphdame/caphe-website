@@ -1,7 +1,7 @@
 # CAPHE Methods Lab — Canonical Case Study Template Standard
 
-**Effective Date:** October 26, 2026  
-**Enforced By:** [`scripts/render_option_c.js`](../scripts/render_option_c.js) & [`scripts/audit_anti_cheat.js`](../scripts/audit_anti_cheat.js) (`Rules 1–30`) + [`test/answer-block.test.js`](../test/answer-block.test.js)
+**Effective Date:** October 31, 2026  
+**Enforced By:** [`scripts/render_option_c.js`](../scripts/render_option_c.js) & [`scripts/audit_anti_cheat.js`](../scripts/audit_anti_cheat.js) + [`test/answer-block.test.js`](../test/answer-block.test.js)
 
 ---
 
@@ -11,7 +11,7 @@
 - State the module's main policy/method takeaway as a complete, independent declarative sentence (`Subject + Finite Active Verb + Policy Takeaway`) in plain words.
 - **Zero Numbers, Percentages, or Dollar Figures in `<h1>` (`Rule 20b`):** Never put forgettable decimals, percentages, dollar figures, or raw counts (`88.5%`, `62.2%`, `30.7%`, `9.16`, `$36,089`, `6% to 11%`) in `<h1>`. Keep all exact empirical statistics inside the Executive Answer Block, Ruler cards, and Table 1.
 - **Forbidden `<h1>` Starters:** Never open an `<h1>` with `"Case Study:"`, `"Why"`, `"How"`, `"When"`, `"What"`, or an `-ing` process verb (`"Evaluating"`, `"Unpacking"`, `"Untangling"`, `"Accounting for"`, `"Separating"` when used as a gerund fragment), and never end `<h1>` with a question mark (`?`).
-- Use the Eyebrow (`CAPHE Methods Lab · Track X`) to indicate the track and module type.
+- Use the Eyebrow (`CAPHE Case Studies · Track X`) to indicate the track and module type.
 
 ### Rule 1A.2 — Plain-English, Number-Free Subtitle (`12–22 Words`, `Rule 20b`)
 - The `.subtitle` explains what the module compares and why it matters for a decision in one clean sentence (`12–22` words).
@@ -31,7 +31,7 @@
   - Instead of *"Total counts treat paperwork delays as if..."* $\rightarrow$ *"Total counts combine paperwork delays with income-ineligible exits in a single figure"*.
 
 ### Rule 1C — 4-Tier Econometric Identification Fence (`Rule 20c`)
-Every module's `<h1>`, `.subtitle`, and `.answer-block` must match the exact econometric identification tier of its underlying data in `IDENTIFICATION_TIER_MANIFEST` (`scripts/audit_anti_cheat.js`), and every `Mode A` module must qualify modeled outcomes in `<h1>` (`Projected`, `Modeled`, `Models`, `Sensitivity Bounds`) or state an observed statutory baseline:
+Every module's `<h1>`, `.subtitle`, and `.answer-block` must match the exact econometric identification tier of its underlying data in `IDENTIFICATION_TIER_MANIFEST`, and every `Mode A` module must qualify modeled outcomes in `<h1>` (`Projected`, `Modeled`, `Models`, `Sensitivity Bounds`) or state an observed statutory baseline:
 
 | Tier (`IDENTIFICATION_TIER_MANIFEST`) | Identification Basis & Slugs | Permitted Verbs & Framing | Forbidden Overclaiming | Canonical Stat-Free Example |
 |---|---|---|---|---|
@@ -42,10 +42,15 @@ Every module's `<h1>`, `.subtitle`, and `.answer-block` must match the exact eco
 
 ---
 
-## 2. 4-Sentence Problem-Framed & Positive-First Executive Answer Block (`.answer-block`)
+## 2. Two-Part Opening Architecture: Policy Setting Introduction (`.policy-setting`) + 4-Sentence Executive Answer Block (`.answer-block`)
 
-Every module's `.answer-block` (`40–130` words) must follow a strict 4-sentence architecture:
-1. **Sentence 1 (The Real-World Policy Problem / Issue — 0 citations):** A 1-sentence plain-English description of the practical decision challenge facing county or state health leaders. Never frame around why policymakers "cannot run an RCT."
+### Rule 2A — Plain-English Policy Setting Topic Introduction (`.policy-setting`, 2–3 Sentences, 0 Study Stats)
+- Every case study opens with a short, plain-English **Policy Setting** paragraph (`2–3` sentences) *before* presenting study statistics or model results.
+- Its role is to orient a cold reader to the real-world public health program, statutory rule, or routine agency task (for example, how counties employ Community Health Workers and how Medi-Cal reimburses 30-minute visits, or how six-month Medi-Cal eligibility renewals work) so the reader understands the topic before hitting the numbers.
+
+### Rule 2B — 4-Sentence Problem-Framed & Positive-First Executive Answer Block (`.answer-block`)
+Directly below `.policy-setting`, every module's `.answer-block` (`40–130` words) follows a disciplined 4-sentence architecture:
+1. **Sentence 1 (The Real-World Policy Problem / Issue — 0 citations):** A 1-sentence plain-English description of the practical decision challenge facing county or state health leaders, using one of the 6 Audience-Native Operational Problem Hooks (`Rule 8`). Never frame around why policymakers "cannot run an RCT."
 2. **Sentence 2 (The Positive Policy Return / Headline Result — `[1]`):** Lead immediately with the positive empirical finding, program return, or validated benchmark in plain English.
 3. **Sentence 3 (Why the Simple Baseline Differs — `[2]`):** Explain the literal operational or mathematical reason a raw average, single-point snapshot, or unadjusted directory count gives a different number (zero anthropomorphic verbs).
 4. **Sentence 4 (Why Independent Checks Build Confidence — `[3]`):** Explain why confirming the finding across independent methods, multi-year baselines, or administrative data sources gives budget leaders confidence to allocate funds.
@@ -100,7 +105,7 @@ Every module's `.answer-block` (`40–130` words) must follow a strict 4-sentenc
 ### Rule 6A — The 4-Sentence Sparse-Number, Contrast-First Answer Block Formula
 Every Executive Answer Block (`.answer-block`) must follow a disciplined 4-sentence structure (40–130 words) that foregrounds the analytical contrast rather than drowning the reader in spreadsheet denominators:
 1. **Sentence 1 — Action-First Analytical Mechanism (0 numbers):** State how the analytical method or decomposition solves the practical policy problem (`Separating Medi-Cal renewals by work hours and exemption type shows where county outreach prevents paperwork coverage losses [1].`).
-2. **Sentence 2 — County Rationale Bridge (`We can consider [County], where [structural rationale]...`, 0–1 focal stat):** Introduce any single-county or multi-county anchor via the **structural tension** that makes it a diagnostic test case (`We can consider Santa Clara County, where low unemployment rules out a countywide jobless waiver even though 88.5% of expansion adults already work or qualify for an exemption [1,2].`).
+2. **Sentence 2 — Statewide Baseline or County Rationale Bridge (`We can consider [County], where [structural rationale]...`, 0–1 focal stat):** Anchor on the 58-county statewide baseline, or introduce a single-county anchor via the **structural tension** that makes it a diagnostic test case (`We can consider Santa Clara County, where low unemployment rules out a countywide jobless waiver even though 88.5% of expansion adults already work or qualify for an exemption [1,2].`).
 3. **Sentence 3 — Parallel Metric Pairing on Identical Units (2–3 focal stats):** Pair the adjusted/decomposed finding directly against the unadjusted baseline in the **exact same unit** (`In our subgroup model, 52.5% of projected losses are preventable paperwork drops (14,219 of 27,076 per cycle), whereas scaling the statewide funnel by population share projects 36,218 to 41,100 losses with no subgroup detail [1,3].`).
 4. **Sentence 4 — Operational Takeaway (0 numbers):** State how that split changes budget or staffing decisions using substantive subgroup names (`That subgroup split directs navigation staff to exempt caregivers, disabled adults, and variable-hour workers rather than treating renewal drop-offs as lost eligibility [3].`).
 
@@ -154,7 +159,9 @@ Every Executive Answer Block (`.answer-block`) must follow a disciplined 4-sente
 - **Tier 3 (Linked TooEarlyToSay.com Full Methodology Article — Mandatory for Buckets 1 & 2):**
   - House multi-equation identification derivations, first-stage $F$ and Hansen $J$ algebra, Breusch-Pagan tests, distributed-lag matrices, 47-specification robustness curves, and replication code.
 
-### Rule 8 — Audience-Native Operational Problem Hook, Zero Straw-Man Drama & Zero Imperative Scolding (`Rule 29a–b`)
+---
+
+## 8. Audience-Native Operational Problem Hook, Zero Straw-Man Drama & Zero Imperative Scolding (`Rule 29a–b`)
 - **Zero Straw-Man Drama (`Rule 29a`):**
   - Never open or frame a case study with unverified sociological claims about dysfunctional committees, supervisors under political pressure, or caricature analysts (`"Budget committees often stall..."`, `"County supervisors face pressure to cut..."`, `"adding twenty control variables takes three seconds"`).
 - **Zero Imperative Scolding in Sentence 1 (`Rule 29b`):**
@@ -168,12 +175,62 @@ Every Executive Answer Block (`.answer-block`) must follow a disciplined 4-sente
     5. **The Unequal-Caseload & Baseline-Drift Program-Comparison Hook** (`selection-into-treatment`, `study-design-ladder`, `parallel-trends-power`, `measurement-error-claims`).
     6. **The Downstream-Milestone Split Hook** (`classifying-causal-mechanisms`).
 
-### Rule 9 — Two-Tier Flesch-Kincaid Reading Level Gate (`Rule 30a–b`)
+---
+
+## 9. Two-Tier Flesch-Kincaid Reading Level Gate (`Rule 30a–b`)
 - **Non-Collapsed Executive Text (`Rule 30a`, `FKGL <= 6.50`):**
-  - All visible text inside `<main>` outside `<details>`, `<select>`, `<script>`, and `<style>` (including H1, Subtitle, Executive Answer Block, Table 1 & Table 2 headers/cells, and Scenario cards) must achieve a Flesch-Kincaid Grade Level (`0.39 * ASL + 11.8 * ASW - 15.59`) of **$\le 6.50$**.
+  - All visible text inside `<main>` outside `<details>`, `<select>`, `<script>`, and `<style>` (including H1, Subtitle, Policy Setting, Executive Answer Block, Table 1 & Table 2 headers/cells, and Scenario cards) must achieve a Flesch-Kincaid Grade Level (`0.39 * ASL + 11.8 * ASW - 15.59`) of **$\le 6.50$**.
 - **Collapsed `<details>` Notes & Synthesis (`Rule 30b`, `FKGL <= 8.00`):**
   - All collapsible `<details>` blocks inside `<main>` (Table 1 Notes, Table 2 Notes, Scenario Notes, and Block 5 Data Sources, Model Inputs, Synthesis, FAQs & Endnotes) must achieve a combined Flesch-Kincaid Grade Level of **$\le 8.00$**.
 
+---
 
+## 10. Three-Stage Authoring Pipeline, Subtle Analytic Perspective & Ledger Purity (`Rule 33`)
 
+To prevent readability edits or practitioner framing from conflating assumed scenario inputs with empirical findings, introducing colloquial/sales copy, stamping overwhelming `Perspective:` badges onto headers, or summing incompatible ledgers, case study creation and revision must strictly separate three gated processes:
 
+- **Stage 1 — Drafting (Data Provenance & Parameter Ledger Lock, `Rule 33b`):**
+  - Before any narrative prose is drafted, every quantitative parameter in the module must be explicitly classified into one of three immutable provenance buckets:
+    1. **`[Model Input / Assumed Scope]`**: Hypothetical scenario parameters, target caseloads, assumed catchment sizes, or statutory fee-schedule inputs (e.g., `55 Medi-Cal patients/yr`, `75 clinic patients/yr`, `150 adults across 10 ZIP codes`, `750-client cohort`, `$1,930,000 Year-1 budget`, `$10/resident shock`). In Table 1, rows containing assumed caseloads or cost inputs must be explicitly labeled (`Assumed Annual Caseload (Model Input)`, `Assumed Program Cost Input`), and rows containing modeled outputs must set `modeled: true` so the renderer appends `*` and links to the model footnote.
+    2. **`[Observed Administrative Baseline]`**: Empirical counts and rates measured directly in state/federal registries (e.g., `279,905 HCAI PQI stays`, `472,014 DHCS enrollees`, `$54,000 BLS QCEW statewide base wage`).
+    3. **`[Modeled / Estimated Finding]`**: Econometric or simulation outputs derived by combining inputs and baselines.
+- **Stage 2 — Readability & Plain-Language Copy Editing (`Rule 30a–b`):**
+  - Copy editors simplifying sentence structure to meet the Grade $\le 6.50$ Flesch-Kincaid ceiling **must never strip the `[Assumed]` / `[Model Input]` qualifier** from a scenario scope parameter or promote a model assumption (`10 ZIP codes`, `150 adults`, `55 patients`) into an empirical finding slot.
+- **Stage 3 — Public Health Officer (PHO) Implications Pass & Subtle Perspective (`Rule 33a & 33c`):**
+  - Every case study undergoes a dedicated **PHO Implications Pass** that channels county public health officer decision questions while enforcing CAPHE's neutral institutional voice (`marketing/voice-specifications-all-properties.md`):
+    - **Subtle Perspective via Row Structure & Class Taxonomy (`Rule 33a`, Zero `Perspective:` Badge Clutter):**
+      - Never stamp mechanical `Perspective: Medicaid Plan` or `Perspective: Societal` badges onto Table 1 column headers, dropdowns, or cards, and never use colloquial money metaphors (`whose pocket`, `wrong pocket`, `dollars land`, `pot of money`, `pay-in`, `payout`) or political-strategy/sales headers (`how to pitch`, `defending core budgets`, `framing by audience`, `sales pitch`).
+      - **Class A — Multi-Payer Financing & Cost-Effectiveness Modules** (`chw-health-outcomes`, `budget-impact`, `measuring-health-common-unit`, `cost-effectiveness-ratio`, `sensitivity-analysis-cea`): Capture perspective naturally through **self-explanatory row structure in Table 1** (*Assumed Caseload Input* $\rightarrow$ *Annual Worker/Program Cost* $\rightarrow$ *Direct Medi-Cal Visit Billing* $\rightarrow$ *Year-1 Hospital Savings* $\rightarrow$ *Added Healthy Years [QALYs]* $\rightarrow$ *Net Cost per QALY / Pays for Itself*) and a plain-English `"Where the Return Shows Up"` row in Table 2.
+      - **Class B — Multi-Tier Statutory & Administrative Incidence Modules** (`selection-into-treatment`, `threat-maturation-solutions`, `identical-data-opposite-policies`): Name the statutory/administrative tier naturally in row/column labels (federal formula, state payroll fund, county administration, household take-up).
+      - **Class C — Measurement, Targeting & Econometric Identification Modules** (remaining 16 modules): Omit payer-perspective framing completely so it never clutters geographic, subpopulation, or estimator comparisons.
+    - **Strict Ledger & Unit Purity (Never Sum Cash Flows and QALYs):**
+      - Never add cash budget flows (Medicaid plan claims, hospital bed-cost offsets, clinic billing) to monetized health gains (QALYs or VSL) into a single summed dollar row (`Total Annual Value: $407,006`). Keep cash offsets and multi-year health gains (`QALYs`) on separate rows with a standard ICER (`$/QALY` or `Pays for itself in Year 1`) bottom line.
+    - **Rounded Estimates & Ranges in Prose, Zero False-Precision Point Numbers (`Rule 33c`):**
+      - In narrative prose (`answerHtml`, `block2.*.desc`, `table2` prose cells, `synthesis`, `faqs`), modeled dollar and clinical projections must be expressed as appropriately rounded estimates or ranges (e.g., `~$107,000`, `~$184,000`, `~$291,000`, `~3.0 to 8.2 QALYs`, `~$36,100 per QALY`, `~11–12 stays`), reserving exact unrounded reconciliation figures strictly for Table 1 cells and technical `<details>` notes. Unmodeled extrapolations (such as inventing a "vacancy/cut impact" row by flipping signs without modeling fixed-overhead stickiness) are strictly prohibited.
+
+---
+
+## 11. Statewide 58-County California Default & Single-County Structural Justification (`Rule 33d`)
+- **Statewide 58-County Default:**
+  - All CAPHE case studies must anchor by default on **statewide 58-county California data** (or multi-county regional archetypes spanning urban, suburban, agricultural, and rural counties). Never default to Santa Clara County for statewide CHW, fiscal, CEA, or LHA modules (`chw-health-outcomes`, `budget-impact`, `measuring-health-common-unit`, `cost-effectiveness-ratio`, `reverse-causation-feedback`, `classifying-causal-mechanisms`, `sensitivity-analysis-cea`).
+- **Single-County Exception Rule (Explicit Structural Mechanism Required):**
+  - A single county (e.g., Santa Clara, Fresno, Nevada, Imperial, Marin) may be highlighted in visible text **only** when demonstrating a specific, explicitly stated structural mechanism that requires sub-state contrast—for example:
+    1. *Statutory Exemption Extreme (`medicaid-expansion`)*: Illustrating an urban county with low unemployment (`~4.1%`, `0.0%` jobless waiver share) versus high-unemployment waiver counties.
+    2. *Urban vs. Rural Distance Cutoff (`geographic-variables`, `food-insecurity-diabetes`, `food-affordability-tradeoffs`, `identical-data-opposite-policies`)*: Contrasting a store-dense suburban county (where 26 of 27 tracts `> 1 mile` are wealthy foothills and only 1 of 408 tracts meets the USDA food-desert cutoff) against agricultural/rural counties (Fresno, Nevada, Imperial).
+    3. *Sub-County Registry or Small-Cell Stratification (`threat-measurement-instrumentation`, `p-hacking-multiple-testing`, `study-design-ladder`)*: Demonstrating municipal counter-permit deduplication or small-cell noise in a 62-cell county age-by-language operational grid (`n = 47` Samoan vs. `n = 138,215` Spanish).
+
+---
+
+## 12. Data Visualization Standards & Hard Ban on Stacked Bar Charts (`Rules V1–V3`)
+- **Rule V1 — Earned Space (When to Include a Data Visualization):**
+  - Include a data visualization when it communicates a quantitative relationship at a glance that a 4-column table cannot easily show:
+    1. *Threshold / Breakeven & Multi-Ledger Gaps* (e.g., the paired horizontal bar chart in `chw-health-outcomes` comparing Worker Cost, Direct Visit Billing, and Year-1 Hospital Savings against the vertical dashed breakeven line),
+    2. *Pre/Post Trajectories & Counterfactual Divergence*, or
+    3. *Sequential Administrative Funnel Drop-Offs*.
+  - Omit standalone charts when a 4-column comparison table of archetypes or estimators is cleaner.
+- **Rule V2 — Hard Ban on Stacked Bar Charts & Mixed-Unit Bars:**
+  - **NO STACKED BAR CHARTS** anywhere across the case studies (neither SVG stacked `<rect>` segments nor CSS `.budget-bar-seg` stacked tracks).
+  - Always use separate, individual horizontal or grouped bars on a shared axis with clear tick marks, direct data labels, and $\ge 4.5:1$ contrast.
+  - Keep non-cash health outcomes (`QALYs`) in a separate callout or gauge—never plotted or stacked onto cash dollar bars.
+- **Rule V3 — Placement:**
+  - Place charts inside the interactive County/Scenario section or paired with Table 1—never above the `Policy Setting` introduction.

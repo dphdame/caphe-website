@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
  * Wave 2 Builder: 4 Flagship California Public Health Economics Case Studies
- * - #7 chw-health-outcomes (Track 1, community, Mode A on SCC PHD HCAI 2024 + DHCS SPA 22-0001)
+ * - #7 chw-health-outcomes (Track 1, community, Mode A on 58-County HCAI 2024 + BLS QCEW + DHCS SPA 22-0001)
  * - #8 medicaid-expansion (Track 1, community, Mode A Calibrated Funnel on Observed DHCS Enrollment Baseline)
- * - #24 comparing-two-programs (Track 3, member, Mode A SCC FY 2026-27 CHW Procurement Corpus)
  * - #28 food-insecurity-diabetes (Track 4, community, Mode A Modeled Area-Median Post-Rent Benchmark & Multi-Level Synthesis)
  */
 
@@ -20,7 +19,7 @@ const wave2Modules = [
         visibleLabel: 'Statewide CHW Reimbursement Analysis',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,129 census tracts, a flat $26.66 Medi-Cal fee schedule covers less than 11% of community health worker labor costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
       }
     ],
     tier: 'community',
@@ -36,29 +35,30 @@ const wave2Modules = [
       '<a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi et al. (2020), Health Affairs</a> &amp; <a href="https://hcai.ca.gov/data/healthcare-utilization/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">HCAI / AHRQ HCUP Hospital Cost Benchmarks</a>: Trial cuts (-22% ER visits, -30% hospital stays, -23% readmissions).',
       '<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Neumann, Cohen &amp; Weinstein (2014), NEJM</a> &amp; <a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">UCSF Healthforce Center</a>: Standard $100,000 per QALY value and CHW job stay benchmarks.'
     ],
-    answerHtml: 'When sizing a county Community Health Worker team, relying only on Medi-Cal visit billing leaves an 89% to 94% pay gap for field outreach [1,2]. Across all 58 state counties, one full-time CHW costs <strong>$92,684 to $122,102</strong> per year [2]. Yet Medi-Cal pays a flat <strong>$31.74</strong> per 30-minute visit [1]. In our four-model comparison, visit fees cover just <strong>6% to 11%</strong> of field pay [1,2]. Adding modeled hospital savings and two-year health gains brings <strong>$407,006 to $852,900</strong> in yearly value per worker [1,3,4]. Splitting hospital, clinic, and local outreach tracks helps county teams blend health plan funds, bed savings, and grants [3,4].',
+    policySettingHtml: 'Community Health Workers and Promotoras help California families manage chronic illness, schedule clinic care, and avoid emergency room trips. In 2022, Medi-Cal added a statewide per-visit billing benefit to help counties and clinics fund these workers.',
+    answerHtml: 'When sizing a county Community Health Worker team, relying only on Medi-Cal visit billing leaves an 89% to 94% pay gap because one full-time CHW costs <strong>$92,684 to $122,102</strong> per year across all 58 state counties while Medi-Cal pays a flat <strong>$31.74</strong> per 30-minute visit [1,2]. In our four-model comparison, hospital and clinic teams offset <strong>~$107,000 to $291,000</strong> in modeled Year-1 hospital costs [1,3]. Neighborhood outreach gains <strong>~8.2 healthy life-years (QALYs)</strong> over two years at a modeled net cost of <strong>~$7,800 per QALY</strong> [3,4]. Tracking visit pay, Year-1 hospital savings, and two-year health gains on separate rows shows how counties pair health plan contracts, hospital bed savings, and prevention grants [3,4].',
     block2: null,
     table1: {
       title: 'Table 1. Costs, Hospital Savings &amp; Health Gains Across 4 Program Models',
-      subtitle: 'One full-time worker serves a distinct group in each model. Use the 58-county lookup below for local numbers.',
-      caption: 'Four state CHW models compared by people served, worker pay, visit fees, Year-1 hospital savings, healthy years, and total value.',
+      subtitle: 'One full-time worker serves an assumed cohort in each model across separate cost and health ledgers. Use the 58-county lookup below for local numbers.',
+      caption: 'Four state CHW models compared by assumed caseload, worker pay, visit fees, Year-1 hospital savings, healthy years, and net cost per QALY.',
       cornerLabel: 'Program Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> Unit is 1 full-time worker. <strong>Row 1 (Base Use):</strong> Scenarios 1 and 2 serve patients with 2.23 ER visits and 0.70 hospital stays per year. Scenario 3 serves clinic patients with diabetes or asthma. They average 1.40 ER visits and 0.35 stays per year. Scenario 4 reaches 150 adults in the 10 highest-need ZIP codes (60% non-English homes). <strong>Row 2 (58-County Pay):</strong> 2024 BLS county pay runs from $92,684 to $122,102 per year. Local outreach pay runs from $87,434 to $116,852. Scenario 3 shows Year 2+ ongoing clinic cost. <strong>Row 3 (* Visit Pay):</strong> DHCS SPA 22-0001 pays a flat $31.74 per 30-minute visit. Scenarios 1, 2, and 4 use field visits. Scenario 3 uses set clinic visits. <strong>Row 4 (* Hospital Savings):</strong> Uses Kangovi et al. (2020) trial cuts. Scenario 1 uses Medi-Cal plan rates. Scenarios 2 to 4 use 2024 HCAI full bed costs. Net Year-1 cash is +$3,287 in Scenario 1, +$187,452 in Scenario 2, and +$80,964 in Scenario 3. Scenario 4 has a -$63,569 net outlay, or $7,771 per QALY. <strong>Rows 5 &amp; 6 (* Health &amp; Total Value):</strong> Added healthy years (QALYs, at 0.0545 per adult over 2 years, 3% discount rate) are valued at $100,000 per QALY (Neumann et al., 2014). Scenario 4 also adds 38 early checks per year.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> Unit is 1 full-time worker. <strong>Row 1 (Assumed Model Input &amp; Scope):</strong> Scenarios 1 and 2 assume a 55-patient annual caseload with baseline use of 2.23 ER visits and 0.70 hospital stays per year. Scenario 3 assumes a 75-patient clinic caseload with diabetes or asthma (averaging 1.40 ER visits and 0.35 stays per year). Scenario 4 assumes an outreach cohort of 150 adults across a 10-ZIP-code high-need catchment (60% non-English homes). <strong>Row 2 (58-County Pay):</strong> 2024 BLS county pay runs from $92,684 to $122,102 per year ($103,719 statewide median). Local outreach pay runs from $87,434 to $116,852. Scenario 3 shows Year 2+ ongoing clinic cost. <strong>Row 3 (* Visit Pay):</strong> DHCS SPA 22-0001 pays a flat $31.74 per 30-minute visit. Scenarios 1, 2, and 4 use field visits. Scenario 3 uses set clinic visits. <strong>Row 4 (* Hospital Savings):</strong> Uses Kangovi et al. (2020) trial cuts. Scenario 1 values avoided care at Medi-Cal managed care plan claim rates ($600 per ER visit, $7,000 per stay). Scenarios 2 to 4 value avoided care at full hospital bed costs ($2,100 per ER visit, $18,500 per stay) from 2024 HCAI files. Net Year-1 cash is +$3,287 in Scenario 1, +$187,452 in Scenario 2, and +$80,964 in Scenario 3. Scenario 4 has a $63,569 net outlay, or $7,771 per QALY. <strong>Rows 5 &amp; 6 (* Health &amp; Net Cost per QALY):</strong> Added healthy years (QALYs, at 0.0545 per adult over 2 years, 3% discount rate) are valued at $100,000 per QALY (Neumann et al., 2014) and kept on a separate ledger from Year-1 cash flows. Scenario 4 also adds 38 early checks per year.',
       columns: [
-        { tag: 'Scenario 1', tagHighlight: false, title: 'Hospital Care (Medi-Cal View)', subtitle: '' },
-        { tag: 'Scenario 2', tagHighlight: false, title: 'Hospital Care (Hospital View)', subtitle: '' },
-        { tag: 'Scenario 3', tagHighlight: false, title: 'Clinic Chronic Care', subtitle: '' },
-        { tag: 'Scenario 4', tagHighlight: false, title: 'Neighborhood Outreach', subtitle: '' }
+        { tag: 'Scenario 1', tagHighlight: false, title: 'Hospital Care (Plan Claims)', subtitle: 'Medi-Cal plan claims for 55 high-need patients' },
+        { tag: 'Scenario 2', tagHighlight: false, title: 'Hospital Care (Bed Costs)', subtitle: 'Full hospital bed costs for 55 high-need patients' },
+        { tag: 'Scenario 3', tagHighlight: false, title: 'Clinic Chronic Care', subtitle: 'Scheduled clinic visits and hospital stays for 75 patients' },
+        { tag: 'Scenario 4', tagHighlight: false, title: 'Neighborhood Outreach', subtitle: 'Neighborhood prevention across 150 adults in 10 ZIP codes' }
       ],
       rows: [
         {
-          label: 'Who This Model Serves',
+          label: 'Assumed Annual Caseload (Model Input)',
           modeled: false,
           cells: [
-            { val: '55 Medi-Cal patients' },
-            { val: '55 hospital patients' },
-            { val: '75 clinic patients' },
-            { val: '150 local adults' }
+            { val: '55 Medi-Cal patients (assumed)' },
+            { val: '55 hospital patients (assumed)' },
+            { val: '75 clinic patients (assumed)' },
+            { val: '150 local adults (assumed)' }
           ]
         },
         {
@@ -92,32 +92,32 @@ const wave2Modules = [
           ]
         },
         {
-          label: 'Added Healthy Years (2-Yr Horizon)',
+          label: 'Two-Year Health Gains (QALYs)',
           modeled: true,
           cells: [
-            { val: '+3.00 QALYs ($300,000)' },
-            { val: '+3.00 QALYs ($300,000)' },
-            { val: '+4.09 QALYs ($409,000)' },
-            { val: '+8.18 QALYs ($818,000)' }
+            { val: '+3.00 QALYs (55 patients, 2 yrs)' },
+            { val: '+3.00 QALYs (55 patients, 2 yrs)' },
+            { val: '+4.09 QALYs (75 patients, 2 yrs)' },
+            { val: '+8.18 QALYs (150 adults, 2 yrs)' }
           ]
         },
         {
-          label: 'Total Annual Value',
+          label: 'Net Cost per Healthy Year Gained',
           modeled: true,
           highlight: true,
           cells: [
-            { val: '$407,006 (3.92:1 return)', barWidth: 48, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '$591,171 (5.70:1 return)', barWidth: 69, barColor: '#0D9488', textColor: 'text-emerald-900' },
-            { val: '$591,333 (5.83:1 return)', barWidth: 69, barColor: '#0D9488', textColor: 'text-emerald-900' },
-            { val: '$852,900 (8.66:1 return)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-900' }
+            { val: 'Pays for itself (+$3,287 net cash)', barWidth: 92, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: 'Pays for itself (+$187,452 net cash)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-900' },
+            { val: 'Pays for itself (+$80,964 net cash)', barWidth: 96, barColor: '#0D9488', textColor: 'text-emerald-900' },
+            { val: '$7,771 / QALY ($63,569 net outlay)', barWidth: 88, barColor: '#0D9488', textColor: 'text-emerald-900' }
           ]
         }
       ]
     },
     table2: {
       title: 'Table 2. When Each Model Works Best &amp; How to Fund It',
-      subtitle: 'How each CHW model fits a clear health goal and a steady county funding mix.',
-      caption: 'Guide comparing when each CHW model works best, main value, key limits, and how counties pay for it.',
+      subtitle: 'How each CHW model fits a clear health goal, budget holder, and steady county funding mix.',
+      caption: 'Guide comparing when each CHW model works best, where the return shows up, key limits, and how counties pay for it.',
       cornerLabel: 'Decision Guide',
       rows: [
         {
@@ -130,19 +130,19 @@ const wave2Modules = [
           ]
         },
         {
-          label: 'Main Value Beyond Hospital Bills',
+          label: 'Where the Return Shows Up',
           cells: [
-            { val: 'Links patients to a doctor right after a stay.' },
-            { val: 'Opens full ER bays and beds for sick patients.' },
-            { val: 'Keeps blood sugar and asthma in check with set visits.' },
-            { val: 'Reaches families who skip clinics due to language or fear.' }
+            { val: 'Managed care plan claims budget in Year 1.' },
+            { val: 'Hospital bed capacity and unpaid care budget.' },
+            { val: 'Clinic visit revenue plus health plan hospital claims.' },
+            { val: 'Two-year resident health gains across high-need ZIP codes.' }
           ]
         },
         {
           label: 'Key Operational Limit',
           cells: [
             { val: 'Field trips cannot bill enough visits to pay full wages.' },
-            { val: 'Small 55-patient loads reach fewer total county adults.' },
+            { val: 'Assumed 55-patient loads reach fewer total county adults.' },
             { val: 'Needs patients who already see a regular clinic doctor.' },
             { val: 'Health gains build over two years past Year-1 bills.' }
           ]
@@ -162,34 +162,34 @@ const wave2Modules = [
       notesBullets: [
         '<strong>Flat Medi-Cal Pay vs. Local Worker Costs:</strong> Under <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a>, Medi-Cal pays a flat $31.74 per 30-minute health education visit across all 58 counties. Individual units pay $26.66. Local worker costs come from 2024 <a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Bureau of Labor Statistics QCEW</a> county wages. Pay averages $54,000 base or $103,719 loaded statewide. Across 58 counties, total cost runs from $92,684 to $122,102. That sum includes 35% fringe, $19,000 lead support, $4,000 training, and 10% office cost.',
         '<strong>Medi-Cal Rates vs. Full Hospital Costs:</strong> Medi-Cal plan rates are $600 per ER visit, $7,000 per hospital stay, and $6,000 per readmission. Those numbers match DHCS fee tables. Full hospital costs are $2,100 per ER visit, $18,500 per stay, and $15,000 per readmission. Those numbers come from <a href="https://hcai.ca.gov/data/healthcare-utilization/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California HCAI</a> and <a href="https://hcup-us.ahrq.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">AHRQ HCUP</a> cost files.',
-        '<strong>Why Year-1 Hospital Bills Leave Out Scenario 4 Value (150 Adults in 10 High-Need ZIP Codes):</strong> Official 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI)</a> log 279,905 avoidable stays in the state. The rate is 902.5 per 100,000 adults in PQI 90 and 715.3 in PQI 92. In high-need ZIP codes, 60% of adults speak a language other than English at home. Also, 14% of immigrant adults skip public aid out of fear. They face 2.4x higher odds of late care (Wolstein et al., 2022, JAMA Network Open). Reaching 150 adults stops 6.6 ER visits and 1.10 stays in Year 1 ($34,900 saved). It also adds 38 checks and brings <strong>8.18 quality-adjusted life years (QALYs)</strong>. That equals 0.0545 QALYs per adult over 2 years at a 3% discount rate. Each QALY is valued at $100,000 (<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann et al., 2014, NEJM</a>). After subtracting $34,900 in bed savings, Scenario 4 costs <strong>$7,771 per QALY gained</strong> ($63,569 / 8.18 QALYs). It brings <strong>$852,900/yr</strong> in total value (8.66:1).'
+        '<strong>Why Year-1 Hospital Bills Leave Out Scenario 4 Value (Assumed 150-Adult Cohort Across 10 High-Need ZIP Codes):</strong> Official 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI)</a> log 279,905 avoidable stays in the state. The rate is 902.5 per 100,000 adults in PQI 90 and 715.3 in PQI 92. In high-need ZIP codes, 60% of adults speak a language other than English at home. Also, 14% of immigrant adults skip public aid out of fear. They face 2.4x higher odds of late care (Wolstein et al., 2022, JAMA Network Open). In a modeled scenario reaching 150 adults, outreach stops 6.6 ER visits and 1.10 stays in Year 1 ($34,900 saved). It also adds 38 checks and brings <strong>8.18 quality-adjusted life years (QALYs)</strong>. That equals 0.0545 QALYs per adult over 2 years at a 3% discount rate. Each QALY is valued at $100,000 (<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann et al., 2014, NEJM</a>). After subtracting $34,900 in bed savings from the $98,469 worker cost, Scenario 4 has a net outlay of $63,569 and costs <strong>$7,771 per QALY gained</strong> ($63,569 / 8.18 QALYs), which is 92% below the $100,000 benchmark.'
       ]
     },
     countyLookup: {
       badge: '58-County Lookup &amp; Impact Check',
-      title: 'See Worker Pay, Hospital Savings, Healthy Years &amp; Total Value by County',
+      title: 'See Worker Pay, Hospital Savings, Healthy Years &amp; Net Cost per QALY by County',
       subtitle: 'Pick a county, a program model, and a health impact level below.',
       dataPath: 'data/chw_county_benchmarks_2024.json'
     },
     synthesis: {
       title: 'Matching Each CHW Model to the Right Group, Goal &amp; Budget',
-      p1: 'Local health leaders face two plain questions. First, how do counties pay a living wage ($92,684 to $122,102/yr) when Medi-Cal pays a flat $31.74 per 30-minute visit? Second, how should each model be judged? Judging every CHW team only by Year-1 bed bills favors small hospital teams. It shortchanges local outreach.',
-      p2: 'Weighing both Year-1 bed savings and two-year healthy years (QALYs) shows where each model fits best. Hospital teams serving 55 sick patients fit best when health plans and hospitals need fast ER and bed savings ($107,006 to $291,171/yr). Clinic teams serving 75 patients fit best when clinics bill for set visits ($46,561/yr, or 45.9% of pay) while cutting hospital bills ($182,333/yr). Local Promotora outreach across 150 adults in the 10 highest-need ZIP codes fits best for health agencies reaching families who delay care. It adds 8.18 healthy years ($818,000 value) plus $34,900 in bed savings. Total value reaches $852,900 (8.66:1) at $7,771 per QALY.'
+      p1: 'Local health leaders face two plain questions when building a Community Health Worker program: how to cover a county living wage ($92,684 to $122,102/yr) when Medi-Cal pays a flat $31.74 per 30-minute visit, and which return measure fits each care setting. Judging every team only by Year-1 hospital bills favors small hospital cohorts and undervalues neighborhood prevention.',
+      p2: 'Keeping direct visit billing, Year-1 hospital savings, and two-year healthy life-years (QALYs) on separate rows shows where each model fits best. Hospital teams serving an assumed 55-patient cohort fit best when health plans and hospitals need fast ER and bed offsets (~$107,000 in plan claims or ~$291,000 in bed costs), paying for themselves in Year 1. Clinic teams serving an assumed 75-patient cohort fit best when clinics bill for scheduled visits (~$46,600/yr, or ~46% of pay) while cutting hospital stays (~$182,000/yr). Neighborhood Promotora outreach serving an assumed 150-adult cohort across 10 high-need ZIP codes fits best for public health agencies reaching families who delay care, gaining ~8.2 QALYs over two years plus ~$35,000 in Year-1 hospital offsets at a net cost of ~$7,800 per QALY gained.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Policy &amp; Fiscal Model on Observed 58-County Baselines):</strong> This flagship study pairs state Medi-Cal fee rules, 2024 HCAI county stay counts, 2026 DHCS plan counts, and 2024 BLS QCEW county pay with trial effect sizes and two-year health weights. The unit of study is 1.0 FTE Community Health Worker across four annual caseloads. Those are 55 hospital patients, 75 clinic patients, or 150 adults across the 10 highest-need ZIP codes in a county.',
+      '<strong>Mode Classification (Mode A Policy &amp; Fiscal Model on Observed 58-County Baselines):</strong> This flagship study pairs state Medi-Cal fee rules, 2024 HCAI county stay counts, 2026 DHCS plan counts, and 2024 BLS QCEW county pay with trial effect sizes and two-year health weights. The unit of study is 1.0 FTE Community Health Worker across four assumed annual caseload scenarios: 55 hospital patients, 75 clinic patients, or 150 adults across a 10-ZIP-code high-need catchment.',
       '<strong>Statutory Fee Schedule Provenance (Zero Regional Adjustment):</strong> California <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Department of Health Care Services (DHCS) State Plan Amendment 22-0001</a> sets flat state CHW rates for CPT 98960-98962. It pays $26.66 per 30-minute individual unit and $31.74 per 30-minute group education unit (modifier U2). There is no county wage adjustment. Visit counts, avoided stays, QALY gains, and net county balances are modeled.',
-      '<strong>58-County HCAI Preventable Hospitalization &amp; BLS QCEW Wage Provenance:</strong> County stay rates come from the 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI) dataset</a>. It covers N = 31,012,717 state adults with 279,905 avoidable stays (902.5 per 100,000 in PQI 90) and 221,844 chronic stays (715.3 per 100,000 in PQI 92). County wage tiers come from 2024 <a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. BLS Quarterly Census of Employment and Wages (QCEW)</a> county pay. They are scaled to Santa Clara County Public Health FY 2026-27 wage rules ($59,000 base or $112,915 loaded in clinic; $54,000 base or $103,719 loaded statewide).',
+      '<strong>58-County HCAI Preventable Hospitalization &amp; BLS QCEW Wage Provenance:</strong> County stay rates come from the 2024 <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI Prevention Quality Indicators (PQI) dataset</a>. It covers N = 31,012,717 state adults with 279,905 avoidable stays (902.5 per 100,000 in PQI 90) and 221,844 chronic stays (715.3 per 100,000 in PQI 92). County wage tiers come from 2024 <a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. BLS Quarterly Census of Employment and Wages (QCEW)</a> county pay across all 58 California counties ($54,000 base or $103,719 loaded statewide median, ranging from $92,684 in rural counties to $122,102 in high-cost urban counties, including 35% fringe, supervision, training, and 10% indirect cost).',
       '<strong>Trial Effect Sizes, Care Avoidance &amp; QALY Utility Parameters:</strong> Hospital cuts (-22% ER visits, -30% hospital stays, -23% 30-day readmissions) come from the IMPaCT trial (<a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi et al., 2020, Health Affairs</a>). Two-year QALY gains equal 0.0545 QALYs per adult at a 3% discount rate (chronic disease 0.025, mental health 0.040, social needs 0.020). They are valued at $100,000 per QALY (<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Neumann, Cohen &amp; Weinstein, 2014, N Engl J Med</a>; Stansert Katzen et al., 2025, Lancet Primary Care). Care delay rates in immigrant areas (13.7% skip rate; OR = 2.39 for late care) come from Wolstein et al. (2022, JAMA Network Open). Staff turnover rates come from <a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">UCSF Healthforce Center</a> surveys (N = 210).'
     ],
     faqs: [
       {
         question: 'Under which circumstances is each of the four CHW models best?',
-        answer: 'Hospital teams (55 high-need patients) work best when a health plan or county hospital needs fast Year-1 ER and bed savings. They save $107,006 at Medi-Cal rates or $291,171 at full bed cost. Clinic teams (75 patients) work best for clinics that can bill set 30-minute visits ($46,561/yr, or 45.9% of pay) while saving $182,333 in hospital costs. Local Promotora outreach (150 adults across 10 high-need ZIP codes) works best for public health teams reaching families who delay clinic care. It brings the largest health gain (+8.18 QALYs, worth $818,000) at a net cost of $7,771 per QALY.'
+        answer: 'Hospital teams (assumed 55-patient cohort) work best when a health plan or county hospital needs fast Year-1 ER and bed offsets. They offset ~$107,000 in Medi-Cal plan claims or ~$291,000 in full hospital bed costs, paying for themselves in Year 1. Clinic teams (assumed 75-patient cohort) work best for clinics that bill set 30-minute visits (~$46,600/yr, or ~46% of pay) while offsetting ~$182,000 in hospital costs. Local Promotora outreach (assumed 150-adult cohort across 10 high-need ZIP codes) works best for public health teams reaching families who delay clinic care. It brings the largest health gain (~8.2 QALYs, valued at ~$818,000) at a net cost of ~$7,800 per QALY.'
       },
       {
         question: 'Why is same-year hospital and emergency cost offset too narrow to evaluate neighborhood promotora prevention?',
-        answer: 'Local Promotoras reach families early, before blood sugar or high blood pressure leads to an ER trip. Counting only Year-1 hospital bills captures $34,900 in bed savings. Yet it leaves out 38 early checks per year and 8.18 added healthy years (QALYs) across 150 adults. Valuing health gains at $100,000 per QALY shows $852,900 in yearly value (8.66:1). The net cost is $7,771 per QALY gained, which is 92% below the $100,000 benchmark.'
+        answer: 'Local Promotoras reach families early, before blood sugar or high blood pressure leads to an ER trip. Counting only Year-1 hospital bills captures ~$35,000 in bed offsets. Yet it leaves out ~38 early checks per year and ~8.2 added healthy life-years (QALYs) across the modeled 150-adult cohort. Valuing health gains on a two-year health ledger at $100,000 per QALY shows ~$818,000 in health value, and the net cost after Year-1 bed offsets is ~$7,800 per QALY gained, which is 92% below the $100,000 benchmark.'
       },
       {
         question: 'Does Medi-Cal adjust its CHW reimbursement rate for high-cost California counties?',
@@ -219,9 +219,10 @@ const wave2Modules = [
       '<a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019–2023 5-Year PUMS</a> (<code>extract_pums.py</code> &amp; <code>scc_hr1_medicaid_risk_profiles.csv:1-46</code>). We pull 97,933 person records across all 15 Santa Clara County PUMAs (08501–08515). The subset has n = 6,297 unweighted adults ages 19–64 on Medicaid/Medi-Cal (HINS4 = 1) without Medicare/SSI (HINS3 != 1, SSP = 0) at income &le;138% FPL (POVPIP &le; 138). Using person weight PWGTP and 80 replicate weights (PWGTP1–PWGTP80) gives 133,998 &plusmn; 3,905 (rounded to 134,000) adults. Scaling to the 120,239 DHCS base shows <strong>77.5% (93,233 DHCS-scaled)</strong> meet the &ge;80 hr/mo rule in Group 1 (38.01%, 45,703 DHCS-scaled; 50,934 &plusmn; 2,423 ACS) or hold a rule exemption in Group 2 (39.53%, 47,530 DHCS-scaled; 52,971 ACS across Bucket B care &lt;14 [30,074], Bucket C birth/disability [11,129], and Bucket D student [11,768]). Another <strong>11.01% (13,226 DHCS-scaled; 14,752 ACS)</strong> work in Group 3 gig or part-time jobs (Buckets E [3,313], F [7,467], G [3,972]). Their status rests on a 1-month-in-6 lookback (88.5% = 106,459 summed across rounded groups, or 106,472 unrounded [0.885499 &times; 120,239]). That leaves <strong>11.45% (13,767 DHCS-scaled; 15,341 ACS)</strong> in Group 4 without recorded work or a survey exemption.',
       '<a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">KFF Medicaid Unwinding &amp; Work Requirement Research</a> (Methodological reference: form disenrollment and check funnel benchmarks). <strong>CAPHE Mode A Renewal Funnel Model</strong> (<code>churn_reduction_model.py</code>, <code>churn_reduction_model_scc.csv:1-24</code>, <code>scc_hr1_synthesis.csv:8-15</code>, <code>INTERVENTION_DESIGN.md:155,239-241</code>). For each group g, the Step 5 paper pool is M_g = N_g &times; p_step5. Here p_step5 is the share not cleared at Steps 1–4. Group 1 has 12,734 at Step 5. Group 2 has 18,870 (4,512 B + 6,120 C + 8,238 D). Group 3 has 10,275. Group 4 has 12,273. The total is M = 54,152. At the DHCS 50% Step 5 loss rate (L_g = 0.50 &times; M_g), six-month losses are 6,367 (13.9% of Group 1) + 9,435 (19.9% of Group 2) + 5,138 (38.8% of Group 3) + 6,136 (44.6% of Group 4) = 27,076 per cycle (30,174 on the 133,998 ACS scale). Multiplying L_g by avoidable shares r_g (0.35 in Group 1 = 2,228; 0.724 in Group 2 = 6,831 [1,241 B + 2,295 C + 3,295 D]; 0.646 in Group 3 = 3,319; 0.30 in Group 4 = 1,841) gives <strong>14,219 of 27,076 (52.5%)</strong> avoidable losses per cycle (10,150 in Groups 2–3). Adding phone form upload raises that to <strong>15,642 of 27,076 (57.8%)</strong> (+1,423 DHCS-scaled; 17,350 of 30,007 on the ACS scale).'
     ],
-    answerHtml: 'When reviewing Medi-Cal renewal drops, one county total leaves out whether adults lost eligibility or missed a form check [1]. In Santa Clara County, low jobless rates rule out a countywide waiver [1]. Yet <strong>88.5%</strong> of Medicaid expansion adults already work or hold an exemption [1,2]. In our modeled four-group check, <strong>52.5%</strong> of projected disenrollment comes from avoidable form drops (<strong>14,219 of 27,076</strong> per cycle) [2,3]. Flat state scaling projects <strong>36,218 to 41,100</strong> losses with no group split [1,3]. Splitting the funnel guides staff to exempt caregivers, disabled adults, and part-time workers [3].',
+    policySettingHtml: 'Every six months, counties check eligibility for adults enrolled in Medi-Cal expansion coverage. When work and reporting rules take effect, state systems check wage and benefit files first and mail paper renewal forms to everyone else.',
+    answerHtml: 'When reviewing Medi-Cal renewal drops in a low-unemployment urban county like Santa Clara (0% jobless waiver share vs. high-unemployment waiver counties), one county total leaves out that <strong>88.5%</strong> of expansion adults already work or hold an exemption [1,2]. In our modeled four-group check, <strong>52.5%</strong> of projected disenrollment comes from avoidable form drops (<strong>14,219 of 27,076</strong> per cycle), whereas flat state scaling projects <strong>36,218 to 41,100</strong> losses with no group split [1,3]. Splitting the renewal funnel by work hours and exemption type guides staff to exempt caregivers, disabled adults, and part-time workers [2,3].',
     block2: {
-      title: 'Aggregate Disenrollment Forecast vs. Procedural Verification Decomposition (Santa Clara County)',
+      title: 'Aggregate Disenrollment Forecast vs. Procedural Verification Decomposition (0% Waiver County Example)',
       contextTag: 'Calibrated Six-Month Renewal Funnel on Observed DHCS Baseline (120,239)',
       ariaLabel: 'Comparison of flat-share aggregate disenrollment assumptions versus procedural versus eligibility churn decomposition',
       ruler1: {
@@ -463,7 +464,8 @@ const wave2Modules = [
       '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service Food Access Research Atlas (FARA)</a>: State 9,033-tract poverty (R² = 62.2%) vs. store distance (R² = 1.8%) study.',
       '<a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC PLACES Local Data for Better Health</a>: Tract health, disability (OR = 1.76), and schooling (OR = 2.47) benchmarks across 408 Santa Clara tracts.'
     ],
-    answerHtml: 'When screening clinic diabetes patients with gross pay alone, intake forms leave out working renter homes where high rent crowds out food cash [1,3]. In Marin County\'s high-rent Canal area, median pay sits above federal food aid cutoffs [1]. Yet monthly rent takes over two-fifths of pay [1,2]. In our modeled area-median benchmark, paying rent shifts a family food plan from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay [1,2]. Across state tracts, poverty accounts for <strong>62.2%</strong> of food risk versus <strong>1.8%</strong> for store distance [3]. Pairing post-rent clinic screens with CalFresh and tailored meals fits both rent strain and schooling or health hurdles [3,4].',
+    policySettingHtml: 'Public health departments and safety-net clinics use income screens and neighborhood maps to place food aid and diabetes support. Standard eligibility rules check household income before rent is paid and map the miles to the nearest grocery store.',
+    answerHtml: 'When screening clinic diabetes patients with gross pay alone, intake forms leave out working renter homes like Marin County\'s high-rent Canal area, where median pay sits above federal food aid cutoffs while rent takes over two-fifths of pay [1,2]. In our modeled area-median benchmark, paying rent shifts a family food plan from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay, and across state tracts poverty accounts for <strong>62.2%</strong> of food risk versus <strong>1.8%</strong> for store distance [1,3]. Pairing post-rent clinic screens with CalFresh and tailored meals fits both rent strain and schooling or health hurdles [3,4].',
     block2: {
       title: 'Two Rulers on the Same Household &amp; Neighborhood Chronic Disease System',
       contextTag: 'Post-Rent Home Budget Benchmark + State Tract Variance Check',
@@ -584,7 +586,7 @@ const wave2Modules = [
           cells: [
             { val: 'Gross pay (220% FPL) leaves out the $2,318 rent squeeze.' },
             { val: 'Store maps leave out deep poverty and health hurdles.' },
-            { val: 'County means leave out small pockets of poor renters.' },
+            { val: 'County means leave out small clusters of low-income renters.' },
             { val: 'Ten-mile store maps tag car-owning homes as high risk.' }
           ]
         },
@@ -608,10 +610,10 @@ const wave2Modules = [
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Statewide &amp; County Multivariate Regression Parameters (Mode B)',
+      notesTitle: 'Table 2 Notes: Statewide &amp; County Multivariate Regression Parameters',
       notesBullets: [
-        '<strong>State 9,033-Tract Variance Split (Mode B):</strong> Across N = 9,033 California census tracts (<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FARA</a> + <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ACS</a>), the poverty rate alone accounts for <strong>R&sup2; = 62.2%</strong> of food risk variance (standardized &beta; = 0.789, t = 121.97, p &lt; 0.0001). Distance to the nearest store alone accounts for just <strong>R&sup2; = 1.8%</strong> (standardized &beta; = 0.056, t = 8.64 in the joint model; joint R&sup2; = 62.5%).',
-        '<strong>Santa Clara County 408-Tract Odds Ratios (Mode B):</strong> In tract models across Santa Clara County (N = 408 tracts), lacking a high school diploma shows <strong>OR = 2.47 (95% CI: 2.35, 2.61, p &lt; 0.001)</strong>. Disability prevalence shows <strong>OR = 1.76 (95% CI: 1.63, 1.89, p = 0.004)</strong>. Jobless rate shows <strong>OR = 1.24 (95% CI: 1.13, 1.35)</strong>.',
+        '<strong>State 9,033-Tract Variance Split:</strong> Across N = 9,033 California census tracts (<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FARA</a> + <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ACS</a>), the poverty rate alone accounts for <strong>R&sup2; = 62.2%</strong> of food risk variance (standardized &beta; = 0.789, t = 121.97, p &lt; 0.0001). Distance to the nearest store alone accounts for just <strong>R&sup2; = 1.8%</strong> (standardized &beta; = 0.056, t = 8.64 in the joint model; joint R&sup2; = 62.5%).',
+        '<strong>Santa Clara County 408-Tract Odds Ratios:</strong> In tract models across Santa Clara County (N = 408 tracts), lacking a high school diploma shows <strong>OR = 2.47 (95% CI: 2.35, 2.61, p &lt; 0.001)</strong>. Disability prevalence shows <strong>OR = 1.76 (95% CI: 1.63, 1.89, p = 0.004)</strong>. Jobless rate shows <strong>OR = 1.24 (95% CI: 1.13, 1.35)</strong>.',
         '<strong>Store Count Rule Check:</strong> Counting all 26,645 SNAP stores in the state flags 462 food desert tracts (5.1% of 9,033 tracts; 1.86M residents). Counting only 4,383 full grocery stores flags 497 tracts (+35 net tracts).'
       ]
     },
@@ -652,7 +654,7 @@ const wave2Modules = [
       ]
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Modeled Area-Median Post-Rent Benchmark &amp; Multi-Level Synthesis):</strong> Monthly food shares in Table 1 are modeled area-median benchmarks. They subtract the ACS B25064 renter median gross rent from the ACS B19013 all-household median income. Then they divide the $973 USDA Thrifty Food Plan basket by the cash left. Because the two medians come from different census universes (all households vs. renter households), this benchmark is not an observed four-person renter budget. Fresno Tract 2 values match food-affordability-tradeoffs (B19013 = $37,238; B25064 = $1,007). Tract R&sup2; splits and odds ratios across N = 9,033 state tracts and N = 408 Santa Clara tracts are observed regression results (Mode B).',
+      '<strong>Area-Median Post-Rent Benchmark &amp; Multi-Level Synthesis:</strong> Monthly food shares in Table 1 are modeled area-median benchmarks. They subtract the ACS B25064 renter median gross rent from the ACS B19013 all-household median income. Then they divide the $973 USDA Thrifty Food Plan basket by the cash left. Because the two medians come from different census universes (all households vs. renter households), this benchmark is not an observed four-person renter budget. Fresno Tract 2 values match food-affordability-tradeoffs (B19013 = $37,238; B25064 = $1,007). Tract R&sup2; splits and odds ratios across N = 9,033 state tracts and N = 408 Santa Clara tracts are observed regression results.',
       '<strong>Primary Data Sources:</strong> Sources include <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019-2023 5-Year Estimates</a> (Tables B19013, B25064, S1701, S1810), the <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA Food and Nutrition Service Thrifty Food Plan ($973/mo family of four)</a>, the <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA Economic Research Service Food Access Research Atlas (FARA)</a>, and <a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDC PLACES Local Data for Better Health</a>.'
     ],
     faqs: [
@@ -670,7 +672,7 @@ const wave2Modules = [
       }
     ],
     related: [
-      { slug: 'food-affordability-tradeoffs', title: 'Gross FPL vs. Post-Rent Food Affordability Rulers', note: 'Track 2 reference module on county vs. tract post-rent food shares' },
+      { slug: 'food-affordability-tradeoffs', title: 'Gross FPL vs. Post-Rent Food Budget Benchmarks', note: 'Track 2 reference module on county vs. tract post-rent food shares' },
       { slug: 'geographic-variables', title: 'When Is Geography a Proxy vs. Mechanism?', note: 'Case study on decomposing poverty R²=62.2% vs. retail distance R²=1.8%' },
       { slug: 'classifying-causal-mechanisms', title: 'Confounders, Mediators & Colliders in Policy Models', note: 'Case study on avoiding over-control in structural pathways' }
     ]

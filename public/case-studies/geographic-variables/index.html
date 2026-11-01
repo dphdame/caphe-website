@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geography: Proxy vs. Causal Mechanism | CAPHE</title>
+  <meta name="description" content="Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).">
+  <link rel="canonical" href="https://www.caphegroup.org/case-studies/geographic-variables">
+  <meta property="og:title" content="Geography: Proxy vs. Causal Mechanism | CAPHE">
+  <meta property="og:description" content="Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/case-studies/geographic-variables">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Article",
+    "LearningResource"
+  ],
+  "headline": "Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance",
+  "description": "Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).",
+  "author": {
+    "@type": "Organization",
+    "name": "CAPHE",
+    "url": "https://www.caphegroup.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "California Association of Public Health Economists",
+    "url": "https://www.caphegroup.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.caphegroup.org/assets/images/logo.png"
+    }
+  },
+  "mainEntityOfPage": "https://www.caphegroup.org/case-studies/geographic-variables",
+  "educationalLevel": "Professional",
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "California Public Health Case Studies",
+    "url": "https://www.caphegroup.org/case-studies"
+  }
+}
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why did store distance show a negative single-factor R² of 4.1% if its unique R² gain after accounting for poverty is +0.003 pp (p = 0.827)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "That pattern reflects spatial sorting across Santa Clara County's 408 tracts. Exactly 26 of the 27 tracts located more than 1.0 mile from a SNAP store are lower-poverty foothill areas (under 20% poverty). In a single-factor regression on the composite index, distance acts as a proxy for foothill affluence. Once poverty rate is included, distance adds +0.003 pp of unique R² gain (0.009% partial R², p = 0.827)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between semi-partial ΔR² (58.1 pp) and partial R² (60.6%), and what does the composite index measure?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The outcome is a 0-1 composite index weighted 30% poverty, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle households, and 10% inverse density. Semi-partial ΔR² (58.06 pp, labeled Partial R² in the saved summary CSV) subtracts distance-only R² (4.11%) from full-model R² (62.17%). True partial R² divides that 58.06 pp gain by the 95.89% variance left unexplained by distance alone, giving 60.55% (60.6%)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why was only 1 of 408 Santa Clara County tracts flagged as a USDA food desert compared with 30 of 225 tracts (13.3%) in Fresno County?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The USDA urban food-desert rule requires BOTH &ge;20% tract poverty AND &gt;1.0 mile to a supermarket (&gt;10 miles in rural tracts). Santa Clara County has 514 verified SNAP stores (mean distance 0.573 miles, 93.4% of tracts within 1.0 mile), so only Mountain View Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) crosses both lines. Fresno County spans wider rural and agricultural tracts (mean 1.45 miles, max 15.53 miles), where 30 of 225 tracts (13.3%) cross both thresholds."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- geo:faq:end -->
+</head>
+<body class="antialiased">
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Site Navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs#webinars">Webinars</a>
+            <a href="/programs#workshops">Workshops</a>
+            <a href="/programs#working-groups">Working Groups</a>
+            <a href="/programs#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/case-studies">Case Studies</a>
+            <a href="/resources#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator">ROI Calculator</a>
+            <a href="/tools/access-explorer">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare local poverty and SNAP rates with store distance across city, suburb, and rural census tracts.
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        Local health agencies map census tracts to decide where to send mobile food vans and grocery outreach. Some neighborhood maps focus on distance to the nearest supermarket, while others weight household poverty and CalFresh enrollment. Comparing poverty rates with store distance across suburban and rural tracts guides where each tool fits.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        Across <strong>408 Santa Clara County tracts,</strong> household poverty accounts for <strong>62.2%</strong> of the 5-part food index <strong>(58.1 percentage points</strong> of unique explained spread, vs. <strong>0.003 points</strong> from distance, <em>p</em> = 0.827) because poverty and SNAP hold 55% of index weight and <strong>93.4% of tracts</strong> sit within 1 mile.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Distance maps alone flag suburban foothills <strong>(4.1% of spread)</strong> where <strong>26 of 27 tracts</strong> past 1 mile have under 20% poverty.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Pairing poverty with trip miles separates urban outreach from rural and valley gaps in Fresno <strong>(30 of 225 tracts, 13.3%).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Store Trips, Local Poverty &amp; Car Access Across Four California Areas</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare store distance, local poverty, car access, and composite index spread across four California areas.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Empirical comparison of store distance, poverty rate, SNAP use, car access, and composite index spread across four California areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Area &amp; Index Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Campus Renter Tract</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Pay Car Foothills</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Dense Suburb County</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rural &amp; Valley Counties</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Trip to Nearest SNAP Store
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">1.218 miles</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&gt;1.0 mi city line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">2.970 miles</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">low-density hills</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0.573 mi mean</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.409 mi median</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Nevada 2.92 mi</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Fresno 1.45 mi</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Tract Poverty &amp; Pay Ratio
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">22.1% poverty</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&ge;20% USDA line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">3.7% poverty</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">2,640 residents</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">532% FPL county mean pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Fresno 19.1% pov</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">Nevada 10.5%</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                SNAP Use &amp; Car Access
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.3% SNAP | 4.8% no car</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">52 HH</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Low SNAP</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">High car ownership</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.5% SNAP | 93.4% &le;1 mi</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">381/408</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">30 of 225 Fresno tracts low-access</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                USDA Low-Access Pattern
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Only 1 of 408 tracts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.2% pop</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">26 of 27 &gt;1 mi tracts &lt;20% pov</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance alone R² = 4.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">minus</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Max 12.43 mi (Nev) / 15.53 mi (Fre)</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Share of Food Index Explained
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+58.1 pp from poverty</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">60.6% partial</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 93%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+0.003 pp from distance</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">0.009% partial</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 1%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Poverty slope 132x larger in index</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">13.3% Fresno USDA food deserts</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Standardized Index Slope
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+0.787 slope from poverty</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">-0.006 slope from distance</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">62.2% full-model index R²</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Nevada median trip 1.98 miles</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Observed Tract &amp; County Data):</strong> We use observed U.S. Census ACS 5-Year tract estimates and USDA SNAP Retailer Locator coordinates across Santa Clara County (N = 408 tracts, 514 SNAP stores, 755 DEH permits), Fresno County (N = 225 tracts), and Nevada County (N = 26 tracts; county_rankings_ca_2023.csv). In Santa Clara County (regression_model_statistics.csv and regression_results_poverty_distance.csv, White HC3), the outcome is the 5-component Extended Vulnerability Index (0-1 scale: 30% poverty rate, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle share, 10% inverse density). Full-model R² = 62.17% (poverty alone R² = 62.17%, distance alone R² = 4.11%). Unique R² gain (semi-partial ΔR², labeled Partial R² in the saved CSV) is +58.06 pp for poverty and +0.0033 pp for distance; true partial R² is 60.55% for poverty and 0.0088% for distance. Poverty β_std = +0.787 (t = 12.51, p &lt; 0.0001) vs. distance β_std = -0.006 (t = -0.22, p = 0.827), VIF = 1.59.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Campus Renter Tract.</strong> Mountain View Tract 5116.08 (1 of 408 county tracts, 3,252 residents).. <strong>High-Pay Car Foothills.</strong> Saratoga / Los Altos Hills Tract 5073.02 (26 of 27 tracts &gt;1 mile from store).. <strong>Dense Suburb County.</strong> Santa Clara County baseline (N = 408 tracts, 514 SNAP stores / 755 permits).. <strong>Rural &amp; Valley Counties.</strong> Fresno County (N = 225 tracts) &amp; Nevada County (N = 26 tracts)..</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Composite Vulnerability Index Split (30% Poverty, 25% SNAP, 20% Distance, 15% No-Car, 10% Density; Santa Clara N = 408 Tracts). Ruler 1: Tract Poverty Rate (30% Index Weight): <strong>62.2% of Index Spread (+58.1 pp Unique R² Gain)</strong>. Tract poverty accounts for <strong>62.2% of the 5-part index spread</strong> (a <strong>+58.1 pp unique R&sup2; gain</strong> above distance, <strong>60.6% partial R&sup2;</strong>, and a <strong>+0.787 standardized slope</strong>) because poverty and SNAP vary widely across city tracts. Ruler 2: Store Trip Distance (Checked With Poverty): <strong>+0.003 pp Unique R² Gain (Flat -0.006 Slope, p = 0.827)</strong>. Store distance alone accounts for <strong>4.1% of index spread</strong> with a minus sign because <strong>26 of 27 tracts</strong> past 1 mile are lower-poverty foothills. Accounting for poverty leaves a <strong>+0.003 pp unique R&sup2; gain</strong> (<em>p</em> = 0.827).</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/food-security/food-desert-myth/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Food Desert Comparison Claim Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Statewide Food Access Comparison Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/transit-equity/hidden-mobility-deserts/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Statewide Mobility Desert Estimate Record &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Pairing Income and Trip Measures Across Suburban, Valley, and Rural Tracts</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We match the screening rule to what poverty and store distance measure in each California area.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix evaluating local context, index behavior, single-metric screening risk, and targeting rules across four areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Campus Renter Tract
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Pay Car Foothills
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Dense Suburb County
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rural &amp; Valley Counties
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Local Area &amp; Renter Context
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High-rent (84.8%) Mountain View tract near Shoreline Park with 95.2% car access.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Saratoga and Los Altos Hills tracts with large lots and no retail zoning.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Dense suburb county where 381 of 408 tracts (93.4%) sit within 1 mile of a SNAP store.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Fresno County (30 of 225 low-access tracts) and rural Nevada County (2.92 mi mean trip).
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What the Tract Measures Show
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Only 1 county tract meets both USDA cutoffs (1.218 mi and 22.1% poverty), with 5.3% SNAP use.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                26 of 27 Santa Clara tracts past 1 mile from a SNAP store have under 20% poverty.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Poverty accounts for 62.2% of the 5-part index spread while distance adds +0.003 pp unique spread.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                In Fresno (max 15.53 mi) and Nevada County (max 12.43 mi), long trips and poverty overlap.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk of Distance-Only Screening
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Relying on the 1-mile line alone flags 1 tract while skipping high-SNAP urban renter tracts.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Sending food vans to tracts past 1 mile without a poverty check puts 26 of 27 routes in rich hills.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Treating a composite index slope as a store-opening trial misreads an observational accounting split.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Applying dense suburban distance patterns to rural Sierra or valley tracts leaves out 12-to-15-mile trips.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best Targeting &amp; Screening Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check SNAP &amp; Cars Before Siting<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Check SNAP use (5.3%) and no-car homes (52 HH) alongside the 1.2-mile trip.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair Distance Maps With Poverty<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Filter &gt;1-mile tract lists by poverty (&ge;20%) and no-car shares before routing vans.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Target CalFresh in High-Poverty Tracts<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use poverty and SNAP rates to target benefit outreach in dense urban tracts.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Route Vans &amp; EBT to Rural Gaps<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Target mobile pantries and online EBT delivery where &gt;1-10 mi trips meet high poverty.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Composite Index Definition, Semi-Partial vs. Partial R² &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Composite Index Definition &amp; Regression Decomposition (Mode B, N = 408 Santa Clara Tracts):</strong> In regression_poverty_vs_distance.py (regression_results_poverty_distance.csv and regression_model_statistics.csv), the dependent variable is the 5-component Extended Vulnerability Index (0-1 scale, mean 0.1960, range 0.0988 to 0.4818; extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json), weighted 30% poverty rate (ACS S1701), 25% SNAP participation, 20% normalized distance to 514 SNAP stores, 15% no-vehicle households (ACS B25044), and 10% inverse population density. Because poverty and distance are components of this index, the OLS model (Index_0_1 = 0.1294 + 0.9920(Poverty_Rate, SE = 0.0793, t = 12.51, p &lt; 0.0001, β_std = +0.787) - 0.0026(Distance_mi, SE = 0.0117, t = -0.22, p = 0.827, β_std = -0.006), White HC3, R² = 0.6217, F = 80.24, VIF = 1.59) is a single-year variance decomposition of the index, not a causal estimate of store openings. Poverty alone gives R² = 0.6217 (62.2%) and distance alone gives R² = 0.0411 (4.1%). The semi-partial ΔR² (R²_full - R²_reduced, labeled Partial R² in regression_model_statistics.csv) is 0.5806 (58.1 pp) for poverty and 0.000033 (0.003 pp) for distance; the true partial R² (ΔR² / (1 - R²_reduced)) is 0.6055 (60.6%) for poverty given distance and 0.000088 (0.009%) for distance given poverty. On the 0-100 index scale in PHASE6_FINAL_DELIVERABLE.md, the slopes are +0.7768 and -0.0173 (β_std ratio 0.7870 / 0.00594 = 132.5x).</p>
+          <p>&bull; <strong>Data Provenance:</strong> Exact results come from FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv, FoodSecurity/analysis/outputs/regression_model_statistics.csv, FoodSecurity/data/processed/extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json, FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv, FoodSecurity/FOOD_DESERT_LOCATION_DETAILS.md (L1-115), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">What Single-Year Tract Maps Can and Cannot Tell a County Team</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">A census-tract map summarizes where low-income households and grocery stores sit, but a single distance threshold can misclassify dense suburbs. In Santa Clara County (N = 408 tracts, 514 verified SNAP stores), 93.4% of tracts (381 of 408) sit within 1.0 mile of a SNAP store (mean 0.573 miles, median 0.409 miles). Of the 27 tracts beyond 1.0 mile, 26 are lower-poverty foothill areas (such as Tract 5073.02 at 2.97 miles and 3.7% poverty), while only 1 tract (Mountain View Tract 5116.08, 3,252 residents, 1.218 miles, 22.1% poverty) meets both USDA food-desert cutoffs.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Decomposing the county's 5-part vulnerability index (weighted 30% poverty, 25% SNAP, 20% store distance, 15% no-car share, and 10% density) shows that poverty accounts for 62.2% of index variance (+58.1 pp unique R² gain, 60.6% partial R²), whereas store distance adds +0.003 pp unique R² gain (p = 0.827) once poverty is included. Because this is an observational decomposition of a composite index in a store-dense county, it does not test the causal effect of building a store. Instead, it shows that suburban teams should pair poverty and SNAP rates with car access instead of screening by distance alone, while rural and valley counties with wider store gaps (such as Fresno County with 30 of 225 tracts at 13.3% USDA low-access up to 15.53 miles, and Nevada County averaging 2.92 miles up to 12.43 miles) require joint income-and-distance targeting.</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[3], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Spatial Proxies vs. Trip Distance (Mode B 408 Santa Clara &amp; 251 Rural/Valley Tracts)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Census Tract Poverty, SNAP &amp; Vehicle Access Estimates (N = 408 Santa Clara Tracts, N = 225 Fresno Tracts &amp; N = 26 Nevada County Tracts).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator Geo-Verified Store Coordinates (514 Santa Clara SNAP Stores).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service (ERS)</a>: Food Access Research Atlas Low-Income and Low-Access Tract Definitions (1-Mile Urban and 10-Mile Rural Thresholds).</li>
+            </ol>
+          </div>
+          <p><strong>Mode B Composite-Index Decomposition &amp; County Comparisons:</strong> All regression figures (N = 408, R² = 62.17%, poverty-only R² = 62.17%, distance-only R² = 4.11%, semi-partial ΔR² = 58.06 pp vs. 0.0033 pp, true partial R² = 60.55% vs. 0.0088%, β_std = +0.7870 vs. -0.0059, p = 0.827, F = 80.24, VIF = 1.59) come from FoodSecurity/analysis/outputs/regression_model_statistics.csv and regression_results_poverty_distance.csv on the 5-component Extended Vulnerability Index (extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json). Rural and valley comparisons (Fresno County: 30 of 225 tracts = 13.3% food deserts, mean 1.45 mi, max 15.53 mi; Nevada County: 26 tracts, mean 2.92 mi, median 1.98 mi, max 12.43 mi) come from FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv. Companion TooEarlyToSay pages (including the article-reported 12% or 1,086 of 9,039 tracts statewide mobility-desert series flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md for incomplete transit agency coverage and coordinate-projection reconciliation) are excluded from empirical claims and policy recommendations on this page.</p>
+          <p><strong>Main Sources:</strong> We use <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau American Community Survey (ACS 5-Year Tract Estimates)</a> and <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator (Geo-Verified Store Coordinates)</a>. We also use <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/food-desert-myth/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">The Food Desert Myth: Evidence Beyond Proximity</a>.
+                <span>USDA low-income, low-access tract measures; the published zero-food-desert finding and 4.7x SNAP participation comparison are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Food Access Comparison Under Reconciliation</a>.
+                <span>Statewide comparison across 9,033 tracts (1.03 versus 1.78 miles to stores by tract composition); its populations and direction conflict with a related page and are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/transit-equity/hidden-mobility-deserts/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Mobility Deserts: Transit Proximity Under Review</a>.
+                <span>Article-reported 12% statewide mobility-desert rate across 9,039 tracts; the transit-stop inventory (64,060 raw versus about 24,000 unique records) is under reconciliation.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why did store distance show a negative single-factor R² of 4.1% if its unique R² gain after accounting for poverty is +0.003 pp (p = 0.827)?</dt>
+                <dd class="text-slate-700 mt-0.5">That pattern reflects spatial sorting across Santa Clara County's 408 tracts. Exactly 26 of the 27 tracts located more than 1.0 mile from a SNAP store are lower-poverty foothill areas (under 20% poverty). In a single-factor regression on the composite index, distance acts as a proxy for foothill affluence. Once poverty rate is included, distance adds +0.003 pp of unique R² gain (0.009% partial R², p = 0.827).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">What is the difference between semi-partial ΔR² (58.1 pp) and partial R² (60.6%), and what does the composite index measure?</dt>
+                <dd class="text-slate-700 mt-0.5">The outcome is a 0-1 composite index weighted 30% poverty, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle households, and 10% inverse density. Semi-partial ΔR² (58.06 pp, labeled Partial R² in the saved summary CSV) subtracts distance-only R² (4.11%) from full-model R² (62.17%). True partial R² divides that 58.06 pp gain by the 95.89% variance left unexplained by distance alone, giving 60.55% (60.6%).</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why was only 1 of 408 Santa Clara County tracts flagged as a USDA food desert compared with 30 of 225 tracts (13.3%) in Fresno County?</dt>
+                <dd class="text-slate-700 mt-0.5">The USDA urban food-desert rule requires BOTH &ge;20% tract poverty AND &gt;1.0 mile to a supermarket (&gt;10 miles in rural tracts). Santa Clara County has 514 verified SNAP stores (mean distance 0.573 miles, 93.4% of tracts within 1.0 mile), so only Mountain View Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) crosses both lines. Fresno County spans wider rural and agricultural tracts (mean 1.45 miles, max 15.53 miles), where 30 of 225 tracts (13.3%) cross both thresholds.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/case-studies/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs</a></li>
+          <li class="my-2"><a href="/case-studies/threat-measurement-instrumentation" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories</a></li>
+          <li class="my-2"><a href="/case-studies/food-insecurity-diabetes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Untangling Food Insecurity & Diabetes Feedback</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/case-studies">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/src/frontend/js/main.js"></script>
+</body>
+</html>

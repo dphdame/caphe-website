@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instrumentation Shifts & Measurement | CAPHE</title>
+  <meta name="description" content="See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.">
+  <link rel="canonical" href="https://www.caphegroup.org/case-studies/threat-measurement-instrumentation">
+  <meta property="og:title" content="Instrumentation Shifts & Measurement | CAPHE">
+  <meta property="og:description" content="See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/case-studies/threat-measurement-instrumentation">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Article",
+    "LearningResource"
+  ],
+  "headline": "Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories",
+  "description": "See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.",
+  "author": {
+    "@type": "Organization",
+    "name": "CAPHE",
+    "url": "https://www.caphegroup.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "California Association of Public Health Economists",
+    "url": "https://www.caphegroup.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.caphegroup.org/assets/images/logo.png"
+    }
+  },
+  "mainEntityOfPage": "https://www.caphegroup.org/case-studies/threat-measurement-instrumentation",
+  "educationalLevel": "Professional",
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "California Public Health Case Studies",
+    "url": "https://www.caphegroup.org/case-studies"
+  }
+}
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why did filtering from 6,613 broad spots to 514 SNAP stores keep 81.7% of top-need tracts (67 of 82) in the highest-vulnerability quintile?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In the 5-component Extended Vulnerability Index, economic factors (30% poverty rate and 25% SNAP participation) hold 55% of the index weight while normalized store distance holds 20%. Even though mean distance doubled from 0.29 to 0.573 miles, 65.2% of tracts (266 of 408) stayed in the exact same quintile and 81.7% of Q5 tracts stayed in Q5."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why did the 2020 ACS 5-Year survey show a -4.94% dip in SNAP homes during COVID-19?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The 2020 ACS 5-Year table averages 60 months from January 2016 to December 2020, so 80% of the sample came before COVID-19. Also, 2020 survey collection faced low response rates among low-pay homes. Monthly CDSS rolls tracked the real +56% to +71% jump right away."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How did the County DEH health permit list check the store count and why was deduplication needed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Raw Santa Clara County DEH permit logs contain 8,555 rows because supermarkets hold separate permits for bakery, deli, and meat counters at the same address (1,220 duplicate rows, or 14.3%). Consolidating by address (7,335 unique sites) and classifying retail grocers (97.5% accuracy) yields 755 refined / 724 confirmed SNAP-eligible grocers, proving the 6,613 map count was inflated 8.76x by non-grocery spots."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- geo:faq:end -->
+</head>
+<body class="antialiased">
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Site Navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs#webinars">Webinars</a>
+            <a href="/programs#workshops">Workshops</a>
+            <a href="/programs#working-groups">Working Groups</a>
+            <a href="/programs#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/case-studies">Case Studies</a>
+            <a href="/resources#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator">ROI Calculator</a>
+            <a href="/tools/access-explorer">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare raw business map lists with verified SNAP store lists when mapping local food access.
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        County food teams build access dashboards from commercial map directories, USDA CalFresh retailer lists, county health permits, and census surveys. Each data source uses different counting rules and update schedules. Switching from raw business map tags to verified CalFresh EBT stores changes measured trip distance even when zero stores closed.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        Checking county map lists against <strong>514 verified CalFresh EBT stores</strong> and <strong>755 county health permits</strong> keeps <strong>81.7% of top-need areas (67 of 82 tracts)</strong> in the same top tier.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Raw map queries return <strong>6,613 food spots</strong> (such as cafes that do not take CalFresh), so switching to verified grocers doubles mean trip distance by <strong>+97% (0.29 to 0.573 miles)</strong> with zero store closures.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Checking map feeds and 5-year census surveys against monthly permits and caseloads keeps grants aimed at real local gaps.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Four Data Rule Shifts That Look Like Big Policy or Market Shifts</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare four real data rule shifts across map tags, SNAP lists, permit records, and survey waves.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Comparison of old ruler vs. checked ruler, apparent metric jump, real local change, and rank stability across four California data feeds.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Data Check Step
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Source 1: Map Tags</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Commercial Map Listings</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Source 2: EBT Filter</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Broad Spots vs. SNAP EBT</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Source 3: Permits</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Deduplicated Health Permits</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Source 4: Rolls</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">5-Yr Survey vs. Monthly Rolls</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Unfiltered Data Feed
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">344 stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">1 old tag</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6,613 broad spots</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.29 mi</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">8,555 raw rows</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">987 old est</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">27,068 ACS 2020 HH</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-4.94% dip</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Verified Agency List
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">6,613 stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">multi-tag pull</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">514 SNAP / 755 DEH</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.573 mi</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">7,335 sites</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">755 / 724 grocers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">+56% to +71% CDSS CalFresh</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Apparent Shift From Data Rule
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+1,822% Store Jump</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-900 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-92.2% Stores</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">+97% Trip</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 92%; background: #D97706;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-14.3% Counter Duplicates</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">-1,220</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 14%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-4.9% Survey vs. +71% Rolls</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 71%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Real Change on the Street
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 new stores</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">tag fix only</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 stores closed</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">EBT filter</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">0 grocers closed</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">merged depts</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5-yr wave watered down 2020</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cross-Check &amp; Rank Match
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">8.76x higher than 755 permits</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">81.7% top-tier steady</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">67/82</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">97.5% retail accuracy</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">477/489</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">ACS rose +17.15% in 2022-23</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Match Across Data Lists
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Google matched 42.1% of retail</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">65.2% same tier</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">98.0% in 1 tier</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Removed 35 chain cafes &amp; 3 bars</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">28,476 (2019) vs 28,880 (-1.4%)</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes (Mode B Observed Data Rule Shifts):</strong> Each column uses its own group base and is not pooled across columns. Shift 1 counts Santa Clara County food map spots (344 single-tag vs. 6,613 multi-tag). Shift 2 tracks distance for 408 Santa Clara census tracts (6,613 spots vs. 514 SNAP stores, checked against 755 refined / 724 confirmed DEH permits). Shift 3 tracks Santa Clara County DEH food permit deduplication (DEHDENOM_UPDATES_SUMMARY.md: 8,555 raw permit rows minus 1,220 multi-department duplicates = 7,335 unique sites, yielding 755 refined / 724 confirmed SNAP-eligible grocers vs. 987 under an older un-deduplicated keyword rule). Shift 4 compares ACS 5-year survey homes with CDSS monthly caseloads (PHASE6_FINAL_DELIVERABLE.md). In Shift 2 across N = 408 tracts (EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md), 266 of 408 tracts (65.2%) stay in the exact same quintile, 400 of 408 (98.0%) stay within ±1 quintile, and 67 of 82 Q5 tracts (81.7%) stay in Q5.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Commercial Map Listings.</strong> Base: SCC Store Spots.. <strong>Broad Spots vs. SNAP EBT.</strong> Base: 408 SCC Tracts.. <strong>Deduplicated Health Permits.</strong> Base: 8,555 SCC Permits.. <strong>5-Yr Survey vs. Monthly Rolls.</strong> Base: Survey vs. Rolls..</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode B Store-List Check on 408 Santa Clara Tracts (Permit Deduplication &amp; Survey Window Checks in Table 1). Ruler 1: Broad Food Map List (6,613 Raw Spots): <strong>0.29 Miles Mean Trip (6,613 Spots)</strong>. Pulling broad food map tags returns <strong>6,613 spots</strong> (such as cafes, snack shops, and mini-marts that do not take CalFresh EBT). That shrinks mean tract distance to <strong>0.29 miles (0.25 mi median)</strong>. Ruler 2: SNAP EBT &amp; Health Permit List (514 EBT / 755 Permits): <strong>0.573 Miles (+97% Trip; 81.7% Top-Tier Steady)</strong>. Keeping only <strong>514 USDA SNAP EBT stores</strong> (checked at a <strong>97.5% accuracy</strong> against <strong>755 DEH permitted grocers</strong>) doubles mean distance to <strong>0.573 miles</strong>. Still, <strong>81.7% of top-need tracts (67/82)</strong> and <strong>98.0% within &pm;1 tier</strong> stay put.</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/methodology/ebt-verification-methodology/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">EBT Retailer Verification Method &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/transit-equity/data-quality-49-to-12/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Transit Stop Deduplication Claim Record &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/gtfs-validation-python/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">GTFS Feed Validation Workflow in Python &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. How to Check Data Feeds So Rule Shifts Do Not Misguide Grants</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We set clear check rules for map APIs, SNAP store lists, permit registries, and 5-year census waves.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Decision matrix mapping each data rule shift to its cause, budget risk, and data check rule.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Commercial Map Listings
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Broad Spots vs. SNAP EBT
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Deduplicated Health Permits
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                5-Yr Survey vs. Monthly Rolls
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why the Data Shift Happened
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Google retired one old store tag, so a single-tag script pulled just 344 stores until multi-tag pulls found 6,613.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Map APIs do not check if a spot takes USDA CalFresh EBT cards.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Raw health permit logs list separate deli, bakery, and meat counters inside one store as separate rows.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The 2020 ACS 5-Year wave blended four pre-COVID years with 2020, creating a -4.94% dip.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Risk of Acting on the Raw Shift
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Comparing the 344-store run to the 6,613-store run looks like a +1,822% store boom with zero new stores.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Switching from broad map lists to SNAP stores doubles measured trip distance (+97%) with zero store closures.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using un-deduplicated permit rows overstates store supply by 14% to 30%.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Using 2020 ACS 5-Year tables alone makes CalFresh need look down (-4.94%) when state rolls jumped +56% to +71%.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Why Priority Ranks Held Steady
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Raw map pulls shift across software updates and should not serve as the base.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Poverty and SNAP hold 55% of index weight (distance 20%), so 81.7% of top-need tracts stayed put.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Merging counter permits by street address gives a clean 755-store denominator (97.5% accuracy).
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Once pre-2020 years rolled off, ACS counts rose +17.15% to match state rolls.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Data Check Rule for Teams
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Check Map Pulls Against Permits<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Match map pulls against County DEH health permits.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use Verified SNAP EBT Lists<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Define food access using USDA SNAP EBT retailers (514 stores in Santa Clara).</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Deduplicate Permit Addresses<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Merge bakery and deli counter rows at the same address before counting stores.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair 5-Yr ACS With Monthly Rolls<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use ACS 5-Year tables for tract rates, and track fast shocks with CDSS rolls.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Tier Shift Matrix, Permit Deduplication &amp; Provenance</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Column Denominators, Tier Shift Matrix &amp; Permit Deduplication (Mode B, N = 408 Santa Clara Tracts):</strong> Each column keeps its own base (store spots, 408 Santa Clara tracts, 8,555 Santa Clara DEH permit rows, and survey vs. state rolls). In EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md, the 5-component index weights poverty at 30%, SNAP at 25%, store distance at 20%, no-vehicle share at 15%, and density at 10%. Switching from 6,613 spots (0.29 mi mean) to 514 SNAP stores (0.573 mi mean) leaves 266 of 408 tracts (65.2%) in the exact same quintile, 400 of 408 (98.0%) within ±1 quintile (only 8 tracts or 2.0% shift by ±2 quintiles), and 67 of 82 Q5 tracts (81.7%) in Q5. In DEHDENOM_UPDATES_SUMMARY.md and STORE_COUNTS_FOR_ANALYSIS.md, consolidating 8,555 raw DEH permit records removes 1,220 multi-department duplicates (14.3%) to yield 7,335 unique facilities, 724 confirmed SNAP-eligible grocers (97.5% accuracy), and 755–766 refined grocers (vs. 987 under an older un-deduplicated keyword rule). Note that a separate companion TooEarlyToSay transit-stop article (49.0% on 24,421 stops across 8 agencies vs. 12.0% on 64,060 Cal-ITP stop rows across 9,039 state tracts in mobility_deserts_metadata.json and mobility_deserts_calitp_metadata.json) is flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md as incomplete and under reconciliation, so it is not used as a policy trigger here.</p>
+          <p>&bull; <strong>Data Provenance:</strong> Exact check tables come from FoodSecurity/EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md (L1-150), FoodSecurity/STORE_COUNTS_FOR_ANALYSIS.md (L1-120), FoodSecurity/DEHDENOM_UPDATES_SUMMARY.md (L1-135), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Why the Data Shift Happened (Broad Spots vs. SNAP EBT).</strong> Map APIs do not check if a spot takes USDA CalFresh EBT cards or holds an active County DEH food permit. &middot; <strong>Risk of Acting on the Raw Shift (Deduplicated Health Permits).</strong> Using un-deduplicated permit rows (8,555 rows or 987 keyword matches) overstates store supply by 14% to 30%. &middot; <strong>Data Check Rule for Teams (Commercial Map Listings).</strong> Match map pulls against County DEH health permits (755 stores, 97.5% accuracy).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Checking Data Rules Protects Both Program Checks and Grant Siting</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">Health teams often build dashboards from map APIs, store lists, permit logs, and rolling census surveys. Each source can change its own rule without notice. A map API drops a store tag (jumping from 344 to 6,613 spots). An EBT filter removes cafes (-92.2% store count, +97% distance). A permit registry lists bakery and deli counters inside one supermarket as separate rows (1,220 duplicates out of 8,555 rows, or 14.3%). Or a 5-year survey waters down a 1-year shock (-4.94% in 2020 ACS vs. +56% to +71% in state CalFresh rolls).</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Teams should treat any sudden dashboard jump as a data-rule shift until checked against state or county rolls. Deduplicating county health permits by address (755 refined / 724 confirmed grocers at 97.5% accuracy), pairing 5-year census baselines (-1.4% gap vs. 2019 CalFresh admin rolls) with monthly caseloads, and checking rank stability (where 65.2% of tracts stay in the same quintile and 81.7% of top-need tracts stay in the highest-need tier) keeps county funds aimed at real local need.</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[4], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Instrumentation Shifts (Mode B Multi-Instrument Audit)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator (514 Verified EBT Retailers across 408 Santa Clara County Census Tracts).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Active Retail Food Facility Permit Registry (755 Permitted Grocers, 97.5% Concordance).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh Caseloads vs. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Rolling Windows</a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 5-Year Estimates</a></li>
+            </ol>
+          </div>
+          <p><strong>Mode B Multi-Ruler Audit:</strong> All store and permit counts (344 single-tag, 6,613 broad map spots, 514 SNAP-verified stores, 8,555 raw DEH rows, 7,335 consolidated sites, 1,220 or 14.3% department duplicates, 724 confirmed / 755 refined grocers, 97.5% classification accuracy, 42.1% Google coverage), trip distances (0.29 mi vs. 0.573 mi), tier shifts (266/408 = 65.2% same quintile, 400/408 = 98.0% within ±1 quintile, 67/82 = 81.7% Q5 stability), and ACS vs. CDSS counts (28,476 vs. 28,880 in 2019 = -1.4%; 27,068 in 2020 = -4.94%; +17.15% in 2022-23) come from verified FoodSecurity files on disk. Companion TooEarlyToSay pages (including the seven-county EBT correlation and the 49% to 12% transit-stop series flagged in FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md) remain under reconciliation and are excluded from grant-siting rules.</p>
+          <p><strong>Main Sources:</strong> We use <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator</a> and <a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Santa Clara County Department of Environmental Health (DEH) Retail Food Facility Registry</a>. We also use <a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Social Services (CDSS) CalFresh Data Tables</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/ebt-verification-methodology/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">The Retail Density Paradox: Why More Stores Mean Worse Data</a>.
+                <span>Proposed EBT acceptance verification across 7,023 California food retailers; seven-county counts, matching thresholds, and the r = -0.828 correlation are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/transit-equity/data-quality-49-to-12/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">Transit Data Quality Under Reconciliation</a>.
+                <span>Article-reported shift from 49% to 12% of tracts classified as mobility deserts; the raw versus deduplicated stop counts behind it are under reconciliation.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/gtfs-validation-python/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">GTFS Validation in Python: An Article-Reported Workflow</a>.
+                <span>Six-layer instructional GTFS validation workflow; the seven-county, 11-feed routing results are article-reported and the project scripts are not public.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why did filtering from 6,613 broad spots to 514 SNAP stores keep 81.7% of top-need tracts (67 of 82) in the highest-vulnerability quintile?</dt>
+                <dd class="text-slate-700 mt-0.5">In the 5-component Extended Vulnerability Index, economic factors (30% poverty rate and 25% SNAP participation) hold 55% of the index weight while normalized store distance holds 20%. Even though mean distance doubled from 0.29 to 0.573 miles, 65.2% of tracts (266 of 408) stayed in the exact same quintile and 81.7% of Q5 tracts stayed in Q5.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why did the 2020 ACS 5-Year survey show a -4.94% dip in SNAP homes during COVID-19?</dt>
+                <dd class="text-slate-700 mt-0.5">The 2020 ACS 5-Year table averages 60 months from January 2016 to December 2020, so 80% of the sample came before COVID-19. Also, 2020 survey collection faced low response rates among low-pay homes. Monthly CDSS rolls tracked the real +56% to +71% jump right away.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How did the County DEH health permit list check the store count and why was deduplication needed?</dt>
+                <dd class="text-slate-700 mt-0.5">Raw Santa Clara County DEH permit logs contain 8,555 rows because supermarkets hold separate permits for bakery, deli, and meat counters at the same address (1,220 duplicate rows, or 14.3%). Consolidating by address (7,335 unique sites) and classifying retail grocers (97.5% accuracy) yields 755 refined / 724 confirmed SNAP-eligible grocers, proving the 6,613 map count was inflated 8.76x by non-grocery spots.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/case-studies/geographic-variables" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance</a></li>
+          <li class="my-2"><a href="/case-studies/measurement-error-claims" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Directory inactive-listing NPIs vs. Active Billers</a></li>
+          <li class="my-2"><a href="/case-studies/food-affordability-tradeoffs" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/case-studies">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/src/frontend/js/main.js"></script>
+</body>
+</html>

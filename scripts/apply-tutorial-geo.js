@@ -19,7 +19,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const ML = path.join(ROOT, 'public', 'methods-lab');
+const ML = path.join(ROOT, 'public', 'case-studies');
 const CONTENT_DIR = path.join(__dirname, 'seo', 'content');
 const MENU = JSON.parse(fs.readFileSync(path.join(__dirname, 'seo', 'citation-menu.json'), 'utf8'));
 

@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const LAB_DIR = path.join(__dirname, '..', 'public', 'methods-lab');
+const LAB_DIR = path.join(__dirname, '..', 'public', 'case-studies');
 
 const SLUGS = [
   'chw-health-outcomes',

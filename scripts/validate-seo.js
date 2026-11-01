@@ -30,10 +30,11 @@ let errors = [];
 let warnings = [];
 
 // Same-origin references that 301-redirect, which Google reports as "Page with
-// redirect". The canonical form is extensionless with NO trailing slash. Two classes
+// redirect". The canonical form is extensionless with NO trailing slash. Three classes
 // redirect, in both root-relative and absolute forms:
-//   - trailing slash:  href="/methods-lab/"  ·  "https://www.caphegroup.org/x/"  (og:url, JSON-LD, llms.txt)
+//   - trailing slash:  href="/case-studies/" ·  "https://www.caphegroup.org/x/"  (og:url, JSON-LD, llms.txt)
 //   - .html extension: href="/about.html"    ·  "https://www.caphegroup.org/resources.html"
+//   - legacy /methods-lab path: href="/methods-lab" · "https://www.caphegroup.org/methods-lab/..."
 // Skip bare root "/", protocol-relative "//host", and /assets/ path prefixes.
 function redirectingRefs(content) {
   const refs = [];
@@ -54,6 +55,15 @@ function redirectingRefs(content) {
   // .html extension — absolute canonical-host URL
   for (const m of content.matchAll(
     /https:\/\/www\.caphegroup\.org(\/[A-Za-z0-9\/_-]+\.html)\b/gi
+  )) {
+    refs.push(m[1]);
+  }
+  // legacy /methods-lab path — root-relative href/src or absolute canonical-host URL
+  for (const m of content.matchAll(/(?:href|src)=["'](\/methods-lab(?:\/[A-Za-z0-9\/_.-]*)?)(?:[?#][^"']*)?["']/gi)) {
+    refs.push(m[1]);
+  }
+  for (const m of content.matchAll(
+    /https:\/\/www\.caphegroup\.org(\/methods-lab(?:\/[A-Za-z0-9\/_.-]*)?)(?=["')>\s]|$)/gi
   )) {
     refs.push(m[1]);
   }
@@ -80,7 +90,7 @@ function reportRedirectingRefs(label, content) {
 // Map a public/ HTML file to its canonical served path.
 //   index.html                              -> /
 //   about.html                              -> /about
-//   methods-lab/index.html                  -> /methods-lab
+//   case-studies/index.html                 -> /case-studies
 //   tools/lha-calculator/methodology.html   -> /tools/lha-calculator/methodology
 function fileToCanonicalPath(relativePath) {
   let p = '/' + relativePath.replace(/\\/g, '/');
@@ -97,13 +107,13 @@ const STATIC_MOUNTS = [
   { prefix: '/data/', dir: path.join(REPO_ROOT, 'data') },
 ];
 
-// Bare methods-lab tutorial slugs that the server 301s to /methods-lab/<slug>
-// (server.js labSlugs). Derived from the tutorial dirs so it can't drift.
+// Bare case-studies slugs that the server 301s to /case-studies/<slug>
+// (server.js labSlugs). Derived from the case-studies dirs so it can't drift.
 // Memoized — resolved once per process (called on every internal link).
 let _labSlugs = null;
 function labSlugSet() {
   if (_labSlugs) return _labSlugs;
-  const ml = path.join(PUBLIC_DIR, 'methods-lab');
+  const ml = path.join(PUBLIC_DIR, 'case-studies');
   _labSlugs = fs.existsSync(ml)
     ? new Set(fs.readdirSync(ml, { withFileTypes: true })
         .filter(d => d.isDirectory() && fs.existsSync(path.join(ml, d.name, 'index.html')))
@@ -116,16 +126,22 @@ const PROGRAMS_SECTIONS = new Set(['webinars', 'workshops', 'working-groups', 'p
 
 // Does an internal root-relative path resolve to something the server serves
 // (200 OR a 301 to a real target — i.e. NOT a 404)? `p` must already be stripped
-// of ?query and #hash. The redirect concern (trailing slash / .html) is owned by
-// redirectingRefs; here we only care whether the link dead-ends.
+// of ?query and #hash. The redirect concern (trailing slash / .html / /methods-lab)
+// is owned by redirectingRefs; here we only care whether the link dead-ends.
 function internalPathResolves(p) {
   if (p === '/') return fs.existsSync(path.join(PUBLIC_DIR, 'index.html'));
   if (p.startsWith('/api/')) return true;             // server route, trusted
   for (const { prefix, dir } of STATIC_MOUNTS) {       // /src /assets /data mounts
     if (p.startsWith(prefix)) return fs.existsSync(path.join(dir, p.slice(prefix.length)));
   }
-  // Normalize a trailing slash away (server 301s /about/ -> /about, /methods-lab/ -> /methods-lab).
+  // Normalize a trailing slash away (server 301s /about/ -> /about, /case-studies/ -> /case-studies).
   if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+  if (p === '/methods-lab') return fs.existsSync(path.join(PUBLIC_DIR, 'case-studies', 'index.html'));
+  if (p.startsWith('/methods-lab/')) {
+    const sub = p.slice('/methods-lab/'.length);
+    if (labSlugSet().has(sub)) return true;
+    return fs.existsSync(path.join(PUBLIC_DIR, 'case-studies', sub));
+  }
   const rel = p.replace(/^\//, '');
   // Server-side redirect maps that resolve to a real target (server.js labSlugs / programs).
   if (labSlugSet().has(rel)) return true;

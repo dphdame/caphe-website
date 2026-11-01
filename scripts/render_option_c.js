@@ -337,16 +337,16 @@ function formatTable1RowLabel(rawLabel, explicitModeled, rowCells = []) {
 function renderColumnBannerSvg(col, idx) {
   const titleLower = `${col.tag || ''} ${col.title || ''} ${col.subtitle || ''}`.toLowerCase();
   if (titleLower.includes('marin') || titleLower.includes('canal') || titleLower.includes('san francisco') || titleLower.includes('coastal') || titleLower.includes('bay area') || titleLower.includes('san mateo')) {
-    return `<img src="/methods-lab/food-affordability-tradeoffs/assets/marin-canal.jpg" alt="Coastal California high-rent community context" class="col-header-img" height="68" loading="lazy">`;
+    return `<img src="/case-studies/food-affordability-tradeoffs/assets/marin-canal.jpg" alt="Coastal California high-rent community context" class="col-header-img" height="68" loading="lazy">`;
   }
   if (titleLower.includes('fresno') || titleLower.includes('valley') || titleLower.includes('tulare') || titleLower.includes('kern') || titleLower.includes('merced')) {
-    return `<img src="/methods-lab/food-affordability-tradeoffs/assets/fresno-valley.jpg" alt="Central Valley California community context" class="col-header-img" height="68" loading="lazy">`;
+    return `<img src="/case-studies/food-affordability-tradeoffs/assets/fresno-valley.jpg" alt="Central Valley California community context" class="col-header-img" height="68" loading="lazy">`;
   }
   if (titleLower.includes('nevada') || titleLower.includes('sierra') || titleLower.includes('alpine') || titleLower.includes('modoc') || titleLower.includes('imperial') || titleLower.includes('rural') || titleLower.includes('inland')) {
-    return `<img src="/methods-lab/food-affordability-tradeoffs/assets/nevada-sierra.jpg" alt="Rural California community context" class="col-header-img" height="68" loading="lazy">`;
+    return `<img src="/case-studies/food-affordability-tradeoffs/assets/nevada-sierra.jpg" alt="Rural California community context" class="col-header-img" height="68" loading="lazy">`;
   }
   if (titleLower.includes('santa clara') || titleLower.includes('alameda') || titleLower.includes('los angeles') || titleLower.includes('urban') || titleLower.includes('metro') || titleLower.includes('sacramento')) {
-    return `<img src="/methods-lab/food-affordability-tradeoffs/assets/santa-clara-suburban.jpg" alt="Urban California metropolitan context" class="col-header-img" height="68" loading="lazy">`;
+    return `<img src="/case-studies/food-affordability-tradeoffs/assets/santa-clara-suburban.jpg" alt="Urban California metropolitan context" class="col-header-img" height="68" loading="lazy">`;
   }
   const diagrams = [
     // Col 0: Baseline Administrative Screen (Unadjusted Level Bars)
@@ -518,7 +518,7 @@ function normalizeTetsCompanions(spec) {
 }
 
 function renderModuleHtml(spec) {
-  const canonicalUrl = `https://www.caphegroup.org/methods-lab/${spec.slug}`;
+  const canonicalUrl = `https://www.caphegroup.org/case-studies/${spec.slug}`;
   const tetsCompanions = normalizeTetsCompanions(spec);
   if (spec.pageTitle.length > 60) {
     throw new Error(`[${spec.slug}] pageTitle exceeds 60 chars (${spec.pageTitle.length}): ${spec.pageTitle}`);
@@ -630,7 +630,7 @@ function renderModuleHtml(spec) {
     "isPartOf": {
       "@type": "CollectionPage",
       "name": "California Public Health Case Studies",
-      "url": "https://www.caphegroup.org/methods-lab"
+      "url": "https://www.caphegroup.org/case-studies"
     }
   };
 
@@ -1373,7 +1373,7 @@ ${cardsHtml}
   })() : '';
 
   const relatedLinksHtml = spec.related.map(r =>
-    `          <li class="my-2"><a href="/methods-lab/${r.slug}" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">${r.title}</a></li>`
+    `          <li class="my-2"><a href="/case-studies/${r.slug}" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">${r.title}</a></li>`
   ).join('\n');
 
   const html = `<!DOCTYPE html>
@@ -1772,7 +1772,7 @@ ${JSON.stringify(faqLd, null, 2)}
         <div class="nav-dropdown">
           <a href="/resources" class="nav-link active">Resources &#9662;</a>
           <div class="nav-dropdown-menu">
-            <a href="/methods-lab">Case Studies</a>
+            <a href="/case-studies">Case Studies</a>
             <a href="/resources#external-resources">External Resources</a>
             <a href="/tools/lha-calculator">ROI Calculator</a>
             <a href="/tools/access-explorer">Access Explorer</a>
@@ -1932,7 +1932,7 @@ ${scenarioGridHtml}
       <ul class="list-none text-sm">
 ${relatedLinksHtml}
       </ul>
-      <p class="text-xs text-slate-600 mt-3"><a href="/methods-lab" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
     </section>
     <!-- related:end -->
 
@@ -1960,7 +1960,7 @@ ${relatedLinksHtml}
         </div>
         <div>
           <h4>Resources</h4>
-          <a href="/methods-lab">Case Studies</a>
+          <a href="/case-studies">Case Studies</a>
           <a href="/resources#external-resources">External Resources</a>
           <a href="/tools/lha-calculator">ROI Calculator</a>
           <a href="/tools/access-explorer">Access Explorer</a>
@@ -1994,7 +1994,7 @@ ${relatedLinksHtml}
     throw new Error(`[${spec.slug}] Expected >= 4 external citation links in body, found ${extLinks.length}`);
   }
 
-  const outPath = path.join(__dirname, '..', 'public', 'methods-lab', spec.slug, 'index.html');
+  const outPath = path.join(__dirname, '..', 'public', 'case-studies', spec.slug, 'index.html');
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, html, 'utf8');
   console.log(`Rendered [${spec.slug}] -> ${outPath} (title=${spec.pageTitle.length}c, answer=${answerWords}w, extLinks=${extLinks.length})`);

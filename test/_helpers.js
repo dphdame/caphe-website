@@ -4,9 +4,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const PUBLIC = path.join(ROOT, 'public');
-const ML = path.join(PUBLIC, 'methods-lab');
+const ML = path.join(PUBLIC, 'case-studies');
 
-/** List tutorial slugs (dirs under methods-lab with an index.html), excluding the hub index. */
+/** List tutorial slugs (dirs under case-studies with an index.html), excluding the hub index. */
 function tutorialSlugs() {
   return fs.readdirSync(ML, { withFileTypes: true })
     .filter(d => d.isDirectory())

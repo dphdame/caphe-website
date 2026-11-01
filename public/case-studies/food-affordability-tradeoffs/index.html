@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is Lost Across Poverty Measures? | CAPHE Case Studies</title>
+  <meta name="description" content="Compare gross-income poverty cutoffs against post-rent food budget shares ($973/mo Thrifty Food Plan) across four California Census ACS communities.">
+  <link rel="canonical" href="https://www.caphegroup.org/case-studies/food-affordability-tradeoffs">
+  <meta property="og:title" content="What Is Lost Across Poverty Measures? | CAPHE Case Studies">
+  <meta property="og:description" content="Compare gross-income poverty cutoffs against post-rent food budget shares ($973/mo Thrifty Food Plan) across four California Census ACS communities.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/case-studies/food-affordability-tradeoffs">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Article",
+    "LearningResource"
+  ],
+  "headline": "Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs",
+  "description": "Compare gross-income poverty cutoffs against post-rent food budget shares ($973/mo Thrifty Food Plan) across four California Census ACS communities.",
+  "author": {
+    "@type": "Organization",
+    "name": "CAPHE",
+    "url": "https://www.caphegroup.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "California Association of Public Health Economists",
+    "url": "https://www.caphegroup.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.caphegroup.org/assets/images/logo.png"
+    }
+  },
+  "mainEntityOfPage": "https://www.caphegroup.org/case-studies/food-affordability-tradeoffs",
+  "educationalLevel": "Professional",
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "California Public Health Case Studies",
+    "url": "https://www.caphegroup.org/case-studies"
+  }
+}
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why do gross-pay poverty lines leave out food strain in high-rent areas?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Federal Poverty Guidelines use one gross-pay line across 48 states. They do not adjust for local rent. In Marin County's Canal area (Tract 1122.03), typical pay is 220% FPL ($5,507/month). That sits above the 130% and 200% FPL cutoffs. Yet our modeled area-median benchmark subtracts renter gross rent ($2,318/month) from all-home pay. A $973 food bill takes 30.5% of the pay left after rent."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does checking post-rent food costs change local plans?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Checking food costs after rent separates tight budgets from long store trips. Teams can match CalFresh shelter rules, clinic food scripts, food vans, or rural delivery to each local gap."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why should health teams check census tracts instead of county means?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "County means blend rich owner areas with low-pay renter tracts. Checking census tracts keeps high county pay from covering up severe post-rent food strain in renter areas."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- geo:faq:end -->
+</head>
+<body class="antialiased">
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Site Navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs#webinars">Webinars</a>
+            <a href="/programs#workshops">Workshops</a>
+            <a href="/programs#working-groups">Working Groups</a>
+            <a href="/programs#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/case-studies">Case Studies</a>
+            <a href="/resources#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator">ROI Calculator</a>
+            <a href="/tools/access-explorer">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Study Credibility &amp; Measurement
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        We compare family food plans before and after local rent across four community types.
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        Federal food aid cutoffs use one gross income line across all 48 contiguous states. In high-rent California neighborhoods, families pay rent first and buy groceries from whatever cash remains. Comparing pre-rent and post-rent budgets shows why working renter families above federal poverty cutoffs still face severe food strain.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When screening families for food aid by gross pay alone, a county leaves out high rent costs in areas like Marin County's Canal neighborhood, where typical monthly pay sits above federal poverty cutoffs while local rent takes more than two-fifths of pay.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Taking rent <strong>($2,318)</strong> from monthly pay <strong>($5,507)</strong> shifts a four-person food plan <strong>($973)</strong> from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Checking post-rent pay across four local areas helps teams pair CalFresh shelter rules with clinic food scripts.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Monthly Pay, Rent Share, and Food Plans by Local Area</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We compare monthly pay, rent share, and left-over food cash for a family of four.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1: Comparison of monthly median pay, share of income spent on monthly rent, and four-person food budget shares across four California areas.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Monthly Budget Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Rent Working Tract</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Low-Pay City Core</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rural Foothills County</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">High-Pay Suburb County</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Median Monthly Pay
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$5,507</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$66,080/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$3,103</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$37,238/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$7,075</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$84,905/yr</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$13,306</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$159,674/yr</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Poverty Ratio (4 People)
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">220% FPL</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&gt;200% line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">124% FPL</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">&le;130% line</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">283% FPL</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">County</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">532% FPL</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">County</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Income Spent on Monthly Rent
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">42.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,318</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">32.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,007</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">23.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$1,635</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">21.1%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,814</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Monthly Pay Left After Rent<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$3,189</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 food plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$2,096</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 food plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$5,440</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 food plan</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">$10,492</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$973 food plan</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Pre-Rent Share Needed for Food<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">17.7%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$4,534 left</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">31.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$2,130 left</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13.8%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$6,102 left</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">7.3%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">$12,333 left</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Post-Rent Share Needed for Food<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">30.5%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$2,216 left</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 66%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">46.4%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$1,123 left</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-amber-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">17.9%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$4,467 left</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 39%; background: #F59E0B;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">9.3%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">$9,519 left</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 20%; background: #10B981;"></div></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> We use 2019–2023 Census ACS 5-Year medians (Table B19013 all-home pay split by 12 and Table B25064 renter gross rent). We pair these with Mode A modeled post-rent shares for the $973/month USDA Thrifty Food Plan. The 2023 HHS four-person Federal Poverty Line is $2,500/month. Table B19013 covers all households and B25064 covers renter homes across different census universes. Thus post-rent numbers show an area-median benchmark, not one single home.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>High-Rent Working Tract.</strong> Marin County: San Rafael Canal area (Tract 1122.03).. <strong>Low-Pay City Core.</strong> Fresno County: Central Fresno (Tract 2).. <strong>Rural Foothills County.</strong> Nevada County (Sierra Foothills baseline).. <strong>High-Pay Suburb County.</strong> Santa Clara County (County baseline)..</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> 2019-2023 Census ACS Area Medians + Post-Rent Budget Benchmark. Ruler 1: Before Rent ($973 / $5,507 Pre-Rent Monthly Pay): <strong>17.7% Pre-Rent Share (220% FPL)</strong>. Out of <strong>$5,507</strong> in typical monthly pay (<strong>220% FPL</strong>), a $973 food bill takes <strong>17.7%</strong> before rent. Ruler 2: After Rent ($973 / $3,189 Post-Rent Monthly Pay): <strong>30.5% Post-Rent Share (-$2,318 Rent)</strong>. Taking out <strong>$2,318</strong> in monthly rent leaves <strong>$3,189</strong>. The $973 food plan takes <strong>30.5%</strong> of what is left (+12.8 pp).</p>
+        </div>
+      </details>
+      <div class="px-5 pb-4">
+        <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
+          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <a href="https://tooearlytosay.com/research/food-security/working-poor-silicon-valley/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Silicon Valley Working-Poor Tract Estimate &rarr;</a> &middot; <a href="https://tooearlytosay.com/research/methodology/census-api-pipeline/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">Census ACS API Pipeline in Python &rarr;</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- NON-STACKED SVG COMPARISON CHART -->
+    <div id="studyChartContainer" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm">
+      <div class="mb-3">
+        <h3 class="text-sm sm:text-base font-bold text-slate-900">Visual Comparison: Monthly Food Share Before vs. After Rent Across the 4 Areas</h3>
+        <p class="text-xs text-slate-600 mt-0.5">Separate paired horizontal bars (non-stacked) comparing the $973/month USDA family food plan as a share of pre-rent income (slate) vs. post-rent disposable income (blue/teal), with a 30% post-rent budget stress reference line.</p>
+      </div>
+      <div>
+        <svg id="studyComparisonSvg" viewBox="0 0 760 236" class="w-full" style="height:auto;max-height:254px;" role="img" aria-label="Visual Comparison: Monthly Food Share Before vs. After Rent Across the 4 Areas">
+          <line x1="225" y1="22" x2="225" y2="222" stroke="#CBD5E1" stroke-width="1.5"/>
+          <line x1="429" y1="20" x2="429" y2="222" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="429" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#B45309">30% Post-Rent Food Share Reference</text>
+          <text x="215" y="52" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">High-Rent Working Tract</text>
+          <rect x="225" y="34" width="120" height="14" rx="3" fill="#64748B"/>
+          <text x="351" y="45" font-size="11" font-weight="600" fill="#475569">17.7% pre-rent</text>
+          <rect x="225" y="51" width="207" height="16" rx="3" fill="#0041A5"/>
+          <text x="438" y="63" font-size="12" font-weight="700" fill="#0F172A">30.5% post-rent</text>
+          <text x="215" y="100" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">Low-Pay City Core</text>
+          <rect x="225" y="82" width="214" height="14" rx="3" fill="#64748B"/>
+          <text x="445" y="93" font-size="11" font-weight="600" fill="#475569">31.4% pre-rent</text>
+          <rect x="225" y="99" width="316" height="16" rx="3" fill="#0041A5"/>
+          <text x="547" y="111" font-size="12" font-weight="700" fill="#0F172A">46.4% post-rent</text>
+          <text x="215" y="148" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">Rural Foothills County</text>
+          <rect x="225" y="130" width="94" height="14" rx="3" fill="#64748B"/>
+          <text x="325" y="141" font-size="11" font-weight="600" fill="#475569">13.8% pre-rent</text>
+          <rect x="225" y="147" width="122" height="16" rx="3" fill="#0D9488"/>
+          <text x="353" y="159" font-size="12" font-weight="700" fill="#0F172A">17.9% post-rent</text>
+          <text x="215" y="196" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">High-Pay Suburb County</text>
+          <rect x="225" y="178" width="50" height="14" rx="3" fill="#64748B"/>
+          <text x="281" y="189" font-size="11" font-weight="600" fill="#475569">7.3% pre-rent</text>
+          <rect x="225" y="195" width="63" height="16" rx="3" fill="#0D9488"/>
+          <text x="294" y="207" font-size="12" font-weight="700" fill="#0F172A">9.3% post-rent</text>
+        </svg>
+        <p class="text-xs text-slate-700 mt-2 leading-relaxed">Table 1 takeaway: Subtracting monthly rent lifts the $973 food plan from 17.7% to 30.5% of remaining income in the High-Rent Working Tract and from 31.4% to 46.4% in the Low-Pay City Core, compared with 13.8% to 17.9% in the Rural Foothills County and 7.3% to 9.3% in the High-Pay Suburb County.</p>
+      </div>
+    </div>
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Local Access &amp; Policy Fit Across Four Areas</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        We match renter share, CalFresh use, and store trips to the right county plan.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2: Renter housing share, SNAP use, distance to SNAP stores, and primary policy fit.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Local Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Rent Working Tract
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Low-Pay City Core
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rural Foothills County
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                High-Pay Suburb County
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Renter Share &amp; CalFresh Use
+              </th>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                96.5% Rent | 19.3% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-rose-800 border-l border-slate-200">
+                78.4% Rent | 44.9% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                25.6% Rent | 7.3% SNAP.
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-slate-950 border-l border-slate-200">
+                44.7% Rent | 5.7% SNAP.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Mean Trip to SNAP Store
+              </th>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-emerald-800 border-l border-slate-200">
+                0.97 mi (8.1% LILA).
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-amber-800 border-l border-slate-200">
+                1.45 mi (13.3% LILA).
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-rose-800 border-l border-slate-200">
+                2.92 mi (12.4 mi max).
+              </td>
+              <td class="py-3.5 px-4 font-mono font-bold align-top text-emerald-800 border-l border-slate-200">
+                0.60 mi (3.7% LILA).
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What Gross Pay Leaves Out
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Rent takes 42.1% of pay above 200% FPL.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Low pay meets high rent and far stores.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Rural store trips reach up to 12.4 miles.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High county pay averages over low-income renter tracts.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best County Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Shelter Rules &amp; Food Rx<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use CalFresh shelter rules and clinic food scripts.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Cash Aid + Food Vans<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pair full CalFresh aid with food vans.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Rural EBT Delivery<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Add rural SNAP stores and online EBT delivery.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Tract-Level Focus<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Focus on low-pay renter tracts, not county means.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: County Baselines &amp; Store Distance Ranges</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Renter Share &amp; SNAP Use (ACS B25003 &amp; B22003):</strong> Marin Tract 1122.03 is 96.5% renters (439 / 455 homes) vs. 36.1% across Marin County. SNAP use is 19.3% vs. 4.8% countywide. Fresno Tract 2 is 78.4% renters (597 / 761 homes) vs. 44.6% countywide. SNAP use is 44.9% vs. 20.5% countywide.</p>
+          <p>&bull; <strong>Store Trips &amp; Low-Access Shares:</strong> In Fresno County, 13.3% of tracts (30 of 225) have low pay and far stores. Trips exceed 1 mile in cities or 10 miles in rural areas, up to 15.53 miles max. In Nevada County, trips to a SNAP store reach 12.43 miles (mean 2.92 miles, median 1.98 miles).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Policy Fit Changes Across These Four Areas</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">One single state food rule misses the mark when local needs differ. In Marin's Canal area (Tract 1122.03), stores are close (0.97 mi mean) and pay sits at 220% FPL. Gross pay rules and new store grants do not fix the main gap. Here 96.5% of homes rent. In our modeled area-median benchmark, ACS B25064 renter gross rent is compared against ACS B19013 all-household pay across different census universes. Rent takes 42.1% of pay. The best step is helping families claim the CalFresh shelter rule and clinic food scripts that do not stop at 130% or 200% FPL.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Central Fresno (Tract 2) faces two gaps at once. Low pay ($3,103/month) pushes the modeled post-rent food share to 46.4%. Also, 13.3% of county tracts lack close stores. This calls for full CalFresh aid plus mobile food vans. Nevada County has a 17.9% post-rent food share, but store trips reach 12.4 miles. It needs rural EBT delivery and more SNAP stores. Santa Clara County shows why health teams fund specific tracts instead of using county means ($13,306/month).</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Study Credibility &amp; Measurement &middot; Poverty &amp; Affordability Denominators (Mode B Area Medians + Mode A Benchmark)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: FY 2024 SNAP Cost-of-Living Adjustments &amp; Thrifty Food Plan ($973/month maximum four-person allotment).</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: 2019&ndash;2023 American Community Survey (ACS) 5-Year Detailed Tables (<code>B19013</code> Median Household Income &amp; <code>B25064</code> Median Gross Rent).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Department of Health and Human Services (HHS)</a>: 2023 Federal Poverty Guidelines ($2,500/month four-person baseline; 130% = $3,250/mo; 200% = $5,000/mo).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.fns.usda.gov/research/cnpp/usda-food-plans/cost-food-monthly-reports" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CNPP June 2023 Thrifty Food Plan</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://healthpolicy.ucla.edu/newsroom/events/focus-food-insecurity-insights-california-health-interview-survey" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">UCLA CHPR California Health Interview Survey (CHIS)</a></li>
+            </ol>
+          </div>
+          <p><strong>1. Mode B vs. Mode A Rules (Area-Median Benchmark Across Different Census Universes):</strong> In the 2019-2023 ACS 5-Year tables (<strong>Mode B</strong> survey data), <code>B19013_001E</code> tracks median pay across <em>all</em> homes. <code>B25064_001E</code> tracks median gross rent across <em>renter</em> homes (different census universes). We subtract <code>B25064_001E</code> from <code>round(B19013_001E / 12)</code> and compare it to a four-person food plan (<code>$973/month</code>) and poverty line (<code>$2,500/month</code>). This builds a <strong>Mode A modeled area-median benchmark</strong>, not an observed budget for one renter family. Renter median pay (<code>B25119_003E</code>) is <strong>$65,777/yr (&plusmn;$16,576)</strong> in Marin Tract 1122.03 and <strong>$29,155/yr (&plusmn;$11,971)</strong> in Fresno Tract 2. It is <strong>$52,986/yr (&plusmn;$8,277)</strong> in Nevada County and <strong>$119,765/yr (&plusmn;$1,703)</strong> in Santa Clara County.</p>
+          <p><strong>2. Main Data Sources:</strong> We use <a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">U.S. Census Bureau 2019-2023 ACS 5-Year Detailed Tables</a> (<code>B19013</code>, <code>B25064</code>, <code>B25003</code>, <code>B22003</code>). We also use <a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">2023 HHS Federal Poverty Guidelines</a> (<strong>$30,000/yr</strong> or <strong>$2,500/mo</strong> for four people; 130% FPL = $3,250/mo; 200% FPL = $5,000/mo). Food costs come from <a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">USDA FNS FY 2024 SNAP COLA</a> and <a href="https://www.fns.usda.gov/research/cnpp/usda-food-plans/cost-food-monthly-reports" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">CNPP June 2023 Thrifty Food Plan</a> (<strong>$973.30/mo</strong> rounded to <strong>$973/mo</strong>). Health survey context comes from <a href="https://healthpolicy.ucla.edu/newsroom/events/focus-food-insecurity-insights-california-health-interview-survey" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">UCLA CHPR California Health Interview Survey (CHIS)</a>.</p>
+          <p><strong>3. Exact ACS API Records &amp; Math Rules:</strong> Marin Tract 1122.03 (<code>GEOID 06041112203</code>) has <code>B19013_001E = $66,080 &plusmn;$19,220</code> (<code>$5,507/mo</code>, <code>220% FPL</code>) and <code>B25064_001E = $2,318/mo &plusmn;$161</code> (<code>42.1%</code>). Post-rent pay is <code>$3,189/mo</code>, pre-rent food share is <code>17.7%</code>, post-rent share is <code>30.5%</code>, and <code>$2,216/mo</code> is left. Fresno Tract 2 (<code>GEOID 06019000200</code>) has <code>B19013_001E = $37,238 &plusmn;$19,169</code> (<code>$3,103/mo</code>, <code>124% FPL</code>) and <code>B25064_001E = $1,007/mo &plusmn;$96</code> (<code>32.5%</code>). Post-rent pay is <code>$2,096/mo</code>, pre-rent share is <code>31.4%</code>, post-rent share is <code>46.4%</code>, and <code>$1,123/mo</code> is left. Nevada County (<code>GEOID 06057</code>) has <code>B19013_001E = $84,905 &plusmn;$4,336</code> (<code>$7,075/mo</code>, <code>283% FPL</code>) and <code>B25064_001E = $1,635/mo &plusmn;$99</code>. Post-rent pay is <code>$5,440/mo</code>, pre-rent share is <code>13.8%</code>, and post-rent share is <code>17.9%</code>. Santa Clara County (<code>GEOID 06085</code>) has <code>B19013_001E = $159,674 &plusmn;$1,962</code> (<code>$13,306/mo</code>, <code>532% FPL</code>) and <code>B25064_001E = $2,814/mo &plusmn;$16</code>. Post-rent pay is <code>$10,492/mo</code>, pre-rent share is <code>7.3%</code>, and post-rent share is <code>9.3%</code>.</p>
+          <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <ul class="space-y-1.5 text-xs text-slate-700">
+              <li>
+                <a href="https://tooearlytosay.com/research/food-security/working-poor-silicon-valley/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">When Work Isn't Enough: A Working-Poor Estimate Under Review</a>.
+                <span>Article-reported count of 57 Santa Clara tracts with employment above 60% and poverty above 10% across 408 tracts, plus housing-cost benchmarks; not publicly reproduced.</span>
+              </li>
+              <li>
+                <a href="https://tooearlytosay.com/research/methodology/census-api-pipeline/" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">How to Build a Census Data Pipeline</a>.
+                <span>Python walkthrough for pulling 2022 ACS 5-year tract estimates through the Census API, with key handling, rate limits, and checks for suppressed or nonnumeric values.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why do gross-pay poverty lines leave out food strain in high-rent areas?</dt>
+                <dd class="text-slate-700 mt-0.5">Federal Poverty Guidelines use one gross-pay line across 48 states. They do not adjust for local rent. In Marin County's Canal area (Tract 1122.03), typical pay is 220% FPL ($5,507/month). That sits above the 130% and 200% FPL cutoffs. Yet our modeled area-median benchmark subtracts renter gross rent ($2,318/month) from all-home pay. A $973 food bill takes 30.5% of the pay left after rent.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does checking post-rent food costs change local plans?</dt>
+                <dd class="text-slate-700 mt-0.5">Checking food costs after rent separates tight budgets from long store trips. Teams can match CalFresh shelter rules, clinic food scripts, food vans, or rural delivery to each local gap.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why should health teams check census tracts instead of county means?</dt>
+                <dd class="text-slate-700 mt-0.5">County means blend rich owner areas with low-pay renter tracts. Checking census tracts keeps high county pay from covering up severe post-rent food strain in renter areas.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/case-studies/geographic-variables" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance</a></li>
+          <li class="my-2"><a href="/case-studies/food-insecurity-diabetes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Case Study: Untangling Bidirectional Links Between Food Affordability and Chronic Disease</a></li>
+          <li class="my-2"><a href="/case-studies/threat-measurement-instrumentation" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/case-studies">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/src/frontend/js/main.js"></script>
+</body>
+</html>

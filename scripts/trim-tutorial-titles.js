@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ML = path.join(__dirname, '..', 'public', 'methods-lab');
+const ML = path.join(__dirname, '..', 'public', 'case-studies');
 const MAX = 60;
 
 const slugs = fs.readdirSync(ML, { withFileTypes: true })

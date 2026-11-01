@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selection Into Treatment & CA Paid Leave | CAPHE</title>
+  <meta name="description" content="Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.caphegroup.org/case-studies/selection-into-treatment">
+  <meta property="og:title" content="Selection Into Treatment & CA Paid Leave | CAPHE">
+  <meta property="og:description" content="Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/case-studies/selection-into-treatment">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Article",
+    "LearningResource"
+  ],
+  "headline": "Wage-Tier Replacement Rates and Job Protection Shape Projected Paid Family Leave Take-Up",
+  "description": "Analyze how California SB 951 wage replacement tiers (90% vs 70%) and CFRA job-protection gaps shape take-up and net transfers across wage quintiles.",
+  "author": {
+    "@type": "Organization",
+    "name": "CAPHE",
+    "url": "https://www.caphegroup.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "California Association of Public Health Economists",
+    "url": "https://www.caphegroup.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.caphegroup.org/assets/images/logo.png"
+    }
+  },
+  "mainEntityOfPage": "https://www.caphegroup.org/case-studies/selection-into-treatment",
+  "educationalLevel": "Professional",
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "California Public Health Case Studies",
+    "url": "https://www.caphegroup.org/case-studies"
+  }
+}
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does PFL take-up differ from total covered workers in California?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "All 18.5 million SDI-covered workers pay into the fund. Yet low-wage workers face cash limits when pay replacement sits below 90%. They also face job-protection gaps when PFL pays for 8 weeks while CFRA protects jobs for 12 unpaid weeks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How did Senate Bill 951 shift tax and pay shares in California Paid Family Leave?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SB 951 removed the SDI wage tax cap on January 1, 2024, so high earners pay tax on all wages. It then raised pay replacement to 90% for low-wage workers on January 1, 2025. Under a 12-week plan, Q1 (&lt;$25K) workers gain +$19.7M net per year."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does private firm offset affect SDI reserves versus worker income?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When firms use state PFL pay to offset private paid leave (30% in the Expected case), net new cash to workers drops from $602.8M to $422.0M. Yet the state SDI fund still pays out the full $623.7M gross outlay."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- geo:faq:end -->
+</head>
+<body class="antialiased">
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Site Navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs#webinars">Webinars</a>
+            <a href="/programs#workshops">Workshops</a>
+            <a href="/programs#working-groups">Working Groups</a>
+            <a href="/programs#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/case-studies">Case Studies</a>
+            <a href="/resources#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator">ROI Calculator</a>
+            <a href="/tools/access-explorer">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Wage-Tier Replacement Rates and Job Protection Shape Projected Paid Family Leave Take-Up
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        Modeling how higher pay rates and job protection shift leave claims across low-wage and high-wage workers.
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        California funds Paid Family Leave through a statewide employee payroll tax on 18.5 million workers. When lawmakers weigh expanding paid leave from 8 to 12 weeks, workers in different wage tiers claim leave at different rates. Job protection rules and private employer top-off pay shape who uses the added weeks.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When sizing a Paid Family Leave expansion from 8 to 12 weeks across California's <strong>18.5 million covered workers,</strong> pairing a 12-week cap with <strong>90% low-wage pay replacement</strong> delivers <strong>$422.0M per year in modeled net worker pay</strong> and a <strong>+$19.7M yearly net gain</strong> for the lowest-paid fifth of workers.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Assuming 100% of eligible claimants take every week overstates yearly fund outlays by <strong>3.1 times ($1,910.0M vs. $623.7M)</strong> because job rules and firm top-offs shape take-up.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Modeling take-up across all five wage groups prices the payroll tax shift at <strong>+0.045 percentage points.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Leave Take-Up, Tax Share &amp; Net Gains Across Wage Groups</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How SB 951 pay rates (90% vs. 70%) and uncapped SDI payroll taxes shape net gains across California wage tiers.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Table 1 shows modeled Paid Family Leave expansion costs and net gains across worker wage groups.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Wage &amp; Tax Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 1 (&lt;$25K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Lowest Wage Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 2 ($25K-$45K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Second Wage Group</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Groups 3-4 ($45K-$110K)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Middle Wage Groups</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Wage Group 5 ($110K+)</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Top Wage Group</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                SB 951 Weekly Pay Rate
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% of weekly wage</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% of weekly wage</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% (Mid) to 70% (Upper-Mid)</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">70%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">capped at $1,765/wk</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Covered Workers
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">25.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">22.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0% of workers</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15.0% of workers</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Added SDI Tax<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">7.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$43.7M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">12.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$74.8M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">42.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$264.7M tax</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.6%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$240.5M tax</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Share of Added PFL Pay<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15.4%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$63.4M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">19.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$78.1M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">45.3%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$186.4M pay</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">20.2%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+$83.0M pay</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Net Yearly Transfer (Pay Minus Tax)<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+$19.7M Net Gain</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 13%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">+$3.3M Net Gain</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 2%; background: #0D9488;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-$78.2M Net Tax</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 50%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">-$157.5M Net Tax</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 100%; background: #0041A5;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Take-Up Factor
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">90% pay + CFRA gap</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Cash need + firm size &ge;5</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Partial firm top-off</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">30% to 50% firm offset</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Wage group shares come from U.S. Census ACS 5-year microdata (18.5M SDI-covered workers) anchored to the EDD May 2026 DI Fund Forecast (330,000 baseline claims, $1,371.5B taxable wages). Mode A rows model a 12-week PFL expansion at 35% added-week take-up.</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Lowest Wage Group.</strong> Mean Wage $18K (25% of Workers). <strong>Second Wage Group.</strong> Mean Wage $35K (22% of Workers). <strong>Middle Wage Groups.</strong> 38% of Covered Workers. <strong>Top Wage Group.</strong> Mean Wage $165K (15% of Workers).</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Model on Observed Baselines: EDD 2025-2026 Claims &amp; ACS 5-Year Wage Groups (N = 18.5M Workers). Ruler 1: Full-Use Cap (100% Take-Up, 0% Firm Offset): <strong>$1,910.0M Outlay (396K Claims)</strong>. Unit: modeled claimants and yearly SDI fund totals. Suppose every modeled claimant took all 4 added weeks (100% take-up) and new claims rose 20% (<strong>396,000 claims</strong>) with zero firm offset. Yearly gross SDI outlays would hit <strong>$1,910.0M</strong>. That would push the modeled SDI reserve to a <strong>-$0.58B (-3.0%) deficit</strong>. Ruler 2: Expected Choice &amp; SB 951 Net Share (35% Take-Up): <strong>$623.7M Gross | +$19.7M to Q1</strong>. Unit: modeled claimants, yearly SDI fund totals, and wage groups. Expected take-up (<strong>35.0%</strong> of added weeks, <strong>12.0%</strong> new claims = <strong>369,600 claims</strong>) costs <strong>$623.7M/yr</strong> in gross SDI outlay. Net worker gain is <strong>$422.0M</strong> after 30% firm offset. A <strong>+0.045 pp</strong> SDI tax shift funds the plan and sends a <strong>+$19.7M yearly net gain</strong> to Q1 (&lt;$25K) workers.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Take-Up Rules, Firm Offsets &amp; Policy Fit</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How worker take-up shapes who gains from paid leave and what the state fund pays.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Table 2 compares take-up drivers, firm offsets, and policy rules across worker wage groups.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Choice Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Lowest Wage Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Second Wage Group
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Middle Wage Groups
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Top Wage Group
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Cash &amp; Job-Rule Factor
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                At the old 60% pay rate, low-wage workers could not afford a 40% pay cut.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                CFRA protects jobs for 12 weeks at firms with 5+ staff, but PFL pays for 8 weeks.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Middle-wage workers weigh 70% to 90% PFL pay against sick days and home bills.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                High-wage staff often get private firm leave that tops off or replaces state PFL pay.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                How Group Take-Up Shifts the Model
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Cash limits show why low-wage workers took shorter leave before the 90% pay tier.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Group take-up reflects job rules in small firms that a flat 100% cap leaves out.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding 12.0% new claims captures higher use when pay and weeks rise.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Splitting $623.7M gross cost from $422.0M net worker pay accounts for 30% firm offset.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Budget Tradeoff
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Adding 4 weeks without the 90% pay floor would shift added pay toward high earners.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Closing the 4-week gap between PFL and CFRA costs +$623.7M/yr.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                The $1,765 weekly cap limits high-wage cost while keeping 90% pay below $63,000.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Removing the wage tax cap means top earners fund 38.6% (+$240.5M) and claim 20.2%.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best-Fit Policy Rule
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Pair 90% Pay With Clinic Outreach<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Link 90% pay with WIC and prenatal clinics so low-wage families claim their +$19.7M gain.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Match 12-Week PFL to CFRA Rules<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Align 12-week PFL pay with 12-week CFRA job protection to close the 4-week unpaid gap.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Split Gross Fund Cost From Net Gain<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Budget reserves for $623.7M gross cost while scoring worker gains on $422.0M net pay.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Uncapped SDI Tax Base<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Use the uncapped $1,371.5B wage base so a 4-week expansion adds +0.045 pp in tax.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Model Inputs, Firm Offset Math &amp; State Benchmarks</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Mode A Model Disclosure:</strong> Individual EDD tax files are private. Group shares across Q1 to Q5 wage tiers are modeled with <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS 2019-2023 5-Year PUMS</a> wage data (18.5M covered workers). Totals are anchored to <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD May 2026 DI Fund Forecast</a> baselines (330,000 forecast 2026 PFL claims, $1,165 weekly pay, and $1,371.5B taxable wages).</p>
+          <p>&bull; <strong>Firm Offset vs. Fund Cash Outlay:</strong> Private firm offset (50% Low, 30% Expected, 0% Cap) lowers <em>net added worker pay</em> ($422.0M Expected vs. $602.8M gross pay) when firms coordinate private paid leave with state PFL. Yet the state fund still pays the full <em>gross SDI cash outlay</em> ($623.7M with $21.1M admin).</p>
+          <p>&bull; <strong>Peer State Rates:</strong> California's 90% low-wage pay tier under SB 951 matches Washington and Colorado (90%). It sits above New Jersey (85%) and New York (67%).</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Budget Tradeoff (Second Wage Group).</strong> Closing the 4-week gap between PFL and CFRA costs +$623.7M/yr (+0.045 pp tax).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare How Worker Take-Up &amp; Firm Offset Shift Annual PFL Outlays</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Comparing modeled yearly SDI outlays and net worker gains across low, expected, and cap scenarios.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare How Worker Take-Up &amp; Firm Offset Shift Annual PFL Outlays">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 1 · Low Bound</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">25% Added Take-Up | 50% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$417.8M Gross | $201.8M Net</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Modeled yearly claims hit 346,500 (+0.030 pp tax shift), while firm offset halves net added worker pay.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 2 · Expected Choice</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">35% Added Take-Up | 30% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$623.7M Gross | $422.0M Net</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Modeled yearly claims hit 369,600 (+0.045 pp tax shift) and send +$23.0M net to the lowest two wage groups.</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Scenario 3 · Full-Use Cap</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">100% Added Take-Up | 0% Offset</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">$1,910.0M Gross | -$0.58B Deficit</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">A 100% take-up stress test triples yearly gross outlay and pushes SDI cash reserves into a -3.0% deficit.</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Scenario Math, 6-Year Outlays &amp; SDI Reserve Notes</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Scenario 1 Low Bound (25% Added Weeks / +5% New Claims):</strong> Adds +16,500 new claims (from 330,000 base to 346,500/yr). That creates <strong>$417.8M/yr</strong> in gross SDI outlay (<strong>$2.688B</strong> over 6 years, 1.33% SDI tax rate) and <strong>$201.8M/yr</strong> in net worker pay after 50% firm offset.</p>
+          <p>&bull; <strong>Scenario 2 Expected Choice (35% Added Weeks / +12% New Claims):</strong> Adds +39,600 new claims (369,600/yr total). That creates <strong>$623.7M/yr</strong> in gross SDI outlay (<strong>$4.013B</strong> over 6 years, 1.345% SDI tax rate) and <strong>$422.0M/yr</strong> in net worker pay after 30% firm offset.</p>
+          <p>&bull; <strong>Scenario 3 Full-Use Cap (100% Added Weeks / +20% New Claims):</strong> Adds +66,000 new claims (396,000/yr total). Gross outlay rises to <strong>$1,910.0M/yr</strong> (<strong>$12.286B</strong> over 6 years) and pushes the 2026 SDI reserve to a <strong>-$0.58B (-3.0%)</strong> deficit.</p>
+        </div>
+      </details>
+    </div>
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Worker Take-Up Shapes Both Causal Models and Tax Fairness</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">In program studies, selection into treatment means people who enroll differ from those who do not. For health economists and state budget leads, worker choice is also the policy path itself. California gives 12 weeks of unpaid job protection under CFRA, yet PFL pays for only 8 weeks. Low-wage workers without savings drop out at week 9, while salaried staff with firm top-offs take all 12 weeks.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Modeling worker take-up next to tax shares avoids two budget errors. It avoids over-budgeting for a 100% cap ($1,910.0M/yr) and avoids assuming leave expansions only help top earners. SB 951 raised low-wage pay to 90% and removed the wage tax cap on high earners. At 35% expected take-up ($623.7M/yr gross cost), the plan scores +0.095 on progressivity and sends +$23.0M in net gains to the bottom two wage groups.</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Worker Take-Up &amp; Tax Share (Mode A on ACS &amp; EDD Baselines)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>California Paid Family Leave &amp; Workforce Baselines:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a> (18.5M covered workers, $1,371.5B taxable wages, 330,000 forecast 2026 PFL claims) and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS 2019-2023 5-Year Microdata</a>.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>SB 951 Pay Tiers &amp; Tax Rules:</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; Gov. Code &sect; 12945.2)</a> sets 90% pay for low-wage workers starting Jan 1, 2025 and removes the SDI wage tax cap starting Jan 1, 2024. That yields a +$19.7M yearly net gain for Q1 workers and +$23.0M across Q1 and Q2.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Expected Take-Up vs. Full-Use Cap:</strong> <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> models 35% added-week take-up at $623.7M in yearly gross cost and $422.0M in net worker pay after 30% employer offset, versus $1,910.0M at 100% take-up.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">EDD Paid Family Leave Monthly Data Series</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019-2023 5-Year Microdata</a></li>
+            </ol>
+          </div>
+          <p><strong>Mode Classification (Mode A Model on Observed Baselines):</strong> Base 2025 PFL claims (325,055 yearly claims), weekly pay ($1,090), and SDI fund balance ($3.011B) are observed EDD records. Forecast 2026 baselines (330,000 claims, $1,165 weekly pay, $1,371.5B taxable wages) and wage-group shares are Mode A projections from the <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a>.</p>
+          <p><strong>Primary Data Sources:</strong> <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Employment Development Department (EDD) May 2026 Disability Insurance Fund Forecast</a>, <a href="https://data.edd.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EDD Paid Family Leave Monthly Data Series</a>, <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC § 3300 &amp; Gov. Code § 12945.2)</a>, and <a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019-2023 5-Year Microdata</a>.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">Why does PFL take-up differ from total covered workers in California?</dt>
+                <dd class="text-slate-700 mt-0.5">All 18.5 million SDI-covered workers pay into the fund. Yet low-wage workers face cash limits when pay replacement sits below 90%. They also face job-protection gaps when PFL pays for 8 weeks while CFRA protects jobs for 12 unpaid weeks.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How did Senate Bill 951 shift tax and pay shares in California Paid Family Leave?</dt>
+                <dd class="text-slate-700 mt-0.5">SB 951 removed the SDI wage tax cap on January 1, 2024, so high earners pay tax on all wages. It then raised pay replacement to 90% for low-wage workers on January 1, 2025. Under a 12-week plan, Q1 (&lt;$25K) workers gain +$19.7M net per year.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">How does private firm offset affect SDI reserves versus worker income?</dt>
+                <dd class="text-slate-700 mt-0.5">When firms use state PFL pay to offset private paid leave (30% in the Expected case), net new cash to workers drops from $602.8M to $422.0M. Yet the state SDI fund still pays out the full $623.7M gross outlay.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/case-studies/threat-maturation-solutions" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Multi-Year Trend Splits on PFL & SB 951</a></li>
+          <li class="my-2"><a href="/case-studies/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact & SDI Reserve Floor Rules</a></li>
+          <li class="my-2"><a href="/case-studies/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Filtered Subsets & Full-Pool Calibration</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/case-studies">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/src/frontend/js/main.js"></script>
+</body>
+</html>

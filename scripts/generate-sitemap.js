@@ -4,7 +4,7 @@
  * Run: node scripts/generate-sitemap.js
  *
  * Emits:
- *   public/sitemap-tutorials.xml  — Methods Lab tutorials + the methods-lab hub
+ *   public/sitemap-tutorials.xml  — Case Studies modules + the case-studies hub
  *   public/sitemap-static.xml     — homepage, membership, tools, org, legal, resources
  *   public/sitemap-index.xml      — master index referencing the two segments
  *   public/sitemap.xml            — kept as a copy of the index for backward compat
@@ -29,7 +29,8 @@ const EXCLUDE_PATTERNS = [
   /^reset-password\.html$/,
   /^login\.html$/,            // noindex (PRD Cluster F)
   /^tools\/pfl-simulator\//,  // noindex staging tool
-  /^methods-lab\/(selection-into-treatment|threat-maturation-solutions)\//, // noindex held PFL case studies
+  /^case-studies\/(selection-into-treatment|threat-maturation-solutions)\//, // noindex held PFL case studies
+  /^case-studies\/pho-packaging-prototype\.html$/, // noindex internal prototype
   /^join\//,
   /^404\.html$/
 ];
@@ -38,7 +39,7 @@ const PRIORITY_MAP = {
   'index.html': '1.0',
   'about.html': '0.9',
   'programs.html': '0.9',
-  'methods-lab/index.html': '0.9',
+  'case-studies/index.html': '0.9',
   'tools/lha-calculator/index.html': '0.9',
   'resources.html': '0.8',
   'membership.html': '0.8',
@@ -57,10 +58,10 @@ function getPriority(relativePath) {
 }
 
 function getChangefreq(relativePath) {
-  if (relativePath.includes('methods-lab/') && relativePath !== 'methods-lab/index.html') {
+  if (relativePath.includes('case-studies/') && relativePath !== 'case-studies/index.html') {
     return 'monthly';
   }
-  if (relativePath === 'programs.html' || relativePath === 'methods-lab/index.html') {
+  if (relativePath === 'programs.html' || relativePath === 'case-studies/index.html') {
     return 'weekly';
   }
   if (relativePath === 'privacy.html' || relativePath === 'terms.html') {
@@ -78,6 +79,8 @@ function findHtmlFiles(dir, baseDir = dir) {
     if (entry.isDirectory()) {
       files.push(...findHtmlFiles(fullPath, baseDir));
     } else if (entry.name.endsWith('.html') && !shouldExclude(relativePath)) {
+      const html = fs.readFileSync(fullPath, 'utf8');
+      if (/<meta[^>]*name=["']robots["'][^>]*noindex/i.test(html)) continue;
       files.push(relativePath);
     }
   }
@@ -92,10 +95,10 @@ function toUrl(file) {
   return `${BASE_URL}/${urlPath}`;
 }
 
-// A tutorial = any methods-lab/* file EXCEPT the hub index.
+// A tutorial = any case-studies/* file EXCEPT the hub index.
 function isTutorial(file) {
   const f = file.replace(/\\/g, '/');
-  return f.startsWith('methods-lab/') && f !== 'methods-lab/index.html';
+  return f.startsWith('case-studies/') && f !== 'case-studies/index.html';
 }
 
 function urlsetXml(files, today) {
@@ -130,9 +133,9 @@ function generate() {
   const all = findHtmlFiles(PUBLIC_DIR);
   const today = new Date().toISOString().split('T')[0];
 
-  // The methods-lab hub (methods-lab/index.html) belongs in the tutorials segment
+  // The case-studies hub (case-studies/index.html) belongs in the tutorials segment
   // as the cluster's parent, per PRD §6.7.
-  const tutorials = all.filter(f => isTutorial(f) || f.replace(/\\/g, '/') === 'methods-lab/index.html');
+  const tutorials = all.filter(f => isTutorial(f) || f.replace(/\\/g, '/') === 'case-studies/index.html');
   const statics = all.filter(f => !tutorials.includes(f));
 
   fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-tutorials.xml'), urlsetXml(tutorials, today));

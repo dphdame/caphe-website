@@ -7,14 +7,16 @@ const V = require('../scripts/validate-seo');
 // against the exact edge cases the 6 code-review findings exposed, so a future
 // refactor that breaks one of them fails loudly instead of silently.
 
-test('redirectingRefs flags trailing-slash + .html in href and absolute forms', () => {
+test('redirectingRefs flags trailing-slash, .html, and legacy /methods-lab in href and absolute forms', () => {
   const hits = V.redirectingRefs(`
-    <a href="/methods-lab/">x</a>
+    <a href="/case-studies/">x</a>
+    <a href="/methods-lab">legacy</a>
     <a href="/about.html">y</a>
     <meta property="og:url" content="https://www.caphegroup.org/tools/access-explorer/">
     <link href="https://www.caphegroup.org/resources.html">
   `);
-  assert.ok(hits.includes('/methods-lab/'));
+  assert.ok(hits.includes('/case-studies/'));
+  assert.ok(hits.includes('/methods-lab'));
   assert.ok(hits.includes('/about.html'));
   assert.ok(hits.includes('/tools/access-explorer/'));
   assert.ok(hits.includes('/resources.html'));
@@ -23,7 +25,7 @@ test('redirectingRefs flags trailing-slash + .html in href and absolute forms', 
 test('redirectingRefs does NOT flag canonical forms, root, or protocol-relative', () => {
   const hits = V.redirectingRefs(`
     <a href="/">home</a>
-    <a href="/methods-lab">ml</a>
+    <a href="/case-studies">cs</a>
     <meta property="og:url" content="https://www.caphegroup.org/">
     <a href="//cdn.example.com/lib/">cdn</a>
   `);
@@ -43,11 +45,11 @@ test('redirectingRefs excludes /assets/ on EVERY branch (finding 1)', () => {
 test('redirectingRefs catches uppercase .HTML (finding 4) and ?query/#hash (finding 5)', () => {
   const hits = V.redirectingRefs(`
     <meta property="og:url" content="https://www.caphegroup.org/About.HTML">
-    <a href="/methods-lab/?utm=x">q</a>
+    <a href="/case-studies/?utm=x">q</a>
     <a href="/about.html#top">h</a>
   `);
   assert.ok(hits.includes('/About.HTML'), 'uppercase .HTML');
-  assert.ok(hits.includes('/methods-lab/'), 'trailing slash before ?query');
+  assert.ok(hits.includes('/case-studies/'), 'trailing slash before ?query');
   assert.ok(hits.includes('/about.html'), '.html before #hash');
 });
 
@@ -60,21 +62,22 @@ test('internalPathResolves knows the non-public static mounts (/src /assets /dat
 test('internalPathResolves handles extensionless, dir-index, root, and /api routes', () => {
   assert.equal(V.internalPathResolves('/'), true);              // index.html
   assert.equal(V.internalPathResolves('/about'), true);         // about.html
-  assert.equal(V.internalPathResolves('/methods-lab'), true);   // methods-lab/index.html
+  assert.equal(V.internalPathResolves('/case-studies'), true);  // case-studies/index.html
   assert.equal(V.internalPathResolves('/tools/lha-calculator/methodology'), true);
   assert.equal(V.internalPathResolves('/api/auth/google'), true); // route, trusted
   assert.equal(V.internalPathResolves('/nope-not-a-page'), false);
 });
 
 test('internalPathResolves models server redirect maps and trailing slash (adversary #3)', () => {
-  // labSlug bare form → server 301s to /methods-lab/<slug>, so it is NOT a 404.
+  // labSlug bare form → server 301s to /case-studies/<slug>, so it is NOT a 404.
   assert.equal(V.internalPathResolves('/selection-into-treatment'), true);
   // /programs/<section> → server 301s to /programs#<section>.
   assert.equal(V.internalPathResolves('/programs/webinars'), true);
   assert.equal(V.internalPathResolves('/programs/not-a-section'), false);
   // trailing slash normalizes (redirect concern owned by redirectingRefs, not this).
   assert.equal(V.internalPathResolves('/about/'), true);
-  assert.equal(V.internalPathResolves('/methods-lab/'), true);
+  assert.equal(V.internalPathResolves('/case-studies/'), true);
+  assert.equal(V.internalPathResolves('/methods-lab'), true);
 });
 
 test('internalLinkTargets skips external, mailto/tel, in-page anchors, protocol-relative', () => {
@@ -96,7 +99,7 @@ test('internalLinkTargets skips external, mailto/tel, in-page anchors, protocol-
 test('fileToCanonicalPath mirrors the server routing', () => {
   assert.equal(V.fileToCanonicalPath('index.html'), '/');
   assert.equal(V.fileToCanonicalPath('about.html'), '/about');
-  assert.equal(V.fileToCanonicalPath('methods-lab/index.html'), '/methods-lab');
+  assert.equal(V.fileToCanonicalPath('case-studies/index.html'), '/case-studies');
   assert.equal(V.fileToCanonicalPath('tools/lha-calculator/methodology.html'),
     '/tools/lha-calculator/methodology');
 });

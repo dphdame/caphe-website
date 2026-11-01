@@ -20,12 +20,12 @@ test('no tutorial references a relative assets/ image src', () => {
   assert.deepStrictEqual(offenders, [], `Relative assets/ srcs found:\n${offenders.join('\n')}`);
 });
 
-test('every root-relative methods-lab image src resolves to a real file', () => {
+test('every root-relative case-studies image src resolves to a real file', () => {
   const missing = [];
   for (const slug of H.tutorialSlugs()) {
     const html = H.read(H.tutorialPath(slug));
     for (const src of H.imgSrcs(html)) {
-      if (/^\/methods-lab\/.+\/assets\//.test(src)) {
+      if (/^\/case-studies\/.+\/assets\//.test(src)) {
         const onDisk = path.join(H.PUBLIC, src.replace(/^\//, '').split('?')[0]);
         if (!fs.existsSync(onDisk)) missing.push(`${slug}: ${src}`);
       }

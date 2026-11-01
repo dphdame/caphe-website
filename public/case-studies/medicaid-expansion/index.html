@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medi-Cal Churn & Work Requirement Funnel | CAPHE</title>
+  <meta name="description" content="Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.">
+  <link rel="canonical" href="https://www.caphegroup.org/case-studies/medicaid-expansion">
+  <meta property="og:title" content="Medi-Cal Churn & Work Requirement Funnel | CAPHE">
+  <meta property="og:description" content="Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caphegroup.org/case-studies/medicaid-expansion">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #0041A5;
+      --color-primary-light: #1565C0;
+      --color-primary-dark: #003080;
+      --color-secondary: #0D9488;
+      --color-accent: #F9A825;
+      --color-text: #1C1C1C;
+      --color-text-secondary: #334155;
+      --color-text-muted: #595959;
+      --color-bg: #FFFFFF;
+      --color-bg-alt: #F8FAFC;
+      --color-border: #E2E8F0;
+      --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-text);
+      background-color: var(--color-bg-alt);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-text);
+      text-wrap: balance;
+    }
+    th {
+      font-family: var(--font-body);
+      color: var(--color-text);
+    }
+    p, td, dd, li {
+      text-wrap: pretty;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+    table { border-collapse: collapse; }
+    .skip-link { position: absolute; top: -100px; left: 16px; background: #0041A5; color: #fff; padding: 8px 16px; border-radius: 4px; z-index: 1000; font-weight: 600; }
+    .skip-link:focus { top: 16px; }
+
+    /* CAPHE Site Shell Navigation & Footer */
+    .nav-top-bar { background: #003080; color: rgba(255,255,255,0.9); font-size: 0.875rem; padding: 0.375rem 0; }
+    .nav-top-bar .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; }
+    .nav-top-bar a { color: rgba(255,255,255,0.9); transition: color 0.15s; }
+    .nav-top-bar a:hover { color: #fff; text-decoration: none; }
+    .nav-top-bar .nav-top-cta { background: #F9A825; color: #003080 !important; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 4px; }
+    .nav { background: #fff; border-bottom: 1px solid #E2E8F0; position: sticky; top: 0; z-index: 100; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 0.625rem; font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; color: #003080; text-decoration: none; }
+    .nav-logo img { height: 40px; width: auto; }
+    .nav-logo-text { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #0041A5; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-link { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #0041A5; text-decoration: none; }
+    .nav-link.active { border-bottom-color: #F9A825; }
+    .nav-dropdown { position: relative; display: flex; align-items: center; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 210px; padding: 0.5rem 0; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block; padding: 0.5rem 1.25rem; font-size: 0.875rem; color: #334155; text-transform: none; letter-spacing: 0; text-decoration: none; }
+    .nav-dropdown-menu a:hover { background: #F8FAFC; color: #0041A5; }
+    .nav-mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+    .nav-mobile-toggle span { display: block; width: 24px; height: 2px; background: #1C1C1C; }
+
+    .footer { background: #0F172A; color: #CBD5E1; padding: 3.5rem 0 2rem; margin-top: 4rem; border-top: 1px solid #1E293B; }
+    .footer .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-grid h4 { font-family: var(--font-heading); font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; margin-bottom: 0.75rem; }
+    .footer-grid a { display: block; color: #CBD5E1; font-size: 0.9375rem; margin-bottom: 0.4rem; text-decoration: none; }
+    .footer-grid a:hover { color: #fff; text-decoration: underline; }
+    .footer-brand p { font-size: 0.9375rem; color: #94A3B8; margin-top: 0.5rem; line-height: 1.5; }
+    .footer-bottom { border-top: 1px solid #1E293B; padding-top: 1.25rem; font-size: 0.875rem; color: #94A3B8; }
+
+    /* Compiled Layout & Typography Utilities */
+    .antialiased { -webkit-font-smoothing: antialiased; }
+    .max-w-6xl { max-width: 71.25rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-4 { padding: 1rem; }
+    .pb-6 { padding-bottom: 1.5rem; }
+    .pb-5 { padding-bottom: 1.25rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .mb-10 { margin-bottom: 2.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-0\.5 { margin-bottom: 0.125rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-0\.5 { margin-top: 0.125rem; }
+    .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .my-1\.5 { margin-top: 0.375rem; margin-bottom: 0.375rem; }
+    .ml-2 { margin-left: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-2\.5 > * + * { margin-top: 0.625rem; }
+    .space-y-1\.5 > * + * { margin-top: 0.375rem; }
+    .space-x-2 > * + * { margin-left: 0.5rem; }
+    .flex { display: flex; }
+    .inline-block { display: inline-block; }
+    .grid { display: grid; }
+    .block { display: block; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-baseline { align-items: baseline; }
+    .justify-between { justify-content: space-between; }
+    .align-top { vertical-align: top; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .w-full { width: 100%; }
+    .col-label { width: 22%; }
+    .col-data { width: 19.5%; }
+    .w-4 { width: 1rem; }
+    .h-4 { height: 1rem; }
+    .min-w-\[860px\] { min-width: 860px; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded { border-radius: 0.25rem; }
+    .border { border-width: 1px; border-style: solid; border-color: #E2E8F0; }
+    .border-b { border-bottom: 1px solid #E2E8F0; }
+    .border-t { border-top: 1px solid #E2E8F0; }
+    .border-l { border-left: 1px solid #E2E8F0; }
+    .border-y-2 { border-top-width: 2px; border-bottom-width: 2px; border-style: solid; }
+    .border-t-2 { border-top-width: 2px; border-top-style: solid; }
+    .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+    .border-collapse { border-collapse: collapse; }
+    .border-slate-300 { border-color: #CBD5E1; }
+    .border-slate-200 { border-color: #E2E8F0; }
+    .border-slate-200\/80 { border-color: rgba(226, 232, 240, 0.8); }
+    .border-slate-200\/60 { border-color: rgba(226, 232, 240, 0.6); }
+    .border-blue-200 { border-color: #BFDBFE; }
+    .border-amber-300 { border-color: #FCD34D; }
+    .border-rose-200 { border-color: #FECDD3; }
+    .border-rose-300 { border-color: #FDA4AF; }
+    .border-emerald-200 { border-color: #A7F3D0; }
+    .border-\[\#0041A5\] { border-color: #0041A5; }
+    .bg-white { background-color: #FFFFFF; }
+    .bg-slate-50 { background-color: #F8FAFC; }
+    .bg-slate-50\/70 { background-color: rgba(248, 250, 252, 0.7); }
+    .bg-slate-100 { background-color: #F1F5F9; }
+    .bg-slate-200 { background-color: #E2E8F0; }
+    .bg-blue-50\/60 { background-color: rgba(239, 246, 255, 0.6); }
+    .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.65); }
+    .bg-blue-50\/20 { background-color: rgba(239, 246, 255, 0.35); }
+    .bg-blue-600 { background-color: #0041A5; }
+    .bg-amber-200 { background-color: #FDE68A; }
+    .bg-rose-50\/50 { background-color: rgba(255, 241, 242, 0.5); }
+    .bg-rose-100\/50 { background-color: rgba(255, 228, 230, 0.5); }
+    .bg-rose-200 { background-color: #FECDD3; }
+    .bg-emerald-50 { background-color: #ECFDF5; }
+    .bg-emerald-50\/70 { background-color: rgba(236, 253, 245, 0.75); }
+    .bg-emerald-100\/60 { background-color: rgba(209, 250, 229, 0.65); }
+    .text-left { text-align: left; }
+    .text-2xl { font-size: 1.5rem; line-height: 1.95rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+    .text-base { font-size: 1rem; line-height: 1.55rem; }
+    .text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+    .text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+    .text-xs { font-size: 0.875rem; line-height: 1.42rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .font-normal { font-weight: 400; }
+    .font-sans { font-family: var(--font-body); }
+    .font-mono { font-family: var(--font-body); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+    .font-\[\'Montserrat\'\] { font-family: var(--font-body); }
+    .font-\[\'Source_Sans_Pro\'\] { font-family: var(--font-body); }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.04em; }
+    .tracking-tight { letter-spacing: -0.015em; }
+    .leading-tight { line-height: 1.25; }
+    .leading-snug { line-height: 1.42; }
+    .leading-relaxed { line-height: 1.62; }
+    .opacity-90 { opacity: 0.9; }
+    .text-white { color: #FFFFFF; }
+    .text-slate-950 { color: #020617; }
+    .text-slate-900 { color: #0F172A; }
+    .text-slate-800 { color: #1E293B; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-500 { color: #595959; }
+    .text-amber-800 { color: #92400E; }
+    .text-rose-950 { color: #4C0519; }
+    .text-rose-800 { color: #9F1239; }
+    .text-rose-700 { color: #BE123C; }
+    .text-emerald-950 { color: #022C22; }
+    .text-emerald-900 { color: #064E3B; }
+    .text-emerald-800 { color: #065F46; }
+    .text-\[\#003080\] { color: #003080; }
+    .text-\[\#0041A5\] { color: #0041A5; }
+    .underline { text-decoration: underline; }
+    .shadow-sm { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07); }
+    .cursor-pointer { cursor: pointer; }
+    .select-none { user-select: none; }
+    .list-none { list-style: none; }
+    .transition-colors { transition: background-color 0.15s ease, color 0.15s ease; }
+    .transition-transform { transition: transform 0.2s ease; }
+    .duration-200 { transition-duration: 200ms; }
+    .hover\:bg-slate-100:hover { background-color: #F1F5F9; }
+    .hover\:bg-slate-200:hover { background-color: #E2E8F0; }
+    .hover\:bg-slate-50\/50:hover { background-color: rgba(248, 250, 252, 0.65); }
+    .hover\:text-\[\#003080\]:hover { color: #003080; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-\[\#0041A5\]:focus { box-shadow: 0 0 0 2px #0041A5; }
+    .focus\:ring-inset:focus { box-shadow: inset 0 0 0 2px #0041A5; }
+    .divide-y > * + * { border-top: 1px solid #E2E8F0; }
+    .divide-slate-200 > * + * { border-color: #E2E8F0; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .group-open\:rotate-90 { transform: rotate(90deg); }
+
+    /* Option C Visual Components */
+    .mt-4 { margin-top: 1rem; }
+    .min-w-\[640px\] { min-width: 640px; }
+    .col-header-img {
+      width: 100%;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+    .col-header-banner {
+      width: 100%;
+      height: 68px;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .inline-mini-bar {
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-top: 6px;
+    }
+    .tag-unit {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #E2E8F0;
+      color: #334155;
+      margin-bottom: 0.3rem;
+    }
+    .tag-unit-tract {
+      background: #DBEAFE;
+      color: #003080;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .sm\:p-6 { padding: 1.5rem; }
+      .sm\:text-3xl { font-size: 1.875rem; line-height: 2.3rem; }
+      .sm\:text-2xl { font-size: 1.45rem; line-height: 1.9rem; }
+      .sm\:text-xl { font-size: 1.25rem; line-height: 1.7rem; }
+      .sm\:text-lg { font-size: 1.125rem; line-height: 1.65rem; }
+      .sm\:text-base { font-size: 1rem; line-height: 1.55rem; }
+      .sm\:text-sm { font-size: 0.95rem; line-height: 1.52rem; }
+      .sm\:text-\[13\.5px\] { font-size: 0.925rem; line-height: 1.5rem; }
+      .sm\:flex-row { flex-direction: row; }
+      .sm\:items-center { align-items: center; }
+      .sm\:items-baseline { align-items: baseline; }
+      .sm\:inline { display: inline; }
+      .sm\:ml-1 { margin-left: 0.25rem; }
+      .sm\:mt-0 { margin-top: 0; }
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .whitespace-nowrap { white-space: nowrap; }
+    @media (min-width: 768px) {
+      .md\:py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+      .md\:items-center { align-items: center; }
+      .md\:hidden { display: none; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+      .lg\:text-4xl { font-size: 2.125rem; line-height: 2.55rem; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1.5rem; border-bottom: 1px solid #E2E8F0; box-shadow: 0 8px 24px rgba(0,0,0,0.1); gap: 1rem; }
+      .nav-links.active { display: flex; }
+      .nav-mobile-toggle { display: flex; }
+      .nav-dropdown-menu { position: static; box-shadow: none; border: none; padding-left: 1.5rem; }
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Article",
+    "LearningResource"
+  ],
+  "headline": "Most Projected Medi-Cal Renewal Losses Stem From Preventable Paperwork Drop-Offs Rather Than Lost Eligibility",
+  "description": "Decompose Santa Clara County Medi-Cal expansion disenrollment into administrative verification friction vs. true eligibility loss using DHCS and ACS data.",
+  "author": {
+    "@type": "Organization",
+    "name": "CAPHE",
+    "url": "https://www.caphegroup.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "California Association of Public Health Economists",
+    "url": "https://www.caphegroup.org",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.caphegroup.org/assets/images/logo.png"
+    }
+  },
+  "mainEntityOfPage": "https://www.caphegroup.org/case-studies/medicaid-expansion",
+  "educationalLevel": "Professional",
+  "isPartOf": {
+    "@type": "CollectionPage",
+    "name": "California Public Health Case Studies",
+    "url": "https://www.caphegroup.org/case-studies"
+  }
+}
+  </script>
+  <!-- geo:faq:start -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What share of Santa Clara County Medi-Cal expansion adults already work or qualify for an exemption?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In Census data scaled to the 120,239 DHCS base, 77.5% of expansion adults already work at least 80 hours per month (38.0%) or hold a caregiver, disability, or student exemption (39.5%). Another 11.0% work in self-employed or part-time roles, reaching 88.5% in all. Only 11.5% (13,767 adults) have no logged work or survey exemption."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does Santa Clara County face a higher per-capita disenrollment rate than the statewide DHCS average?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The state DHCS check funnel exempts 373,389 adults living in high-unemployment or disaster counties before paper checks. Santa Clara County has a low jobless rate (~4.1%). As a result, 0% of its adults get a countywide jobless waiver. Projected six-month losses rise from 36,218 (flat state share) to 41,100."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which Medi-Cal groups experience the highest avoidable procedural churn?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Exempt caregivers, disabled adults, and students face 6,831 avoidable form losses per cycle (72.4% avoidable). Self-employed and part-time workers follow with 3,319 avoidable form losses per cycle (64.6% avoidable)."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- geo:faq:end -->
+</head>
+<body class="antialiased">
+
+  <!-- Top Bar -->
+  <div class="nav-top-bar">
+    <div class="container">
+      <a href="/contact">Contact</a>
+      <a href="/login">Log In</a>
+      <a href="/membership" class="nav-top-cta">Join CAPHE</a>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Site Navigation">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="/assets/images/logo-icon.png" alt="CAPHE" onerror="this.style.display='none'">
+        <div class="nav-logo-text">CAPHE</div>
+      </a>
+      <div class="nav-links">
+        <a href="/about" class="nav-link">About</a>
+        <div class="nav-dropdown">
+          <a href="/programs" class="nav-link">Programs &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/programs#webinars">Webinars</a>
+            <a href="/programs#workshops">Workshops</a>
+            <a href="/programs#working-groups">Working Groups</a>
+            <a href="/programs#peer-review">Peer Review Sessions</a>
+            <a href="/past-events">Past Events</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/resources" class="nav-link active">Resources &#9662;</a>
+          <div class="nav-dropdown-menu">
+            <a href="/case-studies">Case Studies</a>
+            <a href="/resources#external-resources">External Resources</a>
+            <a href="/tools/lha-calculator">ROI Calculator</a>
+            <a href="/tools/access-explorer">Access Explorer</a>
+          </div>
+        </div>
+      </div>
+      <button class="nav-mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
+    <div class="border-b border-slate-200 pb-6 mb-8">
+      <div class="text-xs font-bold text-[#0041A5] mb-2">
+        CAPHE Case Studies &middot; Program Impact
+      </div>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
+        Most Projected Medi-Cal Renewal Losses Stem From Preventable Paperwork Drop-Offs Rather Than Lost Eligibility
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+        How our modeled renewal check splits form drop-offs among working and exempt adults from true income exits.
+      </p>
+      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
+        Every six months, counties check eligibility for adults enrolled in Medi-Cal expansion coverage. When work and reporting rules take effect, state systems check wage and benefit files first and mail paper renewal forms to everyone else.
+      </p>
+      <!-- geo:answer:start -->
+      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
+        When reviewing Medi-Cal renewal drops in a low-unemployment urban county like Santa Clara (0% jobless waiver share vs. high-unemployment waiver counties), one county total leaves out that <strong>88.5%</strong> of expansion adults already work or hold an exemption.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> In our modeled four-group check, <strong>52.5%</strong> of projected disenrollment comes from avoidable form drops <strong>(14,219 of 27,076</strong> per cycle), whereas flat state scaling projects <strong>36,218 to 41,100</strong> losses with no group split.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Splitting the renewal funnel by work hours and exemption type guides staff to exempt caregivers, disabled adults, and part-time workers.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+      </p>
+      <!-- geo:answer:end -->
+    </div>
+
+    <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Six-Month Renewal Funnel Across Four Medi-Cal Adult Groups</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Group size, auto-match rates, and modeled form losses across four Santa Clara County groups.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
+          <caption class="sr-only">Four Santa Clara County Medi-Cal groups compared by size, auto-match rate, six-month loss, and avoidable form drops.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
+                Group &amp; Funnel Measure
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 1</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Working &ge; 80 Hrs/Mo</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 2</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Rule Exemptions</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 3</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Gig &amp; Part-Time Work</div>
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Group 4</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">No Recorded Work</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                DHCS-Scaled Adult Count
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">45,703</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">39.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">47,530</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">11.0%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">13,226</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">11.5%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">13,767</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Census Survey Adult Count
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">50,934</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">52,971</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">14,752</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">15,341</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Auto Data Match Rate
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">80.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.0% to 70.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">10.0% to 45.0% matched</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">5.0% matched</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Six-Month Plan Losses<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">6,367</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">19.9%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">9,435</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">38.8%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">5,138</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">44.6%</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">6,136</span>
+              </td>
+            </tr>
+            <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
+              <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
+                Avoidable Form Losses<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>
+              </th>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">35.0%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">2,228</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 35%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">72.4%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">6,831</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">64.6%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">3,319</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 65%; background: #0041A5;"></div></div>
+              </td>
+              <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">30.0%</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">1,841</span>
+                <div class="inline-mini-bar" aria-hidden="true"><div style="width: 30%; background: #0D9488;"></div></div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Main Renewal Form Hurdle
+              </th>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Wage lag or two jobs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unlinked school or care forms</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Hard 1099 or cash logs</span>
+              </td>
+              <td class="py-3.5 px-4 align-top border-l border-slate-200">
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unlogged health or care hours</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p><strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> This six-month renewal funnel models 27,076 group losses per cycle. Of those, 14,219 (52.5%) are avoidable form drops. It is scaled to the June 2025 Santa Clara County DHCS count of 120,239 expansion adults. Group shares come from U.S. Census ACS 2019–2023 5-Year PUMS data (133,998 weighted adults, rounded to 134,000; n = 6,297 unweighted records across 15 PUMAs).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Working &ge; 80 Hrs/Mo.</strong> Regular W-2 wage earners. <strong>Rule Exemptions.</strong> Caregivers, disabled adults, and students. <strong>Gig &amp; Part-Time Work.</strong> Self-employed and seasonal workers. <strong>No Recorded Work.</strong> No visible ACS survey exemption.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Calibrated Six-Month Renewal Funnel on Observed DHCS Baseline (120,239). Ruler 1: Flat-Share Aggregate Disenrollment View (County-Scaled Funnel): <strong>36,218 to 41,100 / Cycle</strong>. Applying the flat 2.5949% state share to the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS state funnel</a> projects <strong>36,218</strong> six-month losses. That rises to <strong>41,100</strong> with a 0% county jobless waiver share. It does not split form drops from lost eligibility. Ruler 2: Group Eligibility &amp; Procedural Churn Ruler: <strong>88.5% Eligible | 52.5% Avoidable</strong>. Census data (<a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">ACS 2019–2023 PUMS</a> scaled to <strong>120,239</strong> DHCS adults) shows <strong>77.5%</strong> work &ge;80 hrs/mo or hold an exemption. Another <strong>11.0%</strong> work part-time (<strong>88.5%</strong> total). Of <strong>27,076</strong> modeled losses, <strong>14,219 (52.5%)</strong> are avoidable.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- NON-STACKED SVG COMPARISON CHART -->
+    <div id="studyChartContainer" class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm">
+      <div class="mb-3">
+        <h3 class="text-sm sm:text-base font-bold text-slate-900">Visual Comparison: Total Six-Month Coverage Losses vs. Avoidable Form Losses (Adult Counts)</h3>
+        <p class="text-xs text-slate-600 mt-0.5">Separate paired horizontal bars (non-stacked) comparing total modeled six-month coverage losses (slate, Row 4) vs. avoidable paperwork losses among still-eligible adults (blue, Row 5).</p>
+      </div>
+      <div>
+        <svg id="studyComparisonSvg" viewBox="0 0 760 236" class="w-full" style="height:auto;max-height:254px;" role="img" aria-label="Visual Comparison: Total Six-Month Coverage Losses vs. Avoidable Form Losses (Adult Counts)">
+          <line x1="225" y1="16" x2="225" y2="216" stroke="#CBD5E1" stroke-width="1.5"/>
+          <text x="215" y="44" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">Working &ge; 80 Hrs/Mo</text>
+          <rect x="225" y="26" width="170" height="14" rx="3" fill="#64748B"/>
+          <text x="401" y="37" font-size="11" font-weight="600" fill="#475569">6,367 total losses (13.9% of group)</text>
+          <rect x="225" y="43" width="59" height="16" rx="3" fill="#0041A5"/>
+          <text x="290" y="55" font-size="12" font-weight="700" fill="#0F172A">2,228 avoidable form losses (35.0% of losses)</text>
+          <text x="215" y="92" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">Rule Exemptions</text>
+          <rect x="225" y="74" width="252" height="14" rx="3" fill="#64748B"/>
+          <text x="483" y="85" font-size="11" font-weight="600" fill="#475569">9,435 total losses (19.9% of group)</text>
+          <rect x="225" y="91" width="182" height="16" rx="3" fill="#0041A5"/>
+          <text x="413" y="103" font-size="12" font-weight="700" fill="#0F172A">6,831 avoidable form losses (72.4% of losses)</text>
+          <text x="215" y="140" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">Gig &amp; Part-Time Work</text>
+          <rect x="225" y="122" width="137" height="14" rx="3" fill="#64748B"/>
+          <text x="368" y="133" font-size="11" font-weight="600" fill="#475569">5,138 total losses (38.8% of group)</text>
+          <rect x="225" y="139" width="89" height="16" rx="3" fill="#0041A5"/>
+          <text x="320" y="151" font-size="12" font-weight="700" fill="#0F172A">3,319 avoidable form losses (64.6% of losses)</text>
+          <text x="215" y="188" text-anchor="end" font-size="12" font-weight="600" fill="#1E293B">No Recorded Work</text>
+          <rect x="225" y="170" width="164" height="14" rx="3" fill="#64748B"/>
+          <text x="395" y="181" font-size="11" font-weight="600" fill="#475569">6,136 total losses (44.6% of group)</text>
+          <rect x="225" y="187" width="49" height="16" rx="3" fill="#0041A5"/>
+          <text x="280" y="199" font-size="12" font-weight="700" fill="#0F172A">1,841 avoidable form losses (30.0% of losses)</text>
+        </svg>
+        <p class="text-xs text-slate-700 mt-2 leading-relaxed">Table 1 takeaway: Rule Exemptions have the largest volume of avoidable paperwork losses (6,831 of 9,435 total losses, or 72.4%), followed by Gig &amp; Part-Time Workers (3,319 of 5,138, or 64.6%), Working &gt;= 80 Hrs/Mo (2,228 of 6,367, or 35.0%), and No Recorded Work (1,841 of 6,136, or 30.0%).</p>
+      </div>
+    </div>
+    <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Group Profiles, Form Hurdles &amp; County Actions</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        How county teams match each adult group to its main form hurdle and best fix.
+      </p>
+    </div>
+
+    <div class="text-xs text-slate-500 font-medium mb-2 md:hidden">
+      Scroll side to side to see all 4 columns &rarr;
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
+          <caption class="sr-only">Guide matching four Medi-Cal adult groups to form hurdles, staff priorities, and county actions.</caption>
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
+                Decision Factor
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Working &ge; 80 Hrs/Mo
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Rule Exemptions
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                Gig &amp; Part-Time Work
+              </th>
+              <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
+                No Recorded Work
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 text-sm">
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                Work &amp; Home Profile
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                W-2 retail, food, health, and warehouse workers (&ge;80 hrs/mo).
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Parents, disabled adults, and students.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                App drivers, home helpers, and seasonal part-time workers.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Jobless or family-care adults with no logged exemption.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                What One Total Leaves Out
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pay file lags affect 20% who meet work rules.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                State law exempts 100% of this group from work rules.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                One-month checks skip valid hours over six months.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Unlogged health needs qualify for clinic exemptions.
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50/50">
+              <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
+                County Staff Priority
+              </th>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Clear 80% by state wage files before outreach.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Accounts for 6,831 form drops per cycle.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Swap long tax logs for a one-page pay form.
+              </td>
+              <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
+                Pair renewal calls with clinic checks and local slots.
+              </td>
+            </tr>
+            <tr class="bg-slate-50 border-t-2 border-slate-200">
+              <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
+                Best County Action
+              </th>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Auto Wage Match + Text Upload<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Clear 80% by wage data and add phone paystub upload.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Clinic &amp; School Auto-Flag<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Pre-fill health and care exemptions from clinic and school files.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Six-Month Rule + Short Form<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Count any valid month in six plus simple cash forms.</span>
+              </td>
+              <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Health Screen &amp; Local Slot<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Screen for health exemptions and link to local service slots.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Table 2 Notes: Pre-Policy Baseline Drift &amp; Local Unemployment Adjustment</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Observed Pre-Policy Drift (DHCS Count):</strong> Santa Clara County expansion adult counts fell by <strong>-12.31%</strong> (-14,803 adults, from 120,239 in June 2025 to 105,436 in June 2026 in <a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CHHS Open Data</a>). That drop happened during routine unwinding before any work rule began.</p>
+          <p>&bull; <strong>Zero Jobless Waiver Adjustment (Mode A):</strong> State DHCS funnel numbers subtract 373,389 adults in high-unemployment counties before paper checks (<code>dhcs_verification_funnel_scc.csv:5</code>). Santa Clara County has a low jobless rate (~4.1%). It gets a 0.0% county waiver share. Its paper check pool rises by +9,689 (from 72,437 to 82,126). At a 50% paper loss rate, county losses reach <strong>41,100 per cycle</strong> instead of the flat-scaled 36,218.</p>
+          <p>&bull; <strong>Phone Notice Upload Gain:</strong> Adding phone notice upload and form help stops 1,423 more DHCS-scaled losses (+3,131 on the ACS scale). Total stopped disenrollment rises from 14,219 to <strong>15,642 of 27,076 (57.8%)</strong> on the DHCS scale. That equals <strong>17,350 of 30,007 (57.8%)</strong> on the unscaled ACS base.</p>
+          <p>&bull; <strong>Extended Cell Context.</strong> <strong>Work &amp; Home Profile (Rule Exemptions).</strong> Parents (18,950), disabled adults (18,370), and students (10,210).</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- SIDE-BY-SIDE SCENARIO COMPARISON GRID -->
+    <div class="mb-3">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Compare Modeled Renewal Losses Across Three County Outreach Plans</h2>
+      <p class="text-sm text-slate-600 mt-1 max-w-4xl">
+        Projected six-month Medi-Cal losses across three county plans on the 120,239 adult baseline.
+      </p>
+    </div>
+    <div class="scenario-grid bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8" role="region" aria-label="Compare Modeled Renewal Losses Across Three County Outreach Plans">
+      <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 1 · Base Renewal</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">No Targeted County Outreach</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">27,076 Projected Losses / Cycle</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">With no help, half of adults sent paper forms after auto data checks lose coverage each six-month cycle.</p>
+        </div>
+        <div class="scenario-card bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-[#0041A5] mb-1">Scenario 2 · Exemption &amp; Lookback</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">Auto Flagging + Six-Month Check</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">10,150 Saved (37.5% of Losses)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Clinic and school auto-flags for caregivers and students plus a six-month hour check stop 71.4% of avoidable form drops.</p>
+        </div>
+        <div class="scenario-card bg-emerald-50/70 border border-emerald-200 rounded-lg p-4">
+          <div class="text-xs font-bold text-emerald-950 mb-1">Scenario 3 · Full Help + Phone Upload</div>
+          <div class="text-sm font-bold text-slate-950 leading-snug mb-1.5">All Four Groups + Phone Upload</div>
+          <div class="font-mono text-base sm:text-lg font-bold text-emerald-900 mb-1.5">15,642 Saved (57.8% of Losses)</div>
+          <p class="scenario-desc text-xs sm:text-sm text-slate-700 leading-snug">Adding wage follow-up, health screens, and phone form upload across all four groups stops over half of six-month losses.</p>
+        </div>
+      </div>
+      <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Scenario Calculations, Group Splits &amp; ACS-Weighted Scale Crosswalk</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand scenario notes</span>
+        </summary>
+        <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
+          <p>&bull; <strong>Scenario 1 Base Counts:</strong> In the four-group model scaled to 120,239 DHCS adults, 54,152 reach paper renewal after auto checks. Of those, <strong>27,076 (50.0%)</strong> lose plans each six-month cycle. That equals <strong>30,174</strong> on the 133,998 ACS 2019–2023 PUMS base, or <strong>41,100</strong> under flat state scaling with a 0.0% county jobless waiver.</p>
+          <p>&bull; <strong>Scenario 2 Group Math:</strong> Auto clinic and school flags for exempt adults stop <strong>6,831</strong> modeled losses per cycle (1,241 caregivers + 2,295 disabled or new-parent adults + 3,295 students). Six-month hour checks for part-time workers stop <strong>3,319</strong> losses. Together they stop <strong>10,150 losses</strong> (37.5% of 27,076 total losses, or 71.4% of the 14,219 avoidable pool).</p>
+          <p>&bull; <strong>Scenario 3 Full Plan &amp; Phone Upload:</strong> Adding wage follow-up for W-2 workers stops <strong>2,228</strong> losses. Clinic health checks and local service slots for non-working adults stop <strong>1,841</strong> losses. That brings the total to <strong>14,219 (52.5%)</strong>. Pairing with phone form upload adds <strong>+1,423</strong> DHCS-scaled saves, reaching <strong>15,642 of 27,076 (57.8%)</strong> on the DHCS scale (<strong>17,350 of 30,007 [57.8%]</strong> on the ACS scale).</p>
+        </div>
+      </details>
+    </div>
+    <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
+    <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">How Funnel Decomposition Changes County Retention Budgeting</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">When a county sees a projected 36,000 to 41,000 drop in Medi-Cal plans, one top-line total gives no clear plan for staff. If leaders think those adults found job plans or chose not to work, the county will plan for smaller clinic panels. Meanwhile, ER teams will absorb thousands of newly uninsured patients who lost care over an unreturned form.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Splitting the renewal funnel by check stage and Census group shows that <strong>88.5%</strong> of Santa Clara County's 120,239 expansion adults work at least 80 hours per month, hold a rule exemption, or work part-time hours. In our county model, <strong>71.4%</strong> of all avoidable form losses (<strong>10,150 of 14,219</strong> per cycle) hit exempt caregivers, disabled adults, students, and part-time workers. Moving outreach funds to clinic and school auto-flags, six-month hour checks, and one-page pay forms keeps people covered at a fraction of broad ad costs.</p>
+    </section>
+
+    <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+      <details id="data-sources-endnotes" class="group bg-slate-50 text-sm text-slate-700">
+        <summary class="px-5 py-3.5 cursor-pointer list-none flex items-center justify-between hover:bg-slate-100 transition-colors select-none focus:outline-none focus:ring-2 focus:ring-[#0041A5] focus:ring-inset">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[5], state data sources &amp; math rules)</span>
+          </div>
+          <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
+        </summary>
+        <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Program Impact &middot; Flagship Case Study (Mode A Calibrated Funnel on Observed DHCS Enrollment Baseline)</p>
+          <div class="pb-3 border-b border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
+            <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Health and Human Services (CHHS) Open Data Portal: Medi-Cal Certified Eligibles with Demographics by Month</a> (<code>scc_dhcs_medical_enrollment.csv:1-134</code>). Santa Clara County June 2025 Final count is 472,014 total, 255,601 adults 19–64, and 120,239 ACA expansion adults 19–64. That equals 2.5949% of 4,633,636 statewide. The June 2026 count is 105,436 (-12.31% pre-policy drop). The state Step 1–5 funnel comes from the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS Implementation Plan for New Eligibility and Enrollment Changes under H.R. 1</a> (Webinar Deck, Feb 5, 2026, slides 13, 20–26, 34; <code>dhcs_verification_funnel_scc.csv:1-11</code>). Statewide, 1,842,155 (39.8%) clear at Steps 1–4. Santa Clara gets a 0.0% Step 2 jobless waiver share. That shifts +9,689 adults into Step 5 paper checks (82,126 vs. 72,437 flat-scaled) and yields 41,100 vs. 36,218 losses at a 50% Step 5 loss rate.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau ACS 2019–2023 5-Year PUMS</a> (<code>extract_pums.py</code> &amp; <code>scc_hr1_medicaid_risk_profiles.csv:1-46</code>). We pull 97,933 person records across all 15 Santa Clara County PUMAs (08501–08515). The subset has n = 6,297 unweighted adults ages 19–64 on Medicaid/Medi-Cal (HINS4 = 1) without Medicare/SSI (HINS3 != 1, SSP = 0) at income &le;138% FPL (POVPIP &le; 138). Using person weight PWGTP and 80 replicate weights (PWGTP1–PWGTP80) gives 133,998 &plusmn; 3,905 (rounded to 134,000) adults. Scaling to the 120,239 DHCS base shows <strong>77.5% (93,233 DHCS-scaled)</strong> meet the &ge;80 hr/mo rule in Group 1 (38.01%, 45,703 DHCS-scaled; 50,934 &plusmn; 2,423 ACS) or hold a rule exemption in Group 2 (39.53%, 47,530 DHCS-scaled; 52,971 ACS across Bucket B care &lt;14 [30,074], Bucket C birth/disability [11,129], and Bucket D student [11,768]). Another <strong>11.01% (13,226 DHCS-scaled; 14,752 ACS)</strong> work in Group 3 gig or part-time jobs (Buckets E [3,313], F [7,467], G [3,972]). Their status rests on a 1-month-in-6 lookback (88.5% = 106,459 summed across rounded groups, or 106,472 unrounded [0.885499 &times; 120,239]). That leaves <strong>11.45% (13,767 DHCS-scaled; 15,341 ACS)</strong> in Group 4 without recorded work or a survey exemption.</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">KFF Medicaid Unwinding &amp; Work Requirement Research</a> (Methodological reference: form disenrollment and check funnel benchmarks). <strong>CAPHE Mode A Renewal Funnel Model</strong> (<code>churn_reduction_model.py</code>, <code>churn_reduction_model_scc.csv:1-24</code>, <code>scc_hr1_synthesis.csv:8-15</code>, <code>INTERVENTION_DESIGN.md:155,239-241</code>). For each group g, the Step 5 paper pool is M_g = N_g &times; p_step5. Here p_step5 is the share not cleared at Steps 1–4. Group 1 has 12,734 at Step 5. Group 2 has 18,870 (4,512 B + 6,120 C + 8,238 D). Group 3 has 10,275. Group 4 has 12,273. The total is M = 54,152. At the DHCS 50% Step 5 loss rate (L_g = 0.50 &times; M_g), six-month losses are 6,367 (13.9% of Group 1) + 9,435 (19.9% of Group 2) + 5,138 (38.8% of Group 3) + 6,136 (44.6% of Group 4) = 27,076 per cycle (30,174 on the 133,998 ACS scale). Multiplying L_g by avoidable shares r_g (0.35 in Group 1 = 2,228; 0.724 in Group 2 = 6,831 [1,241 B + 2,295 C + 3,295 D]; 0.646 in Group 3 = 3,319; 0.30 in Group 4 = 1,841) gives <strong>14,219 of 27,076 (52.5%)</strong> avoidable losses per cycle (10,150 in Groups 2–3). Adding phone form upload raises that to <strong>15,642 of 27,076 (57.8%)</strong> (+1,423 DHCS-scaled; 17,350 of 30,007 on the ACS scale).</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">DHCS H.R. 1 Implementation Plan Webinar Deck (Feb 5, 2026)</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://www.census.gov/programs-surveys/acs/microdata.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">ACS 2019–2023 PUMS</a></li>
+            </ol>
+          </div>
+          <p><strong>Mode Classification (Mode A Calibrated Funnel on Observed Enrollment Baseline):</strong> The county check funnel (36,218 to 41,100 per cycle under top-down scaling; 27,076 group losses and 14,219 or 52.5% avoidable in the 4-group model) is a Mode A model (<code>dhcs_verification_funnel_scc.csv:1-11</code>, <code>churn_reduction_model_scc.csv:1-24</code>). It is scaled to Santa Clara County's June 2025 DHCS base of 120,239 expansion adults (105,436 in June 2026; <code>scc_dhcs_medical_enrollment.csv:1-134</code>). The 133,998 &plusmn; 3,905 count (rounded to 134,000) is the ACS 2019–2023 5-Year PUMS weighted base (<code>n = 6,297</code> records across PUMAs 08501–08515) used for group shares.</p>
+          <p><strong>Primary Data Sources &amp; Extract Specifications:</strong> Sources include the <a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Health and Human Services (CHHS) Open Data Portal</a> (June 2025 Final to June 2026), the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS H.R. 1 Implementation Plan Webinar Deck (Feb 5, 2026)</a>, the <a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 2019–2023 5-Year PUMS</a> (weights PWGTP and PWGTP1–PWGTP80), and <a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">KFF Medicaid Unwinding &amp; Work Requirement Research</a>.</p>
+          <p><strong>Reconciliation of DHCS vs. ACS Denominators &amp; Rounding:</strong> Table 1 lists both DHCS-scaled counts (<code>N = 120,239</code>: Group 1 = 45,703 [38.01%], Group 2 = 47,530 [39.53%], Group 3 = 13,226 [11.01%], Group 4 = 13,767 [11.45%]; sum of rounded groups 1–3 = 106,459, or 106,472 at unrounded 0.885499 &times; 120,239) and unscaled ACS PUMS weights (<code>N = 133,998</code>, rounded to 134,000: 50,934 + 52,971 + 14,752 + 15,341). County teams can match state plan dashboards directly to Census files.</p>
+          <div class="pt-3 border-t border-slate-200/80">
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <dl class="space-y-2.5">
+              <div>
+                <dt class="font-bold text-slate-900">What share of Santa Clara County Medi-Cal expansion adults already work or qualify for an exemption?</dt>
+                <dd class="text-slate-700 mt-0.5">In Census data scaled to the 120,239 DHCS base, 77.5% of expansion adults already work at least 80 hours per month (38.0%) or hold a caregiver, disability, or student exemption (39.5%). Another 11.0% work in self-employed or part-time roles, reaching 88.5% in all. Only 11.5% (13,767 adults) have no logged work or survey exemption.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Why does Santa Clara County face a higher per-capita disenrollment rate than the statewide DHCS average?</dt>
+                <dd class="text-slate-700 mt-0.5">The state DHCS check funnel exempts 373,389 adults living in high-unemployment or disaster counties before paper checks. Santa Clara County has a low jobless rate (~4.1%). As a result, 0% of its adults get a countywide jobless waiver. Projected six-month losses rise from 36,218 (flat state share) to 41,100.</dd>
+              </div>
+              <div>
+                <dt class="font-bold text-slate-900">Which Medi-Cal groups experience the highest avoidable procedural churn?</dt>
+                <dd class="text-slate-700 mt-0.5">Exempt caregivers, disabled adults, and students face 6,831 avoidable form losses per cycle (72.4% avoidable). Self-employed and part-time workers follow with 3,319 avoidable form losses per cycle (64.6% avoidable).</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- related:start -->
+    <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
+      <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
+      <ul class="list-none text-sm">
+          <li class="my-2"><a href="/case-studies/before-after-trap" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating Pre-Post Changes Against Baseline Trends in Pre-Policy Drift</a></li>
+          <li class="my-2"><a href="/case-studies/p-hacking-multiple-testing" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Testing Subgroup Drops With Multiple-Group Checks</a></li>
+          <li class="my-2"><a href="/case-studies/budget-impact" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Budget Impact & Reserve Floor Analysis</a></li>
+      </ul>
+      <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
+    </section>
+    <!-- related:end -->
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color: white;">
+            CAPHE
+            <span style="color: rgba(255,255,255,0.75); display: block; font-size: 0.85rem; font-weight: 400;">California Association of Public Health Economists</span>
+          </div>
+          <p>
+            A professional association supporting health economics and policy evaluation across
+            California's state and local public health departments.
+          </p>
+        </div>
+        <div>
+          <h4>Programs</h4>
+          <a href="/programs#workshops">Workshops</a>
+          <a href="/programs#webinars">Webinars</a>
+          <a href="/programs#working-groups">Working Groups</a>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <a href="/case-studies">Case Studies</a>
+          <a href="/resources#external-resources">External Resources</a>
+          <a href="/tools/lha-calculator">ROI Calculator</a>
+          <a href="/tools/access-explorer">Access Explorer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="/about">About Us</a>
+          <a href="/contact">Contact</a>
+          <a href="/membership">Membership</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 California Association of Public Health Economists. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+          <a href="/privacy" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> &middot;
+          <a href="/terms" style="color: rgba(255,255,255,0.7);">Terms of Use</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/src/frontend/js/main.js"></script>
+</body>
+</html>

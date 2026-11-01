@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Programmatic Code-to-Figure & Source-Data Verification Harness
- * Across All 24 CAPHE Case Studies + Main Hub Page (public/methods-lab/index.html)
+ * Across All 24 CAPHE Case Studies + Main Hub Page (public/case-studies/index.html)
  *
  * Verifies:
  * 1. Authoritative code-generated source files on disk (JSON, CSV, JS, TeX)
@@ -9,14 +9,14 @@
  *    Bayes base-rate rescaling, empirical Bayes shrinkage, PFL reserve ratios)
  * 3. Every rendered case study's figures (Paired Horizontal Cost-vs-Offset Bar Chart & Table 1
  *    .inline-mini-bar widths) and numeric prose/table tokens
- * 4. Main Case Studies Hub (public/methods-lab/index.html) 1-line comparisons
+ * 4. Main Case Studies Hub (public/case-studies/index.html) 1-line comparisons
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const LAB_DIR = path.join(ROOT, 'public', 'methods-lab');
+const LAB_DIR = path.join(ROOT, 'public', 'case-studies');
 
 function verifyAllCaseStudiesAndFigures() {
   const errors = [];
@@ -261,7 +261,7 @@ function verifyAllCaseStudiesAndFigures() {
   }
 
   // =========================================================================
-  // 3. Verify Main Hub Page (public/methods-lab/index.html) Links & Layout B
+  // 3. Verify Main Hub Page (public/case-studies/index.html) Links & Layout B
   // =========================================================================
   const hubPath = path.join(LAB_DIR, 'index.html');
   const hubHtml = fs.readFileSync(hubPath, 'utf8');
@@ -269,11 +269,11 @@ function verifyAllCaseStudiesAndFigures() {
   const HELD_PFL_SLUGS = new Set(['selection-into-treatment', 'threat-maturation-solutions']);
   for (const slug of Object.keys(CASE_STUDY_CHECKS)) {
     if (HELD_PFL_SLUGS.has(slug)) {
-      assert(!hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Held PFL case study /methods-lab/${slug} must not appear on public hub`);
+      assert(!hubHtml.includes(`href="/case-studies/${slug}"`) && !hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Held PFL case study /case-studies/${slug} must not appear on public hub`);
       const pflHtml = fs.readFileSync(path.join(LAB_DIR, slug, 'index.html'), 'utf8');
       assert(pflHtml.includes('<meta name="robots" content="noindex, nofollow">'), `[${slug}] Held PFL case study missing noindex meta tag`);
     } else {
-      assert(hubHtml.includes(`href="/methods-lab/${slug}"`), `[Hub index.html] Missing link to /methods-lab/${slug}`);
+      assert(hubHtml.includes(`href="/case-studies/${slug}"`), `[Hub index.html] Missing link to /case-studies/${slug}`);
     }
   }
 

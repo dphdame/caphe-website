@@ -2,9 +2,9 @@
 /**
  * Fix broken Methods Lab tutorial images (PRD §6.1).
  *
- * Tutorials live at public/methods-lab/<slug>/index.html and are served at
- * /methods-lab/<slug> (no trailing slash). A relative `src="assets/x.png"`
- * therefore resolves to /methods-lab/assets/x.png → 404. Rewrite every such
+ * Tutorials live at public/case-studies/<slug>/index.html and are served at
+ * /case-studies/<slug> (no trailing slash). A relative `src="assets/x.png"`
+ * therefore resolves to /case-studies/assets/x.png → 404. Rewrite every such
  * relative reference to a root-relative path that includes the slug.
  *
  * Idempotent: running twice is a no-op. Run: node scripts/fix-tutorial-image-paths.js
@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ML = path.join(__dirname, '..', 'public', 'methods-lab');
+const ML = path.join(__dirname, '..', 'public', 'case-studies');
 
 function run() {
   const slugs = fs.readdirSync(ML, { withFileTypes: true })
@@ -30,7 +30,7 @@ function run() {
     // Match src="assets/..." or src='assets/...' that is NOT already root-relative.
     html = html.replace(/(\ssrc=)(["'])assets\/([^"']+)\2/gi, (_m, pre, q, rest) => {
       n++;
-      return `${pre}${q}/methods-lab/${slug}/assets/${rest}${q}`;
+      return `${pre}${q}/case-studies/${slug}/assets/${rest}${q}`;
     });
     if (n > 0) {
       fs.writeFileSync(file, html);

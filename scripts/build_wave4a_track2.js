@@ -1594,7 +1594,7 @@ function verifyWave4ASourcesAndRenderedHtml(renderedPathsBySlug) {
 const renderedPathsBySlug = {};
 for (const spec of modules) {
   renderModuleHtml(spec);
-  const outPath = require('path').join(__dirname, '..', 'public', 'methods-lab', spec.slug, 'index.html');
+  const outPath = require('path').join(__dirname, '..', 'public', 'case-studies', spec.slug, 'index.html');
   renderedPathsBySlug[spec.slug] = outPath;
   const html = require('fs').readFileSync(outPath, 'utf8');
   if (/\/Users\/(victoriaperez|vserver)\b/.test(html)) {

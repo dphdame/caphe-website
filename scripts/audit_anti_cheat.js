@@ -19,7 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const LAB_DIR = path.join(__dirname, '..', 'public', 'methods-lab');
+const LAB_DIR = path.join(__dirname, '..', 'public', 'case-studies');
 
 const EXPECTED_SLUGS = [
   'chw-health-outcomes',
@@ -104,7 +104,7 @@ for (const slug of EXPECTED_SLUGS) {
   }
 
   // 2. Metadata, JSON-LD & External Citations
-  const expectedCanonical = `https://www.caphegroup.org/methods-lab/${slug}`;
+  const expectedCanonical = `https://www.caphegroup.org/case-studies/${slug}`;
   if (!html.includes(`<link rel="canonical" href="${expectedCanonical}">`)) {
     errors.push(`Missing or mismatched canonical link (${expectedCanonical})`);
   }

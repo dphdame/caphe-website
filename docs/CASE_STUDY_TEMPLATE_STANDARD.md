@@ -7,7 +7,7 @@
 
 ## 1. Purpose, Audience & Voice
 
-CAPHE Case Studies (`https://www.caphegroup.org/methods-lab/{slug}`) are decision briefs written for **California County Public Health Officers (PHOs), Health Agency Directors, County Administrative Office (CAO) budget analysts, Medi-Cal Managed Care Plan (MCP) medical directors, and legislative staff**.
+CAPHE Case Studies (`https://www.caphegroup.org/case-studies/{slug}`) are decision briefs written for **California County Public Health Officers (PHOs), Health Agency Directors, County Administrative Office (CAO) budget analysts, Medi-Cal Managed Care Plan (MCP) medical directors, and legislative staff**.
 
 - **Core Question Every Case Study Answers:** *"What is the policy or budget decision on our desk, why does the standard snapshot or raw average mislead us, what does the properly structured comparison show, and what changes operationally as a result?"*
 - **Voice & Readability:**

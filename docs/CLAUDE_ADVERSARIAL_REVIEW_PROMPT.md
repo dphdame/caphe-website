@@ -1,7 +1,7 @@
 # Pinned Claude Adversarial Review Prompt for CAPHE Case Studies
 
 **Role:** Independent Adversarial Reviewer (`claude -p --model opus`)  
-**Target:** One or more compiled CAPHE Case Studies (`public/methods-lab/{slug}/index.html`) and their spec definitions in `scripts/build_wave*.js` + `scripts/render_option_c.js`.  
+**Target:** One or more compiled CAPHE Case Studies (`public/case-studies/{slug}/index.html`) and their spec definitions in `scripts/build_wave*.js` + `scripts/render_option_c.js`.  
 **Standing Rule:** Per the owner's standing editorial direction, material defects identified by this adversarial review are automatically corrected in the spec/renderer, re-verified through `npm run gate`, and recorded with exact before/after dispositions (stopping for human escalation only if two consolidated review rounds remain unresolved or if a change would alter scientific claim/evidence boundaries).
 
 ---
@@ -20,9 +20,9 @@ Target slug(s): <slug>"
 
 ## Pinned Prompt Text
 
-You are an independent adversarial reviewer evaluating a CAPHE Public Health Case Study (`public/methods-lab/<slug>/index.html`) and its underlying spec (`scripts/build_wave*.js`) against the authoritative empirical source data on disk and `docs/CASE_STUDY_TEMPLATE_STANDARD.md`.
+You are an independent adversarial reviewer evaluating a CAPHE Public Health Case Study (`public/case-studies/<slug>/index.html`) and its underlying spec (`scripts/build_wave*.js`) against the authoritative empirical source data on disk and `docs/CASE_STUDY_TEMPLATE_STANDARD.md`.
 
-Read the compiled HTML file (`public/methods-lab/<slug>/index.html`) and its spec entry in `scripts/build_wave*.js`. Challenge the actual rendered text, tables, charts, and numbers from two perspectives simultaneously:
+Read the compiled HTML file (`public/case-studies/<slug>/index.html`) and its spec entry in `scripts/build_wave*.js`. Challenge the actual rendered text, tables, charts, and numbers from two perspectives simultaneously:
 1. **A skeptical Health Economist / Methodologist** checking empirical fidelity, identification fencing, and ledger purity.
 2. **A time-pressed California County Public Health Officer (PHO) / Health Agency Director** scanning the brief in 90 seconds to make a staffing, contracting, or budget decision.
 

@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const methodsLabDir = path.join(__dirname, '../public/methods-lab');
+const methodsLabDir = path.join(__dirname, '../public/case-studies');
 let hasErrors = false;
 
 function checkFile(filePath) {
@@ -23,13 +23,13 @@ function checkFile(filePath) {
     if (!match[1].includes('-')) continue;
 
     console.error(`❌ ${fileName}: Relative link found: href="${match[0]}"`);
-    console.error(`   Should be: href="/methods-lab/${match[1]}/"`);
+    console.error(`   Should be: href="/case-studies/${match[1]}/"`);
     hasErrors = true;
   }
 
   while ((match = parentLinkPattern.exec(content)) !== null) {
     console.error(`❌ ${fileName}: Parent-relative link found: href="${match[0]}"`);
-    console.error(`   Should be: href="/methods-lab/${match[1]}/"`);
+    console.error(`   Should be: href="/case-studies/${match[1]}/"`);
     hasErrors = true;
   }
 }

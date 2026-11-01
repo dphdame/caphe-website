@@ -30,10 +30,10 @@ test('sitemap-index references both child sitemaps', () => {
   assert.ok(/sitemap-static\.xml/.test(xml), 'index must reference static sitemap');
 });
 
-test('tutorials sitemap covers 22 tutorials + the methods-lab index (23 locs)', () => {
+test('tutorials sitemap covers 22 tutorials + the case-studies index (23 locs)', () => {
   const u = locs(files.tutorials);
   assert.strictEqual(u.length, 23, `expected 23 tutorial locs, got ${u.length}`);
-  assert.ok(u.some(x => /\/methods-lab\/?$/.test(x)), 'should include the methods-lab hub');
+  assert.ok(u.some(x => /\/case-studies\/?$/.test(x)), 'should include the case-studies hub');
 });
 
 test('no sitemap lists /login and all locs use www', () => {

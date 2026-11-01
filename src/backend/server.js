@@ -37,37 +37,39 @@ app.use((req, res, next) => {
 
   const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
 
-  // Consolidated Methods Lab syllabus & echo duplicates -> single-hop 301 to canonical module
-  // Checked before generic .html / trailing-slash redirects so /methods-lab/<old>/ is 1 hop
+  // Consolidated Case Studies syllabus & echo duplicates -> single-hop 301 to canonical module
+  // Checked before generic .html / trailing-slash / /methods-lab redirects so /methods-lab/<old>/ is 1 hop
   const consolidatedLabRedirects = {
-    'counterfactual-basics': '/methods-lab/before-after-trap',
-    'control-groups-not-enough': '/methods-lab/selection-into-treatment',
-    'threat-maturation-trends': '/methods-lab/before-after-trap',
-    'threat-history-events': '/methods-lab/before-after-trap',
-    'threat-history-maturation': '/methods-lab/before-after-trap',
-    'correlation-causation-interactive': '/methods-lab/collider-bias',
-    'threat-confounding-selection': '/methods-lab/collider-bias',
-    'why-it-works-isnt-enough': '/methods-lab/cost-effectiveness-ratio',
-    'comparator-choice': '/methods-lab/cost-effectiveness-ratio',
-    'decision-thresholds': '/methods-lab/cost-effectiveness-ratio',
-    'cea-uncertain-effects': '/methods-lab/sensitivity-analysis-cea',
-    'regression-tables-confounding': '/methods-lab/observational-to-experimental',
-    'confounding-assessment-checklist': '/methods-lab/reverse-causation-feedback',
-    'comparing-two-programs': '/methods-lab/chw-health-outcomes'
+    'counterfactual-basics': '/case-studies/before-after-trap',
+    'control-groups-not-enough': '/case-studies/selection-into-treatment',
+    'threat-maturation-trends': '/case-studies/before-after-trap',
+    'threat-history-events': '/case-studies/before-after-trap',
+    'threat-history-maturation': '/case-studies/before-after-trap',
+    'correlation-causation-interactive': '/case-studies/collider-bias',
+    'threat-confounding-selection': '/case-studies/collider-bias',
+    'why-it-works-isnt-enough': '/case-studies/cost-effectiveness-ratio',
+    'comparator-choice': '/case-studies/cost-effectiveness-ratio',
+    'decision-thresholds': '/case-studies/cost-effectiveness-ratio',
+    'cea-uncertain-effects': '/case-studies/sensitivity-analysis-cea',
+    'regression-tables-confounding': '/case-studies/observational-to-experimental',
+    'confounding-assessment-checklist': '/case-studies/reverse-causation-feedback',
+    'comparing-two-programs': '/case-studies/chw-health-outcomes'
   };
   const normalizedPath = urlPath.replace(/\/$/, '').replace(/(?:\/index)?\.html$/i, '') || '/';
-  // Redirect /case-studies and /case-studies/<slug> to /methods-lab and /methods-lab/<slug>
-  if (normalizedPath === '/case-studies') {
-    return res.redirect(301, '/methods-lab' + qs);
-  }
-  if (normalizedPath.startsWith('/case-studies/')) {
-    return res.redirect(301, '/methods-lab/' + normalizedPath.slice('/case-studies/'.length) + qs);
-  }
   const maybeRetiredSlug = normalizedPath.startsWith('/methods-lab/')
     ? normalizedPath.slice('/methods-lab/'.length)
-    : normalizedPath.slice(1);
+    : normalizedPath.startsWith('/case-studies/')
+      ? normalizedPath.slice('/case-studies/'.length)
+      : normalizedPath.slice(1);
   if (consolidatedLabRedirects[maybeRetiredSlug]) {
     return res.redirect(301, consolidatedLabRedirects[maybeRetiredSlug] + qs);
+  }
+  // Redirect legacy /methods-lab and /methods-lab/<slug> to canonical /case-studies and /case-studies/<slug>
+  if (normalizedPath === '/methods-lab') {
+    return res.redirect(301, '/case-studies' + qs);
+  }
+  if (normalizedPath.startsWith('/methods-lab/')) {
+    return res.redirect(301, '/case-studies/' + normalizedPath.slice('/methods-lab/'.length) + qs);
   }
 
   // Redirect .html URLs to clean URLs (301 for SEO)
@@ -83,7 +85,7 @@ app.use((req, res, next) => {
     return res.redirect(301, cleanUrl + qs);
   }
 
-  // Redirect bare lab URLs (e.g., /selection-into-treatment -> /methods-lab/selection-into-treatment)
+  // Redirect bare case study URLs (e.g., /selection-into-treatment -> /case-studies/selection-into-treatment)
   const labSlugs = [
     'before-after-trap', 'budget-impact', 'chw-health-outcomes',
     'classifying-causal-mechanisms', 'collider-bias',
@@ -98,7 +100,7 @@ app.use((req, res, next) => {
   const pathWithoutSlash = urlPath.replace(/\/$/, '');
   const slug = pathWithoutSlash.slice(1); // Remove leading /
   if (labSlugs.includes(slug)) {
-    return res.redirect(301, `/methods-lab/${slug}`);
+    return res.redirect(301, `/case-studies/${slug}`);
   }
 
   // Redirect /programs/subpage to /programs#subpage (sections, not separate pages)
@@ -130,7 +132,7 @@ app.use((req, res, next) => {
       return res.sendFile(htmlFilePath);
     }
 
-    // Also check for directories with index.html (e.g., /methods-lab/parallel-trends-power)
+    // Also check for directories with index.html (e.g., /case-studies/parallel-trends-power)
     const indexFilePath = path.join(publicDir, urlPath, 'index.html');
     if (fs.existsSync(indexFilePath)) {
       return res.sendFile(indexFilePath);
@@ -144,6 +146,8 @@ app.use((req, res, next) => {
 app.use(express.static(publicDir, {
   extensions: ['html', 'htm']
 }));
+// Backwards-compatible static alias so legacy /methods-lab/<slug>/assets/*.png URLs still resolve
+app.use('/methods-lab', express.static(path.join(publicDir, 'case-studies')));
 app.use('/src', express.static(path.join(__dirname, '../../src')));
 app.use('/assets', express.static(path.join(__dirname, '../../assets')));
 app.use('/data', express.static(path.join(__dirname, '../../data')));
@@ -756,7 +760,7 @@ app.post('/api/membership/community', async (req, res) => {
             <li>Monthly event updates</li>
           </ul>
           <p>Check your inbox for a separate email to set up your account password and log in.</p>
-          <p>Explore our <a href="https://www.caphegroup.org/methods-lab">California Public Health Case Studies</a>!</p>
+          <p>Explore our <a href="https://www.caphegroup.org/case-studies">California Public Health Case Studies</a>!</p>
           <p>Best regards,<br>The CAPHE Team</p>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
           <p style="font-size: 12px; color: #666;">California Association of Public Health Economists<br>

@@ -71,6 +71,9 @@ app.use((req, res, next) => {
   if (normalizedPath.startsWith('/methods-lab/')) {
     return res.redirect(301, '/case-studies/' + normalizedPath.slice('/methods-lab/'.length) + qs);
   }
+  if (normalizedPath === '/pfl-calculator' || normalizedPath === '/pfl-simulator' || normalizedPath === '/tools/pfl-calculator') {
+    return res.redirect(301, '/tools/pfl-simulator' + qs);
+  }
 
   // Redirect .html URLs to clean URLs (301 for SEO)
   if (urlPath.endsWith('.html')) {

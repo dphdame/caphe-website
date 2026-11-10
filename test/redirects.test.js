@@ -41,8 +41,14 @@ before(async () => {
 after(() => { if (srv) srv.kill('SIGKILL'); });
 
 test('canonical clean URLs serve 200', async () => {
-  for (const p of ['/', '/about', '/case-studies', '/case-studies/chw-health-outcomes', '/tools/lha-calculator']) {
+  for (const p of ['/', '/about', '/case-studies', '/case-studies/chw-health-outcomes', '/tools/lha-calculator', '/tools/pfl-simulator']) {
     assert.equal((await get(p)).status, 200, `${p} should be 200`);
+  }
+});
+
+test('/pfl-calculator and /pfl-simulator aliases single-hop 301 to /tools/pfl-simulator', async () => {
+  for (const p of ['/pfl-calculator', '/pfl-calculator/', '/pfl-simulator', '/pfl-simulator/', '/tools/pfl-calculator', '/tools/pfl-calculator/']) {
+    assert.deepEqual(await get(p).then(r => [r.status, r.location]), [301, '/tools/pfl-simulator'], p);
   }
 });
 

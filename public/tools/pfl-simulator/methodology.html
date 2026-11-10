@@ -14,7 +14,7 @@
   </script>
 
   <title>Methodology: California Paid Family Leave Expansion Simulator - CAPHE</title>
-  <meta name="description" content="Econometric methodology, statutory background, data sources, and behavioral parameter justifications for the CAPHE California Paid Family Leave Expansion Simulator.">
+  <meta name="description" content="Econometric methodology, statutory background, 2023 ACS & 2024 CDPH data provenance, and reverse-calculated public health threshold specifications for the CAPHE California Paid Family Leave Expansion Simulator.">
   <meta name="author" content="Victoria Cholette">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://www.caphegroup.org/tools/pfl-simulator/methodology">
@@ -27,60 +27,61 @@
 
   <style>
     .methodology-content {
-      max-width: 860px;
+      max-width: 880px;
       margin: 0 auto;
-      line-height: 1.8;
+      line-height: 1.75;
       color: #333333;
-      padding: var(--space-xl) var(--space-md);
+      padding: var(--space-xl, 2rem) var(--space-md, 1rem);
     }
     .methodology-content h1 {
       font-size: 2.2rem;
-      color: var(--color-primary-dark);
-      margin-bottom: var(--space-xs);
+      color: var(--color-primary-dark, #002B70);
+      margin-bottom: 0.35rem;
     }
     .methodology-content h2 {
-      font-size: 1.5rem;
-      color: var(--color-primary);
-      margin-top: var(--space-2xl);
-      border-bottom: 2px solid var(--color-border);
+      font-size: 1.45rem;
+      color: var(--color-primary, #0041A5);
+      margin-top: 2.25rem;
+      border-bottom: 2px solid var(--color-border, #E2E8F0);
       padding-bottom: 0.35rem;
     }
     .methodology-content h3 {
-      font-size: 1.2rem;
-      color: var(--color-text);
-      margin-top: var(--space-xl);
+      font-size: 1.15rem;
+      color: var(--color-text, #1F2937);
+      margin-top: 1.5rem;
     }
     .key-box {
-      background: #F8F9FA;
-      border-left: 4px solid var(--color-primary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-sm);
-      margin: var(--space-lg) 0;
+      background: #F8FAFC;
+      border-left: 4px solid var(--color-primary, #0041A5);
+      padding: 1.25rem;
+      border-radius: 4px;
+      margin: 1.25rem 0;
     }
     .formula-box {
       background: #EBF3FA;
       border: 1px solid #B0BEC5;
-      padding: var(--space-md) var(--space-lg);
-      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      border-radius: 4px;
       font-family: monospace;
-      font-size: 0.95rem;
-      margin: var(--space-md) 0;
+      font-size: 0.92rem;
+      margin: 1rem 0;
+      overflow-x: auto;
     }
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
-      margin: var(--space-md) 0 var(--space-lg);
+      font-size: 0.86rem;
+      margin: 1rem 0 1.5rem;
     }
     .data-table th, .data-table td {
-      border: 1px solid var(--color-border);
-      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--color-border, #E2E8F0);
+      padding: 0.55rem 0.75rem;
       text-align: left;
     }
     .data-table th {
-      background: var(--color-bg-alt);
+      background: #F1F5F9;
       font-family: 'Montserrat', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.76rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -88,11 +89,11 @@
       display: flex;
       gap: 0.5rem;
       font-size: 0.85rem;
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-md);
+      color: #555555;
+      margin-bottom: 1rem;
     }
     .breadcrumbs a {
-      color: var(--color-primary);
+      color: #0041A5;
       text-decoration: none;
     }
   </style>
@@ -131,114 +132,69 @@
     </div>
 
     <h1>Methodology &amp; Econometric Model Specifications</h1>
-    <p style="color: var(--color-text-muted); font-size: 1.05rem;">Technical documentation for the California Paid Family Leave (PFL) 8-to-12-week expansion simulation model.</p>
+    <p style="color: #555555; font-size: 1.05rem;">Technical documentation for the California Paid Family Leave (PFL) 8-to-12-week expansion simulation model (Version 2026.2).</p>
 
     <div class="key-box">
-      <strong>Core Purpose:</strong> This document outlines the empirical parameters, statutory solvency benchmarks, behavioral mechanisms, and data sources underlying the interactive simulator hosted on `caphegroup.org`. The analysis was developed by health economists to provide non-partisan, evidence-based fiscal forecasting for state policymakers, health advocates, and county health authorities.
+      <strong>Core Purpose:</strong> This document specifies the primary-source administrative datasets, statutory benefit and solvency formulas, 2023 ACS earnings-bracket incidence parameters, postpartum caregiving timelines, and reverse-calculated public health outcome thresholds underlying the interactive simulator hosted on <code>caphegroup.org</code>.
     </div>
 
     <h2>1. Statutory &amp; Policy Background</h2>
-    <p>California workers currently face an institutional coverage gap between job-protected leave and state wage replacement:</p>
+    <p>California workers currently face a four-week institutional gap between job-protected leave and state wage replacement:</p>
     <ul>
-      <li><strong>California Family Rights Act (CFRA, Gov. Code §12945.2):</strong> Grants eligible employees up to <strong>12 weeks</strong> of unpaid, job-protected family bonding or caregiving leave.</li>
-      <li><strong>California Paid Family Leave (PFL, UIC §3300 et seq.):</strong> Provides up to <strong>8 weeks</strong> of wage replacement (70%–90% of regular earnings).</li>
+      <li><strong>California Family Rights Act (CFRA, Gov. Code §12945.2):</strong> Grants eligible employees at employers with five or more workers (meeting 12-month tenure and 1,250-hour thresholds) up to <strong>12 weeks</strong> of unpaid, job-protected family bonding or caregiving leave.</li>
+      <li><strong>California Paid Family Leave (PFL, Cal. Unemp. Ins. Code §3300 et seq.):</strong> Provides up to <strong>8 weeks</strong> of partial wage replacement within any 12-month period.</li>
     </ul>
-    <p>This creates a <strong>four-week gap</strong> where workers have statutory job protection but zero wage replacement. The policy proposal modeled in this simulator extends PFL benefits from 8 to 12 weeks, harmonizing state wage replacement with CFRA duration.</p>
+    <p>Extending PFL from 8 to 12 weeks harmonizes wage replacement duration with CFRA job protection and aligns California with peer state social insurance programs (Washington, Colorado, New York, New Jersey, Oregon, and Massachusetts).</p>
 
-    <h2>2. Financing Mechanism &amp; Operational Reserve Standards</h2>
-    <p>CA PFL is funded entirely through the State Disability Insurance (SDI) employee payroll tax. Recent statutory reforms have altered the program's fiscal baseline:</p>
+    <h2>2. Financing Mechanism &amp; Reconciled May 2026 EDD Solvency Trajectory</h2>
+    <p>California PFL is financed entirely through employee payroll contributions to the State Disability Insurance (SDI) Disability Fund under Cal. Unemp. Ins. Code §984:</p>
     <ul>
-      <li><strong>Taxable Wage Ceiling Removal (SB 951):</strong> Effective January 1, 2024, the statutory cap on taxable wages subject to the SDI tax was removed, expanding the funding base to cover 100% of earned wages.</li>
-      <li><strong>Tiered Wage Replacement:</strong> Effective January 1, 2025, SB 951 established a progressive benefit tier: workers earning below ~70% of the state average weekly wage (~$63,000) receive <strong>90% wage replacement</strong>, while higher earners receive <strong>70%</strong>, up to a statutory weekly maximum ($1,681 in 2025; $1,765 in 2026).</li>
-      <li><strong>Reserve Adequacy Standard (UIC §984):</strong> The California Employment Development Department (EDD) defines <strong>25% to 50% of annual disbursements</strong> as an <em>adequate reserve rate target range</em> under the statutory financing formula guidelines, <strong>not a mandatory statutory minimum</strong>. Under EDD's baseline May 2026 forecast without expansion, the SDI fund operates below 25% in 2025 (18.1%) and 2026 (18.2%). Under the Expected expansion scenario, the fund preserves positive cash balances throughout the projection period, reaching $6.37B (30.4% reserve ratio) by 2030, though its reserve ratio dips to 10.8% in 2026 before rebuilding.</li>
+      <li><strong>Taxable Wage Ceiling Removal (SB 951):</strong> Effective January 1, 2024, SB 951 repealed the SDI taxable wage ceiling, subjecting 100% of covered wages ($1,371.5B in 2026) to the 1.30% contribution rate.</li>
+      <li><strong>Tiered Wage Replacement (§2655(d)(3)):</strong> Effective January 1, 2025, workers whose high-quarter wages are up to 70% of the State Average Quarterly Wage receive <strong>90% wage replacement</strong>; higher earners receive <strong>70% wage replacement</strong> subject to a statutory 90%-tier floor ($1,142.31/wk in 2026) and the maximum weekly benefit cap ($1,681 in 2025; $1,765 in 2026).</li>
+      <li><strong>Gross Outlays vs. Employer Substitution (Crowd-Out):</strong> Because EDD pays the statutory PFL weekly benefit regardless of private employer top-up policies (unless an employer operates an EDD-approved Voluntary Plan), state DI Fund solvency and statutory tax rates depend on <strong>Gross Public Outlays</strong> ($623.9M in Expected 2026), whereas employer substitution (30% in Expected) scales <strong>Modeled Net Incremental Household Benefit</strong> ($422.0M).</li>
+      <li><strong>Reconciled Reserve Adequacy Trajectory (2025–2030):</strong> Anchored to the EDD May 2026 DI Fund Forecast (Table 1: $3.011B ending 2025 balance [18.9%]; $3.484B 2026 forecast [19.9%] at 1.30%; $5.091B 2027 forecast [27.4%] at 1.40%), the Expected expansion scenario maintains positive cash reserves throughout 2025–2030 holding the 1.40% rate constant in 2028–2030, reaching <strong>$7.46B (35.4% reserve ratio)</strong> by 2030—comfortably inside EDD's 25%–50% operational reserve target range ($5.15B [24.4%] at 1.35% or $2.83B [13.4%] if rates revert to 1.30%).</li>
     </ul>
 
-    <h2>3. Cost Modeling Framework &amp; Behavioral Parameters</h2>
-    <p>Cost projections utilize a micro-simulation framework that accounts for both the intensive margin (existing claimants taking longer leave) and the extensive margin (new claimants attracted by longer paid duration), adjusted for private employer substitution.</p>
-
+    <h2>3. Cost Modeling Framework &amp; Weeks 1–8 Entrant Sensitivity</h2>
     <div class="formula-box">
-      Net Expansion Cost = [Baseline Claims &times; (1 + Extensive Margin) &times; Take-Up Rate &times; 4 Weeks &times; AWBA] &times; (1 - Crowd-Out) &times; (1 + Admin Factor)
+      Gross Benefits = Baseline Claims &times; (1 + Extensive Margin) &times; Take-Up Rate &times; 4 Weeks &times; AWBA<br>
+      Gross Public Outlays = Gross Benefits &times; (1 + 0.035 Admin Factor)<br>
+      Modeled Net Incremental Household Benefit = Gross Benefits &times; (1 &minus; Crowd-Out)
     </div>
+    <p>In the Expected 2026 scenario (330,000 baseline claims, 12% extensive margin = 369,600 expanded claims, 35% take-up = 129,360 modeled 4-week extension claim-equivalents, $1,165 AWBA), gross benefits equal $602.8M ($623.9M including 3.5% administration) and modeled net incremental household benefits equal $422.0M. Because the baseline formula prices only incremental Weeks 9–12, the simulator also provides explicit sensitivity bounds for <strong>Weeks 1–8 extensive-margin prior-week outlays</strong> (+$133.7M if only the 35% extension-using entrant subset draws 8 prior weeks; +$348.6M if all 39,600 entrants draw the 7.3-week baseline average).</p>
 
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Parameter</th>
-          <th>Floor</th>
-          <th>Expected</th>
-          <th>Ceiling</th>
-          <th>Empirical Literature Basis</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Take-Up Rate</strong></td>
-          <td>25%</td>
-          <td>35%</td>
-          <td>100%</td>
-          <td>Historical CA PFL bonding take-up rates (Basso &amp; Pihl, 2019). Ceiling represents full theoretical exposure.</td>
-        </tr>
-        <tr>
-          <td><strong>Extensive Margin</strong></td>
-          <td>5%</td>
-          <td>12%</td>
-          <td>20%</td>
-          <td>New claims resulting from liquidity constraint alleviation and duration matching (Bartel et al., 2023).</td>
-        </tr>
-        <tr>
-          <td><strong>Employer Crowd-Out</strong></td>
-          <td>50%</td>
-          <td>30%</td>
-          <td>0%</td>
-          <td>DOL FMLA Employee Survey data on private employer wage top-offs and short-term disability substitution.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>4. Worker Equity &amp; Income Distribution Modeling</h2>
-    <p>Individual-level PFL claims by worker income are confidential administrative records not published in public EDD databases. To evaluate distributional equity, an assumption-based micro-simulation model was implemented in <code>02_analysis/05_equity_analysis.py</code> using California wage profiles derived from the Census American Community Survey (ACS) 5-year series, parameterized across 18.5 million covered workers:</p>
+    <h2>4. 2023 ACS Earnings Brackets (<code>B1&ndash;B5</code>) &amp; Distributional Incidence</h2>
+    <p>Rather than relying on synthetic income quintiles, the simulator's equity module (<code>02_analysis/05_equity_analysis.py</code>) uses authentic earnings brackets from the <strong>U.S. Census Bureau 2023 1-Year ACS Table B20001</strong> across 20,729,904 California workers with earnings (and 1,079,642 in Santa Clara County):</p>
     <ul>
-      <li><strong>Quintile Wage Anchors:</strong> Q1 (&lt;$25k, mean $18k); Q2 ($25k–$45k, mean $35k); Q3 ($45k–$70k, mean $57k); Q4 ($70k–$110k, mean $88k); Q5 (&gt;$110k, mean $165k).</li>
-      <li><strong>Replacement Tiering:</strong> Workers in Q1, Q2, and Q3 fall below the ~$63k threshold, qualifying for the 90% replacement rate under SB 951, while Q4 and Q5 receive 70% (capped at $1,710/wk).</li>
-      <li><strong>Net Position Calculation:</strong> The model evaluates both benefit increases and added employee contributions under the Expected scenario ($623.7M in gross outlays). Workers in Q1 receive +$63.4M in additional benefits against +$43.7M in added SDI payroll contributions, for a net position gain of <strong>+$19.7M</strong>. Workers in Q2 gain <strong>+$3.3M</strong>, while higher quintiles (Q3, Q4, Q5) are net contributors (-$19.5M, -$58.8M, -$157.5M).</li>
-      <li><strong>Computed Progressivity Index:</strong> Applying the rank-weighted progressivity formulation in <code>EquityAnalysisModel.calculate_progressivity_index()</code> produces a score of <strong>+0.095</strong>, demonstrating a mildly progressive net transfer to lower-wage households.</li>
+      <li><strong>Bracket Definitions &amp; Statutory Benefits:</strong> B1 (&lt;$25,000; 26.3% of CA workers; $285.58/wk at 90%), B2 ($25,000–$44,999; 21.1% CA; $605.77/wk at 90%), B3 ($45,000–$64,999; 14.9% CA; $951.92/wk at 90%), B4 ($65,000–$99,999; 15.4% CA; $1,142.31/wk statutory floor = 74.2% effective replacement), and B5 ($100,000+; 22.3% CA vs. 41.0% in Santa Clara County; capped at $1,765.00/wk = 49.6% effective replacement at $185,000).</li>
+      <li><strong>Dual Claimant-Participation Bounds:</strong> <em>Case 1 (Historical Lower-Income Under-Utilization)</em> weights claiming by historical pre-SB 951 propensities (0.45, 0.70, 0.95, 1.15, 1.10 across B1–B5); <em>Case 2 (SB 951 + 12-Week Access Boost)</em> models narrowed participation gaps under 90% replacement (0.80, 0.92, 0.98, 0.99, 0.85).</li>
+      <li><strong>Calibrated Substitution-Adjusted Net Benefits:</strong> Bracket-specific employer substitution rates $c_b = \min(\theta \cdot \tilde{c}_b, 0.95)$ are calibrated so net benefits sum exactly to $421.97M and satisfy $\text{Net}_b < \text{Gross}_b$ in every bracket. Under Case 2, workers earning under $65,000 (B1–B3) contribute 27.1% of SDI payroll taxes but receive 39.6% of gross benefits and 48.1% of net incremental household benefits (Net Progressivity Index $\Delta C = +0.216$).</li>
     </ul>
 
-    <h2>5. County Demographic Allocation Methodology</h2>
-    <p>Standard public EDD monthly feeds publish aggregate statewide claim statistics. To provide local health departments, advocates, and county boards of supervisors with regional planning metrics, the simulator implements a deterministic demographic allocation:</p>
-    <ul>
-      <li><strong>Population Benchmark:</strong> Official county population counts from the California Department of Finance (DOF) / U.S. Census Bureau 2023 common vintage series across all 58 California counties.</li>
-      <li><strong>Sourced Bonding Share (89%):</strong> Official EDD claim-type statistics document that infant bonding claims represent <strong>89.0% of total PFL first claims paid</strong> (with family caregiving at 10.0% and military assist at 1.0%), as parameterized in <code>CLAIM_TYPE_SHARES</code>. Statewide baseline bonding claims (293,700 in 2026) and expanded claims are computed using this 89% benchmark.</li>
-      <li><strong>Deterministic Apportionment Formula:</strong> Each county's allocation share is calculated as $w_i = \text{pop}_i / \sum \text{pop}_j$. Statewide bonding claims and net benefit dollars are allocated proportionally to each county by $w_i$.</li>
-      <li><strong>Methodological Fencing:</strong> County counts represent <em>allocated demographic projections</em>, not raw EDD administrative claims. They are provided for local health planning and policy exploration.</li>
-    </ul>
+    <h2>5. Postpartum Caregiving Timeline &amp; Reverse-Calculated Health Thresholds</h2>
+    <p>Implemented in <code>02_analysis/08_public_health_exposure.py</code>, the public health exposure module links 2025 EDD observed claim-type shares (<strong>87.80% bonding</strong> = 113,582 Expected 2026 bonding claim-equivalents) to unique exposed infants using a 1.15 co-parent dual-claiming factor (<strong>98,767 unique exposed infants statewide</strong>, range 90,866–103,256; <strong>4,593–5,446 in Santa Clara County</strong> based on 18,703 resident births in 2024 CDPH data and 78.55% maternal labor force participation in 2023 ACS Table B13012).</p>
+    <div class="formula-box">
+      Required Per-Infant Risk Difference: &Delta;p_req = Y* / N_infants<br>
+      Required Effect per True Added Paid Bonding Week: &beta;_week,req = Y* / (N_claims,bonding &times; 4 &times; &pi;_time)
+    </div>
+    <p>Across $\pi_{\text{time}} \in \{25\%, 50\%, 75\%, 100\%\}$, achieving +1,000 to +2,500 additional infants exclusively breastfed at 6 months requires +0.22 to +2.20 percentage points per true added paid bonding week (within the +1.0 to +1.7 pp/week historical reference range from Huang &amp; Yang 2015), while avoiding 100 infant respiratory/GI hospitalizations requires a 1.22% to 4.89% relative risk reduction per added bonding week (within the 3%–6% historical reference range from Pihl &amp; Basso 2019).</p>
 
-    <h2>6. Peer State Benchmarks</h2>
-    <p>California enacted PFL in 2002 but has since fallen behind national peer programs on duration:</p>
-    <ul>
-      <li><strong>Washington (WA PFML):</strong> Provides 12–18 weeks at 90% wage replacement, funded via a shared 0.74% payroll contribution, with over 5 years of solvent operation.</li>
-      <li><strong>Colorado (CO FAMLI):</strong> Implemented in 2024, providing 12–16 weeks at 90% replacement with a 50/50 employer/employee split (0.90% total).</li>
-      <li><strong>New York (NY PFL):</strong> 12 weeks duration at 67% wage replacement (employee-funded).</li>
-      <li><strong>New Jersey (NJ FLI):</strong> 12 weeks duration at 85% wage replacement.</li>
-    </ul>
-
-    <h2>7. Primary Data Sources &amp; Provenance</h2>
+    <h2>6. Primary Data Sources &amp; Provenance</h2>
     <ol>
-      <li><strong>California Employment Development Department (EDD):</strong> <em>Disability Insurance (DI) Fund Forecast</em> (May 2026 Report, Tables 1, 2, and 3).</li>
-      <li><strong>California EDD Data Library:</strong> <em>Paid Family Leave Monthly Data Series</em> (July 2004 – February 2026, File <code>edd_pfl_monthly_2026-07.csv</code>).</li>
-      <li><strong>U.S. Census Bureau &amp; CA Department of Finance:</strong> <em>American Community Survey (ACS) 2019–2023 5-Year Microdata</em> and <em>California County Population Series</em>.</li>
-      <li><strong>Washington Employment Security Department:</strong> <em>Paid Family &amp; Medical Leave Annual Reports</em> (2020–2025).</li>
+      <li><strong>California Employment Development Department (EDD):</strong> <em>May 2026 Disability Insurance (DI) Fund Forecast</em> (Tables 1, 2, and 3) and <em>PFL Monthly Data Series</em> (<code>edd_pfl_monthly_2026-07.csv</code>).</li>
+      <li><strong>U.S. Census Bureau:</strong> <em>2023 1-Year American Community Survey (ACS) Summary File</em>, Tables B20001 (Sex by Earnings in the Past 12 Months for the Population 16+ with Earnings) and B13012 (Women 16–50 Who Had a Birth in the Past 12 Months by Labor Force Status) for California and Santa Clara County.</li>
+      <li><strong>California Department of Public Health (CDPH):</strong> <em>Final Live Births by Year and County (2022–2024)</em>, California Health and Human Services Open Data Portal (402,192 California resident live births and 18,703 Santa Clara County resident live births in 2024).</li>
     </ol>
 
-    <div style="margin-top: var(--space-2xl); border-top: 1px solid var(--color-border); padding-top: var(--space-md); font-size: 0.85rem; color: var(--color-text-muted);">
-      Citation: Cholette, V. (2026). <em>California Paid Family Leave Expansion: Fiscal Impact and Distributional Equity Analysis</em>. California Association of Public Health Economists (CAPHE).
+    <div style="margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 1rem; font-size: 0.85rem; color: #555555;">
+      Citation: Cholette, V. (2026). <em>Expanding California Paid Family Leave from 8 to 12 Weeks: Fiscal Solvency, Distributional Equity, and Postpartum Public Health Exposure Analysis</em>. California Association of Public Health Economists (CAPHE) &amp; County of Santa Clara Public Health Department.
     </div>
   </div>
 
   <!-- Footer -->
-  <footer class="footer" style="background: #F8F9FA; border-top: 1px solid var(--color-border); padding: var(--space-xl) 0; font-size: 0.85rem; color: var(--color-text-muted);">
-    <div class="container" style="max-width: 860px; margin: 0 auto; padding: 0 var(--space-md); text-align: center;">
-      <a href="/tools/pfl-simulator" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">&larr; Return to PFL Simulator</a>
+  <footer class="footer" style="background: #F8F9FA; border-top: 1px solid #E2E8F0; padding: 2rem 0; font-size: 0.85rem; color: #555555;">
+    <div class="container" style="max-width: 880px; margin: 0 auto; padding: 0 1rem; text-align: center;">
+      <a href="/tools/pfl-simulator" style="color: #0041A5; font-weight: 600; text-decoration: none;">&larr; Return to PFL Simulator</a>
     </div>
   </footer>
 

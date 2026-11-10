@@ -14,14 +14,14 @@
   </script>
 
   <title>California Paid Family Leave Expansion Simulator - CAPHE</title>
-  <meta name="description" content="Simulate the multi-year fiscal solvency, worker equity, and county-level impacts of expanding California Paid Family Leave from 8 to 12 weeks under alternative behavioral assumptions.">
+  <meta name="description" content="Simulate the multi-year fiscal solvency, 2023 ACS earnings-bracket equity, postpartum public health exposure & outcome thresholds, and 58-county impacts of expanding California Paid Family Leave from 8 to 12 weeks.">
   <meta name="author" content="Victoria Cholette">
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://www.caphegroup.org/tools/pfl-simulator">
 
   <!-- Open Graph -->
   <meta property="og:title" content="California Paid Family Leave Expansion Simulator - CAPHE">
-  <meta property="og:description" content="Model the fiscal solvency, worker equity distribution, and 58-county impacts of expanding California PFL from 8 to 12 weeks.">
+  <meta property="og:description" content="Model the May 2026 EDD fiscal solvency, 2023 ACS B1-B5 worker equity, postpartum health exposure & thresholds, and 58-county impacts of expanding California PFL from 8 to 12 weeks.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.caphegroup.org/tools/pfl-simulator">
   <meta property="og:site_name" content="CAPHE - California Association of Public Health Economists">
@@ -51,6 +51,12 @@
       --color-border-dark: #CBD5E1;
       --radius-sm: 4px;
       --radius-md: 6px;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
     }
 
     body {
@@ -67,12 +73,11 @@
     }
 
     .sim-container {
-      max-width: 1240px;
+      max-width: 1260px;
       margin: 0 auto;
       padding: var(--space-lg) var(--space-md);
     }
 
-    /* Breadcrumbs */
     .breadcrumbs {
       display: flex;
       gap: 0.5rem;
@@ -88,7 +93,6 @@
       text-decoration: underline;
     }
 
-    /* Editorial Institutional Header (Zero gradient, zero badges) */
     .sim-header-clean {
       border-bottom: 2px solid var(--color-primary);
       padding-bottom: var(--space-lg);
@@ -111,12 +115,11 @@
     .sim-lead {
       font-size: 1.05rem;
       color: #475569;
-      max-width: 960px;
+      max-width: 1020px;
       margin: 0;
       line-height: 1.5;
     }
 
-    /* Policy & Behavioral Scenario Segmented Controller (Zero Pricing Cards) */
     .scenario-control-section {
       margin-bottom: var(--space-xl);
     }
@@ -195,67 +198,65 @@
       line-height: 1.35;
     }
 
-    /* Active Scenario Feedback Strip */
     .scenario-context-strip {
       background: #F8FAFC;
       border: 1px solid var(--color-border);
       border-top: none;
-      padding: 0.5rem 1rem;
+      padding: 0.55rem 1rem;
       font-size: 0.84rem;
       color: #334155;
       border-radius: 0 0 var(--radius-md) var(--radius-md);
       margin-top: -1px;
     }
 
-    /* Executive Metric Ribbon (Single unified horizontal bar, 0 floating cards) */
     .metric-ribbon {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       background: #F8FAFC;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       margin-bottom: var(--space-xl);
     }
     .metric-col {
-      padding: 1.25rem 1.5rem;
+      padding: 1.15rem 1.25rem;
       border-right: 1px solid var(--color-border);
     }
     .metric-col:last-child {
       border-right: none;
     }
     .metric-label {
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #64748B;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.3rem;
     }
     .metric-val {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.75rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: var(--color-primary-dark);
-      line-height: 1.1;
+      line-height: 1.15;
       margin-bottom: 0.25rem;
     }
     .metric-sub {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--color-text-muted);
       line-height: 1.3;
     }
 
-    /* Tabs Navigation (Editorial Underline) */
     .tabs-nav {
       display: flex;
-      gap: 2rem;
+      gap: 1.6rem;
       border-bottom: 1px solid var(--color-border);
       margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
     }
     .tab-btn {
       padding: 0.75rem 0;
       font-family: 'Montserrat', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       background: transparent;
       border: none;
@@ -279,7 +280,6 @@
       display: block;
     }
 
-    /* Unboxed Tab Panels */
     .tab-section-header {
       margin-bottom: var(--space-lg);
     }
@@ -303,7 +303,54 @@
       margin-bottom: var(--space-lg);
     }
 
-    /* Worker Cost Calculator Strip */
+    .sub-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: #F8FAFC;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.15rem;
+      margin-bottom: var(--space-lg);
+    }
+    .sub-control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .sub-control-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+    }
+    .pill-toggle-group {
+      display: inline-flex;
+      background: #E2E8F0;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      gap: 3px;
+    }
+    .pill-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .pill-btn.active {
+      background: #FFFFFF;
+      color: var(--color-primary-dark);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
     .calculator-strip {
       display: grid;
       grid-template-columns: 1.3fr 0.7fr;
@@ -353,19 +400,20 @@
     .quick-presets {
       display: flex;
       gap: 0.35rem;
+      flex-wrap: wrap;
     }
     .preset-btn {
       background: #FFFFFF;
       border: 1px solid var(--color-border-dark);
       border-radius: 3px;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.55rem;
       font-size: 0.78rem;
       font-weight: 600;
       color: #334155;
       cursor: pointer;
     }
-    .preset-btn:hover {
-      background: #F1F5F9;
+    .preset-btn:hover, .preset-btn.active {
+      background: #EFF6FF;
       border-color: var(--color-primary);
       color: var(--color-primary);
     }
@@ -394,24 +442,23 @@
       margin-top: 0.15rem;
     }
 
-    /* Academic Sim Tables */
     .sim-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       margin-top: 0.75rem;
     }
     .sim-table th, .sim-table td {
-      padding: 0.65rem 0.85rem;
+      padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--color-border);
       text-align: left;
     }
     .sim-table th {
       background: #F1F5F9;
       font-family: 'Montserrat', sans-serif;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: #475569;
       border-top: 1px solid var(--color-border);
       border-bottom: 2px solid var(--color-border-dark);
@@ -424,18 +471,109 @@
       background: #F8FAFC;
     }
 
-    /* 58-County Workstation Layout */
+    /* Postpartum Timeline Visual Styles */
+    .pathway-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .pathway-row {
+      background: #F8FAFC;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+    }
+    .pathway-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.45rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .pathway-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+    }
+    .pathway-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--color-secondary);
+      background: #E0F2F1;
+      padding: 0.15rem 0.55rem;
+      border-radius: 3px;
+    }
+    .timeline-track-wrapper {
+      position: relative;
+      height: 34px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      margin-bottom: 0.45rem;
+    }
+    .seg-sdi {
+      background: #64748B;
+      color: #FFFFFF;
+      font-size: 0.73rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .seg-pfl-base {
+      background: #0041A5;
+      color: #FFFFFF;
+      font-size: 0.73rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .seg-pfl-added {
+      background: #0D9488;
+      color: #FFFFFF;
+      font-size: 0.73rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .milestone-marker {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #C62828;
+      z-index: 5;
+    }
+    .pathway-meta {
+      font-size: 0.83rem;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
     .map-layout {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1.1fr 0.9fr;
       gap: 2rem;
       align-items: flex-start;
       margin-top: var(--space-md);
     }
     .map-controls-bar {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.25rem;
       align-items: center;
+      flex-wrap: wrap;
       background: #F8FAFC;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-sm);
@@ -443,12 +581,12 @@
       margin-bottom: var(--space-md);
     }
     .map-controls-bar label {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #475569;
-      margin-right: 0.4rem;
+      margin-right: 0.35rem;
     }
     .map-controls-bar select {
       padding: 0.4rem 0.65rem;
@@ -505,7 +643,7 @@
       margin-bottom: 0.2rem;
     }
     .county-dossier h3 {
-      margin: 0 0 1rem;
+      margin: 0 0 0.85rem;
       font-size: 1.45rem;
       color: var(--color-primary-dark);
       border-bottom: 2px solid var(--color-primary);
@@ -515,9 +653,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.55rem 0;
+      padding: 0.5rem 0;
       border-bottom: 1px solid var(--color-border);
-      font-size: 0.88rem;
+      font-size: 0.87rem;
     }
     .county-stat-row:last-child {
       border-bottom: none;
@@ -537,10 +675,9 @@
       border-radius: var(--radius-sm);
       font-size: 0.82rem;
       color: #334155;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
-    /* Methodological Notice Fencing */
     .method-notice {
       background: #F8FAFC;
       border: 1px solid var(--color-border);
@@ -552,7 +689,6 @@
       line-height: 1.5;
     }
 
-    /* Documentation Bar */
     .doc-bar {
       display: flex;
       justify-content: space-between;
@@ -580,6 +716,15 @@
     }
     .doc-link-btn:hover {
       background: var(--color-primary-dark);
+    }
+
+    @media (max-width: 960px) {
+      .metric-ribbon {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .map-layout, .calculator-strip {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -619,15 +764,16 @@
 
     <!-- Hero Header -->
     <header class="sim-header-clean">
-      <h1>California Paid Family Leave Expansion Simulator</h1>
-      <p class="sim-lead">Simulate multi-year fiscal solvency, worker equity distributions, and 58-county impacts of extending California Paid Family Leave (PFL) from 8 to 12 weeks under alternative behavioral assumptions.</p>
+      <div class="sim-eyebrow">May 2026 EDD Forecast &bull; 2023 ACS Earnings Brackets &bull; 2024 CDPH Births</div>
+      <h1>California Paid Family Leave Expansion Simulator (8 &rarr; 12 Weeks)</h1>
+      <p class="sim-lead">Simulate multi-year State Disability Insurance (SDI) fund solvency, 2023 ACS earnings-bracket equity (<code>B1&ndash;B5</code>), postpartum caregiving windows &amp; reverse-calculated infant health thresholds, and 58-county impacts under alternative behavioral assumptions.</p>
     </header>
 
     <!-- Policy & Behavioral Scenario Segmented Controller -->
     <section class="scenario-control-section" aria-labelledby="scenario-selector-title">
       <div class="scenario-control-header">
         <span class="scenario-control-label" id="scenario-selector-title">Select Policy &amp; Behavioral Scenario</span>
-        <span style="font-size: 0.8rem; color: #64748B;">Sensitivity bounds across take-up and crowd-out parameters</span>
+        <span style="font-size: 0.8rem; color: #64748B;">Reconciled with EDD May 2026 DI Fund Forecast (330,000 baseline 2026 PFL claims; $1,165 AWB)</span>
       </div>
       <div class="segmented-control" role="radiogroup" aria-label="Behavioral scenarios">
         <!-- Floor -->
@@ -636,7 +782,7 @@
             <span class="scenario-card-title">Floor Scenario</span>
             <span class="scenario-pill">Conservative</span>
           </div>
-          <div class="scenario-card-desc">Minimal response: 25% take-up, 5% extensive margin, 50% employer crowd-out.</div>
+          <div class="scenario-card-desc">Minimal response: 25% take-up, 5% extensive margin, 50% employer substitution.</div>
         </button>
 
         <!-- Expected (Default) -->
@@ -645,7 +791,7 @@
             <span class="scenario-card-title">Expected Scenario</span>
             <span class="scenario-pill">Benchmark</span>
           </div>
-          <div class="scenario-card-desc">Empirical benchmark: 35% take-up, 12% extensive margin, 30% employer crowd-out.</div>
+          <div class="scenario-card-desc">Empirical benchmark: 35% take-up, 12% extensive margin, 30% employer substitution.</div>
         </button>
 
         <!-- Ceiling -->
@@ -654,26 +800,31 @@
             <span class="scenario-card-title">Ceiling Stress Test</span>
             <span class="scenario-pill">Max Exposure</span>
           </div>
-          <div class="scenario-card-desc">Full exposure: 100% take-up, 20% extensive margin, 0% private crowd-out.</div>
+          <div class="scenario-card-desc">Full exposure: 100% take-up, 20% extensive margin, 0% employer substitution.</div>
         </button>
       </div>
 
       <div class="scenario-context-strip" id="scenario-context-strip">
-        <strong>Active Scenario:</strong> Expected Central Benchmark &mdash; +$422.0M net incremental benefits, 369,600 total bonding claims, and a +0.045% SDI tax adjustment (1.345% total rate).
+        <strong>Active Scenario:</strong> Expected Central Benchmark &mdash; <strong>$623.9M</strong> gross DI Fund outlays (<strong>$422.0M</strong> modeled net incremental worker benefits), <strong>129,360</strong> modeled 4-week extension claim-equivalents (<strong>98,767</strong> unique exposed infants statewide), and a <strong>+0.045 pp</strong> SDI rate adjustment (1.300% &rarr; 1.345%).
       </div>
     </section>
 
-    <!-- Key Performance Indicator Ribbon -->
+    <!-- Key Performance Indicator Ribbon (5 Columns) -->
     <div class="metric-ribbon" aria-live="polite">
       <div class="metric-col">
-        <div class="metric-label">Annual Net Benefits (2026)</div>
-        <div class="metric-val" id="kpi-net-outlays">$422.0M</div>
-        <div class="metric-sub" id="kpi-claims-count">369,600 total expanded claims</div>
+        <div class="metric-label">Gross DI Fund Outlays (2026)</div>
+        <div class="metric-val" id="kpi-gross-outlays">$623.9M</div>
+        <div class="metric-sub" id="kpi-net-outlays">Modeled Net Household Gain: $422.0M</div>
+      </div>
+      <div class="metric-col">
+        <div class="metric-label">Exposed Bonding Cohort (2026)</div>
+        <div class="metric-val" id="kpi-unique-infants">98,767</div>
+        <div class="metric-sub" id="kpi-claims-count">Unique infants (113,582 bonding claims)</div>
       </div>
       <div class="metric-col">
         <div class="metric-label">Required SDI Tax Rate</div>
         <div class="metric-val" id="kpi-tax-rate">1.345%</div>
-        <div class="metric-sub" id="kpi-rate-adj">+0.045% increase over baseline (1.30%)</div>
+        <div class="metric-sub" id="kpi-rate-adj">+0.045 pp over 1.30% baseline</div>
       </div>
       <div class="metric-col">
         <div class="metric-label">Annual Worker Cost ($100k)</div>
@@ -681,25 +832,37 @@
         <div class="metric-sub" id="kpi-monthly-cost">~$3.79 per month</div>
       </div>
       <div class="metric-col">
-        <div class="metric-label">6-Year Cumulative Outlays</div>
-        <div class="metric-val" id="kpi-cumulative">$4.01B</div>
-        <div class="metric-sub">Total 2025–2030 public outlays</div>
+        <div class="metric-label">2030 Ending Reserve (1.40% Post-2027)</div>
+        <div class="metric-val" id="kpi-reserve-2030">$7.46B</div>
+        <div class="metric-sub" id="kpi-cumulative">35.4% reserve ratio ($4.01B 6-yr outlays)</div>
       </div>
     </div>
 
     <!-- Main Navigation Tabs -->
     <nav class="tabs-nav" role="tablist">
       <button class="tab-btn active" data-tab="solvency" role="tab" aria-selected="true">1. State Fiscal Solvency (2025–2030)</button>
-      <button class="tab-btn" data-tab="equity" role="tab" aria-selected="false">2. Worker Equity &amp; Wage Replacement</button>
-      <button class="tab-btn" data-tab="sensitivity" role="tab" aria-selected="false">3. Parameter Sensitivity</button>
-      <button class="tab-btn" data-tab="counties" role="tab" aria-selected="false">4. 58-County Impact Explorer</button>
+      <button class="tab-btn" data-tab="equity" role="tab" aria-selected="false">2. Worker Equity (2023 ACS B1–B5)</button>
+      <button class="tab-btn" data-tab="health" role="tab" aria-selected="false">3. Postpartum Health &amp; Thresholds</button>
+      <button class="tab-btn" data-tab="sensitivity" role="tab" aria-selected="false">4. Parameter Sensitivity</button>
+      <button class="tab-btn" data-tab="counties" role="tab" aria-selected="false">5. 58-County Impact Explorer</button>
     </nav>
 
     <!-- Tab 1: State Fiscal & Solvency -->
     <div class="tab-content active" id="tab-solvency" role="tabpanel">
       <div class="tab-section-header">
         <h2>Multi-Year State Disability Insurance (SDI) Fund Solvency (2025–2030)</h2>
-        <p class="tab-section-subtitle">Projections compare projected SDI fund balances under expansion against the EDD 25% operational reserve benchmark under California Unemployment Insurance Code (UIC) §984 formula guidelines.</p>
+        <p class="tab-section-subtitle">Anchored to the California EDD May 2026 DI Fund Forecast (Table 1: $3.011B ending 2025 actual balance; $3.484B 2026 forecast at 1.30%; $5.091B 2027 forecast at 1.40%). Compares projected 2025–2030 ending balances holding the 1.40% rate constant in 2028–2030 against the 25% operational reserve target range.</p>
+      </div>
+
+      <div class="sub-controls-bar">
+        <div class="sub-control-group">
+          <span class="sub-control-label">Weeks 1–8 Extensive-Margin Prior-Week Sensitivity (Expected Scenario):</span>
+          <div class="pill-toggle-group" role="group" aria-label="Entrant prior-week sensitivity">
+            <button type="button" class="pill-btn active" data-entrant="base" onclick="setEntrantMode('base')">Weeks 9–12 Only ($623.9M in 2026)</button>
+            <button type="button" class="pill-btn" data-entrant="subset" onclick="setEntrantMode('subset')">+ Extension-Using Entrant Weeks 1–8 (+$133.7M)</button>
+            <button type="button" class="pill-btn" data-entrant="all" onclick="setEntrantMode('all')">+ All Entrant Weeks 1–8 (+$348.6M)</button>
+          </div>
+        </div>
       </div>
 
       <div class="chart-container-frame">
@@ -711,7 +874,7 @@
       <div class="calculator-strip">
         <div>
           <span class="calc-eyebrow">Individual Employee Impact Calculator</span>
-          <div style="font-size: 0.88rem; color: #475569; margin-bottom: 0.6rem;">Calculate the net change in annual employee SDI payroll contributions under the active scenario:</div>
+          <div style="font-size: 0.88rem; color: #475569; margin-bottom: 0.6rem;">Calculate the full-funding annual employee SDI payroll contribution increase required to offset gross DI Fund outlays under the active scenario:</div>
           <div class="calc-input-row">
             <label for="input-custom-wage" style="font-size: 0.85rem; font-weight: 700; color: #334155;">Annual Gross Wages:</label>
             <div class="calc-input-wrapper">
@@ -719,10 +882,11 @@
               <input type="number" id="input-custom-wage" value="75000" step="5000" min="10000" max="500000">
             </div>
             <div class="quick-presets">
-              <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=45000; updateWorkerCostCalculation();">$45k</button>
+              <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=35000; updateWorkerCostCalculation();">$35k</button>
+              <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=55000; updateWorkerCostCalculation();">$55k</button>
               <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=75000; updateWorkerCostCalculation();">$75k</button>
               <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=100000; updateWorkerCostCalculation();">$100k</button>
-              <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=150000; updateWorkerCostCalculation();">$150k</button>
+              <button type="button" class="preset-btn" onclick="document.getElementById('input-custom-wage').value=185000; updateWorkerCostCalculation();">$185k</button>
             </div>
           </div>
         </div>
@@ -734,40 +898,58 @@
       </div>
 
       <div class="method-notice">
-        <strong>Reserve Ratio Clarification:</strong> The Employment Development Department (EDD) defines 25% to 50% of annual disbursements as an <em>operational adequate reserve rate target range</em> under UIC §984 financing formula guidelines, <strong>not a mandatory statutory minimum</strong>. In fact, under EDD's baseline May 2026 forecast without expansion, the SDI fund operates below 25% in 2025 (18.1%) and 2026 (18.2%). Under the Expected scenario, the fund preserves positive cash balances throughout the projection period, reaching $6.37B (30.4% reserve ratio) by 2030.
+        <strong>Statutory Solvency &amp; Crowd-Out Accounting:</strong> Because EDD pays the statutory PFL weekly benefit regardless of whether a private employer offers supplemental top-up pay (unless the employer operates an EDD-approved Voluntary Plan), state DI Fund solvency and statutory tax rates depend on <strong>Gross Public Outlays</strong> ($623.9M in Expected 2026), whereas employer substitution (crowd-out) scales <strong>Modeled Net Incremental Household Benefit</strong> ($422.0M). Conditional on holding EDD's projected 2027 rate (1.40%) constant in 2028–2030, the Expected scenario maintains positive reserves throughout 2025–2030, reaching <strong>$7.46B (35.4% reserve ratio)</strong> by 2030 ($5.15B [24.4%] at 1.35% or $2.83B [13.4%] if rates revert to 1.30%).
       </div>
     </div>
 
-    <!-- Tab 2: Worker Equity & Parity -->
+    <!-- Tab 2: Worker Equity & Parity (2023 ACS Brackets B1-B5) -->
     <div class="tab-content" id="tab-equity" role="tabpanel">
       <div class="tab-section-header">
-        <h2>Distributional Equity Across Income Quintiles</h2>
-        <p class="tab-section-subtitle">Micro-simulation model comparing benefit distribution versus tax contribution share across wage quintiles under SB 951 tiered replacement rates (90% for lower-wage earners; 70% above ~$63k).</p>
+        <h2>Distributional Equity Across 2023 ACS Earnings Brackets (<code>B1&ndash;B5</code>)</h2>
+        <p class="tab-section-subtitle">Grounded in U.S. Census Bureau 2023 1-Year ACS Table B20001 across 20.73 million California workers with earnings (and 1.08 million in the County of Santa Clara) under Cal. Unemp. Ins. Code §2655(d)(3) tiered wage replacement (90% up to ~$66k; $1,142.31/wk illustrative 90%-tier floor in B4; $1,765.00/wk cap in B5).</p>
+      </div>
+
+      <div class="sub-controls-bar">
+        <div class="sub-control-group">
+          <span class="sub-control-label">Claimant Participation Bound:</span>
+          <div class="pill-toggle-group" role="group" aria-label="Participation bound">
+            <button type="button" class="pill-btn active" data-eq-case="case2" onclick="setEquityCase('case2')">Case 2: SB 951 + 12-Wk Access Boost</button>
+            <button type="button" class="pill-btn" data-eq-case="case1" onclick="setEquityCase('case1')">Case 1: Historical Low-Income Under-Utilization</button>
+          </div>
+        </div>
+        <div class="sub-control-group">
+          <span class="sub-control-label">Benefit Accounting Basis:</span>
+          <div class="pill-toggle-group" role="group" aria-label="Accounting basis">
+            <button type="button" class="pill-btn active" data-eq-basis="net" onclick="setEquityBasis('net')">Calibrated Substitution-Adjusted Net ($422.0M)</button>
+            <button type="button" class="pill-btn" data-eq-basis="gross" onclick="setEquityBasis('gross')">Gross Statutory Benefits ($602.8M)</button>
+          </div>
+        </div>
       </div>
 
       <div class="chart-container-frame">
-        <div style="height: 320px; position: relative;">
+        <div style="height: 330px; position: relative;">
           <canvas id="chart-equity"></canvas>
         </div>
       </div>
 
-      <div class="method-notice" style="margin-bottom: var(--space-lg);">
-        <strong>Distributional Model Disclosure:</strong> Individual-level EDD PFL claim records by worker income are confidential administrative data not published in public state databases. Quintile figures represent an assumption-based micro-simulation model derived from Census ACS wage profiles and SB 951 replacement rules under Expected scenario parameters ($623.7M gross outlays; +0.045% SDI tax rate; computed progressivity index: +0.095).
+      <div class="method-notice" id="equity-indices-banner" style="margin-bottom: var(--space-lg);">
+        <!-- Dynamically populated with Concentration Indices C_T, C_B, and Redistribution Index -->
       </div>
 
-      <h3 style="font-size: 1.15rem; margin-top: var(--space-xl); margin-bottom: 0.35rem;">Income Quintile Profile Ledger</h3>
-      <table class="sim-table" aria-label="Income quintile equity table">
+      <h3 style="font-size: 1.15rem; margin-top: var(--space-xl); margin-bottom: 0.35rem;">2023 ACS Earnings Bracket Ledger (California vs. Santa Clara County)</h3>
+      <table class="sim-table" aria-label="2023 ACS earnings bracket equity table">
         <thead>
           <tr>
-            <th>Quintile</th>
-            <th>Wage Range</th>
-            <th class="num">Worker Share</th>
-            <th class="num">Tax Share</th>
-            <th class="num">Benefit Share</th>
-            <th class="num">Replacement Rate</th>
-            <th class="num">Benefit Increase</th>
-            <th class="num">Added SDI Tax</th>
-            <th class="num">Net Position</th>
+            <th>Bracket</th>
+            <th>2023 ACS Earnings Range</th>
+            <th class="num">CA Workers</th>
+            <th class="num">SCC Workers</th>
+            <th class="num">SDI Tax Share</th>
+            <th class="num">Weekly Benefit (§2655)</th>
+            <th class="num">4-Wk Unreplaced Gap</th>
+            <th class="num" id="th-eq-ben-share">Benefit Share</th>
+            <th class="num" id="th-eq-ben-dollars">Benefit Dollars</th>
+            <th class="num" id="th-eq-ratio">Benefit / Tax Ratio (R<sub>b</sub>)</th>
           </tr>
         </thead>
         <tbody id="equity-table-body">
@@ -776,8 +958,8 @@
       </table>
 
       <div style="margin-top: var(--space-2xl);">
-        <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">Peer State Policy Comparison</h3>
-        <p style="font-size: 0.88rem; color: #555555; margin-bottom: var(--space-md);">California remains the only state among major peer social insurance programs offering fewer than 12 weeks of paid family leave.</p>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">2026 Peer State Policy Comparison</h3>
+        <p style="font-size: 0.88rem; color: #555555; margin-bottom: var(--space-md);">California remains the only state among major peer social insurance programs offering fewer than 12 weeks of paid family bonding and caregiving leave.</p>
         <table class="sim-table" aria-label="Peer state policy comparison table">
           <thead>
             <tr>
@@ -797,24 +979,76 @@
       </div>
     </div>
 
-    <!-- Tab 3: Parameter Sensitivity -->
+    <!-- Tab 3: Postpartum Public Health Exposure & Reverse-Calculated Outcome Thresholds -->
+    <div class="tab-content" id="tab-health" role="tabpanel">
+      <div class="tab-section-header">
+        <h2>Postpartum Caregiving Timeline &amp; Reverse-Calculated Infant Health Thresholds</h2>
+        <p class="tab-section-subtitle">Evaluates how adding 4 paid PFL weeks (8 &rarr; 12 weeks) shifts infant age at parental return to work relative to CDC routine immunization visits (2, 4, and 6 months) and quantifies the required effect sizes across <strong>98,767 unique exposed infants statewide</strong> (4,593–5,446 in Santa Clara County).</p>
+      </div>
+
+      <h3 style="font-size: 1.1rem; margin-bottom: 0.35rem;">Component A: Combined Postpartum SDI (6–8 Wks) + PFL (8 &rarr; 12 Wks) Caregiving Pathways</h3>
+      <p style="font-size: 0.88rem; color: #475569; margin: 0 0 0.75rem;">For birthing mothers, PFL bonding leave follows 6 weeks (vaginal) or 8 weeks (Cesarean) of pregnancy SDI recovery—meaning PFL weeks 9–12 occur at <strong>infant weeks 15–18 or 17–20</strong>, directly bridging the <strong>4-month (~17.3-week) CDC immunization series</strong>. When two parents sequence leave, continuous parental care extends to <strong>infant weeks 28–32</strong>, bridging past the <strong>6-month (~26.0-week) CDC immunization series</strong>.</p>
+
+      <div class="pathway-grid" id="pathway-timeline-container">
+        <!-- Dynamically populated from public_health_exposure.component_a_postpartum_pathways -->
+      </div>
+
+      <h3 style="font-size: 1.15rem; margin-top: var(--space-2xl); margin-bottom: 0.35rem;">Component C: Reverse-Calculated Outcome-Target Threshold Explorer</h3>
+      <p style="font-size: 0.88rem; color: #475569; margin: 0 0 0.85rem;">Because the fraction of incremental paid weeks representing true increases in time at home ($\pi_{\text{time}}$) versus financial substitution for unpaid CFRA leave ($1 - \pi_{\text{time}}$) is unmeasured in public administrative data, select $\pi_{\text{time}}$ below to inspect the exact per-infant risk difference ($\Delta p_{\text{req}}$) and per-bonding-week effect required to achieve statewide public health targets.</p>
+
+      <div class="sub-controls-bar">
+        <div class="sub-control-group">
+          <span class="sub-control-label">Select True Leave-Duration Share (&pi;<sub>time</sub>):</span>
+          <div class="pill-toggle-group" role="group" aria-label="True time extension share pi_time">
+            <button type="button" class="pill-btn" data-pitime="0" onclick="setPiTime(0)">0% (Pure Income/Financial Channel)</button>
+            <button type="button" class="pill-btn" data-pitime="0.25" onclick="setPiTime(0.25)">25% (+1.0 Added Wk/Claim)</button>
+            <button type="button" class="pill-btn active" data-pitime="0.5" onclick="setPiTime(0.5)">50% Central (+2.0 Added Wks/Claim)</button>
+            <button type="button" class="pill-btn" data-pitime="0.75" onclick="setPiTime(0.75)">75% (+3.0 Added Wks/Claim)</button>
+            <button type="button" class="pill-btn" data-pitime="1" onclick="setPiTime(1.0)">100% (+4.0 Added Wks/Claim)</button>
+          </div>
+        </div>
+      </div>
+
+      <table class="sim-table" aria-label="Reverse-calculated public health outcome thresholds">
+        <thead>
+          <tr>
+            <th>Public Health Outcome</th>
+            <th class="num">Statewide Target (Y*)</th>
+            <th class="num">Effective Added Wks / Claim</th>
+            <th class="num">Total True Added Bonding Wks</th>
+            <th class="num">Req. Change / Exposed Infant</th>
+            <th class="num">Req. Effect / Added Bonding Wk</th>
+            <th>Plausibility vs. Literature Benchmark</th>
+          </tr>
+        </thead>
+        <tbody id="threshold-table-body">
+          <!-- Dynamically populated from public_health_exposure.component_c_outcome_thresholds -->
+        </tbody>
+      </table>
+
+      <div class="method-notice">
+        <strong>Methodological Fencing (Identification Boundary):</strong> Literature estimates from California's 2004 PFL introduction (0 &rarr; 6 weeks; Huang &amp; Yang 2015; Pihl &amp; Basso 2019) and national reforms (Pac et al. 2023; Choudhury &amp; Polachek 2021) capture the extensive margin of establishing paid leave at infant weeks 6–12. Because diminishing marginal returns may apply on the 8-to-12-week margin (infant weeks 14–20 for solo birthing mothers; weeks 20–32 for sequential two-parent households), this table reports <strong>reverse-calculated thresholds required for plausibility</strong> rather than unconditional causal point forecasts.
+      </div>
+    </div>
+
+    <!-- Tab 4: Parameter Sensitivity -->
     <div class="tab-content" id="tab-sensitivity" role="tabpanel">
       <div class="tab-section-header">
-        <h2>Econometric Parameter Sensitivity Analysis</h2>
-        <p class="tab-section-subtitle">Isolated impact of individual behavioral assumptions on 2026 expansion costs, derived directly from <code>ExpansionCostModel.run_sensitivity_analysis()</code>.</p>
+        <h2>Econometric Parameter &amp; Structural Sensitivity Analysis</h2>
+        <p class="tab-section-subtitle">Isolated impact of individual behavioral parameters and Weeks 1–8 extensive-margin prior-week outlays on 2026 expansion costs.</p>
       </div>
 
       <table class="sim-table" aria-label="Parameter sensitivity table">
         <thead>
           <tr>
-            <th>Behavioral Parameter</th>
+            <th>Behavioral / Structural Parameter</th>
             <th>Base Value</th>
-            <th>Low Value</th>
-            <th>High Value</th>
+            <th>Low Bound</th>
+            <th>High Bound</th>
             <th class="num">Low Cost ($B)</th>
             <th class="num">Base Cost ($B)</th>
             <th class="num">High Cost ($B)</th>
-            <th class="num">Cost Range ($B)</th>
+            <th class="num">Cost Spread ($B)</th>
           </tr>
         </thead>
         <tbody id="sensitivity-table-body">
@@ -823,15 +1057,15 @@
       </table>
 
       <div class="method-notice">
-        <strong>Sensitivity Finding:</strong> Take-up rate accounts for the overwhelming majority of variance ($1.337B spread), ranging from $0.446B at 25% take-up to $1.783B at 100% take-up. Extensive margin variation (5% to 20%) generates an $84M range.
+        <strong>Sensitivity Finding:</strong> Take-up rate accounts for the largest variance ($1.337B spread, from $0.446B at 25% take-up to $1.783B at 100% take-up). If extensive-margin entrants (+39,600 claims in Expected 2026) represent true zero-week non-filers who also claim Weeks 1–8 prior to Weeks 9–12, 2026 gross DI Fund outlays increase by <strong>+$133.7M</strong> (extension-using subset) to <strong>+$348.6M</strong> (all entrants drawing 7.3 baseline weeks), while the DI Fund still maintains a positive <strong>$5.22B–$6.60B</strong> reserve in 2030 at a 1.40% post-2027 rate.
       </div>
     </div>
 
-    <!-- Tab 4: County Impact Explorer -->
+    <!-- Tab 5: County Impact Explorer -->
     <div class="tab-content" id="tab-counties" role="tabpanel">
       <div class="tab-section-header">
-        <h2>58-County Demographic Allocation &amp; Economic Impact</h2>
-        <p class="tab-section-subtitle">Explore projected infant bonding claim volumes and wage replacement dollars delivered to working families across California counties.</p>
+        <h2>58-County Demographic, Live Birth &amp; Economic Impact Explorer</h2>
+        <p class="tab-section-subtitle">Explore projected infant bonding claims, authentic 2024 CDPH resident live births, unique exposed infants, and extended wage replacement delivered to working families across all 58 California counties.</p>
       </div>
 
       <div class="map-controls-bar">
@@ -845,8 +1079,16 @@
           <label for="map-metric">Map Shading:</label>
           <select id="map-metric">
             <option value="dollars">Expanded Wage Replacement ($)</option>
-            <option value="claims">Additional Bonding Claims</option>
+            <option value="claims">Expanded Bonding Claims</option>
+            <option value="infants">Unique Exposed Infants (2024 CDPH Birth Share)</option>
           </select>
+        </div>
+        <div class="quick-presets">
+          <button type="button" class="preset-btn" onclick="selectCountyQuick('Santa Clara')">Santa Clara</button>
+          <button type="button" class="preset-btn" onclick="selectCountyQuick('Los Angeles')">Los Angeles</button>
+          <button type="button" class="preset-btn" onclick="selectCountyQuick('Fresno')">Fresno</button>
+          <button type="button" class="preset-btn" onclick="selectCountyQuick('Alameda')">Alameda</button>
+          <button type="button" class="preset-btn" onclick="selectCountyQuick('San Diego')">San Diego</button>
         </div>
       </div>
 
@@ -855,47 +1097,59 @@
         <div class="map-wrapper" id="svg-map-container">
           <svg role="img" aria-label="California county interactive map" xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 947" stroke-linecap="round" stroke-linejoin="round" id="ca-svg-map">
             <g id="ca-counties">
-              <!-- SVG paths for 58 counties embedded below -->
+              <!-- SVG paths for 58 counties loaded dynamically -->
             </g>
           </svg>
         </div>
 
         <!-- County Dossier Card (Sticky) -->
         <div class="county-dossier" id="county-card" aria-live="polite">
-          <div class="county-dossier-eyebrow">County Demographic Allocation</div>
-          <h3 id="c-name">Fresno County</h3>
+          <div class="county-dossier-eyebrow">County Demographic &amp; Birth Allocation</div>
+          <h3 id="c-name">Santa Clara County</h3>
           <div class="county-stat-row">
-            <span class="county-stat-label">County Population:</span>
-            <span class="county-stat-val" id="c-pop">1,028,120</span>
+            <span class="county-stat-label">County Population (DOF/Census):</span>
+            <span class="county-stat-val" id="c-pop">1,896,214 (4.81% of CA)</span>
           </div>
           <div class="county-stat-row">
-            <span class="county-stat-label">Baseline Claims (Weeks 1&ndash;8):</span>
-            <span class="county-stat-val" id="c-baseline-claims">7,323</span>
+            <span class="county-stat-label">2024 CDPH Resident Live Births:</span>
+            <span class="county-stat-val" id="c-births">18,703 (4.65% of CA)</span>
           </div>
           <div class="county-stat-row">
-            <span class="county-stat-label">Additional Claims (Weeks 9&ndash;12):</span>
-            <span class="county-stat-val" style="color: var(--color-primary);" id="c-exp-claims">+8,201</span>
+            <span class="county-stat-label">Baseline Bonding Claims (Wks 1&ndash;8):</span>
+            <span class="county-stat-val" id="c-baseline-claims">13,949</span>
           </div>
           <div class="county-stat-row">
-            <span class="county-stat-label">New Wage Replacement Benefits:</span>
-            <span class="county-stat-val" style="color: var(--color-secondary);" id="c-dollars">$11.02 Million</span>
+            <span class="county-stat-label">Expanded Bonding Claims (Total):</span>
+            <span class="county-stat-val" style="color: var(--color-primary);" id="c-exp-claims">15,623 (+1,674)</span>
           </div>
-          <div class="county-takeaway">
-            Families in this county receive approximately <strong id="c-summary-highlight">$11.02M</strong> in extended wage replacement during weeks 9&ndash;12 under the active scenario.
+          <div class="county-stat-row">
+            <span class="county-stat-label">Unique Exposed Infants (Wks 9&ndash;12):</span>
+            <span class="county-stat-val" style="color: var(--color-secondary);" id="c-unique-infants">4,593 – 5,446 infants</span>
+          </div>
+          <div class="county-stat-row">
+            <span class="county-stat-label">Gross Public Outlays (Wks 9&ndash;12):</span>
+            <span class="county-stat-val" id="c-gross-dollars">$30.04 Million</span>
+          </div>
+          <div class="county-stat-row">
+            <span class="county-stat-label">Modeled Net Household Benefit:</span>
+            <span class="county-stat-val" style="color: var(--color-secondary);" id="c-dollars">$20.32 Million</span>
+          </div>
+          <div class="county-takeaway" id="c-takeaway-box">
+            Families in this county receive approximately <strong id="c-summary-highlight">$20.32 Million</strong> in net incremental wage replacement ($30.04M gross outlays) during weeks 9&ndash;12 under the active scenario.
           </div>
         </div>
       </div>
 
       <div class="method-notice">
-        <strong>Methodological Note on County Estimates:</strong> Public EDD monthly data reports aggregate statewide claims. County-level figures represent deterministic demographic apportionments based on official California Department of Finance population distributions scaled to verified statewide totals. These estimates illustrate local community impact and should be interpreted as allocated projections, not administrative case counts.
+        <strong>Methodological Note on County Apportionment:</strong> Public EDD monthly series report statewide claim aggregates. County figures combine deterministic population apportionments (2023 DOF/Census county series) with authentic <strong>2024 CDPH Final Live Births by County</strong> (402,192 statewide resident births; 18,703 in Santa Clara County) and 2025 EDD observed bonding claim shares (87.80% bonding; 1.15 co-parent claims per unique infant). For Santa Clara County, the upper bound of 5,446 unique exposed infants incorporates its higher 2023 ACS maternal labor force participation rate (78.55% vs. 66.25% statewide).
       </div>
     </div>
 
     <!-- Documentation & Citation Bar -->
     <div class="doc-bar">
       <div>
-        <div style="font-weight: 700; color: var(--color-primary-dark);">Need statutory references or econometric documentation?</div>
-        <div style="font-size: 0.85rem; color: #555555;">Review the micro-simulation parameters, statutory citations (UIC §3300–3308, §984), and complete methodology.</div>
+        <div style="font-weight: 700; color: var(--color-primary-dark);">Need statutory references, 2023 ACS &amp; 2024 CDPH provenance, or threshold equations?</div>
+        <div style="font-size: 0.85rem; color: #555555;">Review the complete econometric methodology, UIC §2655(d)(3) &amp; §984 formulas, and reverse-calculated public health threshold specifications.</div>
       </div>
       <div>
         <a href="/tools/pfl-simulator/methodology" class="doc-link-btn">Technical Methodology &rarr;</a>
@@ -906,14 +1160,14 @@
 
   <!-- Footer -->
   <footer class="footer" style="margin-top: var(--space-2xl); background: #F8F9FA; border-top: 1px solid var(--color-border); padding: var(--space-xl) 0; font-size: 0.85rem; color: var(--color-text-muted);">
-    <div class="container" style="max-width: 1240px; margin: 0 auto; padding: 0 var(--space-md); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-md);">
+    <div class="container" style="max-width: 1260px; margin: 0 auto; padding: 0 var(--space-md); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-md);">
       <div>
         <div style="font-weight: 700; color: var(--color-primary);">CAPHE - California Association of Public Health Economists</div>
         <div>Advancing rigorous, non-partisan economic evaluation in California public health policy.</div>
       </div>
       <div>
-        <div>Data Sources: California EDD Disability Insurance Fund Forecast (May 2026); Census ACS 2023.</div>
-        <div>Model Version: 2026.1 (Updated October 2026 per SB 951 implementation).</div>
+        <div>Data Sources: CA EDD DI Fund Forecast (May 2026); U.S. Census ACS 2023 (Tables B20001 &amp; B13012); CDPH Final Live Births (2024).</div>
+        <div>Model Version: 2026.2 (Updated November 2026 — Reconciled Solvency, ACS B1–B5 Equity &amp; Postpartum Health Thresholds).</div>
       </div>
     </div>
   </footer>
@@ -922,10 +1176,13 @@
   <script>
     let MODEL_DATA = null;
     let ACTIVE_SCENARIO = 'expected';
+    let ENTRANT_MODE = 'base'; // 'base' | 'subset' | 'all'
+    let EQUITY_CASE = 'case2'; // 'case2' | 'case1'
+    let EQUITY_BASIS = 'net';  // 'net' | 'gross'
+    let ACTIVE_PITIME = 0.5;   // 0, 0.25, 0.5, 0.75, 1.0
     let solvencyChart = null;
     let equityChart = null;
 
-    // Load Model Data from static JSON
     async function initSimulator() {
       try {
         const response = await fetch('/tools/pfl-simulator/data/pfl_model_data.json');
@@ -933,8 +1190,7 @@
       } catch (e) {
         console.error("Failed to load model data from API", e);
       }
-      
-      // Load county SVG into container
+
       try {
         const svgResp = await fetch('/tools/pfl-simulator/ca-counties.svg');
         const svgText = await svgResp.text();
@@ -956,6 +1212,8 @@
       populateCountyDropdown();
       populateEquityTable();
       populatePeerStates();
+      populatePathwayTimeline();
+      populateThresholdTable();
       populateSensitivityTable();
       updateUI();
       renderSolvencyChart();
@@ -963,7 +1221,6 @@
     }
 
     function setupEventListeners() {
-      // Scenario card selection
       document.querySelectorAll('.scenario-card').forEach(card => {
         card.addEventListener('click', () => {
           document.querySelectorAll('.scenario-card').forEach(c => {
@@ -977,7 +1234,6 @@
         });
       });
 
-      // Tabs
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.tab-btn').forEach(b => {
@@ -992,7 +1248,6 @@
           const targetTab = document.getElementById(tabId);
           if (targetTab) targetTab.classList.add('active');
 
-          // Trigger chart render if needed
           if (btn.dataset.tab === 'solvency') {
             setTimeout(renderSolvencyChart, 50);
           } else if (btn.dataset.tab === 'equity') {
@@ -1003,11 +1258,9 @@
         });
       });
 
-      // Wage calculator
       const wageInput = document.getElementById('input-custom-wage');
       wageInput.addEventListener('input', updateWorkerCostCalculation);
 
-      // County selection
       const countySelect = document.getElementById('county-select');
       countySelect.addEventListener('change', () => {
         displayCountyDetails(countySelect.value);
@@ -1018,45 +1271,102 @@
       mapMetric.addEventListener('change', updateMapColors);
     }
 
+    function setEntrantMode(mode) {
+      ENTRANT_MODE = mode;
+      document.querySelectorAll('[data-entrant]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-entrant') === mode);
+      });
+      renderSolvencyChart();
+    }
+
+    function setEquityCase(caseKey) {
+      EQUITY_CASE = caseKey;
+      document.querySelectorAll('[data-eq-case]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-eq-case') === caseKey);
+      });
+      populateEquityTable();
+      renderEquityChart();
+    }
+
+    function setEquityBasis(basisKey) {
+      EQUITY_BASIS = basisKey;
+      document.querySelectorAll('[data-eq-basis]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-eq-basis') === basisKey);
+      });
+      populateEquityTable();
+      renderEquityChart();
+    }
+
+    function setPiTime(val) {
+      ACTIVE_PITIME = val;
+      document.querySelectorAll('[data-pitime]').forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-pitime')) === val);
+      });
+      populateThresholdTable();
+    }
+
+    function selectCountyQuick(countyName) {
+      const sel = document.getElementById('county-select');
+      if (sel) {
+        sel.value = countyName;
+        displayCountyDetails(countyName);
+        highlightMapCounty(countyName);
+      }
+    }
+
     function updateUI() {
       if (!MODEL_DATA) return;
       const sc = MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO];
       if (!sc) return;
 
-      document.getElementById('kpi-net-outlays').innerText = '$' + sc.net_incremental_benefits_millions.toFixed(1) + 'M';
-      document.getElementById('kpi-claims-count').innerText = sc.expanded_claims.toLocaleString() + ' total expanded claims';
+      const bondingShare = MODEL_DATA.bonding_claims_share || 0.87803;
+      const modeledClaimEquiv = Math.round(sc.expanded_claims * sc.take_up_rate);
+      const bondingClaimsEquiv = Math.round(modeledClaimEquiv * bondingShare);
+      const uniqueInfants = Math.round(bondingClaimsEquiv / 1.15);
+
+      document.getElementById('kpi-gross-outlays').innerText = '$' + sc.gross_public_outlays_millions.toFixed(1) + 'M';
+      document.getElementById('kpi-net-outlays').innerText = 'Modeled Net Household Gain: $' + sc.net_incremental_benefits_millions.toFixed(1) + 'M';
+      document.getElementById('kpi-unique-infants').innerText = uniqueInfants.toLocaleString();
+      document.getElementById('kpi-claims-count').innerText = 'Unique infants (' + bondingClaimsEquiv.toLocaleString() + ' bonding claims)';
       document.getElementById('kpi-tax-rate').innerText = (sc.required_sdi_rate * 100).toFixed(3) + '%';
-      document.getElementById('kpi-rate-adj').innerText = '+' + sc.rate_increase_percentage_points.toFixed(3) + '% over baseline (1.30%)';
+      document.getElementById('kpi-rate-adj').innerText = '+' + sc.rate_increase_percentage_points.toFixed(3) + ' pp over 1.30% baseline';
       document.getElementById('kpi-worker-cost').innerText = '$' + sc.cost_per_100k_wages.toFixed(2);
       document.getElementById('kpi-monthly-cost').innerText = '~$' + (sc.cost_per_100k_wages / 12).toFixed(2) + ' per month';
 
       const cum = MODEL_DATA.six_year_cumulative_outlays_billions[ACTIVE_SCENARIO];
-      document.getElementById('kpi-cumulative').innerText = '$' + cum.toFixed(2) + 'B';
+      const bal2030Arr = MODEL_DATA.fund_trajectories[ACTIVE_SCENARIO + '_fund_balance'];
+      const rr2030Arr = MODEL_DATA.fund_trajectories[ACTIVE_SCENARIO + '_reserve_ratio'];
+      const bal2030 = bal2030Arr ? bal2030Arr[bal2030Arr.length - 1] : 7.46;
+      const rr2030 = rr2030Arr ? (rr2030Arr[rr2030Arr.length - 1] * 100).toFixed(1) : '35.4';
+
+      document.getElementById('kpi-reserve-2030').innerText = (bal2030 < 0 ? '-$' + Math.abs(bal2030).toFixed(2) : '$' + bal2030.toFixed(2)) + 'B';
+      document.getElementById('kpi-cumulative').innerText = rr2030 + '% reserve ratio ($' + cum.toFixed(2) + 'B 6-yr outlays)';
 
       const stripEl = document.getElementById('scenario-context-strip');
       if (stripEl) {
         let scDesc = '';
         if (ACTIVE_SCENARIO === 'floor') {
-          scDesc = 'Conservative Floor &mdash; Minimal behavioral response (25% take-up, 5% extensive margin, 50% employer crowd-out).';
+          scDesc = 'Conservative Floor (25% take-up, 5% extensive margin, 50% employer substitution)';
         } else if (ACTIVE_SCENARIO === 'expected') {
-          scDesc = 'Expected Central Benchmark &mdash; Empirical evidence consensus (35% take-up, 12% extensive margin, 30% employer crowd-out).';
+          scDesc = 'Expected Central Benchmark (35% take-up, 12% extensive margin, 30% employer substitution)';
         } else {
-          scDesc = 'Ceiling Stress Test &mdash; Full theoretical exposure (100% take-up, 20% extensive margin, 0% private crowd-out).';
+          scDesc = 'Ceiling Stress Test (100% take-up, 20% extensive margin, 0% employer substitution)';
         }
-        stripEl.innerHTML = `<strong>Active Scenario:</strong> ${scDesc} Projected annual net outlays: <strong>+$${sc.net_incremental_benefits_millions.toFixed(1)}M</strong>; required SDI tax adjustment: <strong>+${sc.rate_increase_percentage_points.toFixed(3)}%</strong> (1.300% &rarr; ${(sc.required_sdi_rate * 100).toFixed(3)}%).`;
+        stripEl.innerHTML = `<strong>Active Scenario:</strong> ${scDesc} &mdash; <strong>$${sc.gross_public_outlays_millions.toFixed(1)}M</strong> gross DI Fund outlays (<strong>$${sc.net_incremental_benefits_millions.toFixed(1)}M</strong> modeled net incremental worker benefits), <strong>${modeledClaimEquiv.toLocaleString()}</strong> 4-week extension claim-equivalents (<strong>${uniqueInfants.toLocaleString()}</strong> unique exposed infants), and a <strong>+${sc.rate_increase_percentage_points.toFixed(3)} pp</strong> full-funding SDI rate adjustment.`;
       }
 
       updateWorkerCostCalculation();
       renderSolvencyChart();
       updateMapColors();
 
-      const currentCounty = document.getElementById('county-select').value || 'Fresno';
+      const currentCounty = document.getElementById('county-select').value || 'Santa Clara';
       displayCountyDetails(currentCounty);
+      highlightMapCounty(currentCounty);
     }
 
     function updateWorkerCostCalculation() {
       const wage = parseFloat(document.getElementById('input-custom-wage').value) || 0;
-      let rateHike = 0.00045; // default Expected
+      let rateHike = 0.00045;
 
       if (MODEL_DATA && MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO]) {
         rateHike = MODEL_DATA.expansion_scenarios[ACTIVE_SCENARIO].rate_increase_percentage_points / 100;
@@ -1076,7 +1386,16 @@
       const years = MODEL_DATA.fund_trajectories.years;
       const reserveTarget = MODEL_DATA.fund_trajectories.edd_reserve_target_25pct;
       const baseline = MODEL_DATA.fund_trajectories.baseline_fund_balance;
-      const activeTrajectory = MODEL_DATA.fund_trajectories[ACTIVE_SCENARIO + '_fund_balance'] || MODEL_DATA.fund_trajectories.expected_fund_balance;
+      let activeTrajectory = MODEL_DATA.fund_trajectories[ACTIVE_SCENARIO + '_fund_balance'] || MODEL_DATA.fund_trajectories.expected_fund_balance;
+      let activeLabel = 'Active Scenario Balance (' + ACTIVE_SCENARIO.toUpperCase() + ' — Weeks 9–12 Gross Outlays)';
+
+      if (ACTIVE_SCENARIO === 'expected' && ENTRANT_MODE === 'subset' && MODEL_DATA.fund_trajectories.expected_with_entrant_subset_fund_balance) {
+        activeTrajectory = MODEL_DATA.fund_trajectories.expected_with_entrant_subset_fund_balance;
+        activeLabel = 'Expected + Extension-Using Entrant Weeks 1–8 (+$133.7M in 2026)';
+      } else if (ACTIVE_SCENARIO === 'expected' && ENTRANT_MODE === 'all' && MODEL_DATA.fund_trajectories.expected_with_entrant_all_fund_balance) {
+        activeTrajectory = MODEL_DATA.fund_trajectories.expected_with_entrant_all_fund_balance;
+        activeLabel = 'Expected + All Entrant Weeks 1–8 (+$348.6M in 2026)';
+      }
 
       if (solvencyChart) {
         solvencyChart.destroy();
@@ -1098,7 +1417,7 @@
               tension: 0.1
             },
             {
-              label: 'Baseline Fund Balance (No Expansion)',
+              label: 'Baseline Fund Balance (No Expansion — EDD May 2026 Table 1)',
               data: baseline,
               borderColor: '#9E9E9E',
               borderWidth: 2,
@@ -1107,7 +1426,7 @@
               tension: 0.1
             },
             {
-              label: 'Active Scenario Balance (' + ACTIVE_SCENARIO.toUpperCase() + ')',
+              label: activeLabel,
               data: activeTrajectory,
               borderColor: ACTIVE_SCENARIO === 'ceiling' ? '#C62828' : '#0041A5',
               backgroundColor: ACTIVE_SCENARIO === 'ceiling' ? 'rgba(198,40,40,0.08)' : 'rgba(0,65,165,0.08)',
@@ -1133,7 +1452,7 @@
           },
           scales: {
             y: {
-              title: { display: true, text: 'Fund Balance ($ Billions)', font: { weight: 'bold' } },
+              title: { display: true, text: 'Ending Fund Balance ($ Billions)', font: { weight: 'bold' } },
               grid: { color: '#EEEEEE' }
             },
             x: {
@@ -1146,15 +1465,20 @@
 
     function renderEquityChart() {
       const ctx = document.getElementById('chart-equity');
-      if (!ctx || !MODEL_DATA) return;
+      if (!ctx || !MODEL_DATA || !MODEL_DATA.equity_brackets_summary) return;
 
-      const labels = MODEL_DATA.equity_quintiles.map(q => q.quintile + ' (' + q.wage_range + ')');
-      const contribShares = MODEL_DATA.equity_quintiles.map(q => q.sdi_contribution_share_pct);
-      const benefitShares = MODEL_DATA.equity_quintiles.map(q => q.expansion_benefit_share_pct);
+      const brackets = MODEL_DATA.equity_brackets_summary.brackets;
+      const labels = brackets.map(b => b.bracket_id + ' (' + b.bracket_label + ')');
+      const contribShares = brackets.map(b => +(b.contribution_share * 100).toFixed(1));
+      const shareKey = `${EQUITY_CASE}_${EQUITY_BASIS}_benefit_share`;
+      const benefitShares = brackets.map(b => +(b[shareKey] * 100).toFixed(1));
 
       if (equityChart) {
         equityChart.destroy();
       }
+
+      const caseLabel = EQUITY_CASE === 'case2' ? 'Case 2 (SB 951 Access)' : 'Case 1 (Historical Skew)';
+      const basisLabel = EQUITY_BASIS === 'net' ? 'Calibrated Net ($422.0M)' : 'Gross Statutory ($602.8M)';
 
       equityChart = new Chart(ctx, {
         type: 'bar',
@@ -1162,15 +1486,15 @@
           labels: labels,
           datasets: [
             {
-              label: 'SDI Tax Contribution Share (%)',
+              label: 'SDI Payroll Tax Contribution Share (%)',
               data: contribShares,
-              backgroundColor: '#B0BEC5',
+              backgroundColor: '#94A3B8',
               borderRadius: 4
             },
             {
-              label: 'PFL Expansion Benefit Share (%)',
+              label: `PFL Expansion Benefit Share (%) — ${caseLabel}, ${basisLabel}`,
               data: benefitShares,
-              backgroundColor: '#0D9488',
+              backgroundColor: EQUITY_BASIS === 'net' ? '#0D9488' : '#0041A5',
               borderRadius: 4
             }
           ]
@@ -1184,8 +1508,13 @@
               callbacks: {
                 afterBody: function(items) {
                   const idx = items[0].dataIndex;
-                  const q = MODEL_DATA.equity_quintiles[idx];
-                  return 'Wage Replacement Tier: ' + q.wage_replacement_rate_pct + '%\nNet Benefit Increase: +$' + q.net_annual_position_millions.toFixed(1) + 'M';
+                  const b = brackets[idx];
+                  const dolKey = `${EQUITY_CASE}_${EQUITY_BASIS}_benefit_millions`;
+                  const ratioKey = `${EQUITY_CASE}_ratio_${EQUITY_BASIS}`;
+                  return [
+                    `Statutory Weekly Benefit: $${b.weekly_benefit_dollars.toFixed(2)} (${(b.effective_replacement_rate * 100).toFixed(1)}% eff. rate)`,
+                    `Benefit Dollars: $${b[dolKey].toFixed(2)}M | Benefit-to-Tax Ratio (Rb): ${b[ratioKey].toFixed(2)}x`
+                  ];
                 }
               }
             }
@@ -1201,25 +1530,142 @@
     }
 
     function populateEquityTable() {
-      if (!MODEL_DATA) return;
+      if (!MODEL_DATA || !MODEL_DATA.equity_brackets_summary) return;
       const tbody = document.getElementById('equity-table-body');
       tbody.innerHTML = '';
 
-      MODEL_DATA.equity_quintiles.forEach(q => {
+      const eqSum = MODEL_DATA.equity_brackets_summary;
+      const idxObj = eqSum.distributional_indices;
+      const archMap = {};
+      if (MODEL_DATA.public_health_exposure && MODEL_DATA.public_health_exposure.component_b_household_archetypes) {
+        MODEL_DATA.public_health_exposure.component_b_household_archetypes.forEach(a => {
+          archMap[a.bracket_id] = a;
+        });
+      }
+
+      const cT = idxObj.C_contributions.toFixed(3);
+      const cB = idxObj[`C_${EQUITY_BASIS}_benefits_${EQUITY_CASE}`].toFixed(3);
+      const dC = idxObj[`redistribution_index_${EQUITY_BASIS}_${EQUITY_CASE}`].toFixed(3);
+      const caseTitle = EQUITY_CASE === 'case2'
+        ? 'Case 2 (SB 951 + 12-Week Access Boost)'
+        : 'Case 1 (Historical Lower-Income Under-Utilization)';
+      const basisTitle = EQUITY_BASIS === 'net'
+        ? 'Calibrated Substitution-Adjusted Net ($422.0M, where Net < Gross in every bracket)'
+        : 'Gross Statutory DI Fund Benefits ($602.8M)';
+
+      const banner = document.getElementById('equity-indices-banner');
+      if (banner) {
+        banner.innerHTML = `<strong>Active Distributional Specification:</strong> ${caseTitle} &bull; ${basisTitle}.<br>
+        <strong>Concentration Indices:</strong> Payroll Tax Contributions <code>C<sub>T</sub> = +${cT}</code> vs. Expansion Benefits <code>C<sub>B</sub> = +${cB}</code> &rarr; <strong>Net Progressivity / Redistribution Index <code>&Delta;C = C<sub>T</sub> &minus; C<sub>B</sub> = +${dC}</code></strong> (positive values indicate progressive redistribution toward lower- and middle-wage earners relative to uncapped SDI payroll tax contributions).`;
+      }
+
+      eqSum.brackets.forEach(b => {
+        const arch = archMap[b.bracket_id] || {};
+        const gap4wk = arch.four_week_unreplaced_wage_gap !== undefined ? arch.four_week_unreplaced_wage_gap : 0;
+        const shareVal = b[`${EQUITY_CASE}_${EQUITY_BASIS}_benefit_share`] * 100;
+        const dolVal = b[`${EQUITY_CASE}_${EQUITY_BASIS}_benefit_millions`];
+        const ratioVal = b[`${EQUITY_CASE}_ratio_${EQUITY_BASIS}`];
+        const ratioColor = ratioVal >= 1.0 ? 'var(--color-success)' : '#475569';
+        const effRatePct = (b.effective_replacement_rate * 100).toFixed(1);
+
         const tr = document.createElement('tr');
-        const netPos = q.net_position_change_millions;
-        const netColor = netPos >= 0 ? 'var(--color-success)' : 'var(--color-error)';
-        const netSign = netPos >= 0 ? '+' : '';
         tr.innerHTML = `
-          <td><strong>${q.quintile}</strong></td>
-          <td>${q.wage_range}</td>
-          <td class="num">${q.worker_share_pct.toFixed(1)}%</td>
-          <td class="num">${q.sdi_contribution_share_pct.toFixed(1)}%</td>
-          <td class="num" style="color: var(--color-secondary); font-weight: 700;">${q.expansion_benefit_share_pct.toFixed(1)}%</td>
-          <td class="num"><span style="background: ${q.wage_replacement_rate_pct === 90 ? '#E8F5E9' : '#EDE7F6'}; color: ${q.wage_replacement_rate_pct === 90 ? '#2E7D32' : '#512DA8'}; padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 700;">${q.wage_replacement_rate_pct}%</span></td>
-          <td class="num">+$${q.gross_benefit_increase_millions.toFixed(1)}M</td>
-          <td class="num">-$${q.added_sdi_contribution_millions.toFixed(1)}M</td>
-          <td class="num" style="font-weight: 700; color: ${netColor};">${netSign}$${netPos.toFixed(1)}M</td>
+          <td><strong>${b.bracket_id}</strong></td>
+          <td>${b.bracket_label} <span style="color:#64748B; font-size:0.8rem;">($${(b.representative_annual_wage/1000).toFixed(0)}k rep.)</span></td>
+          <td class="num">${(b.ca_worker_share * 100).toFixed(1)}%</td>
+          <td class="num">${(b.scc_worker_share * 100).toFixed(1)}%</td>
+          <td class="num">${(b.contribution_share * 100).toFixed(1)}%</td>
+          <td class="num"><strong>$${b.weekly_benefit_dollars.toFixed(2)}</strong> <span style="font-size:0.78rem; color:#0D9488;">(${effRatePct}%)</span></td>
+          <td class="num">$${Math.round(gap4wk).toLocaleString()}</td>
+          <td class="num" style="color: var(--color-primary); font-weight: 700;">${shareVal.toFixed(1)}%</td>
+          <td class="num"><strong>$${dolVal.toFixed(2)}M</strong></td>
+          <td class="num" style="font-weight: 700; color: ${ratioColor};">${ratioVal.toFixed(2)}x</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populatePathwayTimeline() {
+      const container = document.getElementById('pathway-timeline-container');
+      if (!container || !MODEL_DATA || !MODEL_DATA.public_health_exposure) return;
+      container.innerHTML = '';
+
+      const pathways = MODEL_DATA.public_health_exposure.component_a_postpartum_pathways || [];
+      const maxWeeks = 32;
+
+      pathways.forEach(p => {
+        const sdiWks = p.sdi_weeks;
+        const curEnd = p.infant_age_end_current_weeks;
+        const expEnd = p.infant_age_end_expanded_weeks;
+        const curPflAfterSdi = curEnd - sdiWks;
+        const addedWks = expEnd - curEnd;
+
+        const sdiPct = (sdiWks / maxWeeks) * 100;
+        const curPflPct = (curPflAfterSdi / maxWeeks) * 100;
+        const addedPct = (addedWks / maxWeeks) * 100;
+        const m4Pct = (17.3 / maxWeeks) * 100;
+        const m6Pct = (26.0 / maxWeeks) * 100;
+
+        const row = document.createElement('div');
+        row.className = 'pathway-row';
+        row.innerHTML = `
+          <div class="pathway-header">
+            <span class="pathway-title">${p.pathway_name}</span>
+            <span class="pathway-badge">Infant Age at Return: Wk ${curEnd} (${p.infant_age_end_current_months} mo) &rarr; Wk ${expEnd} (${p.infant_age_end_expanded_months} mo)</span>
+          </div>
+          <div class="timeline-track-wrapper" title="${p.clinical_window_reached}">
+            <div class="seg-sdi" style="width:${sdiPct}%;">SDI (${sdiWks}w)</div>
+            <div class="seg-pfl-base" style="width:${curPflPct}%;">Current PFL (to Wk ${curEnd})</div>
+            <div class="seg-pfl-added" style="width:${addedPct}%;">+Expanded Wks 9–12 (to Wk ${expEnd})</div>
+            <div class="milestone-marker" style="left:${m4Pct}%;" title="4-Month CDC Immunization Visit (~17.3 wks)"></div>
+            <div class="milestone-marker" style="left:${m6Pct}%;" title="6-Month CDC Immunization Visit (~26.0 wks)"></div>
+          </div>
+          <div class="pathway-meta">
+            <span><strong>Clinical Milestone:</strong> ${p.clinical_window_reached}</span>
+            <span style="color:#C62828; font-weight:600;">Vertical Markers: 4-Mo Visit (Wk 17.3) &amp; 6-Mo Visit (Wk 26.0)</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function populateThresholdTable() {
+      const tbody = document.getElementById('threshold-table-body');
+      if (!tbody || !MODEL_DATA || !MODEL_DATA.public_health_exposure) return;
+      tbody.innerHTML = '';
+
+      const rows = (MODEL_DATA.public_health_exposure.component_c_outcome_thresholds || []).filter(
+        r => Math.abs(r.pi_time - ACTIVE_PITIME) < 0.001
+      );
+
+      rows.forEach(r => {
+        const isBf = r.outcome_name.includes('Breastfeeding');
+        const perInfantStr = isBf
+          ? `+${r.required_abs_change_per_exposed_infant_pp.toFixed(2)} pp`
+          : `-${r.required_abs_change_per_exposed_infant_pp.toFixed(3)} pp (${r.required_cohort_rrr_pct.toFixed(1)}% RRR)`;
+
+        let perWeekStr = 'N/A (Income/Stress Pathway Only)';
+        if (r.pi_time > 0) {
+          perWeekStr = isBf
+            ? `+${r.required_abs_change_per_paid_bonding_week_pp.toFixed(2)} pp / added bonding wk`
+            : `-${r.required_rrr_per_paid_bonding_week_pct.toFixed(2)}% RRR / added bonding wk`;
+        }
+
+        const badgeColor = r.status.includes('Within') ? '#E8F5E9' : (r.status.includes('Undefined') ? '#F1F5F9' : '#FFF8E1');
+        const textColor = r.status.includes('Within') ? '#2E7D32' : (r.status.includes('Undefined') ? '#475569' : '#B45309');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${r.outcome_name}</strong></td>
+          <td class="num"><strong>${isBf ? '+' : '-'}${r.target_cases.toLocaleString()} infants</strong></td>
+          <td class="num">${r.effective_added_weeks_per_claim.toFixed(1)} wks</td>
+          <td class="num">${Math.round(r.total_added_paid_bonding_weeks).toLocaleString()} wks</td>
+          <td class="num"><strong>${perInfantStr}</strong></td>
+          <td class="num" style="color: var(--color-primary); font-weight: 700;">${perWeekStr}</td>
+          <td>
+            <span style="display:inline-block; background:${badgeColor}; color:${textColor}; font-weight:700; font-size:0.78rem; padding:0.15rem 0.5rem; border-radius:3px; margin-bottom:0.2rem;">${r.status}</span>
+            <div style="font-size:0.78rem; color:#64748B;">${r.historical_benchmark_citation}: ${r.historical_benchmark_value}</div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -1234,9 +1680,9 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${s.parameter_name}</strong></td>
-          <td>${(s.base_value * 100).toFixed(0)}%</td>
-          <td>${(s.low_value * 100).toFixed(0)}%</td>
-          <td>${(s.high_value * 100).toFixed(0)}%</td>
+          <td>${(s.base_value * 100).toFixed(1)}%</td>
+          <td>${(s.low_value * 100).toFixed(1)}%</td>
+          <td>${(s.high_value * 100).toFixed(1)}%</td>
           <td class="num">$${s.low_cost_billions.toFixed(3)}B</td>
           <td class="num">$${s.base_cost_billions.toFixed(3)}B</td>
           <td class="num">$${s.high_cost_billions.toFixed(3)}B</td>
@@ -1265,7 +1711,7 @@
           <td><strong>${s.state}</strong></td>
           <td><strong>${s.duration_weeks} Weeks</strong></td>
           <td>${s.wage_replacement}</td>
-          <td class="num"><strong>$${s.max_weekly_benefit}</strong></td>
+          <td class="num"><strong>$${s.max_weekly_benefit.toLocaleString()}</strong></td>
           <td class="num">${s.payroll_tax_rate_pct}%</td>
           <td>${s.funding_share}</td>
           <td style="font-size: 0.82rem; color: #475569;">${s.notes}</td>
@@ -1284,7 +1730,7 @@
         const opt = document.createElement('option');
         opt.value = name;
         opt.textContent = name + ' County';
-        if (name === 'Fresno') opt.selected = true;
+        if (name === 'Santa Clara') opt.selected = true;
         select.appendChild(opt);
       });
     }
@@ -1296,16 +1742,43 @@
 
       document.getElementById('c-name').innerText = c.name + ' County';
       document.getElementById('c-pop').innerText = c.population.toLocaleString() + ' (' + (c.population_share * 100).toFixed(2) + '% of CA)';
+
+      const births = c.cdph_2024_resident_births || 0;
+      const birthSharePct = ((c.cdph_2024_birth_share || 0) * 100).toFixed(2);
+      document.getElementById('c-births').innerText = births.toLocaleString() + ' (' + birthSharePct + '% of CA)';
+
       document.getElementById('c-baseline-claims').innerText = c.baseline_bonding_claims.toLocaleString();
 
       const expClaims = c.expansion_bonding_claims[ACTIVE_SCENARIO] || c.expansion_bonding_claims.expected;
       const diffClaims = expClaims - c.baseline_bonding_claims;
       document.getElementById('c-exp-claims').innerText = expClaims.toLocaleString() + ' (+' + diffClaims.toLocaleString() + ')';
 
+      const infantsBirth = c.unique_exposed_infants_birth_share
+        ? (c.unique_exposed_infants_birth_share[ACTIVE_SCENARIO] || c.unique_exposed_infants_birth_share.expected)
+        : Math.round(expClaims * 0.35 / 1.15);
+
+      if (countyName === 'Santa Clara' && ACTIVE_SCENARIO === 'expected' && c.scc_lfp_adjusted_unique_infants_expected) {
+        document.getElementById('c-unique-infants').innerText = `${infantsBirth.toLocaleString()} (birth share) – ${c.scc_lfp_adjusted_unique_infants_expected.toLocaleString()} (LFP-adj.)`;
+      } else {
+        document.getElementById('c-unique-infants').innerText = `${infantsBirth.toLocaleString()} infants`;
+      }
+
+      const grossK = c.expanded_gross_outlays_thousands
+        ? (c.expanded_gross_outlays_thousands[ACTIVE_SCENARIO] || c.expanded_gross_outlays_thousands.expected)
+        : 0;
+      const grossFormatted = grossK >= 1000 ? '$' + (grossK / 1000).toFixed(2) + ' Million' : '$' + Math.round(grossK).toLocaleString() + ' Thousand';
+      document.getElementById('c-gross-dollars').innerText = grossFormatted;
+
       const dollarsK = c.expanded_benefit_dollars_thousands[ACTIVE_SCENARIO] || c.expanded_benefit_dollars_thousands.expected;
       const dollarsFormatted = dollarsK >= 1000 ? '$' + (dollarsK / 1000).toFixed(2) + ' Million' : '$' + Math.round(dollarsK).toLocaleString() + ' Thousand';
       document.getElementById('c-dollars').innerText = dollarsFormatted;
-      document.getElementById('c-summary-highlight').innerText = dollarsFormatted;
+
+      const takeawayBox = document.getElementById('c-takeaway-box');
+      if (countyName === 'Santa Clara') {
+        takeawayBox.innerHTML = `<strong>Santa Clara County Spotlight:</strong> With <strong>18,703</strong> resident live births (2024 CDPH) and a <strong>78.55%</strong> maternal labor force participation rate (vs. 66.25% statewide in 2023 ACS Table B13012), Santa Clara County accounts for <strong>4,593 to 5,446 unique exposed infants</strong> and <strong>${dollarsFormatted}</strong> in modeled net household benefit (${grossFormatted} gross outlays). Because 41.0% of SCC workers earn $100,000+ (B5), local public health gains are concentrated among the 45.7% of SCC workers earning under $65,000 (B1–B3) who qualify for 90% wage replacement.`;
+      } else {
+        takeawayBox.innerHTML = `Working families in <strong>${c.name} County</strong> (2024 CDPH resident live births: <strong>${births.toLocaleString()}</strong>) receive approximately <strong>${dollarsFormatted}</strong> in modeled net wage replacement (<strong>${grossFormatted}</strong> in gross DI Fund outlays) across <strong>${infantsBirth.toLocaleString()}</strong> unique exposed infants during weeks 9&ndash;12 under the active scenario.`;
+      }
     }
 
     function setupMapInteractivity() {
@@ -1344,16 +1817,23 @@
     function updateMapColors() {
       if (!MODEL_DATA || !MODEL_DATA.counties) return;
       const metric = document.getElementById('map-metric').value;
-      const maxVal = metric === 'dollars' ? 105529 : 80000; // LA benchmark
+      const maxVal = metric === 'dollars' ? 105529 : (metric === 'infants' ? 23500 : 80000);
 
       document.querySelectorAll('#ca-svg-map path').forEach(path => {
         const name = path.getAttribute('data-county');
         const c = MODEL_DATA.counties[name];
         if (!c) return;
 
-        const val = metric === 'dollars' ? 
-          (c.expanded_benefit_dollars_thousands[ACTIVE_SCENARIO] || c.expanded_benefit_dollars_thousands.expected) :
-          (c.expansion_bonding_claims[ACTIVE_SCENARIO] || c.expansion_bonding_claims.expected);
+        let val = 0;
+        if (metric === 'dollars') {
+          val = c.expanded_benefit_dollars_thousands[ACTIVE_SCENARIO] || c.expanded_benefit_dollars_thousands.expected;
+        } else if (metric === 'infants') {
+          val = c.unique_exposed_infants_birth_share
+            ? (c.unique_exposed_infants_birth_share[ACTIVE_SCENARIO] || c.unique_exposed_infants_birth_share.expected)
+            : 0;
+        } else {
+          val = c.expansion_bonding_claims[ACTIVE_SCENARIO] || c.expansion_bonding_claims.expected;
+        }
 
         const ratio = Math.min(Math.max(val / maxVal, 0.05), 1.0);
         const lightness = Math.round(92 - (ratio * 55));

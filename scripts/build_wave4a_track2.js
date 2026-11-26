@@ -27,69 +27,69 @@ const modules = [
         visibleLabel: 'Silicon Valley Working-Poor Tract Estimate',
         title: 'When Work Isn\'t Enough: A Working-Poor Estimate Under Review',
         url: 'https://tooearlytosay.com/research/food-security/working-poor-silicon-valley/',
-        claimCovered: 'Article-reported count of 57 Santa Clara tracts with employment above 60% and poverty above 10% across 408 tracts, plus housing-cost benchmarks; not publicly reproduced.'
+        claimCovered: 'The article reports that 57 of 408 Santa Clara tracts have work rates above 60% and poverty above 10%. It also gives housing-cost estimates; not publicly reproduced.'
       },
       {
-        visibleLabel: 'Census ACS API Pipeline in Python',
+        visibleLabel: 'Requesting and Checking Census ACS Data in Python',
         title: 'How to Build a Census Data Pipeline',
         url: 'https://tooearlytosay.com/research/methodology/census-api-pipeline/',
-        claimCovered: 'Python walkthrough for pulling 2022 ACS 5-year tract estimates through the Census API, with key handling, rate limits, and checks for suppressed or nonnumeric values.'
+        claimCovered: 'A guide to using Python to request 2022 ACS 5-year tract data from the Census service. It explains access keys, rate limits, and missing-value checks.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Poverty &amp; Affordability Denominators (Mode B Area Medians + Mode A Benchmark)',
-    pageTitle: 'What Is Lost Across Poverty Measures? | CAPHE Case Studies',
-    metaDescription: 'Compare gross-income poverty cutoffs against post-rent food budget shares ($973/mo Thrifty Food Plan) across four California Census ACS communities.',
-    h1: 'Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs',
-    subtitle: 'We compare family food plans before and after local rent across four community types.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Income Before Rent vs. Food Money After Rent',
+    pageTitle: 'Pre-Rent Income Limits & Post-Rent Food Costs | CAPHE',
+    metaDescription: 'Compare income before rent with money left after rent in four California areas, and see what share pays for a $973 monthly food plan.',
+    h1: 'Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits',
+    subtitle: 'Checking food cost shares before and after rent across four city, inland, and rural areas.',
     endnotes: [
-      '<a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: FY 2024 SNAP Cost-of-Living Adjustments &amp; Thrifty Food Plan ($973/month maximum four-person allotment).',
-      '<a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: 2019&ndash;2023 American Community Survey (ACS) 5-Year Detailed Tables (<code>B19013</code> Median Household Income &amp; <code>B25064</code> Median Gross Rent).',
-      '<a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Department of Health and Human Services (HHS)</a>: 2023 Federal Poverty Guidelines ($2,500/month four-person baseline; 130% = $3,250/mo; 200% = $5,000/mo).'
+      '<a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: 2024 food benefit cost updates and the $973 monthly food plan for four people.',
+      '<a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: 2019&ndash;2023 five-year survey tables for median pay (<code>B19013</code>) and median rent (<code>B25064</code>).',
+      '<a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Department of Health and Human Services (HHS)</a>: 2023 poverty rules ($2,500 per month for four people; 130% = $3,250; 200% = $5,000).'
     ],
-    policySettingHtml: 'Federal food aid cutoffs use one gross income line across all 48 contiguous states. In high-rent California neighborhoods, families pay rent first and buy groceries from whatever cash remains. Comparing pre-rent and post-rent budgets shows why working renter families above federal poverty cutoffs still face severe food strain.',
-    answerHtml: 'When screening families for food aid by gross pay alone, a county leaves out high rent costs in areas like Marin County\'s Canal neighborhood, where typical monthly pay sits above federal poverty cutoffs while local rent takes more than two-fifths of pay [1,2]. Taking rent (<strong>$2,318</strong>) from monthly pay (<strong>$5,507</strong>) shifts a four-person food plan (<strong>$973</strong>) from <strong>17.7%</strong> of gross pay to <strong>30.5%</strong> of post-rent pay [1,2]. Checking post-rent pay across four local areas helps teams pair CalFresh shelter rules with clinic food scripts [2,3].',
+    policySettingHtml: 'Gross income is income before taxes and other deductions, while post-rent cash is money left after rent. CalFresh is California\'s Supplemental Nutrition Assistance Program (SNAP). For most homes with working-age adults, CalFresh first checks if gross pay is at or below 200% of the Federal Poverty Level (FPL). Rent deductions apply in a later check. This study subtracts each area\'s median rent from its median pay, where a median is the middle value. These area estimates compare food cost shares across places rather than showing which homes qualify.',
+    answerHtml: 'Food takes a large share of estimated money left after rent even where median pay exceeds federal poverty limits [2,3]. In Marin\'s Canal tract (1122.03), median pay across all homes is <strong>$5,507 per month</strong> [2]. That equals <strong>220%</strong> of four-person <strong>FPL</strong>, above the 200% FPL four-person limit [2,3]. Subtracting <strong>$2,318</strong> median rent (<strong>42.1%</strong> of area pay) leaves <strong>$3,189</strong> in estimated money after rent [2]. Against those tract medians, the U.S. Department of Agriculture (USDA) <strong>$973</strong> monthly food plan for four people takes <strong>17.7%</strong> of pay before rent [1,2]. After rent, that plan takes <strong>30.5%</strong> of money left and leaves <strong>$2,216</strong> [1,2]. Post-rent food shares reach <strong>46.4%</strong> in Central Fresno versus <strong>17.9%</strong> in Nevada County and <strong>9.3%</strong> in Santa Clara [1,2]. Counties can pair these estimates with store miles to place produce vouchers, CalFresh help, and Electronic Benefit Transfer (EBT) delivery [1,3].',
     block2: {
-      title: 'Same $973 Monthly Grocery Bill, Two Different Denominators (Marin Canal Neighborhood)',
-      contextTag: '2019-2023 Census ACS Area Medians + Post-Rent Budget Benchmark',
-      ariaLabel: 'Comparison of Gross vs. Post-Rent Food Share in Marin County Canal District: 17.7% of $5,507 median household income before rent versus 30.5% of $3,189 modeled income after subtracting $2,318 median rent',
+      title: 'Food Share Before Rent vs. After Rent (Marin Canal Tract 1122.03)',
+      contextTag: 'Area Median Pay and Rent From 2019-2023 Census Data',
+      ariaLabel: 'Comparison of food share before and after rent in Marin County Canal Tract 1122.03',
       ruler1: {
-        title: 'Ruler 1: Before Rent ($973 / $5,507 Pre-Rent Monthly Pay)',
+        title: 'Before Rent ($973 / $5,507 Monthly Pay)',
         stat: '17.7% Pre-Rent Share (220% FPL)',
-        ariaLabel: 'Before rent: $973 food plan out of $5,507 ACS median monthly household income, a 17.7% share, leaving $4,534',
+        ariaLabel: 'Before rent: $973 food plan out of $5,507 median monthly pay',
         segments: [
           { cls: 'seg-food', width: 18, label: 'Food Plan: $973 (17.7%)' },
-          { cls: 'seg-gross', width: 82, label: 'Remaining Pre-Rent: $4,534 (82.3%)' }
+          { cls: 'seg-gross', width: 82, label: 'Left Before Rent: $4,534 (82.3%)' }
         ],
-        desc: 'Out of <strong>$5,507</strong> in typical monthly pay (<strong>220% FPL</strong>), a $973 food bill takes <strong>17.7%</strong> before rent.'
+        desc: 'Before rent, the $973 food plan takes 17.7% of the $5,507 area pay estimate.'
       },
       ruler2: {
-        title: 'Ruler 2: After Rent ($973 / $3,189 Post-Rent Monthly Pay)',
+        title: 'After Rent ($973 / $3,189 Money Left After Rent)',
         stat: '30.5% Post-Rent Share (-$2,318 Rent)',
-        ariaLabel: 'Modeled after-rent benchmark: $2,318 median monthly rent subtracted first, $973 food plan equal to 30.5% of the $3,189 post-rent income',
+        ariaLabel: 'After subtracting $2,318 rent, $973 equals 30.5% of $3,189 left after rent',
         segments: [
           { cls: 'seg-rent', width: 42, label: 'Rent: 42.1% ($2,318)' },
           { cls: 'seg-food', width: 18, label: 'Food: 30.5% ($973)' },
-          { cls: 'seg-rest', width: 40, label: 'Remaining: $2,216' }
+          { cls: 'seg-rest', width: 40, label: 'Left: $2,216' }
         ],
-        desc: 'Taking out <strong>$2,318</strong> in monthly rent leaves <strong>$3,189</strong>. The $973 food plan takes <strong>30.5%</strong> of what is left (+12.8 pp).'
+        desc: 'Subtracting $2,318 median rent leaves $3,189, so $973 takes 30.5% of money left.'
       }
     },
     table1: {
-      title: 'Table 1. Monthly Pay, Rent Share, and Food Plans by Local Area',
-      subtitle: 'We compare monthly pay, rent share, and left-over food cash for a family of four.',
-      caption: 'Table 1: Comparison of monthly median pay, share of income spent on monthly rent, and four-person food budget shares across four California areas.',
+      title: 'Table 1. Monthly Income, Rent, and the Share Needed for Food in Four Areas',
+      subtitle: 'Checking food shares before and after rent for a $973 monthly plan in four areas.',
+      caption: 'Table 1: Compare median monthly pay, rent, money left after rent, and the share needed for a four-person food plan in four California areas.',
       cornerLabel: 'Monthly Budget Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> We use 2019–2023 Census ACS 5-Year medians (Table B19013 all-home pay split by 12 and Table B25064 renter gross rent). We pair these with Mode A modeled post-rent shares for the $973/month USDA Thrifty Food Plan. The 2023 HHS four-person Federal Poverty Line is $2,500/month. Table B19013 covers all households and B25064 covers renter homes across different census universes. Thus post-rent numbers show an area-median benchmark, not one single home.',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Area Estimates From Median Pay and Rent:</strong> Pay and rent come from the 2019&ndash;2023 American Community Survey (ACS). Table <code>B19013</code> gives median yearly pay for all homes; divide by 12 for monthly pay. Table <code>B25064</code> gives median monthly rent for rented homes. Because those two tables cover different groups of homes, subtracting rent from pay creates an area estimate rather than one family\'s budget. This table compares that estimate with a $973 monthly food plan and the 2023 four-person poverty rule of $2,500 per month.',
       columns: [
-        { tag: 'Group 1', tagHighlight: true, title: 'High-Rent Working Tract', subtitle: 'Marin County: San Rafael Canal area (Tract 1122.03).' },
-        { tag: 'Group 2', tagHighlight: true, title: 'Low-Pay City Core', subtitle: 'Fresno County: Central Fresno (Tract 2).' },
-        { tag: 'Group 3', tagHighlight: false, title: 'Rural Foothills County', subtitle: 'Nevada County (Sierra Foothills baseline).' },
-        { tag: 'Group 4', tagHighlight: false, title: 'High-Pay Suburb County', subtitle: 'Santa Clara County (County baseline).' }
+        { tag: 'Area 1: High-Rent Tract', tagHighlight: true, title: 'Marin Canal Tract 1122.03', subtitle: 'San Rafael Canal tract 1122.03 in Marin County.' },
+        { tag: 'Area 2: Central City Tract', tagHighlight: true, title: 'Central Fresno Tract 2', subtitle: 'Central city tract 2 in Fresno County.' },
+        { tag: 'Area 3: Rural Foothills', tagHighlight: false, title: 'Nevada County Median', subtitle: 'Median across all of Nevada County in the Sierra foothills.' },
+        { tag: 'Area 4: High-Pay County', tagHighlight: false, title: 'Santa Clara County Median', subtitle: 'Median across all of Santa Clara County.' }
       ],
       rows: [
         {
-          label: 'Median Monthly Pay',
+          label: 'Median Monthly Household Income',
           cells: [
             { val: '$5,507 ($66,080/yr)' },
             { val: '$3,103 ($37,238/yr)' },
@@ -98,16 +98,16 @@ const modules = [
           ]
         },
         {
-          label: 'Poverty Ratio (4 People)',
+          label: 'Income vs. Four-Person Poverty Rule',
           cells: [
-            { val: '220% FPL (>200% line)' },
-            { val: '124% FPL (<=130% line)' },
-            { val: '283% FPL (County)' },
-            { val: '532% FPL (County)' }
+            { val: '220% FPL (above 200% limit)' },
+            { val: '124% FPL (below 130% limit)' },
+            { val: '283% FPL (countywide)' },
+            { val: '532% FPL (countywide)' }
           ]
         },
         {
-          label: 'Share of Income Spent on Monthly Rent',
+          label: 'Median Rent &amp; Share of Income',
           cells: [
             { val: '42.1% ($2,318)' },
             { val: '32.5% ($1,007)' },
@@ -116,7 +116,7 @@ const modules = [
           ]
         },
         {
-          label: 'Monthly Pay Left After Rent',
+          label: 'Estimated Money Left After Rent',
           modeled: true,
           cells: [
             { val: '$3,189 ($973 food plan)' },
@@ -149,85 +149,85 @@ const modules = [
       ]
     },
     table2: {
-      title: 'Table 2. Local Access &amp; Policy Fit Across Four Areas',
-      subtitle: 'We match renter share, CalFresh use, and store trips to the right county plan.',
-      caption: 'Table 2: Renter housing share, SNAP use, distance to SNAP stores, and primary policy fit.',
+      title: 'Table 2. Matching Food Vouchers, CalFresh Aid, and Delivery to Local Needs',
+      subtitle: 'Checking food costs after rent, renter shares, CalFresh use, and store miles to pick programs.',
+      caption: 'Table 2: Renter share, CalFresh use, store distance, costs and travel needs that income limits miss, and matched county actions.',
       cornerLabel: 'Local Measure',
       rows: [
         {
           label: 'Renter Share &amp; CalFresh Use',
           mono: true,
           cells: [
-            { val: '96.5% Rent | 19.3% SNAP', color: 'text-slate-950' },
-            { val: '78.4% Rent | 44.9% SNAP', color: 'text-rose-800' },
-            { val: '25.6% Rent | 7.3% SNAP', color: 'text-slate-950' },
-            { val: '44.7% Rent | 5.7% SNAP', color: 'text-slate-950' }
+            { val: '96.5% Renters | 19.3% CalFresh', color: 'text-slate-950' },
+            { val: '78.4% Renters | 44.9% CalFresh', color: 'text-rose-800' },
+            { val: '25.6% Renters | 7.3% CalFresh', color: 'text-slate-950' },
+            { val: '44.7% Renters | 5.7% CalFresh', color: 'text-slate-950' }
           ]
         },
         {
-          label: 'Mean Trip to SNAP Store',
+          label: 'County Average Distance to SNAP Store',
           mono: true,
           cells: [
-            { val: '0.97 mi (8.1% LILA)', color: 'text-emerald-800' },
-            { val: '1.45 mi (13.3% LILA)', color: 'text-amber-800' },
-            { val: '2.92 mi (12.4 mi max)', color: 'text-rose-800' },
-            { val: '0.60 mi (3.7% LILA)', color: 'text-emerald-800' }
+            { val: '0.97 mi county (8.1% USDA low-access)', color: 'text-emerald-800' },
+            { val: '1.45 mi county (13.3% USDA low-access)', color: 'text-amber-800' },
+            { val: '2.92 mi county (12.4 mi max rural trip)', color: 'text-rose-800' },
+            { val: '0.60 mi county (3.7% USDA low-access)', color: 'text-emerald-800' }
           ]
         },
         {
-          label: 'What Gross Pay Leaves Out',
+          label: 'What Income Limits Before Rent Miss',
           cells: [
-            { val: 'Rent takes 42.1% of pay above 200% FPL.' },
-            { val: 'Low pay meets high rent and far stores.' },
-            { val: 'Rural store trips reach up to 12.4 miles.' },
-            { val: 'High county pay ($13,306) averages over low-income renter tracts.' }
+            { val: 'Area pay ($5,507, 220% 4-person FPL) exceeds 200% FPL, yet food takes 30.5% of money left after rent.' },
+            { val: 'Low median pay ($3,103) and $1,007 rent (32.5%) raise food to 46.4% of money left after rent.' },
+            { val: 'The 17.9% county food share after rent does not show rural store trips of up to 12.4 miles.' },
+            { val: 'The $13,306 county median pay (532% FPL) does not show rent and pay differences across tracts.' }
           ]
         },
         {
-          label: 'Best County Action',
+          label: 'Recommended County Action',
           policyFit: true,
           cells: [
-            { headline: 'Shelter Rules &amp; Food Rx', detail: 'Use CalFresh shelter rules and clinic food scripts.' },
-            { headline: 'Cash Aid + Food Vans', detail: 'Pair full CalFresh aid with food vans.' },
-            { headline: 'Rural EBT Delivery', detail: 'Add rural SNAP stores and online EBT delivery.' },
-            { headline: 'Tract-Level Focus', detail: 'Focus on low-pay renter tracts, not county means.' }
+            { headline: 'Produce Vouchers &amp; Clinic Aid', detail: 'Pair CalFresh eligibility checks with clinic produce prescriptions and local food vouchers not limited to 200% FPL.' },
+            { headline: 'CalFresh Aid + Mobile Markets', detail: 'Help eligible homes sign up for CalFresh and send mobile food markets to Fresno tracts far from stores.' },
+            { headline: 'Rural EBT Stores &amp; Delivery', detail: 'Sign up rural grocers for EBT and expand online food delivery on foothill routes.' },
+            { headline: 'Direct Grants by Census Tract', detail: 'Direct county food grants using tract post-rent estimates instead of countywide median pay.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: County Baselines &amp; Store Distance Ranges',
+      notesTitle: 'Table 2 Notes: Renter Shares, CalFresh Use &amp; Store Distance Sources',
       notesBullets: [
-        '<strong>Renter Share &amp; SNAP Use (ACS B25003 &amp; B22003):</strong> Marin Tract 1122.03 is 96.5% renters (439 / 455 homes) vs. 36.1% across Marin County. SNAP use is 19.3% vs. 4.8% countywide. Fresno Tract 2 is 78.4% renters (597 / 761 homes) vs. 44.6% countywide. SNAP use is 44.9% vs. 20.5% countywide.',
-        '<strong>Store Trips &amp; Low-Access Shares:</strong> In Fresno County, 13.3% of tracts (30 of 225) have low pay and far stores. Trips exceed 1 mile in cities or 10 miles in rural areas, up to 15.53 miles max. In Nevada County, trips to a SNAP store reach 12.43 miles (mean 2.92 miles, median 1.98 miles).'
+        '<strong>Renter Share &amp; CalFresh Use:</strong> In Marin Tract 1122.03, 439 of 455 homes rent, or 96.5%, compared with 36.1% countywide. CalFresh use is 19.3% in the tract and 4.8% countywide. In Fresno Tract 2, 597 of 761 homes rent, or 78.4%, versus 44.6% countywide. CalFresh use is 44.9% in the tract and 20.5% countywide.',
+        '<strong>Store Distance &amp; USDA Rules:</strong> In Fresno County, 30 of 225 tracts (13.3%) meet USDA low-income and long-trip rules. Store trips must exceed 1 mile in cities or 10 miles in rural areas, and reach 15.53 miles in Fresno. In Nevada County, trips to a confirmed SNAP store average 2.92 miles, with a 1.98-mile median and 12.43-mile longest trip.'
       ]
     },
     synthesis: {
-      title: 'Why Policy Fit Changes Across These Four Areas',
-      p1: 'One single state food rule misses the mark when local needs differ. In Marin\'s Canal area (Tract 1122.03), stores are close (0.97 mi mean) and pay sits at 220% FPL. Gross pay rules and new store grants do not fix the main gap. Here 96.5% of homes rent. In our modeled area-median benchmark, ACS B25064 renter gross rent is compared against ACS B19013 all-household pay across different census universes. Rent takes 42.1% of pay. The best step is helping families claim the CalFresh shelter rule and clinic food scripts that do not stop at 130% or 200% FPL.',
-      p2: 'Central Fresno (Tract 2) faces two gaps at once. Low pay ($3,103/month) pushes the modeled post-rent food share to 46.4%. Also, 13.3% of county tracts lack close stores. This calls for full CalFresh aid plus mobile food vans. Nevada County has a 17.9% post-rent food share, but store trips reach 12.4 miles. It needs rural EBT delivery and more SNAP stores. Santa Clara County shows why health teams fund specific tracts instead of using county means ($13,306/month).'
+      title: 'Why Money Left After Rent and Store Miles Support Different Programs',
+      p1: 'Income limits before rent treat $5,507 per month the same in high-rent and low-rent counties. Yet area food shares change once local rent is subtracted. In Marin\'s Canal tract, 96.5% of homes rent and 19.3% use CalFresh, while the county\'s average distance to a SNAP store is 0.97 miles. Tract median pay across all homes is $5,507, or 220% of four-person FPL (above the 200% FPL four-person limit). Because tract medians pair all-home pay with renter rent, they do not show which homes qualify. Subtracting $2,318 median rent (42.1% of area pay) raises the $973 food plan to 30.5% of money left after rent. These findings support offering CalFresh checks, produce prescriptions, and local food vouchers at clinics in high-rent areas.',
+      p2: 'The other three areas show how pay, rent, and store miles combine in distinct ways. Central Fresno Tract 2 pairs $3,103 median pay and $1,007 rent with long trips to large grocery stores in 13.3% of county tracts. Food takes 46.4% of estimated money left after rent ($973 of $2,096), which supports CalFresh sign-up help and mobile markets. By contrast, rural Nevada County has a 17.9% food share after rent ($7,075 pay, $1,635 rent) and trips up to 12.43 miles. Those long trips support adding rural EBT stores and delivery, while Santa Clara\'s $13,306 county median shows why staff must check tract data.'
     },
     methodologyParagraphs: [
-      '<strong>1. Mode B vs. Mode A Rules (Area-Median Benchmark Across Different Census Universes):</strong> In the 2019-2023 ACS 5-Year tables (<strong>Mode B</strong> survey data), <code>B19013_001E</code> tracks median pay across <em>all</em> homes. <code>B25064_001E</code> tracks median gross rent across <em>renter</em> homes (different census universes). We subtract <code>B25064_001E</code> from <code>round(B19013_001E / 12)</code> and compare it to a four-person food plan (<code>$973/month</code>) and poverty line (<code>$2,500/month</code>). This builds a <strong>Mode A modeled area-median benchmark</strong>, not an observed budget for one renter family. Renter median pay (<code>B25119_003E</code>) is <strong>$65,777/yr (&plusmn;$16,576)</strong> in Marin Tract 1122.03 and <strong>$29,155/yr (&plusmn;$11,971)</strong> in Fresno Tract 2. It is <strong>$52,986/yr (&plusmn;$8,277)</strong> in Nevada County and <strong>$119,765/yr (&plusmn;$1,703)</strong> in Santa Clara County.',
-      '<strong>2. Main Data Sources:</strong> We use <a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">U.S. Census Bureau 2019-2023 ACS 5-Year Detailed Tables</a> (<code>B19013</code>, <code>B25064</code>, <code>B25003</code>, <code>B22003</code>). We also use <a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">2023 HHS Federal Poverty Guidelines</a> (<strong>$30,000/yr</strong> or <strong>$2,500/mo</strong> for four people; 130% FPL = $3,250/mo; 200% FPL = $5,000/mo). Food costs come from <a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">USDA FNS FY 2024 SNAP COLA</a> and <a href="https://www.fns.usda.gov/research/cnpp/usda-food-plans/cost-food-monthly-reports" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">CNPP June 2023 Thrifty Food Plan</a> (<strong>$973.30/mo</strong> rounded to <strong>$973/mo</strong>). Health survey context comes from <a href="https://healthpolicy.ucla.edu/newsroom/events/focus-food-insecurity-insights-california-health-interview-survey" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">UCLA CHPR California Health Interview Survey (CHIS)</a>.',
-      '<strong>3. Exact ACS API Records &amp; Math Rules:</strong> Marin Tract 1122.03 (<code>GEOID 06041112203</code>) has <code>B19013_001E = $66,080 &plusmn;$19,220</code> (<code>$5,507/mo</code>, <code>220% FPL</code>) and <code>B25064_001E = $2,318/mo &plusmn;$161</code> (<code>42.1%</code>). Post-rent pay is <code>$3,189/mo</code>, pre-rent food share is <code>17.7%</code>, post-rent share is <code>30.5%</code>, and <code>$2,216/mo</code> is left. Fresno Tract 2 (<code>GEOID 06019000200</code>) has <code>B19013_001E = $37,238 &plusmn;$19,169</code> (<code>$3,103/mo</code>, <code>124% FPL</code>) and <code>B25064_001E = $1,007/mo &plusmn;$96</code> (<code>32.5%</code>). Post-rent pay is <code>$2,096/mo</code>, pre-rent share is <code>31.4%</code>, post-rent share is <code>46.4%</code>, and <code>$1,123/mo</code> is left. Nevada County (<code>GEOID 06057</code>) has <code>B19013_001E = $84,905 &plusmn;$4,336</code> (<code>$7,075/mo</code>, <code>283% FPL</code>) and <code>B25064_001E = $1,635/mo &plusmn;$99</code>. Post-rent pay is <code>$5,440/mo</code>, pre-rent share is <code>13.8%</code>, and post-rent share is <code>17.9%</code>. Santa Clara County (<code>GEOID 06085</code>) has <code>B19013_001E = $159,674 &plusmn;$1,962</code> (<code>$13,306/mo</code>, <code>532% FPL</code>) and <code>B25064_001E = $2,814/mo &plusmn;$16</code>. Post-rent pay is <code>$10,492/mo</code>, pre-rent share is <code>7.3%</code>, and post-rent share is <code>9.3%</code>.'
+      '<strong>1. Survey Medians and Money Left After Rent:</strong> In the 2019&ndash;2023 Census survey, table <code>B19013</code> gives median pay across all homes. Table <code>B25064</code> gives median rent across rented homes. Divide yearly median pay by 12 and round to the nearest dollar, then subtract median monthly rent. Compare the money left with the $973 food plan and the $2,500 monthly poverty rule for four people. This produces an area estimate, not one family\'s recorded budget. Median yearly pay for renters alone (<code>B25119</code>) is $65,777 (plus or minus $16,576) in Marin Tract 1122.03 and $29,155 (plus or minus $11,971) in Fresno Tract 2. It is $52,986 (plus or minus $8,277) in Nevada County and $119,765 (plus or minus $1,703) in Santa Clara County.',
+      '<strong>2. Data Sources:</strong> <a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">U.S. Census Bureau 2019&ndash;2023 ACS 5-Year Tables</a> (<code>B19013</code>, <code>B25064</code>, <code>B25003</code>, <code>B22003</code>). <a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">2023 HHS Federal Poverty Guidelines</a> ($30,000 per year or $2,500 per month for four people; 130% = $3,250; 200% = $5,000). <a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">USDA FNS 2024 SNAP Cost-of-Living Update</a> and <a href="https://www.fns.usda.gov/research/cnpp/usda-food-plans/cost-food-monthly-reports" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">USDA June 2023 Thrifty Food Plan</a> ($973.30 per month rounded to $973). <a href="https://healthpolicy.ucla.edu/newsroom/events/focus-food-insecurity-insights-california-health-interview-survey" target="_blank" rel="noopener noreferrer" class="underline text-[#0041A5]">UCLA California Health Interview Survey (CHIS)</a>.',
+      '<strong>3. Area Numbers Used in Table 1:</strong> Marin Tract 1122.03 (Census ID <code>06041112203</code>) has $66,080 yearly pay ($5,507/mo, 220% FPL) and $2,318 rent (42.1%). That leaves $3,189 after rent, a 17.7% food share before rent, a 30.5% share after rent, and $2,216 left. Fresno Tract 2 (ID <code>06019000200</code>) has $37,238 yearly pay ($3,103/mo, 124% FPL) and $1,007 rent (32.5%). That leaves $2,096 after rent, a 31.4% share before rent, a 46.4% share after rent, and $1,123 left. Nevada County (ID <code>06057</code>) has $84,905 yearly pay ($7,075/mo, 283% FPL), $1,635 rent (23.1%), $5,440 after rent, 13.8% before rent, 17.9% after rent, and $4,467 left. Santa Clara County (ID <code>06085</code>) has $159,674 yearly pay ($13,306/mo, 532% FPL), $2,814 rent (21.1%), $10,492 after rent, 7.3% before rent, 9.3% after rent, and $9,519 left.'
     ],
     faqs: [
       {
-        question: 'Why do gross-pay poverty lines leave out food strain in high-rent areas?',
-        answer: 'Federal Poverty Guidelines use one gross-pay line across 48 states. They do not adjust for local rent. In Marin County\'s Canal area (Tract 1122.03), typical pay is 220% FPL ($5,507/month). That sits above the 130% and 200% FPL cutoffs. Yet our modeled area-median benchmark subtracts renter gross rent ($2,318/month) from all-home pay. A $973 food bill takes 30.5% of the pay left after rent.'
+        question: 'Why do income limits before rent fail to show high food costs in high-rent areas?',
+        answer: 'Federal poverty rules apply one dollar limit across 48 states without subtracting rent. In Marin\'s Canal tract (1122.03), median pay across all homes is $5,507 (220% of four-person FPL) and median rent is $2,318. This tract estimate compares area medians rather than showing which homes qualify. Subtracting $2,318 rent leaves $3,189 and raises a $973 food plan from 17.7% of pay before rent to 30.5% of money left after rent.'
       },
       {
-        question: 'How does checking post-rent food costs change local plans?',
-        answer: 'Checking food costs after rent separates tight budgets from long store trips. Teams can match CalFresh shelter rules, clinic food scripts, food vans, or rural delivery to each local gap.'
+        question: 'How does checking money left after rent and store miles separately help county planning?',
+        answer: 'Checking money left after rent and store miles separately helps identify high housing costs and long trips to EBT stores. In Marin Canal, median pay is 220% of four-person FPL, and the county\'s average distance to a SNAP store is 0.97 miles. Those facts support CalFresh checks, clinic produce prescriptions, and local food vouchers, while rural areas with 12.43-mile trips need EBT stores and delivery.'
       },
       {
-        question: 'Why should health teams check census tracts instead of county means?',
-        answer: 'County means blend rich owner areas with low-pay renter tracts. Checking census tracts keeps high county pay from covering up severe post-rent food strain in renter areas.'
+        question: 'Why should counties check census tracts instead of countywide median pay?',
+        answer: 'Countywide medians combine high-pay homeowner suburbs with lower-pay renter tracts. In Santa Clara County, median pay is $13,306 per month and the food plan takes 9.3% of estimated money left after rent. County figures do not show differences across tracts, whereas tract estimates identify local renter areas where rent exceeds two-fifths of pay.'
       }
     ],
     related: [
-      { slug: 'geographic-variables', title: 'Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance', note: 'Case study comparing poverty R² (62.2%) against store distance across 9,033 California tracts' },
-      { slug: 'food-insecurity-diabetes', title: 'Case Study: Untangling Bidirectional Links Between Food Affordability and Chronic Disease', note: 'Track 4 flagship case study pairing post-rent food budgets with clinical diabetes outcomes' },
-      { slug: 'threat-measurement-instrumentation', title: 'Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories', note: 'Case study comparing commercial store lists against USDA SNAP-verified EBT retailers' }
+      { slug: 'geographic-variables', title: 'Tract Poverty Explains Most of Santa Clara\'s Food-Need Score Compared With Store Miles', note: 'Case study comparing poverty score differences (62.2%) against store distance across California tracts' },
+      { slug: 'food-insecurity-diabetes', title: 'High Rent and Local Poverty Explain Food Need and Diabetes Rates Better Than Store Miles', note: 'Case study pairing post-rent food budgets with neighborhood poverty and chronic-care needs' },
+      { slug: 'threat-measurement-instrumentation', title: 'Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same', note: 'Case study comparing map search lists against USDA SNAP-confirmed EBT stores' }
     ]
   },
 
@@ -238,198 +238,200 @@ const modules = [
     slug: 'observational-to-experimental',
     tetsCompanion: [
       {
-        visibleLabel: 'Public Health Spending Regime Analysis',
+        visibleLabel: 'Public Health Spending in Regular and Pandemic Years',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each extra dollar per person links with -0.238 deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Routine-Budget Identification (Mode B 57-County Panel)',
-    pageTitle: 'Routine-Budget Analysis vs. Raw Yearly Averages | CAPHE',
-    metaDescription: 'Compare pandemic surge spending (+2.47) against pre-COVID routine-budget estimates preventing 2.38 to 5.31 deaths per 100,000 across 57 California counties.',
-    h1: 'Routine County Public Health Budgets Lower Premature Deaths After Separating Outbreak Spending',
-    subtitle: 'We compare pandemic emergency surge spending with annual and multi-year routine budget models across California counties.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Routine Health Budgets vs. Emergency Aid Years',
+    pageTitle: 'Routine County Health Spending & Pandemic Aid | CAPHE',
+    metaDescription: 'Compare 2020-2023 pandemic aid (+2.47) with pre-2020 county health spending linked to 2.38 to 5.31 fewer deaths per 100,000 in California.',
+    h1: 'Routine County Health Spending Links With Lower Death Rates Outside Pandemic Grant Years',
+    subtitle: 'Testing 2020-2023 pandemic aid apart from pre-2020 county health spending across 57 counties.',
     endnotes: [
-      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: County Financial Transactions Reports &amp; LGRS Schedule Harmonization (57-County Public Health Spending Panel, 2003&ndash;2023, N = 943 pre-COVID and N = 220 COVID-19 era county-years).',
-      '<a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDPH Vital Statistics</a>: County All-Cause &amp; Cause-Specific Mortality Files (2003&ndash;2023) &amp; <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE LHA Methodology</a>.',
-      '<a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown, T. T. (2014)</a>: "How Effective Are Public Health Departments at Preventing Mortality?", <em>Economics &amp; Human Biology</em>, 13, 34&ndash;45; and <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012)</a>, <em>JBES</em>, 30(1), 67&ndash;80.'
+      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: County financial reports matched across 57 counties from 2003 to 2023 (943 pre-COVID and 220 COVID-19 county-years).',
+      '<a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Public Health (CDPH) Vital Statistics</a>: County death records from all causes and specific causes (2003&ndash;2023) and <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Methodology</a>.',
+      '<a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown, T. T. (2014)</a>: Study in <em>Economics &amp; Human Biology</em> (13, 34&ndash;45), and <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012)</a> in <em>JBES</em> (30, 67&ndash;80).'
     ],
-    policySettingHtml: 'County boards review health budgets across calm years and outbreak years. From 2020 to 2023, state and federal relief grants rose fast in counties with high death rates. Splitting outbreak aid from base care shows how steady county health funds save lives.',
-    answerHtml: 'Tracking routine pre-pandemic budget shifts across <strong>943 county-years</strong> (2003 to 2019) shows that each <strong>$10 per resident</strong> in county health spending prevents <strong>2.38 deaths per 100,000 annually</strong> (<strong>$32</strong> in health value per <strong>$1</strong> spent) and <strong>4.32 deaths per 100,000 over 13-year cumulative horizons</strong> (<strong>$59</strong> per <strong>$1</strong> spent) [1,2]. During the 2020 to 2023 pandemic window, emergency grants jumped 64% and show <strong>+2.47 deaths per 100,000 per $10</strong> because surge funds followed pandemic mortality spikes [1,2]. Multi-year routine-budget models confirm <strong>5.31 fewer deaths per 100,000</strong> across the single-regime 2003 to 2016 horizon [3].',
+    policySettingHtml: 'Routine county health budgets fund local disease control and prevention year after year. During the 2020-2023 COVID-19 pandemic, state and federal agencies sent the largest emergency grants to counties with large increases in deaths. Higher death rates can bring in more emergency aid. That reverse causation means health needs affect spending rather than spending causing more deaths. Combining pandemic years with regular years makes the combined estimate close to zero because the two periods show opposite patterns. Testing the two periods apart lets county boards see how regular health spending links with death rates.',
+    answerHtml: 'Across <strong>943</strong> yearly county records from 2003 to 2019, each extra <strong>$10 per resident</strong> in routine county health spending links to <strong>2.38 fewer deaths</strong> per 100,000 per year [1,2]. Over 13-year changes, that link is <strong>4.32 fewer deaths</strong> per 100,000 per year (unadjusted <em>p</em> = 0.0052; multiple-testing-adjusted <em>p</em> = 0.067, above 0.05) [1,2,3]. A second statistical check estimates <strong>5.31 fewer deaths</strong> per 100,000 per year [3]. Federal rules use $13.6M as the Value of a Statistical Life (VSL) to value reduced death risk. If causal, those three links imply <strong>$420,168</strong> per expected death prevented (<strong>$32 per $1</strong>), <strong>$231,481</strong> (<strong>$59 per $1</strong>), and <strong>$188,324</strong> [2,3]. Those dollar figures are <strong>illustrative valuations conditional on a causal interpretation</strong>, not cash received by counties [2]. By contrast, 2020-2023 emergency grants (220 county-years) rose 64.2% ($102.75 to $168.70) where COVID-19 deaths increased the most [1,2]. During those years, each $10 linked to <strong>+2.47</strong> more deaths, putting all 2003-2023 years near zero at -0.25 [1,2].',
     block2: {
-      title: 'Two Identification Rulers: Pandemic Surge Window vs. Routine-Budget Horizons (57 Counties)',
-      contextTag: 'Mode B Empirical Estimates (N = 943 Pre-COVID &amp; N = 220 COVID-19 County-Years, 2003 to 2023)',
-      ariaLabel: 'Comparison of pandemic surge slope of +2.47 deaths per 100,000 versus routine-budget estimates of 2.38 annual and 4.32 to 5.31 cumulative fewer deaths per 100,000',
+      title: 'Pandemic Emergency Aid Years vs. Earlier County Spending Links (57 Counties)',
+      contextTag: 'Observed Estimates Across 943 Pre-COVID and 220 COVID-19 Yearly County Records',
+      ariaLabel: 'Comparison of pandemic aid estimate of +2.47 versus pre-pandemic links of 2.38 yearly and 4.32 (adjusted p = 0.067) to 5.31 fewer deaths per 100,000',
       ruler1: {
-        title: 'Ruler 1: Pandemic Emergency Window (2020-2023 Surge Grants)',
-        stat: '+2.47 Deaths / 100K (4.85-Point Sign Flip)',
-        ariaLabel: 'Pandemic 2020-2023 regression slope of +2.47 deaths per 100,000 per $10 per capita shifted by +4.85 points above the -2.38 pre-COVID baseline due to reactive pandemic relief grants',
+        title: 'Pandemic Emergency Aid Period (2020-2023 Relief Grants)',
+        stat: '+2.47 Deaths / 100K',
+        ariaLabel: 'Pandemic 2020-2023 slope of +2.47 deaths per 100,000 per $10 per person',
         segments: [
-          { cls: 'seg-Housing', width: 92, label: '+4.85 Emergency Grant Shift (+64.2% COVID-19 Surge)' },
-          { cls: 'seg-rest', width: 8, label: '+2.47 Surge Slope' }
+          { cls: 'seg-Housing', width: 92, label: '+64.2% COVID-19 Aid Increase' },
+          { cls: 'seg-rest', width: 8, label: '+2.47 Estimate' }
         ],
-        desc: 'During 2020 to 2023 (N = 220), county health spending jumped <strong>+64.2% ($99.65 to $168.70/capita)</strong> as federal COVID-19 relief followed mortality waves, flipping the slope to <strong>+2.47 deaths/100K per $10</strong> and attenuating pooled 2003-2023 TWFE to <strong>-0.25</strong>.'
+        desc: 'Emergency COVID-19 relief grants rose 64.2% where local death rates increased the most.'
       },
       ruler2: {
-        title: 'Ruler 2: Routine-Budget Analysis (Annual TWFE &amp; Cumulative Horizons)',
-        stat: '2.38 Yr | 4.32 13-Yr | 5.31 2SLS Fewer / 100K',
-        ariaLabel: 'Routine-budget analysis isolates 2.38 fewer deaths per 100,000 annually, 4.32 fewer over 13-year cumulative horizons, and 5.31 fewer under Long-Difference 2SLS',
+        title: 'Pre-Pandemic Links in Yearly and 13-Year Comparisons',
+        stat: '2.38 Yr | 4.32 13-Yr (adj. p = 0.067) | 5.31 Check',
+        ariaLabel: 'Pre-pandemic models compare estimated links of 2.38 fewer deaths yearly and 4.32 over 13-year changes (adjusted p = 0.067), alongside 5.31 in a second check',
         segments: [
-          { cls: 'seg-primary', width: 45, label: 'Annual TWFE (2003-2019): 2.38 Fewer' },
-          { cls: 'seg-food', width: 55, label: '13-Yr Cumulative: 4.32 OLS / 5.31 2SLS Fewer' }
+          { cls: 'seg-primary', width: 45, label: 'Yearly: 2.38 Fewer' },
+          { cls: 'seg-food', width: 55, label: '13-Yr: 4.32 (adj. p = 0.067)' }
         ],
-        desc: 'Tracking routine pre-pandemic budgets (2003 to 2019, N = 943) gives <strong>2.38 fewer deaths/100K annually</strong>. Over 13-year cumulative horizons (2003 to 2016), protection builds to <strong>4.32 fewer deaths/100K in OLS</strong> and <strong>5.31 fewer in long-difference 2SLS</strong>.'
+        desc: 'Pre-COVID models compare yearly (-2.38) and 13-year (-4.32, adj. p = 0.067) spending links.'
       }
     },
     table1: {
-      title: 'Table 1. From Pandemic Surge Feedback to Annual and Multi-Year Routine-Budget Checks',
-      subtitle: 'We compare four models of local health spending ($10 per resident) and death rates per 100,000.',
-      caption: 'Empirical comparison of the 2020-2023 Pandemic Surge Window, 2003-2019 Annual County Panel, 13-Year Cumulative Change, and 13-Year Routine-Budget IV Model.',
+      title: 'Table 1. Pandemic Aid Compared With Yearly and 13-Year Spending Links Before 2020',
+      subtitle: 'Comparing changes in death rates linked to each extra $10 spent per person across 57 counties.',
+      caption: 'Table 1: Compare pandemic aid years with three studies of pre-2020 county spending across yearly changes, 13-year changes, and a second check of the 13-year result.',
       cornerLabel: 'Model Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates):</strong> We use county-clustered standard errors across 57 California counties. The 2020-2023 pandemic window (N = 220) has β = +0.247 per $1 (+2.47 per $10, SE = 0.75, p = 0.0010), while pooled 2003-2023 TWFE (N = 1,163) is attenuated to -0.25 per $10 (p = 0.710). The 2003-2019 pre-COVID TWFE OLS baseline (N = 943) has β = -0.238 per $1 (-2.38 per $10, SE = 0.78, p = 0.0022, wild cluster bootstrap p = 0.007, 95% CI -3.91 to -0.85). The 13-year cumulative long-difference OLS (2003-2016, N = 57) has -4.32 per $10 (SE = 1.54, p = 0.0052; 16-year 2003-2019 excl. 5 LGRS outliers is -5.91, p = 0.0330). The 13-year Long-Difference Lewbel (2012) 2SLS model (2003-2016, N = 57) has -5.31 per $10 (SE = 1.67, p = 0.0015, first-stage F = 111.20, Hansen J p = 0.2132). Cost per life saved is $10 / (|β_10| / 100,000).',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (57-County Spending Links &amp; Dollar Estimates Assuming Cause):</strong> Error checks group records by county across 57 California counties, leaving out San Francisco and three city health offices. The 2020&ndash;2023 pandemic period (220 records) gives +0.247 per $1 (+2.47 per $10, SE = 0.75, p = 0.0010). Combining all years from 2003 to 2023 (1,163 records) gives -0.25 per $10 (SE = 0.67, p = 0.710). The 2003&ndash;2019 yearly model (943 records) accounts for lasting county traits and yearly state changes. It gives -0.238 per $1, or -2.38 per $10 (SE = 0.78, p = 0.0022; repeat-sample county check p = 0.007; 95% range -3.91 to -0.85). The 13-year model (2003&ndash;2016, 57 counties) gives -4.32 per $10 (SE = 1.54, unadjusted p = 0.0052, adjusted p = 0.067). A 16-year check without five reporting-change records gives -5.91 (SE = 2.77, p = 0.0330). Across 16 delay checks, a 4-year change with raw p = .0049 adjusts to .0788. The Lewbel two-stage check (2003&ndash;2016) gives -5.31 (SE = 1.67, p = 0.0015, first-step F = 111.20, J-test p = 0.2132). In a log version, first-step F drops to 0.85, making that log check weak. Rows with * assume cause and use the $13.6M federal value ($420,168 or 32.4:1 [$32 per $1] yearly; $231,481 or 58.8:1 [$59 per $1] over 13 years; $188,324 or 72.2:1 [$72 per $1] in the check).',
       columns: [
-        { tag: 'Model 1: Pandemic Surge', tagHighlight: false, title: 'COVID-19 Surge Window', subtitle: '57 Counties (2020-2023, N=220).' },
-        { tag: 'Model 2: Annual Panel', tagHighlight: true, title: 'Pre-COVID Annual Baseline', subtitle: '57 Counties (2003-2019, N=943).' },
-        { tag: 'Model 3: 13-Yr Span', tagHighlight: true, title: '13-Year Cumulative Change', subtitle: '57 Counties (2003-2016, N=57).' },
-        { tag: 'Model 4: Routine-Budget IV', tagHighlight: false, title: 'Supply-Shift IV Check', subtitle: '13-Yr Routine-Budget Model (2003-2016, N=57).' }
+        { tag: 'Model 1: Emergency Aid', tagHighlight: false, title: 'COVID-19 Aid Period', subtitle: '57 counties in 2020-2023 (220 yearly county records).' },
+        { tag: 'Model 2: Yearly Data', tagHighlight: true, title: 'Yearly Pre-COVID Data', subtitle: '57 counties in 2003-2019 (943 yearly county records).' },
+        { tag: 'Model 3: 13-Yr Changes', tagHighlight: true, title: '13-Year Changes', subtitle: '57 counties in 2003-2016 under one reporting format (adj. p = 0.067).' },
+        { tag: 'Model 4: Second Check', tagHighlight: false, title: '13-Year Second Check', subtitle: '57 counties in 2003-2016 using county trait differences.' }
       ],
       rows: [
         {
-          label: 'Source of Budget Shifts',
+          label: 'Spending Differences Studied',
           cells: [
-            { val: 'Emergency COVID-19 relief (+64.2%)' },
-            { val: 'Within-county routine budgets' },
-            { val: '13-year sustained budget shifts' },
-            { val: 'Variance-based routine-budget check' }
+            { val: 'Emergency COVID-19 aid (+64.2% increase)' },
+            { val: 'Within-county routine yearly budgets' },
+            { val: '13-year spending changes (2003-2016)' },
+            { val: 'Population trait check on 13-yr data' }
           ]
         },
         {
-          label: 'Deaths per $10 per Resident',
+          label: 'Yearly Deaths per 100,000 per $10 / Person',
           highlight: true,
           cells: [
-            { val: '+2.47 (pandemic surge)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '2.38 fewer deaths (annual)', barWidth: 45, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '4.32 fewer deaths (13-yr)', barWidth: 81, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '5.31 fewer deaths (routine IV)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '+2.47 (pandemic aid years)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '2.38 fewer deaths (yearly)', barWidth: 45, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '4.32 fewer deaths (13-yr, adj. p=0.067)', barWidth: 81, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '5.31 fewer deaths (per yr, check)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Effect Range &amp; Precision',
+          label: '95% Statistical Range',
           cells: [
-            { val: '+1.00 to +3.94 range' },
-            { val: '0.85 to 3.91 fewer range' },
-            { val: '1.30 to 7.34 fewer range' },
-            { val: '2.04 to 8.58 fewer range' }
+            { val: '+1.00 to +3.94 per 100,000' },
+            { val: '0.85 to 3.91 fewer per 100,000' },
+            { val: '1.30 to 7.34 fewer per 100,000' },
+            { val: '2.04 to 8.58 fewer per 100,000' }
           ]
         },
         {
-          label: 'Subgroup &amp; Regime Checks',
+          label: 'County Group &amp; Method Checks',
           cells: [
-            { val: 'Pooled 2003-23 attenuated (-0.25)' },
-            { val: 'Urban (-2.59) &amp; Rural (-2.42)' },
-            { val: '16-yr 2003-19 span: 5.91 fewer' },
-            { val: 'Strong first-stage &amp; valid instruments' }
+            { val: 'All 2003-23 years: -0.25' },
+            { val: 'Urban (-2.59) &amp; Smaller (-2.42)' },
+            { val: 'adj. p = 0.067 | 16-yr: 5.91 fewer' },
+            { val: 'First-step F = 111.20 | J p = 0.213' }
           ]
         },
         {
-          label: 'Cost per Life Saved',
+          label: 'Estimated Cost per Death Prevented (If Causal)*',
+          modeled: true,
           cells: [
-            { val: 'Not defined (+2.47 sign)' },
-            { val: '$420,168 per life saved' },
-            { val: '$231,481 per life saved' },
-            { val: '$188,324 per life saved' }
+            { val: 'Not calculated (+2.47 opposite sign)' },
+            { val: '$420,168 (if causal)' },
+            { val: '$231,481 (if causal)' },
+            { val: '$188,324 (if causal)' }
           ]
         },
         {
-          label: 'Return per $1 Spent',
+          label: 'Estimated Health Value per $1 (If Causal)*',
+          modeled: true,
           cells: [
-            { val: 'Looks like 0:1 (reverse feedback)' },
-            { val: '$32 per $1 ($13.6M life value)' },
-            { val: '$59 per $1 ($13.6M life value)' },
-            { val: '$72 per $1 ($13.6M life value)' }
+            { val: 'Not calculated (emergency aid years)' },
+            { val: '$32 per $1 (if causal, $13.6M VSL)' },
+            { val: '$59 per $1 (if causal, $13.6M VSL)' },
+            { val: '$72 per $1 (if causal, $13.6M VSL)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Why Separating Pandemic Surges and Exposure Horizons Builds Budget Trust',
-      subtitle: 'We show how the annual county panel, 13-year cumulative differences, and routine-budget IV models reinforce each other.',
-      caption: 'Decision matrix comparing data scope, outbreak spending rules, budget risk, and policy fit across four models.',
+      title: 'Table 2. Analyzing Crisis Aid Years Apart From Pre-2020 County Budgets',
+      subtitle: 'Testing 2020-2023 emergency aid apart so county boards can read pre-2020 spending links clearly.',
+      caption: 'Table 2: Compare study periods, links between spending and deaths, possible reading errors, and county budget advice.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'Data &amp; Time Scope',
+          label: 'Study Years &amp; Funding Type',
           cells: [
-            { val: 'Emergency pandemic window across 57 counties from 2020 to 2023 (N = 220).' },
-            { val: 'Routine pre-pandemic panel across 57 counties from 2003 to 2019 (N = 943).' },
-            { val: '13-year single-regime cumulative change from 2003 to 2016 (N = 57).' },
-            { val: '13-year routine-budget IV model from 2003 to 2016 (N = 57).' }
+            { val: 'COVID-19 aid years (2020-2023, 220 records) when grants rose from $102.75 to $168.70 per person.' },
+            { val: 'Pre-COVID yearly records (2003-2019, 943 records) accounting for lasting county traits and yearly state changes.' },
+            { val: '13-year changes (2003-2016, 57 counties) under one reporting format comparing spending and death rates.' },
+            { val: 'Two-stage 13-year check (2003-2016, 57 counties) using population trait differences across counties.' }
           ]
         },
         {
-          label: 'How Outbreak Funds Are Handled',
+          label: 'What the Estimate Shows',
           cells: [
-            { val: 'Captures +64.2% COVID-19 grant surges following pandemic death spikes (+2.47).' },
-            { val: 'Separates routine prevention budgets ($99.65/cap) from pandemic relief ($168.70/cap).' },
-            { val: 'Accumulates multi-year chronic disease and cardiovascular gains (48.4% heart).' },
-            { val: 'Uses variance-based instruments with strong first-stage checks.' }
+            { val: 'State and federal COVID-19 aid went to counties with large death increases, giving a +2.47 link.' },
+            { val: 'Regular yearly spending links with lower death rates in urban (-2.59) and smaller (-2.42) counties.' },
+            { val: 'The 13-year model estimates 4.32 fewer deaths (adj. p = 0.067) versus 2.38 in the yearly model.' },
+            { val: 'The extra check also links spending with fewer deaths (-5.31), though log versions weaken and assumptions stay untestable.' }
           ]
         },
         {
-          label: 'Budget Risk if Misread',
+          label: 'Budget Error When Misread',
           cells: [
-            { val: 'Pooling 2020-2023 with 2003-2019 attenuates the slope to -0.25.' },
-            { val: 'Judging budgets only on 1-year returns omits 45% of cumulative 13-year gains.' },
-            { val: 'Ignoring the FY 2016-17 state reporting schedule shift creates artificial jump outliers.' },
-            { val: 'Single-year IV has weak first stages, whereas 13-year cumulative IV is strong.' }
+            { val: 'Combining 2020-2023 aid with 2003-2019 budgets gives an estimate near zero (-0.25) from opposite patterns.' },
+            { val: 'These studies did not randomly assign spending, so they cannot prove cause on their own.' },
+            { val: 'Reporting the 13-year -4.32 link without adj. p = 0.067 or reporting-format limits overstates certainty.' },
+            { val: 'Treating this extra statistical check as a randomized trial overstates proof of cause and effect.' }
           ]
         },
         {
-          label: 'Best Policy &amp; Budget Action',
+          label: 'Recommended Budget Action',
           policyFit: true,
           cells: [
-            { headline: 'Separate Emergency Relief Windows', detail: 'Never pool emergency pandemic grants with baseline prevention budgets.' },
-            { headline: 'Use -2.38 ($32:$1) as Yr 1 Floor', detail: 'Use 2.38 fewer deaths ($420,168/life) for conservative annual budgeting.' },
-            { headline: 'Use -4.32 ($59:$1) for Multi-Year ROI', detail: 'Show boards that sustained 13-year investments save lives at $231,481 each.' },
-            { headline: 'Cite 13-Yr Routine-Budget IV (-5.31)', detail: 'Show that endogeneity-corrected cumulative returns reach $72 per $1.' }
+            { headline: 'Analyze Crisis Aid Apart', detail: 'Review emergency outbreak grants on their own instead of combining them with regular budgets.' },
+            { headline: 'Report Yearly Link + Limits', detail: 'Report 2.38 fewer deaths as an observed link, and $420,168 ($32 per $1) only if causal.' },
+            { headline: 'Pair 4.32 With adj. p = 0.067', detail: 'Report the 13-year link (-4.32, adj. p = 0.067) and mark $231,481 ($59 per $1) as if causal.' },
+            { headline: 'Keep 5.31 as Extra Check', detail: 'Use the 5.31 check ($188,324 per death prevented, $72 per $1 if causal) only as an extra check.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Regime Separation, Exposure Horizons &amp; Lewbel 2SLS Diagnostics',
+      notesTitle: 'Table 2 Notes: Pandemic Aid Period, Long-Term Illness Links &amp; Extra Method Checks',
       notesBullets: [
-        '<strong>Pandemic Regime Separation:</strong> During 2020 to 2023 (N = 220), intergovernmental COVID-19 grants pushed mean county public health spending up 64.2% (from $99.65 to $168.70 per capita in 2023 USD) while mortality rose from 703.4 to 795.4 per 100,000. That reverse-causality surge yields β = +0.247 per $1 (+2.47 per $10, p = 0.0010), a 4.85-point shift above the pre-pandemic baseline (-2.38 per $10, p = 0.0022).',
-        '<strong>Subgroup &amp; Cause-Specific Channels:</strong> Within the 2003 to 2019 pre-COVID baseline (N = 943), protective effects hold in both large urban counties (&gt;500,000 residents: -2.59 per $10, p &lt; 0.0001) and smaller/rural counties (&le;500,000 residents: -2.42 per $10, p = 0.0136), as well as the single-regime 2003-2016 SCO schedule (-2.62 per $10, p = 0.0128). Preventable chronic disease mortality falls by -2.84 per $10 (p = 0.0022), led by heart disease (-1.15 per $10, p = 0.0066, accounting for 48.4% of the all-cause reduction).',
-        '<strong>Data Provenance:</strong> Exact slopes and diagnostics come from `src/frontend/js/lha-calculator.js`, `public/tools/lha-calculator/methodology.html`, and `Value_of_Public_Health/paper/ajph_submission.tex` (Tables 1-3 and Online Appendix Table A3).'
+        '<strong>Pandemic Period Shift:</strong> From 2020 to 2023 (220 records), COVID-19 aid from state and federal agencies raised mean county health spending by 64.2%, from $102.75 to $168.70 per person. Over the same years, the all-cause death rate rose from 806.02 to 970.80 per 100,000. That produced a +2.47 per $10 link (p = 0.0010), which is 4.85 deaths per 100,000 above the -2.38 pre-COVID result.',
+        '<strong>Urban, Rural &amp; Cause-Specific Links:</strong> In 2003&ndash;2019 (943 records), higher spending links with lower death rates in urban counties above 500,000 people (-2.59 per $10, p &lt; 0.0001). It also links with lower death rates in smaller counties at or below 500,000 people (-2.42, p = 0.0136) and in 2003&ndash;2016 (-2.62, p = 0.0128). Deaths from long-term illnesses show a -2.84 link (p = 0.0022). Heart and blood-vessel disease accounts for the largest share at -1.15 (p = 0.0066, or 48.4% of the yearly link).',
+        '<strong>Where Results Come From:</strong> All estimates and test scores come from CAPHE\'s 57-county Local Health Authority study files and methodology notes.'
       ]
     },
     synthesis: {
-      title: 'Why Regime Separation and Multi-Year Horizons Build Budget Trust',
-      p1: 'County boards and state lawmakers set health budgets in real time. During the 2020 to 2023 COVID-19 emergency, federal and state relief grants boosted county health budgets by 64.2% in response to pandemic death waves. Because emergency aid chased high mortality (+2.47 deaths per 100,000 per $10, p = 0.001), pooling pandemic emergency years with routine budgets makes steady prevention programs look flat (-0.25, p = 0.710).',
-      p2: 'Separating routine pre-pandemic prevention budgets (2003 to 2019, N = 943) from pandemic surge grants reveals clear, compounding mortality reductions across California\'s 57 county health departments. Each $10 per resident averts 2.38 deaths per 100,000 annually ($420,168 per life saved, $32 return per $1), building to 4.32 fewer deaths over 13-year cumulative horizons ($231,481 per life, $59 return per $1), 5.91 over 16 years ($80 return per $1), and 5.31 in 13-year routine-budget models ($72 return per $1). Budget leaders can back base prevention with verified annual and multi-year proof.'
+      title: 'Why Testing Crisis Aid Apart From Regular Budgets Makes Links Clear',
+      p1: 'County health spending rises after large death increases during emergencies, yet is linked to lower death rates in regular years. From 2020 to 2023, COVID-19 aid raised county health spending by 64.2%, from $102.75 to $168.70 per person. Funding increased most where pandemic deaths rose most, giving a +2.47 link (p = 0.001). Combining both periods in one 2003-2023 model mixes two opposite patterns. As a result, the combined estimate is close to zero at -0.25 (p = 0.710).',
+      p2: 'Analyzing the pre-COVID period (2003-2019, 943 records) on its own gives clear within-county comparisons. Each extra $10 per person links to 2.38 fewer deaths per 100,000 each year. Based on 13-year changes, that link is 4.32 fewer deaths per 100,000 each year (unadjusted p = 0.0052; adj. p = 0.067), alongside 5.31 in an extra check and 5.91 over 16 years. Using the $13.6M federal VSL value, those links imply $420,168 per expected death prevented ($32 per $1) yearly and $231,481 ($59 per $1) over 13 years. Those dollar estimates apply only if spending caused the lower death rates; they are not cash received by counties.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Panel &amp; Published Studies:</strong> All slopes (+2.47 pandemic surge, -0.25 pooled 2003-2023, -2.38 pre-COVID annual TWFE, -2.62 single-regime 2003-2016, -2.59 urban, -2.42 smaller/rural, -4.32 13-year long-difference OLS, -5.91 16-year long-difference OLS, and -5.31 / -11.49 Long-Difference Lewbel 2SLS), standard errors, and diagnostics (F = 111.20, Hansen J p = 0.2132) are Mode B estimates from the 57-county working-paper panel (`ajph_submission.tex`).',
-      '<strong>Main Sources:</strong> We cite <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), "How Effective Are Public Health Departments at Preventing Mortality?", Economics &amp; Human Biology, 13, 34-45</a> and <a href="https://doi.org/10.2105/AJPH.2016.303233" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2016), American Journal of Public Health, 106(8), 1477-1482</a>. We also use <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>, and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Mortality Data</a>.'
+      '<strong>Evidence Types (57-County Observed Links &amp; Dollar Values Assuming Cause):</strong> All spending-death estimates come from observed records across 57 California counties without random assignment of spending. Those estimates include +2.47 in 2020&ndash;2023, -0.25 across 2003&ndash;2023, -2.38 yearly in 2003&ndash;2019, -2.62 in 2003&ndash;2016, -2.59 in urban counties, and -2.42 in smaller counties. Multi-year estimates are -4.32 over 13 years (unadjusted p = 0.0052, adjusted p = 0.067), -5.91 over 16 years, and -5.31 in the Lewbel two-stage check (F = 111.20, J-test p = 0.2132). Dollar figures ($420,168, $231,481, and $188,324 per expected death prevented, or $32, $59, and $72 per $1) are illustrative valuations conditional on a causal interpretation at the $13.6M federal value.',
+      '<strong>Primary Sources:</strong> <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), Economics &amp; Human Biology, 13, 34&ndash;45</a>. <a href="https://doi.org/10.2105/AJPH.2016.303233" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2016), American Journal of Public Health, 106(8), 1477&ndash;1482</a>. <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67&ndash;80</a>. <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Reports</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Death Records</a>.'
     ],
     faqs: [
       {
-        question: 'Why does the 2020-2023 pandemic window (+2.47) have the opposite sign of the pre-pandemic routine budget result (2.38 fewer deaths)?',
-        answer: 'During 2020 to 2023, emergency COVID-19 relief grants pushed county public health spending up 64.2% ($99.65 to $168.70 per capita) specifically in response to pandemic mortality waves. That reactive surge (+2.47 deaths/100K per $10) reverses the sign when pooled with routine pre-pandemic prevention (-2.38 deaths/100K).'
+        question: 'Why does 2020-2023 show +2.47 more deaths while 2003-2019 spending is linked to 2.38 fewer deaths?',
+        answer: 'From 2020 to 2023, state and federal COVID-19 aid raised county health spending by 64.2% ($102.75 to $168.70 per person). Funding rose most in counties with large increases in deaths, which explains why each $10 links to 2.47 more deaths per 100,000 in those years. Combining pandemic years with 2003-2019 gives an estimate near zero and obscures the earlier link with 2.38 fewer deaths.'
       },
       {
-        question: 'Why do 13-year and 16-year cumulative long-difference models find larger effects (-4.32 to -5.91) than annual TWFE (-2.38)?',
-        answer: 'Public health prevention works primarily through chronic disease control (where heart disease accounts for 48.4% of the mortality drop). Sustained multi-year investments compound over 4 to 16 years and filter out single-year budget noise, nearly doubling the protective effect from 2.38 to 4.32-5.91 fewer deaths per 100,000.'
+        question: 'Why does the 13-year model show 4.32 fewer deaths (p = 0.067 after adjustment) versus 2.38 in 1-year models?',
+        answer: 'The yearly model compares changes in spending and death rates inside each county from one year to the next (-2.38 per $10, including -1.15 from heart and blood-vessel disease, or 48.4%). The 13-year model compares changes over 13 years and estimates -4.32 (unadjusted p = 0.0052, adj. p = 0.067), alongside -5.91 over 16 years. Both models study observed records over different time spans, and neither proves cause and effect on its own.'
       },
       {
-        question: 'Does public health spending reduce mortality in both urban and rural California counties?',
-        answer: 'Yes. In the 2003 to 2019 pre-COVID panel (N = 943), a $10 per capita increase reduces mortality by 2.59 deaths per 100,000 in large urban counties (>500,000 residents, p < 0.0001) and by 2.42 deaths per 100,000 in smaller and rural counties (<=500,000 residents, p = 0.0136).'
+        question: 'Is regular county health spending linked to lower death rates in both urban and rural counties?',
+        answer: 'Yes, the 2003-2019 county records (943 county-years) show links between higher spending and fewer deaths in both groups. In urban counties above 500,000 residents, each extra $10 per person links to 2.59 fewer deaths per 100,000 (p < 0.0001). In smaller counties at or below 500,000 residents, each $10 links to 2.42 fewer deaths per 100,000 (p = 0.0136).'
       }
     ],
     related: [
-      { slug: 'reverse-causation-feedback', title: 'Outbreak Spending Surges & Multi-Horizon Returns', note: 'Case study detailing pandemic grant feedback and annual vs. cumulative horizons' },
-      { slug: 'study-design-ladder', title: 'Each Public Health Budget Question Requires a Distinct Empirical Study Design', note: 'Case study matching linked administrative records, trend splits, panel analyses, and outreach trials' },
-      { slug: 'sensitivity-analysis-cea', title: 'Testing Which Assumptions Change a Funding Decision', note: 'Case study stress-testing the 32:1 annual and 59:1 cumulative returns across HHS 2025 VSL tiers' }
+      { slug: 'reverse-causation-feedback', title: 'Combining Pandemic Aid With Routine County Health Budgets Mixes Relief Grants With Pre-2020 Links', note: 'Case study separating emergency pandemic aid from pre-2020 county spending links' },
+      { slug: 'study-design-ladder', title: 'Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method', note: 'Case study matching linked state records, trend models, county panels, and call trials' },
+      { slug: 'sensitivity-analysis-cea', title: 'County Health Spending Links Show Higher Value Than Cost Under Three Federal Rates If Causal', note: 'Case study testing conditional $32 yearly and $59 13-year death-risk values across federal tiers' }
     ]
   },
 
@@ -440,209 +442,209 @@ const modules = [
     slug: 'geographic-variables',
     tetsCompanion: [
       {
-        visibleLabel: 'Food Desert Comparison Claim Record',
+        visibleLabel: 'Record of Claims About Low-Income Areas With Long Store Trips',
         title: 'The Food Desert Myth: Evidence Beyond Proximity',
         url: 'https://tooearlytosay.com/research/food-security/food-desert-myth/',
-        claimCovered: 'USDA low-income, low-access tract measures; the published zero-food-desert finding and 4.7x SNAP participation comparison are under reconciliation.'
+        claimCovered: 'USDA low-income, long-trip tract measures; the finding that no tracts met the stated rules and the 4.7x SNAP use comparison are under reconciliation.'
       },
       {
         visibleLabel: 'Statewide Food Access Comparison Record',
         title: 'Food Access Comparison Under Reconciliation',
         url: 'https://tooearlytosay.com/research/food-security/food-access-vulnerability-paradox/',
-        claimCovered: 'Statewide comparison across 9,033 tracts (1.03 versus 1.78 miles to stores by tract composition); its populations and direction conflict with a related page and are under reconciliation.'
+        claimCovered: 'Statewide comparison across 9,033 tracts (1.03 versus 1.78 miles to stores by tract group); it disagrees with a related page and is under reconciliation.'
       },
       {
-        visibleLabel: 'Statewide Mobility Desert Estimate Record',
+        visibleLabel: 'Statewide Limited-Transit Area Estimate Record',
         title: 'Mobility Deserts: Transit Proximity Under Review',
         url: 'https://tooearlytosay.com/research/transit-equity/hidden-mobility-deserts/',
-        claimCovered: 'Article-reported 12% statewide mobility-desert rate across 9,039 tracts; the transit-stop inventory (64,060 raw versus about 24,000 unique records) is under reconciliation.'
+        claimCovered: 'Article-reported finding that 12% of 9,039 state tracts have limited transit access; the stop list (64,060 raw versus about 24,000 distinct records) is under reconciliation.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Spatial Proxies vs. Trip Distance (Mode B 408 Santa Clara &amp; 251 Rural/Valley Tracts)',
-    pageTitle: 'Geography: Proxy vs. Causal Mechanism | CAPHE',
-    metaDescription: 'Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-index spread (58.1 pp unique R2 gain) while store distance adds 0.003 pp (p = 0.827).',
-    h1: 'Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance',
-    subtitle: 'We compare local poverty and SNAP rates with store distance across city, suburb, and rural census tracts.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Tract Poverty vs. Store Distance',
+    pageTitle: 'Tract Poverty vs. Store Miles in Food Scores | CAPHE',
+    metaDescription: 'Across 408 Santa Clara census tracts, poverty accounts for 62.2% of food-need score differences, while store distance adds 0.003 pp (p = 0.827).',
+    h1: 'Tract Poverty Explains Most of Santa Clara\'s Food-Need Score Compared With Store Miles',
+    subtitle: 'Comparing how tract poverty and SNAP store miles relate to food-need scores in four counties.',
     endnotes: [
-      '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Census Tract Poverty, SNAP &amp; Vehicle Access Estimates (N = 408 Santa Clara Tracts, N = 225 Fresno Tracts &amp; N = 26 Nevada County Tracts).',
-      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator Geo-Verified Store Coordinates (514 Santa Clara SNAP Stores).',
-      '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service (ERS)</a>: Food Access Research Atlas Low-Income and Low-Access Tract Definitions (1-Mile Urban and 10-Mile Rural Thresholds).'
+      '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: Five-year survey tract data on poverty, SNAP use, and car access (408 Santa Clara, 225 Fresno, and 26 Nevada County tracts).',
+      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP store locations checked for map accuracy (514 Santa Clara SNAP stores).',
+      '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service (ERS)</a>: Food Access Research Atlas low-income and long-distance tract rules (1 mile in cities and 10 miles in rural areas).'
     ],
-    policySettingHtml: 'Local health agencies map census tracts to decide where to send mobile food vans and grocery outreach. Some neighborhood maps focus on distance to the nearest supermarket, while others weight household poverty and CalFresh enrollment. Comparing poverty rates with store distance across suburban and rural tracts guides where each tool fits.',
-    answerHtml: 'Across <strong>408 Santa Clara County tracts</strong>, household poverty accounts for <strong>62.2%</strong> of the 5-part food index (<strong>58.1 percentage points</strong> of unique explained spread, vs. <strong>0.003 points</strong> from distance, <em>p</em> = 0.827) because poverty and SNAP hold 55% of index weight and <strong>93.4% of tracts</strong> sit within 1 mile [1,2]. Distance maps alone flag suburban foothills (<strong>4.1% of spread</strong>) where <strong>26 of 27 tracts</strong> past 1 mile have under 20% poverty [2,3]. Pairing poverty with trip miles separates urban outreach from rural and valley gaps in Fresno (<strong>30 of 225 tracts, 13.3%</strong>) [1,3].',
+    policySettingHtml: 'County food teams map census tracts, which are small Census areas. Those maps help place Supplemental Nutrition Assistance Program (SNAP) staff, mobile markets, and delivery routes. Checking tracts by store miles alone treats every long drive the same. Some high-pay foothill suburbs have high car ownership and zoning that limits shops. Meanwhile, low-pay city renters often live near food stores they still cannot afford. Combining tract poverty with store distance separates trouble paying for food from long rural trips.',
+    answerHtml: 'In Santa Clara County, poverty accounts for far more food-need score differences than store miles across <strong>408 census tracts</strong> [1,2]. The five-part score weights poverty (30%), SNAP use (25%), store distance (20%), homes without cars (15%), and low density (10%) [1,2]. Adding poverty to distance explains <strong>58.1 pp</strong> (percentage points) more score differences (<strong>62.2%</strong> total, <strong>60.6%</strong> partial) [1]. County median pay is 532% of four-person Federal Poverty Level (FPL) [1]. After poverty is included, SNAP store distance adds <strong>0.003 pp</strong> (<em>p</em> = <strong>0.827</strong>, no clear link) [1,2]. In fact, <strong>93.4%</strong> of tract centers are within 1 mile of a store [1,2]. Of 27 tracts past 1 mile, 26 have under 20% poverty [1,2]. Only 1 tract (<strong>1.218 miles</strong>, <strong>3,252 residents</strong>) meets both study rules [1,2]. By contrast, U.S. Department of Agriculture (USDA) rules cover <strong>30 of 225</strong> Fresno tracts (<strong>13.3%</strong>, up to <strong>15.53 mi</strong>), and Nevada County trips average <strong>2.92 mi</strong> (<strong>12.43 mi</strong> max) [1,3].',
     block2: {
-      title: 'Two Spatial Rulers on the 5-Part Composite Index: Poverty Rate vs. Store Distance (N = 408 Tracts)',
-      contextTag: 'Mode B Composite Vulnerability Index Split (30% Poverty, 25% SNAP, 20% Distance, 15% No-Car, 10% Density; Santa Clara N = 408 Tracts)',
-      ariaLabel: 'Comparison of the share of the 5-component tract vulnerability index accounted for by household poverty at 62.2% (58.1 percentage points unique R-squared gain) versus distance to SNAP grocery stores at 0.003 percentage points unique R-squared gain after accounting for poverty',
+      title: 'Poverty Rate vs. Store Distance in the Five-Part Food-Need Score (408 Tracts)',
+      contextTag: 'What Accounts for Differences in the Combined Food-Need Score (408 Tracts)',
+      ariaLabel: 'Comparison of score differences accounted for by poverty at 62.2% versus store distance at 0.003 pp after including poverty',
       ruler1: {
-        title: 'Ruler 1: Tract Poverty Rate (30% Index Weight)',
-        stat: '62.2% of Index Spread (+58.1 pp Unique R² Gain)',
-        ariaLabel: 'Household poverty accounts for 62.2% of composite index variation, with a 58.1 percentage point unique R-squared gain beyond distance and a +0.787 standardized slope',
+        title: 'Tract Poverty Rate (30% Score Weight)',
+        stat: '62.2% of Score Differences (+58.1 pp Added)',
+        ariaLabel: 'Household poverty accounts for 62.2% of combined score differences',
         segments: [
-          { cls: 'seg-primary', width: 62, label: 'Poverty Accounts for 62.2% of Index (+58.1 pp Unique R² Gain)' },
-          { cls: 'seg-rest', width: 38, label: 'Remaining Index Spread (37.8%)' }
+          { cls: 'seg-primary', width: 62, label: 'Poverty: 62.2% (+58.1 pp Added)' },
+          { cls: 'seg-rest', width: 38, label: 'Remaining Share (37.8%)' }
         ],
-        desc: 'Tract poverty accounts for <strong>62.2% of the 5-part index spread</strong> (a <strong>+58.1 pp unique R&sup2; gain</strong> above distance, <strong>60.6% partial R&sup2;</strong>, and a <strong>+0.787 standardized slope</strong>) because poverty and SNAP vary widely across city tracts.'
+        desc: 'Tract poverty accounts for 62.2% of differences in the five-part food-need score.'
       },
       ruler2: {
-        title: 'Ruler 2: Store Trip Distance (Checked With Poverty)',
-        stat: '+0.003 pp Unique R² Gain (Flat -0.006 Slope, p = 0.827)',
-        ariaLabel: 'After accounting for poverty, distance to SNAP stores adds 0.003 percentage points of unique R-squared gain (0.009% partial R-squared) with a flat -0.006 standardized slope',
+        title: 'Store Distance (After Including Poverty)',
+        stat: '+0.003 pp Added (p = 0.827)',
+        ariaLabel: 'After including poverty, store distance adds 0.003 percentage points',
         segments: [
           { cls: 'seg-Housing', width: 4, label: '4.1% Alone' },
-          { cls: 'seg-rest', width: 96, label: '+0.003 pp Unique R² Gain After Poverty Check (p = 0.827)' }
+          { cls: 'seg-rest', width: 96, label: '+0.003 pp Added (p = 0.827)' }
         ],
-        desc: 'Store distance alone accounts for <strong>4.1% of index spread</strong> with a minus sign because <strong>26 of 27 tracts</strong> past 1 mile are lower-poverty foothills. Accounting for poverty leaves a <strong>+0.003 pp unique R&sup2; gain</strong> (<em>p</em> = 0.827).'
+        desc: 'After poverty is included, store miles add 0.003 pp to explained score differences (p = 0.827).'
       }
     },
     table1: {
-      title: 'Table 1. Store Trips, Local Poverty &amp; Car Access Across Four California Areas',
-      subtitle: 'We compare store distance, local poverty, car access, and composite index spread across four California areas.',
-      caption: 'Empirical comparison of store distance, poverty rate, SNAP use, car access, and composite index spread across four California areas.',
-      cornerLabel: 'Area &amp; Index Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Observed Tract &amp; County Data):</strong> We use observed U.S. Census ACS 5-Year tract estimates and USDA SNAP Retailer Locator coordinates across Santa Clara County (N = 408 tracts, 514 SNAP stores, 755 DEH permits), Fresno County (N = 225 tracts), and Nevada County (N = 26 tracts; `county_rankings_ca_2023.csv`). In Santa Clara County (`regression_model_statistics.csv` and `regression_results_poverty_distance.csv`, White HC3), the outcome is the 5-component Extended Vulnerability Index (0-1 scale: 30% poverty rate, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle share, 10% inverse density). Full-model R² = 62.17% (poverty alone R² = 62.17%, distance alone R² = 4.11%). Unique R² gain (semi-partial ΔR², labeled `Partial R²` in the saved CSV) is +58.06 pp for poverty and +0.0033 pp for distance; true partial R² is 60.55% for poverty and 0.0088% for distance. Poverty β_std = +0.787 (t = 12.51, p &lt; 0.0001) vs. distance β_std = -0.006 (t = -0.22, p = 0.827), VIF = 1.59.',
+      title: 'Table 1. Store Miles, Tract Poverty, and Food-Need Score Differences in Four Areas',
+      subtitle: 'Checking SNAP store miles, tract poverty, car access, and score gaps in four areas.',
+      caption: 'Table 1: Compare store distances, poverty, SNAP use, car access, and how poverty and distance relate to the combined food-need score in four California settings.',
+      cornerLabel: 'Tract &amp; Score Measure',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Tract Comparisons &amp; What Accounts for Score Differences):</strong> Tract data combine 2019&ndash;2023 Census survey tables with location-checked USDA SNAP store lists across Santa Clara County (408 tracts, 514 SNAP stores, 755 permitted grocers), Fresno County (225 tracts), and Nevada County (26 tracts). In Santa Clara County, the model studies a five-part food-need score on a 0 to 1 scale. It gives 30% weight to poverty, 25% to SNAP use, 20% to scaled store distance, 15% to homes without cars, and 10% to low density (fewer people per square mile). The full model explains 62.17% of score differences. Poverty alone explains 62.17%. Distance alone explains 4.11%, with longer trips linked to lower scores because distant tracts are mostly low-poverty hills. Adding poverty to distance adds 58.06 pp (58.1 pp), while adding distance to poverty adds 0.0033 pp (0.003 pp). Of the remaining differences, poverty explains 60.55% (60.6%) and distance explains 0.0088% (0.009%). On a shared scale, the poverty link is +0.787 (p &lt; 0.0001) and distance is -0.006 (p = 0.827). Input overlap is low, with a variance inflation factor of 1.59.',
       columns: [
-        { tag: 'Group 1', tagHighlight: true, title: 'Campus Renter Tract', subtitle: 'Mountain View Tract 5116.08 (1 of 408 county tracts, 3,252 residents).' },
-        { tag: 'Group 2', tagHighlight: false, title: 'High-Pay Car Foothills', subtitle: 'Saratoga / Los Altos Hills Tract 5073.02 (26 of 27 tracts &gt;1 mile from store).' },
-        { tag: 'Group 3', tagHighlight: false, title: 'Dense Suburb County', subtitle: 'Santa Clara County baseline (N = 408 tracts, 514 SNAP stores / 755 permits).' },
-        { tag: 'Group 4', tagHighlight: true, title: 'Rural &amp; Valley Counties', subtitle: 'Fresno County (N = 225 tracts) &amp; Nevada County (N = 26 tracts).' }
+        { tag: 'Setting 1: Meets Both Rules', tagHighlight: true, title: 'Mountain View Tract 5116.08', subtitle: 'Tract 5116.08 is the only one of 408 Santa Clara tracts with 20%+ poverty and &gt;1 mile to a SNAP store (3,252 residents).' },
+        { tag: 'Setting 2: Foothill Tracts', tagHighlight: false, title: 'Low-Poverty Foothill Tracts', subtitle: 'Tract 5073.02 in the Saratoga hills; 26 of 27 county tracts &gt;1 mile from a SNAP store have under 20% poverty.' },
+        { tag: 'Setting 3: Countywide Score', tagHighlight: false, title: 'Santa Clara Countywide', subtitle: 'All 408 census tracts across 514 confirmed SNAP stores and 755 permitted grocers.' },
+        { tag: 'Setting 4: Valley &amp; Rural', tagHighlight: true, title: 'Fresno &amp; Nevada Counties', subtitle: 'Fresno County (225 tracts) and rural Nevada County in the Sierra foothills (26 tracts).' }
       ],
       rows: [
         {
-          label: 'Trip to Nearest SNAP Store',
+          label: 'Distance to Confirmed SNAP Store',
           cells: [
-            { val: '1.218 miles (&gt;1.0 mi city line)' },
-            { val: '2.970 miles (low-density hills)' },
+            { val: '1.218 miles (&gt;1.0 mi city rule)' },
+            { val: '2.970 miles (low-density foothills)' },
             { val: '0.573 mi mean (0.409 mi median)' },
             { val: 'Nevada 2.92 mi | Fresno 1.45 mi' }
           ]
         },
         {
-          label: 'Tract Poverty &amp; Pay Ratio',
+          label: 'Tract Poverty &amp; Income Context',
           cells: [
-            { val: '22.1% poverty (&ge;20% USDA line)' },
+            { val: '22.1% poverty (&ge;20% rule)' },
             { val: '3.7% poverty (2,640 residents)' },
-            { val: '532% FPL county mean pay' },
-            { val: 'Fresno 19.1% pov | Nevada 10.5%' }
+            { val: '532% FPL county median pay' },
+            { val: 'Fresno 19.1% poverty | Nevada 10.5%' }
           ]
         },
         {
-          label: 'SNAP Use &amp; Car Access',
+          label: 'CalFresh Use &amp; Car Access',
           cells: [
-            { val: '5.3% SNAP | 4.8% no car (52 HH)' },
+            { val: '5.3% SNAP | 4.8% no car (52 homes)' },
             { val: 'Low SNAP | High car ownership' },
             { val: '5.5% SNAP | 93.4% &le;1 mi (381/408)' },
             { val: '30 of 225 Fresno tracts low-access' }
           ]
         },
         {
-          label: 'USDA Low-Access Pattern',
+          label: 'Distance Rule Pattern',
           cells: [
-            { val: 'Only 1 of 408 tracts (0.2% pop)' },
-            { val: '26 of 27 &gt;1 mi tracts &lt;20% pov' },
-            { val: ' Distance alone R² = 4.1% (minus)' },
-            { val: 'Max 12.43 mi (Nev) / 15.53 mi (Fre)' }
+            { val: 'Only 1 of 408 tracts (3,252 residents)' },
+            { val: '26 of 27 &gt;1 mi tracts &lt;20% poverty' },
+            { val: '4.1% alone (longer trip, lower score)' },
+            { val: 'Longest: 12.43 mi (Nev) / 15.53 mi (Fre)' }
           ]
         },
         {
-          label: 'Share of Food Index Explained',
+          label: 'Share of Score Differences Explained',
           highlight: true,
           cells: [
             { val: '+58.1 pp from poverty (60.6% partial)', barWidth: 93, barColor: '#0041A5', textColor: 'text-[#003080]' },
             { val: '+0.003 pp from distance (0.009% partial)', barWidth: 1, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: 'Poverty slope 132x larger in index', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '13.3% Fresno USDA food deserts', barWidth: 13, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: 'Poverty link 132x larger on shared scale', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '13.3% Fresno USDA low-access tracts', barWidth: 13, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Standardized Index Slope',
+          label: 'Link Size on Shared Scale',
           cells: [
-            { val: '+0.787 slope from poverty' },
-            { val: '-0.006 slope from distance' },
-            { val: '62.2% full-model index R²' },
+            { val: '+0.787 poverty link on shared scale' },
+            { val: '-0.006 distance link (p = 0.827)' },
+            { val: '62.2% full-model score differences' },
             { val: 'Nevada median trip 1.98 miles' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Pairing Income and Trip Measures Across Suburban, Valley, and Rural Tracts',
-      subtitle: 'We match the screening rule to what poverty and store distance measure in each California area.',
-      caption: 'Decision matrix evaluating local context, index behavior, single-metric screening risk, and targeting rules across four areas.',
+      title: 'Table 2. Choosing Food Aid and Mobile Markets for City and Rural Areas',
+      subtitle: 'Matching food aid in dense suburbs and mobile market routes in rural counties to tract data.',
+      caption: 'Table 2: Compare area traits, tract findings, what distance-only checks leave out, and how counties can choose where to offer aid.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'Local Area &amp; Renter Context',
+          label: 'Area &amp; Store Layout',
           cells: [
-            { val: 'High-rent (84.8%) Mountain View tract near Shoreline Park with 95.2% car access.' },
-            { val: 'Saratoga and Los Altos Hills tracts with large lots and no retail zoning.' },
-            { val: 'Dense suburb county where 381 of 408 tracts (93.4%) sit within 1 mile of a SNAP store.' },
-            { val: 'Fresno County (30 of 225 low-access tracts) and rural Nevada County (2.92 mi mean trip).' }
+            { val: 'In this Mountain View tract near Shoreline Park, 84.8% of homes rent and 95.2% have a car.' },
+            { val: 'Large-lot Saratoga and Los Altos Hills foothill tracts where zoning limits rows of shops.' },
+            { val: 'Store-dense urban county where centers of 381 of 408 tracts (93.4%) are within 1.0 mile of a SNAP store.' },
+            { val: 'Farming Fresno County (30 of 225 low-income, long-trip tracts) and rural Nevada County (2.92 mi mean trip).' }
           ]
         },
         {
-          label: 'What the Tract Measures Show',
+          label: 'What Tract Data Show',
           cells: [
-            { val: 'Only 1 county tract meets both USDA cutoffs (1.218 mi and 22.1% poverty), with 5.3% SNAP use.' },
-            { val: '26 of 27 Santa Clara tracts past 1 mile from a SNAP store have under 20% poverty.' },
-            { val: 'Poverty accounts for 62.2% of the 5-part index spread while distance adds +0.003 pp unique spread.' },
-            { val: 'In Fresno (max 15.53 mi) and Nevada County (max 12.43 mi), long trips and poverty overlap.' }
+            { val: 'Meets this study\'s 20% poverty and 1-mile SNAP rules (1.218 miles, 22.1% poverty, 3,252 residents; 5.3% SNAP).' },
+            { val: 'Low-poverty hills make up 26 of 27 tracts past 1.0 mile, linking longer trips with lower poverty.' },
+            { val: 'Poverty accounts for 62.2% of score differences (+58.1 pp added); distance adds +0.003 pp (p = 0.827).' },
+            { val: 'Store trips up to 15.53 miles in Fresno and 12.43 miles in Nevada occur alongside low pay.' }
           ]
         },
         {
-          label: 'Risk of Distance-Only Screening',
+          label: 'Error of Distance-Only Checks',
           cells: [
-            { val: 'Relying on the 1-mile line alone flags 1 tract while skipping high-SNAP urban renter tracts.' },
-            { val: 'Sending food vans to tracts past 1 mile without a poverty check puts 26 of 27 routes in rich hills.' },
-            { val: 'Treating a composite index slope as a store-opening trial misreads an observational accounting split.' },
-            { val: 'Applying dense suburban distance patterns to rural Sierra or valley tracts leaves out 12-to-15-mile trips.' }
+            { val: 'The 1-mile rule finds 27 tracts and 1 meets the poverty rule, leaving out high-need city renter tracts.' },
+            { val: 'Sending mobile food vans to all >1-mile tracts without checking poverty sends service to 26 low-poverty hill tracts.' },
+            { val: 'Treating a comparison of score differences as a test of opening a new store overstates cause.' },
+            { val: 'Using suburban store rules in valley or mountain counties misses store trips of 12 to 15 miles.' }
           ]
         },
         {
-          label: 'Best Targeting &amp; Screening Action',
+          label: 'Recommended County Rule',
           policyFit: true,
           cells: [
-            { headline: 'Check SNAP &amp; Cars Before Siting', detail: 'Check SNAP use (5.3%) and no-car homes (52 HH) alongside the 1.2-mile trip.' },
-            { headline: 'Pair Distance Maps With Poverty', detail: 'Filter >1-mile tract lists by poverty (>=20%) and no-car shares before routing vans.' },
-            { headline: 'Target CalFresh in High-Poverty Tracts', detail: 'Use poverty and SNAP rates to target benefit outreach in dense urban tracts.' },
-            { headline: 'Route Vans &amp; EBT to Rural Gaps', detail: 'Target mobile pantries and online EBT delivery where >1-10 mi trips meet high poverty.' }
+            { headline: 'Check Cars &amp; SNAP Use Too', detail: 'Review homes without cars (52 homes) and low CalFresh use (5.3%) before choosing sites for fixed pantries.' },
+            { headline: 'Require 20%+ Tract Poverty', detail: 'Filter >1-mile tract lists by 20%+ poverty and car access so foothill zoning does not misdirect vans.' },
+            { headline: 'Prioritize Food Aid in Cities', detail: 'Focus city outreach on CalFresh sign-up help and post-rent food money in high-poverty tracts.' },
+            { headline: 'Send Vans to Long-Trip Areas', detail: 'Send mobile markets and Electronic Benefit Transfer (EBT) delivery where residents have long trips and high poverty.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Composite Index Definition, Semi-Partial vs. Partial R² &amp; Provenance',
+      notesTitle: 'Table 2 Notes: Score Weights, Added Information Measures &amp; Data Sources',
       notesBullets: [
-        '<strong>Composite Index Definition &amp; Regression Decomposition (Mode B, N = 408 Santa Clara Tracts):</strong> In `regression_poverty_vs_distance.py` (`regression_results_poverty_distance.csv` and `regression_model_statistics.csv`), the dependent variable is the 5-component Extended Vulnerability Index (`0-1` scale, mean `0.1960`, range `0.0988` to `0.4818`; `extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json`), weighted `30%` poverty rate (ACS S1701), `25%` SNAP participation, `20%` normalized distance to 514 SNAP stores, `15%` no-vehicle households (ACS B25044), and `10%` inverse population density. Because poverty and distance are components of this index, the OLS model (`Index_0_1 = 0.1294 + 0.9920(Poverty_Rate, SE = 0.0793, t = 12.51, p < 0.0001, β_std = +0.787) - 0.0026(Distance_mi, SE = 0.0117, t = -0.22, p = 0.827, β_std = -0.006)`, White HC3, `R² = 0.6217`, `F = 80.24`, `VIF = 1.59`) is a cross-sectional variance decomposition of the index, not a causal estimate of store openings. Poverty alone gives `R² = 0.6217 (62.2%)` and distance alone gives `R² = 0.0411 (4.1%)`. The semi-partial `ΔR²` (`R²_full - R²_reduced`, labeled `Partial R²` in `regression_model_statistics.csv`) is `0.5806 (58.1 pp)` for poverty and `0.000033 (0.003 pp)` for distance; the true partial `R²` (`ΔR² / (1 - R²_reduced)`) is `0.6055 (60.6%)` for poverty given distance and `0.000088 (0.009%)` for distance given poverty. On the 0-100 index scale in `PHASE6_FINAL_DELIVERABLE.md`, the slopes are `+0.7768` and `-0.0173` (`β_std` ratio `0.7870 / 0.00594 = 132.5x`).',
-        '<strong>Data Provenance:</strong> Exact results come from `FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv, FoodSecurity/analysis/outputs/regression_model_statistics.csv, FoodSecurity/data/processed/extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json, FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv, FoodSecurity/FOOD_DESERT_LOCATION_DETAILS.md (L1-115), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110)`.'
+        '<strong>Score Weights &amp; Descriptive Scope (408 Santa Clara Tracts):</strong> The model studies the five-part Extended Vulnerability Index on a 0 to 1 scale. Its weights are 30% poverty, 25% SNAP use, 20% scaled distance to 514 SNAP stores, 15% homes without cars, and 10% low density. Because poverty and distance are parts of the score, the model (R&sup2; = 0.6217) describes differences in current scores rather than estimating what opening a store would cause. On a shared scale, the poverty link is +0.787 (p &lt; 0.0001) and distance is -0.006 (p = 0.827). Error checks allow unequal error spread (HC3, F = 80.24, overlap score = 1.59). Adding poverty adds 58.06 pp (58.1 pp) and distance adds 0.0033 pp (0.003 pp), while partial shares are 60.55% (60.6%) versus 0.0088% (0.009%).',
+        '<strong>Data Sources:</strong> Tract and county numbers come from CAPHE\'s Food Security study outputs for Santa Clara, Fresno, and Nevada counties.'
       ]
     },
     synthesis: {
-      title: 'What Cross-Sectional Tract Maps Can and Cannot Tell a County Team',
-      p1: 'A census-tract map summarizes where low-income households and grocery stores sit, but a single distance threshold can misclassify dense suburbs. In Santa Clara County (N = 408 tracts, 514 verified SNAP stores), 93.4% of tracts (381 of 408) sit within 1.0 mile of a SNAP store (mean 0.573 miles, median 0.409 miles). Of the 27 tracts beyond 1.0 mile, 26 are lower-poverty foothill areas (such as Tract 5073.02 at 2.97 miles and 3.7% poverty), while only 1 tract (Mountain View Tract 5116.08, 3,252 residents, 1.218 miles, 22.1% poverty) meets both USDA food-desert cutoffs.',
-      p2: 'Decomposing the county\'s 5-part vulnerability index (weighted 30% poverty, 25% SNAP, 20% store distance, 15% no-car share, and 10% density) shows that poverty accounts for 62.2% of index variance (+58.1 pp unique R² gain, 60.6% partial R²), whereas store distance adds +0.003 pp unique R² gain (p = 0.827) once poverty is included. Because this is an observational decomposition of a composite index in a store-dense county, it does not test the causal effect of building a store. Instead, it shows that suburban teams should pair poverty and SNAP rates with car access rather than screening by distance alone, while rural and valley counties with wider store gaps (such as Fresno County with 30 of 225 tracts at 13.3% USDA low-access up to 15.53 miles, and Nevada County averaging 2.92 miles up to 12.43 miles) require joint income-and-distance targeting.'
+      title: 'How Food-Need Scores Help Counties Choose Food Benefits or Store Access',
+      p1: 'Measuring miles to the nearest grocer without checking pay misreads suburbs where hillside zoning limits shops. Across Santa Clara\'s 408 tracts and 514 SNAP stores, 93.4% of tracts (381) have centers within 1.0 mile of a store. The county mean trip is 0.573 miles. Of the 27 tracts past 1.0 mile, 26 are foothill tracts with under 20% poverty, such as Tract 5073.02 (2.970 miles, 3.7% poverty). This study checks for both 20%+ poverty and >1.0 mile from a tract center to a SNAP store. Only Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) meets both rules.',
+      p2: 'Checking the five-part score shows that poverty accounts for 62.2% of score differences (+58.1 pp added, 60.6% partial). After poverty is included, store miles add just +0.003 pp (p = 0.827). Poverty and distance are both parts of that score. So this comparison describes current need rather than testing a new store. These findings support CalFresh sign-up help and post-rent food money in dense suburbs. Mobile markets and EBT delivery instead fit rural counties like Fresno (30 of 225 tracts meeting USDA rules, 13.3%, up to 15.53 mi) and Nevada (2.92 mi mean, 12.43 mi max).'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Composite-Index Decomposition &amp; County Comparisons:</strong> All regression figures (`N = 408`, `R² = 62.17%`, poverty-only `R² = 62.17%`, distance-only `R² = 4.11%`, semi-partial `ΔR² = 58.06 pp` vs. `0.0033 pp`, true partial `R² = 60.55%` vs. `0.0088%`, `β_std = +0.7870` vs. `-0.0059`, `p = 0.827`, `F = 80.24`, `VIF = 1.59`) come from `FoodSecurity/analysis/outputs/regression_model_statistics.csv` and `regression_results_poverty_distance.csv` on the 5-component Extended Vulnerability Index (`extended_vulnerability_index_SNAP_VERIFIED_20251029_metadata.json`). Rural and valley comparisons (`Fresno County: 30 of 225 tracts = 13.3% food deserts, mean 1.45 mi, max 15.53 mi; Nevada County: 26 tracts, mean 2.92 mi, median 1.98 mi, max 12.43 mi`) come from `FoodSecurity/data/processed/statewide/county_rankings_ca_2023.csv`. Companion TooEarlyToSay pages (including the article-reported 12% or 1,086 of 9,039 tracts statewide mobility-desert series flagged in `FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md` for incomplete transit agency coverage and coordinate-projection reconciliation) are excluded from empirical claims and policy recommendations on this page.',
-      '<strong>Main Sources:</strong> We use <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau American Community Survey (ACS 5-Year Tract Estimates)</a> and <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator (Geo-Verified Store Coordinates)</a>. We also use <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.'
+      '<strong>Sources for Observed Tract Data and Score Comparisons:</strong> All model numbers across 408 Santa Clara tracts come from observed tract records. The full model explains 62.17% of score differences (poverty alone 62.17%, distance alone 4.11%). Added share is 58.06 pp for poverty versus 0.0033 pp for distance, and partial share is 60.55% versus 0.0088%. Shared-scale links are +0.7870 versus -0.0059 (p = 0.827, F = 80.24, overlap score = 1.59). In Fresno County, 30 of 225 tracts (13.3%) meet USDA rules, with a 1.45-mile mean and 15.53-mile max. In Nevada County (26 tracts), trips average 2.92 miles, with a 1.98-mile median and 12.43-mile max. Related TooEarlyToSay pages whose conflicting results are still being checked are not used for claims or rules on this page.',
+      '<strong>Primary Sources:</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Tract Estimates</a>. <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator</a>. <a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA ERS Food Access Research Atlas</a>.'
     ],
     faqs: [
       {
-        question: 'Why did store distance show a negative single-factor R² of 4.1% if its unique R² gain after accounting for poverty is +0.003 pp (p = 0.827)?',
-        answer: 'That pattern reflects spatial sorting across Santa Clara County\'s 408 tracts. Exactly 26 of the 27 tracts located more than 1.0 mile from a SNAP store are lower-poverty foothill areas (under 20% poverty). In a single-factor regression on the composite index, distance acts as a proxy for foothill affluence. Once poverty rate is included, distance adds +0.003 pp of unique R² gain (0.009% partial R², p = 0.827).'
+        question: 'Why does store distance explain 4.1% of score differences alone but add only 0.003 pp (p = 0.827) after poverty is included?',
+        answer: 'In Santa Clara County, 26 of the 27 tracts more than 1.0 mile from a SNAP store are in low-poverty hills. In the distance-only model, longer store trips link with lower food-need scores (4.1% of differences) because high-pay hillside zoning limits shops. Once tract poverty is included, store miles add just +0.003 pp of explained differences (0.009% partial, p = 0.827).'
       },
       {
-        question: 'What is the difference between semi-partial ΔR² (58.1 pp) and partial R² (60.6%), and what does the composite index measure?',
-        answer: 'The outcome is a 0-1 composite index weighted 30% poverty, 25% SNAP rate, 20% normalized store distance, 15% no-vehicle households, and 10% inverse density. Semi-partial ΔR² (58.06 pp, labeled Partial R² in the saved summary CSV) subtracts distance-only R² (4.11%) from full-model R² (62.17%). True partial R² divides that 58.06 pp gain by the 95.89% variance left unexplained by distance alone, giving 60.55% (60.6%).'
+        question: 'Why do the two measures of poverty\'s added information give 58.1 pp and 60.6%?',
+        answer: 'Both numbers show how much score difference poverty explains beyond store distance, using two totals. The full model explains 62.17% and distance alone explains 4.11%, so subtracting gives 58.06 pp (58.1 pp), called unique R-squared gain. Distance alone leaves 95.89% unexplained, and dividing 58.06 pp by 95.89% gives 60.55% (60.6%), called partial R-squared.'
       },
       {
-        question: 'Why was only 1 of 408 Santa Clara County tracts flagged as a USDA food desert compared with 30 of 225 tracts (13.3%) in Fresno County?',
-        answer: 'The USDA urban food-desert rule requires BOTH >=20% tract poverty AND >1.0 mile to a supermarket (>10 miles in rural tracts). Santa Clara County has 514 verified SNAP stores (mean distance 0.573 miles, 93.4% of tracts within 1.0 mile), so only Mountain View Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) crosses both lines. Fresno County spans wider rural and agricultural tracts (mean 1.45 miles, max 15.53 miles), where 30 of 225 tracts (13.3%) cross both thresholds.'
+        question: 'How do USDA low-income and low-access rules differ from this study\'s rules that identify 1 of 408 Santa Clara tracts?',
+        answer: 'The USDA Food Access Research Atlas marks low-income tracts by 20%+ poverty. Tracts also qualify if median family pay is at or below 80% of state or metro medians. At least 500 people or one-third must also live past 1 mile in cities (10 miles rural) from a large grocer. Under USDA rules, 15 of 408 Santa Clara tracts and 30 of 225 Fresno tracts (13.3%) qualify. This study\'s separate SNAP rules require both 20%+ poverty and a tract center past 1.0 mile from 514 SNAP stores. Only Tract 5116.08 (1.218 miles, 22.1% poverty, 3,252 residents) meets both rules.'
       }
     ],
     related: [
-      { slug: 'food-affordability-tradeoffs', title: 'Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs', note: 'Track 2 reference case comparing FPL, CPM, MIT Living Wage, and Housing-First residual income' },
-      { slug: 'threat-measurement-instrumentation', title: 'Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories', note: 'Case study showing how SNAP EBT verification and GTFS transit feeds change tract metrics' },
-      { slug: 'food-insecurity-diabetes', title: 'Untangling Food Insecurity & Diabetes Feedback', note: 'Track 4 flagship case study on bidirectional chronic-disease pathways' }
+      { slug: 'food-affordability-tradeoffs', title: 'Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits', note: 'Case study comparing pre-rent income limits against post-rent food cost shares' },
+      { slug: 'threat-measurement-instrumentation', title: 'Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same', note: 'Case study showing how SNAP EBT checks and permit record merging change tract measures' },
+      { slug: 'food-insecurity-diabetes', title: 'High Rent and Local Poverty Explain Food Need and Diabetes Rates Better Than Store Miles', note: 'Case study pairing post-rent food budgets with neighborhood poverty and chronic-care needs' }
     ]
   },
 
@@ -653,75 +655,75 @@ const modules = [
     slug: 'identical-data-opposite-policies',
     tetsCompanion: [
       {
-        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        visibleLabel: 'Statewide Analysis of Community Health Worker Pay',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a fixed $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of estimated field worker costs.'
       }
     ],
     tier: 'community',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Nominal vs. Real Indices (Mode B Official GPCI &amp; ACS Data)',
-    pageTitle: 'Nominal vs. Cost-Adjusted Medi-Cal Fees | CAPHE',
-    metaDescription: 'See how California\'s uniform nominal Medi-Cal schedule interacts with CMS Practice Expense GPCI (1.506 in San Francisco vs 0.900 in Imperial) and ACS rents.',
-    h1: 'Uniform Statewide Medi-Cal Fee Schedules Deliver Unequal Clinic Purchasing Power Across Counties',
-    subtitle: 'We compare local clinic costs with area need to match payment rates and staff grants.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Clinic Operating Costs vs. Local Hardship',
+    pageTitle: 'City Clinic Costs vs. Inland Need in Medi-Cal | CAPHE',
+    metaDescription: 'Compare Medi-Cal visit fees with clinic cost scores (1.506 in San Francisco vs. 0.900 in Imperial) and local poverty across California.',
+    h1: 'Fixed Medi-Cal Visit Fees Do Not Meet City Clinic Costs While Poor Inland Areas Lack Care',
+    subtitle: 'Using clinic wage and rent scores to set fees and local poverty ranks to direct grants.',
     endnotes: [
-      '<a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Centers for Medicare &amp; Medicaid Services (CMS)</a>: CY 2026 Physician Fee Schedule Final Rule Practice Expense GPCI (with CAPHE 3-part cost shares: 55.6% clinical wages, 29.7% rent, 14.7% estimated services).',
-      '<a href="https://www.neighborhoodatlas.medicine.wisc.edu/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">University of Wisconsin School of Medicine and Public Health</a>: Area Deprivation Index (ADI) Neighborhood Atlas &amp; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.',
-      '<a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">MACPAC (Jan 2025) &amp; Dunn et al.</a>: Medicaid Provider Billing Friction (17.6% claim value loss) &amp; <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), <em>NEJM</em>, 372(6), 537&ndash;545</a>.'
+      '<a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Centers for Medicare &amp; Medicaid Services (CMS)</a>: 2026 doctor fee rule clinic operating-cost score (GPCI), with CAPHE three-part shares (55.6% wages, 29.7% office rent, 14.7% bought services).',
+      '<a href="https://www.neighborhoodatlas.medicine.wisc.edu/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">University of Wisconsin School of Medicine and Public Health</a>: Area Deprivation Index (ADI) hardship ranks and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Data</a>.',
+      '<a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Medicaid and CHIP Payment and Access Commission (MACPAC, Jan 2025) &amp; Dunn et al.</a>: National Medicaid claim loss from denials and billing work (17.6% vs. 4.7% Medicare and 2.4% private) and <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), <em>NEJM</em>, 372(6), 537&ndash;545</a> (10-state fee increase study).'
     ],
-    policySettingHtml: 'California pays one statewide Medi-Cal fee schedule across coastal cities and rural inland counties. Yet coastal clinics pay high staff wages and office rents, while inland rural counties face deep resident poverty and doctor shortages. Comparing local clinic overhead indices against neighborhood need ranks shows why two separate policy tools are needed.',
-    answerHtml: 'Tying city Medi-Cal clinic rates to the federal Geographic Practice Cost Index (CMS Practice Expense GPCI) backs coastal clinics where overhead runs <strong>50.6% above the US mean</strong> (<strong>1.506 index</strong> in San Francisco vs. <strong>0.900</strong> in Imperial County) [1]. One flat fee list leaves out cost and need gaps because San Francisco sits at the <strong>15th percentile</strong> of local need while Imperial County sits at the <strong>85th percentile</strong> [2]. Pairing cost rate boosts with loan grants and simpler billing (saving <strong>17.6%</strong> claim value) fits both [1,3].',
+    policySettingHtml: 'Medi-Cal\'s fee-for-service system pays a set fee per visit. It pays the same rate from San Francisco to Imperial County. Medi-Cal managed-care plans use doctor networks and set separate rates, yet state fees still guide pay. In state hearings, city clinics cite a clinic cost score from the Centers for Medicare &amp; Medicaid Services (CMS). Inland groups cite the Area Deprivation Index (ADI), which ranks hardship by pay, schooling, work, and housing. Using one score alone misses either clinic costs or residents\' needs.',
+    answerHtml: 'In these four areas, higher clinic-cost scores occur with lower hardship ranks. Lower cost scores occur with higher hardship ranks [1,2]. CAPHE\'s three-part CMS Geographic Practice Cost Index (GPCI) split weights staff wages (<strong>55.6%</strong>), rent (<strong>29.7%</strong>), and services (<strong>14.7%</strong>) [1]. San Francisco\'s clinic cost score is <strong>1.506</strong> (<strong>50.6%</strong> above 1.00), while Imperial is <strong>0.900</strong> (<strong>10.0%</strong> below) [1]. By contrast, ADI hardship places Imperial and Fresno Tract 2 (<strong>$3,103</strong> pay, <strong>$1,007</strong> rent) at the <strong>85th</strong> percentile [2]. San Francisco is at the <strong>15th</strong> percentile, and Santa Clara medians are <strong>$13,306</strong> pay and <strong>$2,814</strong> rent [2]. In Marin Tract 1122.03, <strong>$2,318</strong> rent equals <strong>42.1%</strong> of <strong>$5,507</strong> pay [2]. Raising Medicaid fees to Medicare levels raised visit access from <strong>58.7%</strong> to <strong>66.4%</strong> [3]. Meanwhile, Medicaid billing work loses <strong>17.6%</strong> of claim value, so pairing city fee rules with inland grants meets both needs [1,3].',
     block2: {
-      title: 'Two Policy Rulers on the Same State Schedule: Practice Expense GPCI vs. Local Need',
-      contextTag: 'Mode B Observed Federal &amp; State Benchmarks: CMS CY 2026 Practice Expense GPCI, Census ACS Gross Rent, Local Need Percentile &amp; MACPAC Billing Loss',
-      ariaLabel: 'Comparison of CMS CY 2026 Practice Expense GPCI (1.506 in San Francisco vs 0.900 in Imperial) versus Neighborhood Need percentile (15th percentile in San Francisco vs 85th percentile in Imperial)',
+      title: 'Clinic Operating-Cost Index vs. Residents\' Hardship Rank',
+      contextTag: 'Federal Cost Scores and Hardship Ranks Across Four California Areas',
+      ariaLabel: 'Comparison of CMS clinic operating-cost index (1.506 in San Francisco vs 0.900 in Imperial) versus Area Deprivation Index (15th percentile in San Francisco vs 85th percentile in Imperial)',
       ruler1: {
-        title: 'Ruler 1: CMS Practice Expense GPCI (CY 2026)',
+        title: 'CMS Clinic Operating-Cost Index (2026)',
         stat: '1.506 in SF (+50.6%) vs. 0.900 in Imperial (-10.0%)',
-        ariaLabel: 'CMS Practice Expense GPCI is 1.506 in San Francisco (+50.6% above national average) versus 0.900 in Imperial County (-10.0% below national average)',
+        ariaLabel: 'CMS clinic cost index is 1.506 in San Francisco versus 0.900 in Imperial County',
         segments: [
-          { cls: 'seg-Housing', width: 63, label: 'San Francisco PE GPCI: 1.506 (+50.6%)' },
-          { cls: 'seg-primary', width: 37, label: 'Imperial PE GPCI: 0.900 (-10.0%)' }
+          { cls: 'seg-Housing', width: 63, label: 'San Francisco GPCI: 1.506' },
+          { cls: 'seg-primary', width: 37, label: 'Imperial GPCI: 0.900' }
         ],
-        desc: 'A CAPHE 3-part composite re-weights CMS Practice Expense GPCI parts to <strong>55.6% staff pay, 29.7% office rent, and 14.7% estimated services</strong>. Under a flat state fee list, San Francisco clinics face <strong>1.67x higher costs (1.506 vs. 0.900)</strong> than Imperial County.'
+        desc: 'San Francisco\'s clinic cost index is about 1.67 times as high as Imperial County\'s.'
       },
       ruler2: {
-        title: 'Ruler 2: Local Need Index &amp; Renter Pay Strain',
-        stat: '85th Percentile in Imperial vs. 15th in SF (5.7x Flip)',
-        ariaLabel: 'Neighborhood Need Index ranks Imperial County at the 85th national percentile of socioeconomic deprivation versus the 15th percentile in San Francisco',
+        title: 'Residents\' Hardship Rank',
+        stat: '85th Percentile in Imperial vs. 15th in SF',
+        ariaLabel: 'Area Deprivation Index ranks Imperial County at the 85th percentile versus the 15th percentile in San Francisco',
         segments: [
-          { cls: 'seg-food', width: 85, label: 'Imperial &amp; Valley Need: 85th Percentile (Fresno Rent $1,007 on $3,103 Pay)' },
-          { cls: 'seg-Housing', width: 15, label: 'SF 15th' }
+          { cls: 'seg-food', width: 85, label: 'Imperial & Fresno Hardship: 85th Percentile' },
+          { cls: 'seg-Housing', width: 15, label: 'SF: 15th' }
         ],
-        desc: 'Tracking resident need flips the map. Imperial sits at the <strong>85th US need percentile</strong> and Central Fresno homes earn <strong>$3,103/mo (rent $1,007)</strong>. San Francisco sits at the <strong>15th percentile</strong> and Santa Clara homes earn <strong>$13,306/mo (rent $2,814)</strong>.'
+        desc: 'Hardship ranks Imperial at the 85th percentile versus the 15th in San Francisco.'
       }
     },
     table1: {
-      title: 'Table 1. Clinic Costs vs. Local Need Across Four Market Types',
-      subtitle: 'We compare clinic cost scores, monthly rent share, and local need across four health markets.',
-      caption: 'Cross-market comparison of CMS Practice Expense GPCI, Census ACS monthly rent and pay, Local Need percentile, MACPAC billing loss, and Polsky NEJM visit gains.',
-      cornerLabel: 'Market &amp; Cost Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates:</strong> We use observed CMS CY 2026 Practice Expense GPCI scores and a CAPHE 3-part normalization of three PE sub-components (19.15% staff wages, 10.22% office rent, and 5.07% estimated purchased services divided by their 34.44% sum = 55.6% pay, 29.7% rent, and 14.7% estimated services). We pair these with Census ACS 5-Year median gross rent (B25064) and household pay (B19013) across different census universes. We also include the Local Need Index (ADI US percentile) and published MACPAC (Jan 2025) and Polsky et al. (2015, NEJM) benchmarks.',
+      title: 'Table 1. Clinic Wage and Rent Costs vs. Local Poverty in Four Areas',
+      subtitle: 'Checking CMS clinic cost scores, Census rents and pay, hardship ranks, and claim value lost to denials.',
+      caption: 'Table 1: Compare clinic operating costs, household rent and pay, hardship ranks, national billing losses, and appointment gains from a 10-state fee increase study.',
+      cornerLabel: 'Area &amp; Cost Measure',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Federal Cost Scores, Census Medians &amp; Study Results):</strong> Clinic cost scores come from the 2026 CMS doctor fee rule Practice Expense GPCI (1.00 is the national reference). Three CMS cost shares are 19.15% staff wages, 10.22% office rent, and 5.07% bought services, which total 34.44%. Dividing each by 34.44% converts those three shares to 100%: 55.6% wages, 29.7% rent, and 14.7% services. Monthly pay across all homes (<code>B19013</code>) and rent for rented homes (<code>B25064</code>) come from 2019&ndash;2023 Census data. Hardship ranks come from the Area Deprivation Index (ADI), where higher percentiles mean greater hardship. National claim loss from denials and billing work comes from Dunn et al. / MACPAC (Jan 2025: 17.6% Medicaid vs. 4.7% Medicare and 2.4% private). Appointment gains come from Polsky et al. (2015, <em>NEJM</em>: 58.7% to 66.4%, +7.7 pp).',
       columns: [
-        { tag: 'Group 1', tagHighlight: true, title: 'High-Cost City Market', subtitle: 'San Francisco &amp; Bay Area (CMS Area 05 / Santa Clara ACS baseline).' },
-        { tag: 'Group 2', tagHighlight: false, title: 'High-Rent Working Tract', subtitle: 'Marin County: San Rafael Canal area (Tract 1122.03).' },
-        { tag: 'Group 3', tagHighlight: false, title: 'Rural Foothills Market', subtitle: 'Nevada County (Sierra Foothills rural area).' },
-        { tag: 'Group 4', tagHighlight: true, title: 'High-Need Farm Region', subtitle: 'Central Valley &amp; Imperial County (Central Fresno Tract 2 &amp; Imperial).' }
+        { tag: 'Area 1: High-Cost City', tagHighlight: true, title: 'San Francisco &amp; Bay Area', subtitle: 'Clinic cost score is for CMS Locality 05 (San Francisco); Census pay and rent are for Santa Clara County.' },
+        { tag: 'Area 2: Renter Tract', tagHighlight: false, title: 'Marin Canal Tract 1122.03', subtitle: 'San Rafael Canal tract 1122.03 in Marin County.' },
+        { tag: 'Area 3: Rural Sierra', tagHighlight: false, title: 'Nevada County Foothills', subtitle: 'Nevada County rural health area in the Sierra foothills.' },
+        { tag: 'Area 4: High-Need Inland', tagHighlight: true, title: 'Fresno &amp; Imperial Counties', subtitle: 'Central Fresno Tract 2 and Imperial County border area.' }
       ],
       rows: [
         {
-          label: 'Clinic Overhead Index (GPCI)',
+          label: 'Clinic Cost Index (GPCI; 1.00 = US Ref)',
           highlight: true,
           cells: [
-            { val: '1.506 (+50.6% vs US base)', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '1.380 (+38.0% coast metro)', barWidth: 92, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '1.506 (+50.6% vs US ref)', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '1.380 (+38.0% coastal city)', barWidth: 92, barColor: '#D97706', textColor: 'text-amber-900' },
             { val: '1.025 (+2.5% rural Sierra)', barWidth: 68, barColor: '#0041A5', textColor: 'text-[#003080]' },
             { val: '0.900 (-10.0% Imperial)', barWidth: 60, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Share of Income Spent on Monthly Rent',
+          label: 'Median Rent &amp; Share of Income',
           cells: [
             { val: '21.1% ($2,814)' },
             { val: '42.1% ($2,318)' },
@@ -730,7 +732,7 @@ const modules = [
           ]
         },
         {
-          label: 'Median Monthly Pay',
+          label: 'Median Monthly Household Income',
           cells: [
             { val: '$13,306' },
             { val: '$5,507' },
@@ -739,112 +741,114 @@ const modules = [
           ]
         },
         {
-          label: 'Neighborhood Need Rank',
+          label: 'Residents\' Hardship Rank (ADI)',
           highlight: true,
           cells: [
-            { val: '15th percentile (Low need)', barWidth: 18, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '45th percentile (Rent strain)', barWidth: 53, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '55th percentile (Rural spread)', barWidth: 65, barColor: '#D97706', textColor: 'text-amber-900' },
-            { val: '85th percentile (High need)', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' }
+            { val: '15th percentile (lower hardship)', barWidth: 18, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '45th percentile (renter tract)', barWidth: 53, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '55th percentile (wide rural area)', barWidth: 65, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '85th percentile (high poverty)', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' }
           ]
         },
         {
-          label: 'Billing Hurdle Loss',
+          label: 'National Billing Loss Study*',
+          modeled: true,
           cells: [
-            { val: '17.6% Medicaid vs 2.4% Private' },
-            { val: '17.6% Medicaid vs 4.7% Medicare' },
-            { val: '17.6% Medicaid billing loss' },
-            { val: '17.6% Medicaid billing loss' }
+            { val: '17.6% Medicaid vs. 2.4% private (US)' },
+            { val: '17.6% Medicaid vs. 4.7% Medicare (US)' },
+            { val: '17.6% national Medicaid billing loss' },
+            { val: '17.6% national Medicaid billing loss' }
           ]
         },
         {
-          label: 'Visit Gain From Fee Bump',
+          label: 'Separate 10-State Fee Increase Study*',
+          modeled: true,
           cells: [
-            { val: '+1.25 pp per 10% real bump' },
-            { val: '58.7% to 66.4% (+7.7 pp total)' },
-            { val: '58.7% base visit rate' },
-            { val: '66.4% post-bump visit rate' }
+            { val: '+1.25 pp per 10% real fee increase (Polsky)' },
+            { val: '58.7% to 66.4% (+7.7 pp 10-state avg)' },
+            { val: '58.7% 10-state starting visit rate' },
+            { val: '66.4% 10-state rate after fee increase' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Matching Coastal Cost Boosts and Inland Staff Grants to Local Markets',
-      subtitle: 'We show why clinic cost and local need point in opposite ways and how two tools fix both.',
-      caption: 'Decision matrix comparing policy frames, market limits, single-rule risks, and two-tool policy fit across four areas.',
+      title: 'Table 2. Adjusting Fees for Clinic Costs and Giving Grants to High-Need Areas',
+      subtitle: 'Setting city fees by clinic wage and rent costs and funding grants in poor counties.',
+      caption: 'Table 2: Compare local problems getting care in four areas, why one measure is not enough, and how fee adjustments and grants address both needs.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'The Main Policy Case',
+          label: 'Main Problem Getting Care',
           cells: [
-            { val: 'With a 1.506 cost score and $2,814 rent, a flat Medi-Cal dollar buys one-third less care in the Bay Area.' },
-            { val: 'In Marin\'s Canal area, families pay $2,318 rent (42.1% of $5,507 pay) and clinics pay high coast wages.' },
-            { val: 'Nevada County has near-mean costs (1.025, rent $1,635), but wide rural miles limit clinic patient volume.' },
-            { val: 'Imperial and Central Fresno sit at the 85th need percentile ($3,103 pay), where low rent (0.900) cannot draw doctors.' }
+            { val: 'At a 1.506 cost score ($2,814 Santa Clara median rent), the same fee buys about one-third less care than at 1.00.' },
+            { val: 'Clinics in Marin Tract 1122.03 ($5,507 median pay, $2,318 rent or 42.1%, 45th ADI percentile) have a 1.380 cost score.' },
+            { val: 'Near-average clinic costs (1.025 score, $1,635 rent, $7,075 pay) combine with small rural patient counts.' },
+            { val: 'Residents rank at the 85th hardship percentile ($3,103 pay and $1,007 rent in Fresno Tract 2; 0.900 Imperial score).' }
           ]
         },
         {
-          label: 'Main Market Constraint',
+          label: 'Why Fixed Fees &amp; Billing Loss Reduce Care',
           cells: [
-            { val: 'High private pay (2.4% billing loss vs. 17.6% in Medicaid) and +50.6% clinic costs crowd out solo practices.' },
-            { val: 'High county pay (15th need percentile) covers up renter tracts where clinics pay coast wages to serve workers.' },
-            { val: 'Fixed clinic rent spread across small rural panels makes the 17.6% Medicaid billing loss hard to absorb.' },
-            { val: 'Even when a flat Medi-Cal dollar goes further against $1,007 rent, few doctors open offices in border tracts.' }
+            { val: 'High clinic costs (+50.6%) plus 17.6% national Medicaid billing loss (vs. 2.4% private) reduce net doctor pay.' },
+            { val: 'Marin County\'s median pay does not show the pay and rent costs of renters in Tract 1122.03 (45th ADI percentile).' },
+            { val: 'Small rural offices have too few staff to handle repeated claim denials and re-bills (17.6% Medicaid loss).' },
+            { val: 'Lower office rent (0.900 score) does not solve high local poverty and too few doctors.' }
           ]
         },
         {
-          label: 'Risk of Using One Metric Alone',
+          label: 'Problem With Using One Measure',
           cells: [
-            { val: 'Setting pay boosts by local need alone (15th percentile) leaves Bay Area clinics with +50.6% higher wage and rent bills.' },
-            { val: 'Using county mean pay leaves out high-rent worker tracts where 42.1% of pay goes to rent.' },
-            { val: 'Using city cost boosts without rural floors leaves foothill clinics with neither rate boosts nor hiring grants.' },
-            { val: 'Cutting inland Medi-Cal pay because Imperial\'s cost score is 0.900 lowers clinic pay in 85th-percentile need areas.' }
+            { val: 'Assigning funds by county hardship alone (15th percentile) leaves high-rent city clinics short on wages and rent.' },
+            { val: 'Using countywide median pay misses high-rent tracts like Marin Canal ($5,507 pay, 42.1% rent share).' },
+            { val: 'Adjusting fees for city costs alone does not solve small rural patient counts that need a minimum payment.' },
+            { val: 'Lowering inland Medi-Cal fees with Imperial\'s 0.900 score would cut clinic pay in 85th-percentile hardship areas.' }
           ]
         },
         {
-          label: 'Two-Tool Policy Fit',
+          label: 'Recommended Two-Rule Plan',
           policyFit: true,
           cells: [
-            { headline: 'Tie Clinic Rates to Local Costs', detail: 'Link city Medi-Cal fee lists to the CMS Practice Expense GPCI.' },
-            { headline: 'Target Renter Tracts by Need', detail: 'Pair Bay Area cost boosts with local outreach in high-rent tracts.' },
-            { headline: 'Cut 17.6% Billing Friction', detail: 'Simplify claims to save the 15.2 pp gap between Medicaid and private plans.' },
-            { headline: 'Send Staff Grants to High Need', detail: 'Use 85th-percentile need ranks to fund loan pay and clinic grants in Fresno.' }
+            { headline: 'Adjust Fees for Clinic Costs', detail: 'Adjust Medi-Cal visit fees upward with CMS GPCI cost scores in high-rent cities.' },
+            { headline: 'Direct Grants by Tract', detail: 'Pair city fee adjustments with tract clinic grants in high-rent working neighborhoods.' },
+            { headline: 'Reduce 17.6% Billing Loss', detail: 'Simplify Medi-Cal prior approvals and claims to lower billing loss toward private plan rates (2.4%).' },
+            { headline: 'Fund Inland Doctor Grants', detail: 'Send loan repayment aid, medical training slots, and clinic grants to 85th-percentile hardship counties.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: CMS Practice Expense GPCI, MACPAC Billing Loss &amp; Provenance',
+      notesTitle: 'Table 2 Notes: Cost Share Math, Billing Loss &amp; Fee Increase Study',
       notesBullets: [
-        '<strong>CMS Practice Expense GPCI &amp; CAPHE 3-Part Composite (Mode B):</strong> Under the CMS CY 2026 Physician Fee Schedule Final Rule, three Practice Expense GPCI sub-components (19.15% employee wages from BLS OEWS, 10.22% office rent from Census ACS/HUD 2BR rent, and 5.07% estimated purchased services, summing to 34.44% of total MEI weight) normalize to a 3-part CAPHE composite of 55.6% staff pay, 29.7% office rent, and 14.7% estimated services. San Francisco PE GPCI is 1.506 (+50.6% above the US mean, ADI ~15th percentile) vs. Imperial County at 0.900 (-10.0%, ADI ~85th percentile).',
-        '<strong>Billing Loss &amp; Fee Bump Benchmarks (Mode B):</strong> Dunn, Gottlieb, Shapiro, &amp; Sonnenstuhl / MACPAC (Jan 2025) show that Medicaid providers lose 17.6% of claim value to billing hurdles, vs. 4.7% in Medicare and 2.4% in private plans. Polsky et al. (2015, *NEJM*) find that the Medicaid fee bump raised primary care visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Census ACS 5-Year (2019-2023) rent and pay numbers come from different census universes (B19013 all households vs. B25064 renter homes).'
+        '<strong>CMS Clinic Cost Score &amp; Three-Part Shares:</strong> In the 2026 CMS doctor fee rule, three local cost parts sum to 34.44%. Staff wages are 19.15% (from federal wage data), office rent is 10.22% (from Census and housing data), and bought services are 5.07%. Dividing each part by 34.44% gives 55.6% wages, 29.7% office rent, and 14.7% bought services. The overall Practice Expense GPCI ranges from 1.506 in San Francisco to 0.900 in Imperial County.',
+        '<strong>Billing Loss &amp; Fee Increase Results:</strong> Dunn, Gottlieb, Shapiro, and Sonnenstuhl (cited by MACPAC, Jan 2025) report that Medicaid doctors lose 17.6% of claim value to denials and re-bills. That compares with 4.7% in Medicare and 2.4% in private plans. Polsky et al. (2015, <em>NEJM</em>) studied a 10-state Medicaid primary care fee increase to Medicare levels. Visit openings rose by 7.7 points, from 58.7% to 66.4% (+1.25 pp per 10% real fee increase).'
       ]
     },
     synthesis: {
-      title: 'Matching Cost Rate Indexing and Need-Targeted Staff Grants to Local Markets',
-      p1: 'In state budget hearings, coastal city health systems and inland rural groups show real federal data that rank counties in opposite ways. Coastal groups cite the CMS Practice Expense Geographic Practice Cost Index (GPCI, where a CAPHE 3-part composite weights staff pay at 55.6% and office rent at 29.7%). San Francisco\'s Practice Expense GPCI sits at 1.506 (+50.6% above the US mean, with Santa Clara median rent at $2,814/month). Because the state pays one flat Medi-Cal fee list, coastal clinics face tight margins. Inland and border groups cite the Local Need Index (Area Deprivation Index, ADI) and Census ACS pay. Imperial County sits at the 85th US need percentile and Central Fresno homes earn $3,103/month ($1,007 rent), while San Francisco sits at the 15th percentile.',
-      p2: 'Health economics shows that these two benchmarks do not conflict. They track two separate market limits that need two separate tools. Polsky et al. (2015, NEJM) show that raising primary care fees lifts visit access by +7.7 pp (58.7% to 66.4%, or +1.25 pp per 10% fee bump). Dunn et al. and the Medicaid and CHIP Payment and Access Commission (MACPAC, 2025) show that 17.6% of Medicaid claim value is lost to billing hurdles (vs. 2.4% in private plans). Tying fee lists to clinic costs and cutting the 17.6% billing loss backs high-cost city clinics. Sending CalHealthCares loan pay and residency grants by local need builds doctor supply in inland counties.'
+      title: 'Why Clinic Costs and Local Hardship Need Two Payment Rules',
+      p1: 'State Medi-Cal hearings often set coastal clinics against inland groups, yet both cite accurate data. Coastal clinics point to the CMS GPCI cost score. In CAPHE\'s three-part split, wages are 55.6%, rent is 29.7%, and services are 14.7%. That overall score is 1.506 in San Francisco (+50.6% above 1.00), and Santa Clara median rent is $2,814. Rural Nevada County is near 1.00 ($7,075 pay, $1,635 rent, 1.025 score). By contrast, ADI ranks place Imperial and Fresno Tract 2 ($3,103 pay, $1,007 rent) at the 85th hardship percentile. San Francisco ranks at the 15th percentile.',
+      p2: 'Using two payment rules matches state policy to each local problem. In a 10-state study, raising Medicaid fees raised visit openings from 58.7% to 66.4% (+7.7 points). Meanwhile, the Medicaid and CHIP Payment and Access Commission (MACPAC) reports a 17.6% Medicaid billing loss. Private plans lose 2.4%. Adjusting city fees for clinic costs and cutting claim denials helps pay urban rent and wages. Keeping the inland fee score at or above 1.00 and funding loan grants helps hire doctors in 85th-percentile counties.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Observed Benchmarks:</strong> All CMS CY 2026 Practice Expense GPCI scores (1.506 San Francisco vs. 0.900 Imperial) and CAPHE 3-part normalized cost shares (55.6% pay, 29.7% rent, 14.7% estimated services from the 19.15%, 10.22%, and 5.07% MEI shares) are Mode B data. They pair with Area Deprivation Index percentiles (15th vs. 85th) and Census ACS 5-Year (2019-2023) rents ($2,814, $2,318, $1,635, $1,007) and monthly pay ($13,306, $5,507, $7,075, $3,103) across different census universes. MACPAC billing loss rates (17.6% Medicaid, 4.7% Medicare, 2.4% private) and Polsky et al. (58.7% to 66.4%, +7.7 pp) benchmarks come from the CMS CY 2026 Physician Fee Schedule Final Rule and Census ACS 5-Year tables.',
-      '<strong>Main Sources:</strong> We cite <a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS CY 2026 Physician Fee Schedule Final Rule (Geographic Practice Cost Indices)</a> and <a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">MACPAC (Jan 2025) &amp; Dunn, Gottlieb, Shapiro, &amp; Sonnenstuhl on Medicaid Billing Friction</a>. We also use <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), NEJM, 372(6), 537-545</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates (Tables B19013 &amp; B25064)</a>.'
+      '<strong>Sources for Federal Cost Scores, Census Medians &amp; Study Results:</strong> Each number comes from a published source matching its area and measure. The 2026 CMS Practice Expense GPCI scores are 1.506 in San Francisco, 1.380 in Marin, 1.025 in Nevada County, and 0.900 in Imperial, with three-part shares of 55.6% wages, 29.7% rent, and 14.7% services. Hardship percentiles (15th vs. 85th) come from the Area Deprivation Index. Five-year Census tables (2019&ndash;2023) provide median rents ($2,814, $2,318, $1,635, $1,007) and median pay ($13,306, $5,507, $7,075, $3,103). National billing loss rates (17.6% Medicaid, 4.7% Medicare, 2.4% private) come from MACPAC, and primary care appointment changes (58.7% to 66.4%, +7.7 pp) come from Polsky et al.',
+      '<strong>Primary Sources:</strong> <a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS CY 2026 Physician Fee Schedule Final Rule</a>. <a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">MACPAC (Jan 2025) &amp; Dunn, Gottlieb, Shapiro, &amp; Sonnenstuhl</a>. <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), NEJM, 372(6), 537&ndash;545</a>. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Tables (B19013 &amp; B25064)</a>.'
     ],
     faqs: [
       {
-        question: 'How does the CAPHE 3-part composite of the CMS Practice Expense GPCI weight local pay and rent?',
-        answer: 'Under the CMS CY 2026 Physician Fee Schedule Final Rule, three Practice Expense GPCI sub-components (19.15% local health staff wages from BLS OEWS, 10.22% office rent from Census ACS 2-bedroom gross rent, and 5.07% estimated purchased services) normalize across their 34.44% sum to 55.6% staff pay, 29.7% rent, and 14.7% estimated services. The overall Practice Expense GPCI is 1.506 in San Francisco vs. 0.900 in Imperial County.'
+        question: 'How are staff wages, office rent, and bought services weighted in CAPHE\'s three-part cost comparison?',
+        answer: 'Under the 2026 CMS fee rule, three local cost shares make up 34.44% of the overall index: 19.15% staff wages, 10.22% office rent, and 5.07% bought services. Dividing each share by 34.44% scales those three parts to 100%, giving 55.6% wages, 29.7% rent, and 14.7% services. Separately, the overall clinic cost index is 1.506 in San Francisco and 0.900 in Imperial County.'
       },
       {
-        question: 'Why do the CMS Practice Expense GPCI and the Area Deprivation Index rank San Francisco and Imperial in opposite ways?',
-        answer: 'The CMS Practice Expense GPCI tracks what a clinic pays to hire staff and rent space (1.506 in SF vs. 0.900 in Imperial). The Area Deprivation Index (ADI) tracks resident poverty and hardship (15th percentile in SF vs. 85th percentile in Imperial). High-cost cities squeeze clinic margins, while high-need rural counties face low family pay and doctor shortages.'
+        question: 'Why do the CMS GPCI cost index and the ADI hardship index rank counties in opposite order?',
+        answer: 'The GPCI measures prices that clinics pay for staff wages and office rent (1.506 in San Francisco vs. 0.900 in Imperial). By contrast, the ADI ranks resident hardship using income, work, schooling, and housing (15th percentile in San Francisco vs. 85th in Imperial). City clinics pay high office rents and staff wages, while inland counties have high poverty and too few doctors.'
       },
       {
-        question: 'How much does billing friction cut real Medicaid pay?',
-        answer: 'Work by Dunn, Gottlieb, Shapiro, and Sonnenstuhl cited by MACPAC (January 2025) shows that Medicaid providers lose 17.6% of claim value to denials and billing hurdles. That is more than triple Medicare (4.7%) and seven times private plans (2.4%).'
+        question: 'How much claim value do Medicaid doctors lose to claim denials and billing paperwork?',
+        answer: 'National studies cited by MACPAC in 2025 report that Medicaid doctors lose 17.6% of claim value to denials and re-bills. That loss is more than triple Medicare\'s 4.7% billing loss. It is also over seven times the 2.4% loss in private plans.'
       }
     ],
     related: [
-      { slug: 'food-affordability-tradeoffs', title: 'Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs', note: 'Track 2 flagship comparing pre-rent and post-rent household budgets across Marin, Fresno, Nevada, and Santa Clara' },
-      { slug: 'measurement-error-claims', title: 'Directory Registry Counts vs. Active Claims Billers', note: 'Case study analyzing managed care encounter shares and administrative billing friction' },
-      { slug: 'collider-bias', title: 'Filtered-Group Shift in Active-Biller Subsets', note: 'Case study on how conditioning on active billers shifts observed correlations' }
+      { slug: 'food-affordability-tradeoffs', title: 'Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits', note: 'Case study comparing pre-rent and post-rent area estimates across Marin, Fresno, Nevada, and Santa Clara' },
+      { slug: 'chw-health-outcomes', title: 'Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs', note: 'Case study showing how fixed $31.74 Medi-Cal CHW fees compare with county wage costs' },
+      { slug: 'measurement-error-claims', title: 'Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out', note: 'Case study examining Medicaid billing claims and state and federal ban lists' }
     ]
   },
 
@@ -855,209 +859,209 @@ const modules = [
     slug: 'threat-measurement-instrumentation',
     tetsCompanion: [
       {
-        visibleLabel: 'EBT Retailer Verification Method',
+        visibleLabel: 'EBT Store Check Method',
         title: 'The Retail Density Paradox: Why More Stores Mean Worse Data',
         url: 'https://tooearlytosay.com/research/methodology/ebt-verification-methodology/',
-        claimCovered: 'Proposed EBT acceptance verification across 7,023 California food retailers; seven-county counts, matching thresholds, and the r = -0.828 correlation are under reconciliation.'
+        claimCovered: 'Proposed EBT check across 7,023 California food retailers; seven-county counts, matching rules, and the -0.828 correlation are under reconciliation.'
       },
       {
-        visibleLabel: 'Transit Stop Deduplication Claim Record',
+        visibleLabel: 'Record of Claims About Combining Duplicate Transit Stops',
         title: 'Transit Data Quality Under Reconciliation',
         url: 'https://tooearlytosay.com/research/transit-equity/data-quality-49-to-12/',
-        claimCovered: 'Article-reported shift from 49% to 12% of tracts classified as mobility deserts; the raw versus deduplicated stop counts behind it are under reconciliation.'
+        claimCovered: 'Article-reported change from 49% to 12% of tracts with limited transport access; the raw and combined stop counts behind it are under reconciliation.'
       },
       {
-        visibleLabel: 'GTFS Feed Validation Workflow in Python',
+        visibleLabel: 'Checking Transit Schedule Data in Python',
         title: 'GTFS Validation in Python: An Article-Reported Workflow',
         url: 'https://tooearlytosay.com/research/methodology/gtfs-validation-python/',
-        claimCovered: 'Six-layer instructional GTFS validation workflow; the seven-county, 11-feed routing results are article-reported and the project scripts are not public.'
+        claimCovered: 'Six sets of teaching steps for checking General Transit Feed Specification (GTFS) data; the seven-county, 11-feed route results are article-reported and the scripts are not public.'
       }
     ],
     tier: 'community',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Instrumentation Shifts (Mode B Multi-Instrument Audit)',
-    pageTitle: 'Instrumentation Shifts & Measurement | CAPHE',
-    metaDescription: 'See how switching from 6,613 broad food listings to 514 SNAP-verified EBT retailers doubles measured distance (+97%) without a single store closing.',
-    h1: 'Verified CalFresh Store Lists Double Measured Grocery Distance Compared With Commercial Map Directories',
-    subtitle: 'We compare raw business map lists with verified SNAP store lists when mapping local food access.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Data Counting Rules &amp; Changes in How Data Are Counted',
+    pageTitle: 'SNAP Grocer Lists vs. Commercial Map Counts | CAPHE',
+    metaDescription: 'Switching from 6,613 map food listings to 514 SNAP-confirmed EBT stores nearly doubles measured distance (+97%) without any store closing.',
+    h1: 'Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same',
+    subtitle: 'Comparing map searches, SNAP store lists, county health permits, and five-year surveys across 408 tracts.',
     endnotes: [
-      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP Retailer Locator (514 Verified EBT Retailers across 408 Santa Clara County Census Tracts).',
-      '<a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Active Retail Food Facility Permit Registry (755 Permitted Grocers, 97.5% Concordance).',
-      '<a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh Caseloads vs. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Rolling Windows</a>.'
+      '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP store list with 514 confirmed Electronic Benefit Transfer (EBT) stores across 408 Santa Clara census tracts.',
+      '<a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Retail food permit list (8,555 raw records combined into 7,335 sites and 755 classified / 724 confirmed grocers at 97.5% accuracy).',
+      '<a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh enrollment records compared with <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Data</a>.'
     ],
-    policySettingHtml: 'County food teams build access dashboards from commercial map directories, USDA CalFresh retailer lists, county health permits, and census surveys. Each data source uses different counting rules and update schedules. Switching from raw business map tags to verified CalFresh EBT stores changes measured trip distance even when zero stores closed.',
-    answerHtml: 'Checking county map lists against <strong>514 verified CalFresh EBT stores</strong> and <strong>755 county health permits</strong> keeps <strong>81.7% of top-need areas (67 of 82 tracts)</strong> in the same top tier [1,2]. Raw map queries return <strong>6,613 food spots</strong> (such as cafes that do not take CalFresh), so switching to verified grocers doubles mean trip distance by <strong>+97% (0.29 to 0.573 miles)</strong> with zero store closures [1,2]. Checking map feeds and 5-year census surveys against monthly permits and caseloads keeps grants aimed at real local gaps [2,3].',
+    policySettingHtml: 'County food reports combine store lists from map companies (via an application programming interface, or API) with health permits. They also use Supplemental Nutrition Assistance Program (SNAP) store lists. Five-year American Community Survey (ACS) tables add data across census tracts, which are small Census areas. Each source counts food stores or homes receiving food aid by its own rule. Map lists include cafes, permit logs list deli counters apart, and five-year surveys average earlier years. When a counting rule changes, numbers shift even when no stores open or close.',
+    answerHtml: 'Changing counting rules changes food-access numbers with zero change in actual stores [1,2]. Moving from <strong>6,613</strong> map food listings to <strong>514</strong> SNAP Electronic Benefit Transfer (EBT) stores nearly doubles mean distance [1]. Trips rise from <strong>0.29</strong> to <strong>0.573</strong> miles [1]. Even so, <strong>81.7%</strong> of top-need tracts stay in the highest fifth, and <strong>65.2%</strong> of all 408 tracts keep the same fifth [1,2]. In county Department of Environmental Health (DEH) files, combining <strong>1,220</strong> duplicate counter records (<strong>14.3%</strong> of <strong>8,555</strong>) leaves <strong>7,335</strong> sites [2]. That step finds <strong>755</strong> grocers (including <strong>724</strong> confirmed grocers) at <strong>97.5%</strong> accuracy in a 489-site check [2]. Pairing five-year ACS maps with monthly California Department of Social Services (CDSS) rolls also shows recent changes [3].',
     block2: {
-      title: 'Two Store Rulers on the Same 408 Tracts: Raw Map Spots vs. SNAP-Verified EBT Stores',
-      contextTag: 'Mode B Store-List Check on 408 Santa Clara Tracts (Permit Deduplication &amp; Survey Window Checks in Table 1)',
-      ariaLabel: 'Comparison of 6,613 unverified commercial food stores yielding 0.29 miles mean distance versus 514 SNAP-verified EBT stores yielding 0.573 miles mean distance',
+      title: 'Unchecked Map Food Listings vs. Confirmed SNAP EBT Stores (408 Tracts)',
+      contextTag: 'Check of Data Counting Rules Across 408 Santa Clara Census Tracts',
+      ariaLabel: 'Comparison of 6,613 map food listings giving 0.29 miles average distance versus 514 SNAP-confirmed EBT stores giving 0.573 miles average distance',
       ruler1: {
-        title: 'Ruler 1: Broad Food Map List (6,613 Raw Spots)',
-        stat: '0.29 Miles Mean Trip (6,613 Spots)',
-        ariaLabel: 'Broad commercial food POI query returns 6,613 establishments with 0.29 miles mean distance and 0.25 miles median distance',
+        title: 'Unchecked Map Search Results (6,613 Food Listings)',
+        stat: '0.29 Miles Mean Distance (6,613 Listings)',
+        ariaLabel: 'Map search returns 6,613 food businesses with 0.29 miles average distance',
         segments: [
-          { cls: 'seg-Housing', width: 92, label: '6,100 Non-SNAP / Non-Grocery Spots (92.2% Noise)' },
+          { cls: 'seg-Housing', width: 92, label: '92.2% Non-EBT Listings' },
           { cls: 'seg-primary', width: 8, label: '514 SNAP' }
         ],
-        desc: 'Pulling broad food map tags returns <strong>6,613 spots</strong> (such as cafes, snack shops, and mini-marts that do not take CalFresh EBT). That shrinks mean tract distance to <strong>0.29 miles (0.25 mi median)</strong>.'
+        desc: 'Broad map search categories include cafes and snack shops that cannot take EBT cards.'
       },
       ruler2: {
-        title: 'Ruler 2: SNAP EBT &amp; Health Permit List (514 EBT / 755 Permits)',
-        stat: '0.573 Miles (+97% Trip; 81.7% Top-Tier Steady)',
-        ariaLabel: 'Restricting to 514 SNAP-verified EBT retailers doubles mean distance to 0.573 miles (+97%), yet 81.7% of top-quintile tracts (67 of 82) remain in the highest-need tier',
+        title: 'USDA SNAP EBT & Health Permit Check (514 EBT / 755 Permits)',
+        stat: '0.573 Miles (+97% Distance; 81.7% Top-Fifth Match)',
+        ariaLabel: 'Using 514 SNAP-confirmed EBT stores nearly doubles average distance to 0.573 miles while keeping 81.7% of top-fifth tracts in the top fifth',
         segments: [
-          { cls: 'seg-food', width: 82, label: '81.7% of Top-Need Tracts (67/82) Stay in Top Tier' },
-          { cls: 'seg-rest', width: 18, label: '18.3% Nearby Shift' }
+          { cls: 'seg-food', width: 82, label: '81.7% Remain in Top Fifth' },
+          { cls: 'seg-rest', width: 18, label: '18.3% Move One Group' }
         ],
-        desc: 'Keeping only <strong>514 USDA SNAP EBT stores</strong> (checked at a <strong>97.5% accuracy</strong> against <strong>755 DEH permitted grocers</strong>) doubles mean distance to <strong>0.573 miles</strong>. Still, <strong>81.7% of top-need tracts (67/82)</strong> and <strong>98.0% within &pm;1 tier</strong> stay put.'
+        desc: 'Using confirmed SNAP stores nearly doubles measured distance, yet 81.7% of top-need tracts stay in the top fifth.'
       }
     },
     table1: {
-      title: 'Table 1. Four Data Rule Shifts That Look Like Big Policy or Market Shifts',
-      subtitle: 'We compare four real data rule shifts across map tags, SNAP lists, permit records, and survey waves.',
-      caption: 'Comparison of old ruler vs. checked ruler, apparent metric jump, real local change, and rank stability across four California data feeds.',
-      cornerLabel: 'Data Check Step',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Observed Data Rule Shifts):</strong> Each column uses its own group base and is not pooled across columns. Shift 1 counts Santa Clara County food map spots (344 single-tag vs. 6,613 multi-tag). Shift 2 tracks distance for 408 Santa Clara census tracts (6,613 spots vs. 514 SNAP stores, checked against 755 refined / 724 confirmed DEH permits). Shift 3 tracks Santa Clara County DEH food permit deduplication (`DEHDENOM_UPDATES_SUMMARY.md`: 8,555 raw permit rows minus 1,220 multi-department duplicates = 7,335 unique sites, yielding 755 refined / 724 confirmed SNAP-eligible grocers vs. 987 under an older un-deduplicated keyword rule). Shift 4 compares ACS 5-year survey homes with CDSS monthly caseloads (`PHASE6_FINAL_DELIVERABLE.md`). In Shift 2 across N = 408 tracts (`EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md`), 266 of 408 tracts (65.2%) stay in the exact same quintile, 400 of 408 (98.0%) stay within ±1 quintile, and 67 of 82 Q5 tracts (81.7%) stay in Q5.',
+      title: 'Table 1. Four Data Counting Changes That Shift Measured Food Access',
+      subtitle: 'Checking how map search groups, SNAP EBT lists, permit checks, and 5-year surveys change counts.',
+      caption: 'Table 1: Compare records before checks, confirmed agency lists, reported changes from counting rules, actual store changes, and ranking checks across four Santa Clara data sources.',
+      cornerLabel: 'Data Counting Check',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Check of Data and Counting Rules Across Four Sources):</strong> Each column checks a separate Santa Clara data source on its own total. Column 1 compares map search results: 344 listings under one old group versus 6,613 under several groups. Column 2 checks distances from each center point across 408 census tracts. It compares 6,613 map listings (0.29 mi mean) with 514 USDA SNAP EBT stores (0.573 mi mean). Across five ranked groups, 266 of 408 tracts (65.2%) stay in the same fifth. Also, 400 of 408 (98.0%) stay within one group, and 67 of 82 top tracts (81.7%) stay in the highest fifth. Column 3 combines duplicate Santa Clara DEH food permits. Removing 1,220 duplicate counter rows from 8,555 raw rows leaves 7,335 sites. That finds 755 grocers (724 confirmed) at 97.5% accuracy (477 of 489 checked), versus 987 raw word matches. Column 4 compares five-year Census SNAP homes (28,476 in 2019 vs. 28,880 state records, or -1.4%; 27,068 in 2020, or -4.94%) with monthly CDSS increases (+56% to +71%).',
       columns: [
-        { tag: 'Source 1: Map Tags', tagHighlight: false, title: 'Commercial Map Listings', subtitle: 'Base: SCC Store Spots.' },
-        { tag: 'Source 2: EBT Filter', tagHighlight: true, title: 'Broad Spots vs. SNAP EBT', subtitle: 'Base: 408 SCC Tracts.' },
-        { tag: 'Source 3: Permits', tagHighlight: true, title: 'Deduplicated Health Permits', subtitle: 'Base: 8,555 SCC Permits.' },
-        { tag: 'Source 4: Rolls', tagHighlight: false, title: '5-Yr Survey vs. Monthly Rolls', subtitle: 'Base: Survey vs. Rolls.' }
+        { tag: 'Change 1: Map Categories', tagHighlight: false, title: 'Map Search Categories', subtitle: 'Downloaded map search results for Santa Clara food businesses.' },
+        { tag: 'Change 2: EBT Filter', tagHighlight: true, title: 'Map List vs. SNAP EBT', subtitle: '408 Santa Clara census tracts.' },
+        { tag: 'Change 3: Combine Permits', tagHighlight: true, title: 'County Health Permits', subtitle: '8,555 Santa Clara DEH permit records.' },
+        { tag: 'Change 4: Survey Delay', tagHighlight: false, title: '5-Yr ACS vs. State Records', subtitle: 'Census five-year survey period vs. monthly CDSS enrollment records.' }
       ],
       rows: [
         {
-          label: 'Unfiltered Data Feed',
+          label: 'Records Before Checks',
           cells: [
-            { val: '344 stores (1 old tag)' },
-            { val: '6,613 broad spots (0.29 mi)' },
-            { val: '8,555 raw rows (987 old est)' },
-            { val: '27,068 ACS 2020 HH (-4.94% dip)' }
+            { val: '344 listings (one outdated category)' },
+            { val: '6,613 food listings (0.29 mi mean)' },
+            { val: '8,555 permit records (987 word matches)' },
+            { val: '27,068 ACS 2020 homes (-4.94% change)' }
           ]
         },
         {
-          label: 'Verified Agency List',
+          label: 'Checked or Confirmed Count',
           cells: [
-            { val: '6,613 stores (multi-tag pull)' },
-            { val: '514 SNAP / 755 DEH (0.573 mi)' },
-            { val: '7,335 sites (755 / 724 grocers)' },
-            { val: '+56% to +71% CDSS CalFresh' }
+            { val: '6,613 listings (several categories)' },
+            { val: '514 SNAP / 755 DEH (0.573 mi mean)' },
+            { val: '7,335 distinct sites (755 / 724 grocers)' },
+            { val: '+56% to +71% monthly CDSS vs. 2019' }
           ]
         },
         {
-          label: 'Apparent Shift From Data Rule',
+          label: 'Reported Change From Counting Rule',
           highlight: true,
           cells: [
-            { val: '+1,822% Store Jump', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '-92.2% Stores | +97% Trip', barWidth: 92, barColor: '#D97706', textColor: 'text-amber-900' },
-            { val: '-14.3% Counter Duplicates (-1,220)', barWidth: 14, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '-4.9% Survey vs. +71% Rolls', barWidth: 71, barColor: '#0041A5', textColor: 'text-[#003080]' }
+            { val: '+1,822% Change From Search Rule', barWidth: 100, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '-92.2% Listings | +98% Distance', barWidth: 92, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '-14.3% Duplicate Records (-1,220)', barWidth: 14, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '-4.9% 5-Yr ACS vs. +71% State Records', barWidth: 71, barColor: '#0041A5', textColor: 'text-[#003080]' }
           ]
         },
         {
-          label: 'Real Change on the Street',
+          label: 'Actual Store or Enrollment Change',
           cells: [
-            { val: '0 new stores (tag fix only)' },
-            { val: '0 stores closed (EBT filter)' },
-            { val: '0 grocers closed (merged depts)' },
-            { val: '5-yr wave watered down 2020' }
+            { val: 'Zero new stores opened (search change)' },
+            { val: 'Zero grocers closed (EBT list used)' },
+            { val: 'Zero grocers closed (counters combined)' },
+            { val: '60-month average made 2020 rise look small' }
           ]
         },
         {
-          label: 'Cross-Check &amp; Rank Match',
+          label: 'Accuracy Checks &amp; Ranking Changes',
           cells: [
-            { val: '8.76x higher than 755 permits' },
-            { val: '81.7% top-tier steady (67/82)' },
-            { val: '97.5% retail accuracy (477/489)' },
-            { val: 'ACS rose +17.15% in 2022-23' }
+            { val: '8.76x above 755 permitted grocers' },
+            { val: '81.7% remain in top fifth (67/82)' },
+            { val: '97.5% check accuracy (477/489 sample)' },
+            { val: 'ACS rose +17.15% from 2022 to 2023' }
           ]
         },
         {
-          label: 'Match Across Data Lists',
+          label: 'Agreement Between Record Lists',
           cells: [
-            { val: 'Google matched 42.1% of retail' },
-            { val: '65.2% same tier | 98.0% in 1 tier' },
-            { val: 'Removed 35 chain cafes &amp; 3 bars' },
-            { val: '28,476 (2019) vs 28,880 (-1.4%)' }
+            { val: 'Matched 42.1% of permitted retail sites' },
+            { val: '65.2% same fifth | 98.0% within &plusmn;1' },
+            { val: 'Left out 35 chain cafes &amp; 3 bars' },
+            { val: '2019 check: 28,476 vs. 28,880 (-1.4%)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. How to Check Data Feeds So Rule Shifts Do Not Misguide Grants',
-      subtitle: 'We set clear check rules for map APIs, SNAP store lists, permit registries, and 5-year census waves.',
-      caption: 'Decision matrix mapping each data rule shift to its cause, budget risk, and data check rule.',
+      title: 'Table 2. Data Checks That Keep Counting Changes From Misdirecting Food Grants',
+      subtitle: 'Checking map search results, SNAP store lists, county permits, and five-year surveys before changing grant amounts.',
+      caption: 'Table 2: Match each counting change with its cause, funding risk, ranking check, and recommended rule for checking data.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'Why the Data Shift Happened',
+          label: 'Cause of the Counting Change',
           cells: [
-            { val: 'Google retired one old store tag, so a single-tag script pulled just 344 stores until multi-tag pulls found 6,613.' },
-            { val: 'Map APIs do not check if a spot takes USDA CalFresh EBT cards or holds an active County DEH food permit.' },
-            { val: 'Raw health permit logs list separate deli, bakery, and meat counters inside one store as separate rows (1,220 duplicates).' },
-            { val: 'The 2020 ACS 5-Year wave blended four pre-COVID years (2016-2019) with 2020, creating a -4.94% dip.' }
+            { val: 'A map vendor retired one grocer category, reducing search results to 344 until broader categories returned 6,613 listings.' },
+            { val: 'Map categories group coffee shops, diners, and snack shops with grocery stores that accept SNAP EBT cards.' },
+            { val: 'County health records issue separate permits for bakery, deli, and meat counters inside one store (1,220 records).' },
+            { val: 'The 2020 five-year ACS table combined 48 months from 2016-2019 with 12 months in 2020 when response rates fell.' }
           ]
         },
         {
-          label: 'Risk of Acting on the Raw Shift',
+          label: 'Error if Records Are Used Without Checks',
           cells: [
-            { val: 'Comparing the 344-store run to the 6,613-store run looks like a +1,822% store boom with zero new stores.' },
-            { val: 'Switching from broad map lists to SNAP stores doubles measured trip distance (+97%) with zero store closures.' },
-            { val: 'Using un-deduplicated permit rows (8,555 rows or 987 keyword matches) overstates store supply by 14% to 30%.' },
-            { val: 'Using 2020 ACS 5-Year tables alone makes CalFresh need look down (-4.94%) when state rolls jumped +56% to +71%.' }
+            { val: 'Comparing two map searches across a category change reports a +1,822% store increase when zero stores opened.' },
+            { val: 'Switching a report from map listings to SNAP stores looks like a sudden 98% increase in measured distance.' },
+            { val: 'Counting raw permit records (8,555 vs. 7,335 sites) overstates distinct sites by 16.6% (1,220 extra records, or 14.3% of raw records).' },
+            { val: 'Using 2020 five-year ACS tables during an emergency mistakes a +56% to +71% CalFresh increase for a -4.94% decline.' }
           ]
         },
         {
-          label: 'Why Priority Ranks Held Steady',
+          label: 'Why Checked Rankings Change Little',
           cells: [
-            { val: 'Raw map pulls shift across software updates and should not serve as the base.' },
-            { val: 'Poverty and SNAP hold 55% of index weight (distance 20%), so 81.7% of top-need tracts stayed put.' },
-            { val: 'Merging counter permits by street address gives a clean 755-store denominator (97.5% accuracy).' },
-            { val: 'Once pre-2020 years rolled off, ACS counts rose +17.15% to match state rolls.' }
+            { val: 'Checking store counts against county health permits keeps map category changes from changing baseline totals.' },
+            { val: 'Poverty (30%) and SNAP use (25%) account for 55% of the score vs. 20% for distance, keeping 81.7% in the top fifth.' },
+            { val: 'Combining permits by street address finds 755 classified (724 confirmed) grocers at 97.5% check accuracy.' },
+            { val: 'In stable years (2019), five-year ACS matches state records within 1.4% (28,476 vs. 28,880), then rises +17.15% in 2022-23.' }
           ]
         },
         {
-          label: 'Data Check Rule for Teams',
+          label: 'Recommended Rule for Checking Data',
           policyFit: true,
           cells: [
-            { headline: 'Check Map Pulls Against Permits', detail: 'Match map pulls against County DEH health permits (755 stores, 97.5% accuracy).' },
-            { headline: 'Use Verified SNAP EBT Lists', detail: 'Define food access using USDA SNAP EBT retailers (514 stores in Santa Clara).' },
-            { headline: 'Deduplicate Permit Addresses', detail: 'Merge bakery and deli counter rows at the same address before counting stores.' },
-            { headline: 'Pair 5-Yr ACS With Monthly Rolls', detail: 'Use ACS 5-Year tables for tract rates, and track fast shocks with CDSS rolls.' }
+            { headline: 'Check Map Lists Against Permits', detail: 'Compare map search counts against county health permits before reporting store numbers.' },
+            { headline: 'Use Confirmed SNAP EBT Lists', detail: 'Measure food-aid store distance using location-checked SNAP EBT stores (514 in Santa Clara).' },
+            { headline: 'Combine Permits by Address', detail: 'Combine deli, meat, and bakery counter records by street address before counting grocers.' },
+            { headline: 'Pair 5-Yr ACS With State Records', detail: 'Use five-year ACS for tract benefit shares in stable years and monthly CDSS records in emergencies.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Tier Shift Matrix, Permit Deduplication &amp; Provenance',
+      notesTitle: 'Table 2 Notes: Changes Between Ranked Groups, Duplicate Address Checks &amp; Sources',
       notesBullets: [
-        '<strong>Column Denominators, Tier Shift Matrix &amp; Permit Deduplication (Mode B, N = 408 Santa Clara Tracts):</strong> Each column keeps its own base (store spots, 408 Santa Clara tracts, 8,555 Santa Clara DEH permit rows, and survey vs. state rolls). In `EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md`, the 5-component index weights poverty at 30%, SNAP at 25%, store distance at 20%, no-vehicle share at 15%, and density at 10%. Switching from 6,613 spots (0.29 mi mean) to 514 SNAP stores (0.573 mi mean) leaves 266 of 408 tracts (65.2%) in the exact same quintile, 400 of 408 (98.0%) within ±1 quintile (only 8 tracts or 2.0% shift by ±2 quintiles), and 67 of 82 Q5 tracts (81.7%) in Q5. In `DEHDENOM_UPDATES_SUMMARY.md` and `STORE_COUNTS_FOR_ANALYSIS.md`, consolidating 8,555 raw DEH permit records removes 1,220 multi-department duplicates (14.3%) to yield 7,335 unique facilities, 724 confirmed SNAP-eligible grocers (97.5% accuracy), and 755–766 refined grocers (vs. 987 under an older un-deduplicated keyword rule). Note that a separate companion TooEarlyToSay transit-stop article (49.0% on 24,421 stops across 8 agencies vs. 12.0% on 64,060 Cal-ITP stop rows across 9,039 state tracts in `mobility_deserts_metadata.json` and `mobility_deserts_calitp_metadata.json`) is flagged in `FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md` as incomplete and under reconciliation, so it is not used as a policy trigger here.',
-        '<strong>Data Provenance:</strong> Exact check tables come from `FoodSecurity/EXTENDED_VULNERABILITY_SNAP_VERIFIED_RESULTS.md (L1-150), FoodSecurity/STORE_COUNTS_FOR_ANALYSIS.md (L1-120), FoodSecurity/DEHDENOM_UPDATES_SUMMARY.md (L1-135), and FoodSecurity/PHASE6_FINAL_DELIVERABLE.md (L1-110)`.'
+        '<strong>Ranked Group Checks &amp; Permit Address Checks (408 Santa Clara Tracts):</strong> The five-part food-need score gives 30% weight to poverty, 25% to SNAP use, and 20% to store distance. It gives 15% to homes without a car and 10% to density. Changing distance from 6,613 map listings (0.29 mi mean) to 514 SNAP EBT stores (0.573 mi mean) keeps 266 of 408 tracts (65.2%) in the same fifth. Across all tracts, 400 of 408 (98.0%) stay within one group, and 67 of 82 top tracts (81.7%) stay in the highest fifth. Combining 8,555 raw Santa Clara DEH permit rows removes 1,220 duplicate counter rows (14.3%). That leaves 7,335 sites and 724 confirmed / 755 classified grocers (97.5% accuracy). Related TooEarlyToSay transit pages still being checked are not used for policy decisions here.',
+        '<strong>Data Sources:</strong> All store, permit, and ranking counts come from CAPHE\'s Santa Clara County Food Security check files.'
       ]
     },
     synthesis: {
-      title: 'Why Checking Data Rules Protects Both Program Checks and Grant Siting',
-      p1: 'Health teams often build dashboards from map APIs, store lists, permit logs, and rolling census surveys. Each source can change its own rule without notice. A map API drops a store tag (jumping from 344 to 6,613 spots). An EBT filter removes cafes (-92.2% store count, +97% distance). A permit registry lists bakery and deli counters inside one supermarket as separate rows (1,220 duplicates out of 8,555 rows, or 14.3%). Or a 5-year survey waters down a 1-year shock (-4.94% in 2020 ACS vs. +56% to +71% in state CalFresh rolls).',
-      p2: 'Teams should treat any sudden dashboard jump as a data-rule shift until checked against state or county rolls. Deduplicating county health permits by address (755 refined / 724 confirmed grocers at 97.5% accuracy), pairing 5-year census baselines (-1.4% gap vs. 2019 CalFresh admin rolls) with monthly caseloads, and checking rank stability (where 65.2% of tracts stay in the same quintile and 81.7% of top-need tracts stay in the highest-need tier) keeps county funds aimed at real local need.'
+      title: 'Why Staff Must Check Counting Rules Before Reading Report Changes',
+      p1: 'Analysts often combine map lists, SNAP lists, permit logs, and surveys without checking their rules. Yet each source defines a food store or enrolled home in its own way. Replacing one old map search group with several groups raises listings from 344 to 6,613. Using 514 SNAP EBT stores nearly doubles mean distance, from 0.29 to 0.573 miles. Raw DEH permit files also list deli counters apart, adding 1,220 extra rows across 8,555 permits (14.3%). Meanwhile, five-year ACS averages make sudden enrollment rises look smaller, showing -4.94% in 2020 while monthly CDSS rolls rose 56% to 71%.',
+      p2: 'Checking sudden report changes against agency records before changing grants prevents funding errors. Combining Santa Clara DEH permits by street address leaves 7,335 sites and 755 classified (724 confirmed) grocers at 97.5% accuracy. Across all 408 tracts, 65.2% stay in the same fifth after switching to EBT stores. Also, 81.7% of top-need tracts stay in the highest fifth. Using confirmed SNAP EBT lists and pairing ACS maps with monthly CDSS rolls keeps funding tied to checked data.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Multi-Ruler Audit:</strong> All store and permit counts (`344` single-tag, `6,613` broad map spots, `514` SNAP-verified stores, `8,555` raw DEH rows, `7,335` consolidated sites, `1,220` or `14.3%` department duplicates, `724` confirmed / `755` refined grocers, `97.5%` classification accuracy, `42.1%` Google coverage), trip distances (`0.29 mi` vs. `0.573 mi`), tier shifts (`266/408 = 65.2%` same quintile, `400/408 = 98.0%` within ±1 quintile, `67/82 = 81.7%` Q5 stability), and ACS vs. CDSS counts (`28,476` vs. `28,880` in 2019 = `-1.4%`; `27,068` in 2020 = `-4.94%`; `+17.15%` in 2022-23) come from verified `FoodSecurity` files on disk. Companion TooEarlyToSay pages (including the seven-county EBT correlation and the 49% to 12% transit-stop series flagged in `FoodSecurity/analysis/MOBILITY_DESERTS_STATUS.md`) remain under reconciliation and are excluded from grant-siting rules.',
-      '<strong>Main Sources:</strong> We use <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator</a> and <a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Santa Clara County Department of Environmental Health (DEH) Retail Food Facility Registry</a>. We also use <a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Social Services (CDSS) CalFresh Data Tables</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Estimates</a>.'
+      '<strong>Check of Recorded Data Across Lists:</strong> All store and permit counts come from recorded agency and map files: 344 single-category listings, 6,613 multi-category map listings, 514 SNAP-confirmed EBT stores, 8,555 raw DEH permit records, 7,335 distinct sites, 1,220 (14.3%) duplicate counter records, 724 confirmed and 755 classified grocers, 97.5% check accuracy, and a 42.1% map match rate. Distances from tract center points are 0.29 mi versus 0.573 mi, with group changes of 65.2% same fifth, 98.0% within one fifth, and 81.7% top-fifth retention. Survey versus state counts are 28,476 versus 28,880 in 2019 (-1.4%), 27,068 in 2020 (-4.94%), and +17.15% from 2022 to 2023. Related TooEarlyToSay pages still being checked are not used as grounds for policy decisions.',
+      '<strong>Primary Sources:</strong> <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA FNS SNAP Retailer Locator</a>. <a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Santa Clara County DEH Retail Food Facility Registry</a>. <a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDSS CalFresh Data Tables</a>. <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Data</a>.'
     ],
     faqs: [
       {
-        question: 'Why did filtering from 6,613 broad spots to 514 SNAP stores keep 81.7% of top-need tracts (67 of 82) in the highest-vulnerability quintile?',
-        answer: 'In the 5-component Extended Vulnerability Index, economic factors (30% poverty rate and 25% SNAP participation) hold 55% of the index weight while normalized store distance holds 20%. Even though mean distance doubled from 0.29 to 0.573 miles, 65.2% of tracts (266 of 408) stayed in the exact same quintile and 81.7% of Q5 tracts stayed in Q5.'
+        question: 'Why did 81.7% of top-need tracts stay in the top fifth when EBT checks nearly doubled average distance from 0.29 to 0.573 miles?',
+        answer: 'In the five-part food-need score, poverty (30%) and SNAP use (25%) account for 55% of the score, while store distance accounts for 20%. Removing cafes and snack shops increased measured distance in higher-income and lower-income tracts alike. As a result, 65.2% of all 408 tracts stayed in the same fifth and 81.7% of top-fifth tracts (67 of 82) remained in that fifth.'
       },
       {
-        question: 'Why did the 2020 ACS 5-Year survey show a -4.94% dip in SNAP homes during COVID-19?',
-        answer: 'The 2020 ACS 5-Year table averages 60 months from January 2016 to December 2020, so 80% of the sample came before COVID-19. Also, 2020 survey collection faced low response rates among low-pay homes. Monthly CDSS rolls tracked the real +56% to +71% jump right away.'
+        question: 'Why did the 2020 five-year ACS show a 4.94% SNAP decline while state CalFresh enrollment increased by 56% to 71%?',
+        answer: 'Each five-year ACS release combines survey responses collected over 60 months, so four-fifths of the 2020 file came from 2016-2019 before COVID-19. Survey collection in 2020 also had lower response rates among low-income renters. By contrast, monthly CDSS state records counted new CalFresh sign-ups right away.'
       },
       {
-        question: 'How did the County DEH health permit list check the store count and why was deduplication needed?',
-        answer: 'Raw Santa Clara County DEH permit logs contain 8,555 rows because supermarkets hold separate permits for bakery, deli, and meat counters at the same address (1,220 duplicate rows, or 14.3%). Consolidating by address (7,335 unique sites) and classifying retail grocers (97.5% accuracy) yields 755 refined / 724 confirmed SNAP-eligible grocers, proving the 6,613 map count was inflated 8.76x by non-grocery spots.'
+        question: 'Why must county health permits be combined by street address before counting grocery stores?',
+        answer: 'Santa Clara DEH files hold 8,555 active records because one supermarket often holds separate permits for its main floor, bakery, deli, and meat counter. Combining those 1,220 duplicate records (14.3% of raw records) by address leaves 7,335 distinct sites and 755 classified (724 confirmed) grocers at 97.5% accuracy. That check shows the map list had 6,613 food businesses, 8.76 times the 755 grocers from permit records, because it included non-grocery shops.'
       }
     ],
     related: [
-      { slug: 'geographic-variables', title: 'Household Poverty Accounts for Most Neighborhood Food-Access Variation Compared With Store Distance', note: 'Case study showing why poverty explains 62.2% of variance vs. 0.0% for store distance' },
-      { slug: 'measurement-error-claims', title: 'Directory inactive-listing NPIs vs. Active Billers', note: 'Case study on measurement error between NPPES provider directories and Medicaid claims' },
-      { slug: 'food-affordability-tradeoffs', title: 'Modeled Post-Rent Household Budgets Reveal Severe Food Strain Above Federal Gross-Income Cutoffs', note: 'Track 2 reference case comparing FPL, CPM, MIT Living Wage, and Residual Income' }
+      { slug: 'geographic-variables', title: 'Tract Poverty Explains Most of Santa Clara\'s Food-Need Score Compared With Store Miles', note: 'Case study showing why household poverty accounts for 62.2% of food-need score differences' },
+      { slug: 'measurement-error-claims', title: 'Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out', note: 'Case study on matching provider billing claims across separate ban lists' },
+      { slug: 'food-affordability-tradeoffs', title: 'Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits', note: 'Case study comparing pre-rent income limits against post-rent food cost shares' }
     ]
   },
 
@@ -1067,194 +1071,194 @@ const modules = [
   {
     slug: 'study-design-ladder',
     tier: 'public',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Matching Designs to Questions (Mode B Portfolio)',
-    pageTitle: 'Matching Study Designs to Policy Questions | CAPHE',
-    metaDescription: 'Match 4 California health policy questions to the right design: Admin-ACS Linkage, Multi-Year Trend Splits, 57-County Panels, and Outreach Trials.',
-    h1: 'Each Public Health Budget Question Requires a Distinct Empirical Study Design',
-    subtitle: 'We match linked state records, trend splits, county panels, and outreach trials to each budget question.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Matching Study Methods to Budget Questions',
+    pageTitle: 'Matching Study Methods to Budget Questions | CAPHE',
+    metaDescription: 'Match four California health budget questions with suitable methods: linked records and surveys, past trends, county data, and call trials.',
+    h1: 'Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method',
+    subtitle: 'Matching linked records, trend checks, county data, and call trials to the question each method answers.',
     endnotes: [
-      '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Medi-Cal Certified Eligibles &amp; Redetermination Dashboards Linked With U.S. Census ACS PUMS.',
-      '<a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Employment Development Department (EDD)</a>: May 2026 Disability Insurance &amp; Paid Family Leave Fund Forecast.',
-      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: 57-County Public Health Spending Panel (2003&ndash;2023) &amp; <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014)</a>.',
-      '<a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">National Bureau of Economic Research (NBER WP 34191)</a>: California Medicaid Renewal Outreach 5-Arm Trial (N = 82,695).'
+      '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Medi-Cal enrollment records linked with Census ACS data (255,601 state-recorded adults vs. 152,811 survey adults; 120,239 work-rule adults).',
+      '<a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Employment Development Department (EDD)</a>: May 2026 Paid Family Leave fund forecast (325,055 claims in 2025; 330,000 without law change vs. 369,600 modeled with 12-week leave).',
+      '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: 57-county health spending data (2003&ndash;2023) and <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), <em>Economics &amp; Human Biology</em></a>.',
+      '<a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">National Bureau of Economic Research (NBER Working Paper 34191)</a>: California Medicaid renewal trial with five groups (82,695 members) and Bronx Community Health Worker referral study (27.8% &times; 69.2% &times; 78.1% = 15.0%).'
     ],
-    policySettingHtml: 'Public health leaders answer different budget questions at each stage of launching and scaling a program. Sizing a multilingual outreach cohort, forecasting a statewide paid leave law, scoring county health budgets, and testing phone call scripts each require different data structures. Matching each budget question to its study design prevents costly planning gaps.',
-    answerHtml: 'Matching each California public health budget question to its study design locates <strong>120,239 Medi-Cal members</strong> needing renewal outreach [1], <strong>+39,600 Paid Family Leave claims</strong> [2], <strong>2.38 annual to 4.32 cumulative fewer deaths per 100,000</strong> from county health spending [3], and an <strong>8% to 11% renewal lift</strong> from live calls [4]. Using one raw source alone undercounts Medi-Cal adults by <strong>-40.2%</strong> in home surveys or mixes trend growth with new policy shifts [1,2]. Pairing linked records, trend splits, county panels, and outreach trials gives leaders a full toolkit [3,4].',
+    policySettingHtml: 'No single study method can answer every question about public health budgets. Randomized controlled trials (RCTs) test outreach calls directly. Yet researchers cannot randomly assign a statewide law across counties. They also cannot randomize 20 years of past county budgets. American Community Survey (ACS) counts can miss enrolled adults, and simple before-and-after checks can mistake a past trend for a law\'s effect. Planning Medi-Cal staff, costing Paid Family Leave (PFL), checking county budgets, and testing calls each face different limits. Matching each question to a suitable method avoids starting count and trend errors.',
+    answerHtml: 'Matching four state health questions to suitable study methods avoids large starting errors [1,2,3,4]. First, linking Department of Health Care Services (DHCS) records (<strong>255,601</strong> adults) with ACS shares fixes a <strong>40.2%</strong> survey undercount (<strong>152,811</strong> in ACS) [1]. That link finds <strong>120,239</strong> work-rule adults, including 26,515 Limited English Proficient (LEP) adults [1]. Second, an Employment Development Department (EDD) forecast of <strong>330,000</strong> claims without the law adds <strong>+39,600</strong> modeled PFL claims (<strong>369,600</strong> total) [2]. Third, pre-COVID county data link $10 per person with <strong>2.38</strong> fewer deaths per 100,000 yearly [3]. Over 13 years, that observed link is <strong>4.32</strong> fewer deaths (<em>p</em> = 0.067 after multiple-test adjustment, above 0.05) [3]. Fourth, a five-group trial (<strong>82,695</strong> members) shows live calls raise renewals [4]. Separate Community Health Worker (CHW) steps (<strong>27.8%</strong> &times; <strong>69.2%</strong> &times; <strong>78.1%</strong> = <strong>15.0%</strong>) show which steps patients miss [4].',
     block2: {
-      title: 'Two Design Rulers: Unmatched Baseline Errors vs. Matched Designs Across 4 Decisions',
-      contextTag: 'Mode B Multi-Design Summary Across Medi-Cal, Paid Family Leave, County LHA &amp; CHW Outreach Studies',
-      ariaLabel: 'Comparison of descriptive and uncontrolled errors (-40.2% survey undercount, -12.31% pre-trend drift, +2.47 pandemic surge slope) versus fit-for-purpose study designs',
+      title: 'Simple Starting Estimates vs. Matched Study Methods Across Four Decisions',
+      contextTag: 'Four Study Methods Across Medi-Cal, Paid Family Leave, County Spending & Call Trials',
+      ariaLabel: 'Comparison of simple starting estimate errors versus matched study methods across four California public health budget questions',
       ruler1: {
-        title: 'Ruler 1: Single-Source &amp; Raw Estimates (Undercounts, Drift &amp; Surge Mix)',
-        stat: '-40.2% Undercount | -12.3% Drift | +2.47 Surge Mix',
-        ariaLabel: 'Relying on uncalibrated surveys or unadjusted designs produces a 40.2% Medi-Cal survey undercount, 12.31% pre-policy drift, and a +2.47 pandemic surge slope',
+        title: 'Simple Single-Source Starting Estimates',
+        stat: '-40.2% Survey Gap | Earlier Trends | +2.47 Crisis Mix',
+        ariaLabel: 'Simple starting estimates produce a 40.2% survey undercount, earlier trend mixing, and a +2.47 emergency aid reversal',
         segments: [
-          { cls: 'seg-Housing', width: 40, label: '-40.2% ACS Undercount' },
-          { cls: 'seg-gross', width: 25, label: '-12.3% Drift' },
-          { cls: 'seg-rest', width: 35, label: '+2.47 Surge Mix' }
+          { cls: 'seg-Housing', width: 40, label: '-40.2% Survey Gap' },
+          { cls: 'seg-gross', width: 25, label: 'Earlier Trends' },
+          { cls: 'seg-rest', width: 35, label: '+2.47 Crisis Mix' }
         ],
-        desc: 'Using an unmatched design undercounts Santa Clara adult Medi-Cal members by <strong>-40.2% in ACS surveys</strong> (152,811 vs. 255,601 DHCS). It also misreads a <strong>-12.31% pre-law enrollment drop</strong> or flips the sign in pandemic county spending (<strong>+2.47 in 2020-2023</strong>).'
+        desc: 'Simple starting counts miss 40.2% of adults, mix in earlier trends, or reverse emergency aid signs (+2.47).'
       },
       ruler2: {
-        title: 'Ruler 2: Matched Design Toolkit (Linked Records, Trend Split, County Panel &amp; Trials)',
-        stat: '120,239 Target | +39.6K PFL | 2.38-4.32 Fewer Deaths | +8-11% Lift',
-        ariaLabel: 'Matched designs isolate 120,239 HR1-exposed enrollees, +39,600 incremental PFL claims, 2.38 annual and 4.32 cumulative fewer deaths/100K per $10/capita, and +8-11% navigator lift',
+        title: 'Study Methods Chosen for Four Questions',
+        stat: '120,239 Adults | +39.6K Claims | 2.38 & 4.32 (adj. p = 0.067) | +8-11% Gain',
+        ariaLabel: 'Matched methods estimate 120,239 adults, +39,600 added claims, links of 2.38 to 4.32 fewer deaths (adjusted p = 0.067), and +8-11% live-call renewal gain',
         segments: [
-          { cls: 'seg-primary', width: 25, label: 'Record Link: 120.2K' },
-          { cls: 'seg-food', width: 25, label: 'Trend Split: +39.6K' },
-          { cls: 'seg-primary', width: 25, label: 'Panel: 2.38 Yr / 4.32 Cumul (32-59:1)' },
-          { cls: 'seg-food', width: 25, label: 'Trial: +8-11% Lift' }
+          { cls: 'seg-primary', width: 25, label: 'Linked Data: 120.2K' },
+          { cls: 'seg-food', width: 25, label: 'Trend Model: +39.6K' },
+          { cls: 'seg-primary', width: 25, label: 'County Data: 2.38 & 4.32 (adj. p = 0.067)' },
+          { cls: 'seg-food', width: 25, label: 'Trial: +8-11%' }
         ],
-        desc: 'Matching each question to its design finds <strong>120,239 exposed members</strong> and <strong>+39,600 PFL claims ($623.7M)</strong>. It also finds <strong>2.38 annual / 4.32 cumulative fewer deaths/100K (32:1 to 59:1 BCR)</strong> and <strong>+8% to +11% live-call renewal lift</strong>.'
+        desc: 'Each budget question pairs with the method that estimates the number needed, keeping 4.32 paired with adj. p = 0.067.'
       }
     },
     table1: {
-      title: 'Table 1. Matching Four California Health Policy Questions to the Right Study Design',
-      subtitle: 'We compare four CAPHE studies across budget question, raw baseline error, matched design, and main result.',
-      caption: 'Four-column study design matrix comparing Admin-Survey Linkage, Trend Split + Simulation, Routine-Budget Panel, and Outreach Trial + Funnel Check.',
-      cornerLabel: 'Study Design Factor',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Empirical Estimates; Rung 2 Mode A Simulation):</strong> Each column uses a separate study group (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). The Rung 2 PFL SB 951 claim and cost numbers are Mode A simulation outputs. In Rung 3, the 2020-2023 pandemic surge slope is +2.47 deaths per 100,000 per $10 per resident (p = 0.001) and pooled 2003-2023 TWFE is -0.25 (p = 0.710). Rung 3 pre-COVID routine-budget TWFE (2003-2019, N = 943) yields -2.38 (p = 0.0022), 13-year long-difference OLS yields -4.32 (p = 0.0052), and Long-Difference Lewbel 2SLS yields -5.31 (first-stage F = 111.20, Hansen J p = 0.2132).',
+      title: 'Table 1. Matching Four State Health Budget Questions to Suitable Study Methods',
+      subtitle: 'Checking each budget question, raw count flaw, chosen method, and main result in four studies.',
+      caption: 'Table 1: Four columns compare linked state records and surveys, claim models with and without a law change, county records over time, and random call trials with referral checks.',
+      cornerLabel: 'Study Method',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Separate Groups Studied &amp; How Results Were Produced):</strong> Each column studies a separate California group. Column 1 links observed Santa Clara adult Medi-Cal records with Census data. Column 2 uses a policy model built on EDD claim records and forecasts. Column 3 studies observed 2003&ndash;2023 county records across 57 health offices (+2.47 in 2020&ndash;2023, -2.38 yearly before COVID-19, and -4.32 over 13 years with unadjusted p = 0.0052 and adjusted p = 0.067). An extra Lewbel two-stage check estimates -5.31 (F = 111.20, J-test p = 0.2132). Those scores check method rules rather than proving cause, and federal VSL dollar ratios are illustrative valuations conditional on a causal interpretation. Column 4 reports a Medicaid renewal trial (82,695 members) and a three-step CHW referral study (3,522 patients).',
       columns: [
-        { tag: 'Rung 1: Target Size', tagHighlight: false, title: 'Record + Survey Link', subtitle: 'SCC Medi-Cal HR 1 Scope.' },
-        { tag: 'Rung 2: Law Shift', tagHighlight: false, title: 'Trend Split + Model', subtitle: 'CA Paid Family Leave (SB 951).' },
-        { tag: 'Rung 3: County Panel', tagHighlight: true, title: 'Routine-Budget Panel', subtitle: '57-County LHA Pay (2003-2019).' },
-        { tag: 'Rung 4: Outreach Step', tagHighlight: true, title: 'Outreach Trial + Funnel', subtitle: 'Call Scripts &amp; CHW Reach.' }
+        { tag: 'Method 1: Counting People', tagHighlight: false, title: 'Linked Records &amp; Survey', subtitle: 'Santa Clara Medi-Cal renewal staffing.' },
+        { tag: 'Method 2: Statewide Law', tagHighlight: false, title: 'Model With &amp; Without Law', subtitle: 'California Paid Family Leave (SB 951).' },
+        { tag: 'Method 3: County Records', tagHighlight: true, title: 'County Budgets Over Time', subtitle: '57-county public health spending links.' },
+        { tag: 'Method 4: Program Test', tagHighlight: true, title: 'Call Trial &amp; Step Checks', subtitle: 'Renewal calls and CHW referral steps.' }
       ],
       rows: [
         {
-          label: 'Main Budget Question',
+          label: 'Budget Question',
           cells: [
-            { val: 'How many members need language help?' },
-            { val: 'What will SB 951 + 12-wk PFL cost?' },
-            { val: 'Does county health spending save lives?' },
-            { val: 'Which outreach script lifts renewals?' }
+            { val: 'How many members need bilingual outreach?' },
+            { val: 'How many claims will the law add above trend?' },
+            { val: 'Do larger regular county budgets link with lower deaths?' },
+            { val: 'Which outreach steps raise renewals or care links?' }
           ]
         },
         {
-          label: 'Raw Baseline Gap',
+          label: 'Problem With Simple Starting Estimate',
           cells: [
-            { val: 'ACS alone undercounts by -40.2% (152.8K vs 255.6K)' },
-            { val: 'Pre-post mixes +1.52% claim drift &amp; +3.5% pay' },
-            { val: 'Pandemic surge grants give +2.47 (plus sign)' },
-            { val: 'Total rate leaves out 85% pre-visit drop' }
+            { val: 'ACS survey misses 40.2% (152,811 vs. 255,601)' },
+            { val: 'Before-and-after mixes +1.52% claim &amp; wage growth' },
+            { val: 'Including COVID-19 aid reverses sign (+2.47)' },
+            { val: '15.0% total rate misses steps 85% did not finish' }
           ]
         },
         {
-          label: 'Matched Study Method',
+          label: 'Method Chosen to Answer Question',
           cells: [
-            { val: 'Fix totals to DHCS; use ACS shares' },
-            { val: 'Split 2025-26 base slope from law jump' },
-            { val: 'Separate pre-COVID routine budgets &amp; horizons' },
-            { val: '5-arm trial (N=82,695) + funnel check' }
+            { val: 'Match total to DHCS; apply ACS shares' },
+            { val: 'Estimate 330,000 claims before law change' },
+            { val: 'Analyze 2003-2019 yearly &amp; 13-yr changes apart' },
+            { val: '5-group trial (82,695) + 3-step referral check' }
           ]
         },
         {
-          label: 'Main Result',
+          label: 'Main Observed or Modeled Result',
           highlight: true,
           cells: [
-            { val: '120,239 Exposed (23K Sp/Viet LEP)', textColor: 'text-[#003080]' },
-            { val: '+39,600 Claims ($623.7M Gross)', textColor: 'text-[#003080]' },
-            { val: '2.38 Yr / 4.32 Cumul Fewer (32-59:1)', textColor: 'text-emerald-800' },
-            { val: '+8-11% Call Lift (15.0% CHW Link)', textColor: 'text-emerald-800' }
+            { val: '120,239 Subject to Work Rule (26,515 LEP)', textColor: 'text-[#003080]' },
+            { val: '*+39,600 Modeled Claims (369,600 total)', textColor: 'text-[#003080]' },
+            { val: '2.38 Yr / 4.32 13-Yr Link (adj. p = 0.067)', textColor: 'text-emerald-800' },
+            { val: '+8-11% Live-Call Gain | 78.1% Linked if Reached', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Key Check or Group Detail',
+          label: 'Checks &amp; Smaller Group Results',
           cells: [
-            { val: '15,559 Spanish + 7,467 Viet + 3,489 Chinese' },
-            { val: '325,055 (2025) -> 330,000 base vs. 369,600' },
-            { val: 'Urban (-2.59) &amp; Rural (-2.42); 13-yr IV -5.31' },
-            { val: 'Text and email arms: 0% lift' }
+            { val: '15,559 Spanish + 7,467 Vietnamese + 3,489 Chinese' },
+            { val: '325,055 (2025) &rarr; 330,000 base ($623.7M gross)' },
+            { val: 'Urban (-2.59) &amp; Smaller (-2.42); check -5.31' },
+            { val: '27.8% started &times; 69.2% reached &times; 78.1% = 15.0%' }
           ]
         },
         {
           label: 'Direct Budget Action',
           cells: [
-            { val: 'Hire bilingual staff for 26,515 adults' },
-            { val: 'Set payroll tax at +0.04 pp ($60/yr)' },
-            { val: 'Back base county LHA ($420K yr / $231K cumul)' },
-            { val: 'Fund live calls and CHWs over text tweaks' }
+            { val: 'Staff bilingual helpers for 26,515 adults' },
+            { val: 'Estimate +0.04 pp payroll tax (+$60/yr worker)' },
+            { val: 'Analyze crisis aid apart ($231K-$420K if causal)' },
+            { val: 'Fund live phone calls &amp; starting outreach' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. How Each Study Design Guides Agency Plans and Budgets',
-      subtitle: 'We show how linked records, trend splits, county panels, and outreach trials work together.',
-      caption: 'Decision matrix evaluating when to use each study design, what data it adds, the risk of a mismatch, and team actions.',
+      title: 'Table 2. Matching Each Health Program Question to Its Study Method',
+      subtitle: 'Matching each stage of health program planning to the study method that fits its data.',
+      caption: 'Table 2: Compare when each method applies, what it can show, what goes wrong with another method, and what agencies should do.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'When This Design Fits Best',
+          label: 'When This Method Applies',
           cells: [
-            { val: 'When a team sizes a target group and finds language or age subgroups before launch.' },
-            { val: 'When a state law (like SB 951\'s jump to 90% pay) starts on one date statewide.' },
-            { val: 'When budgets shift across 57 counties and pandemic surge grants must be separated from base care.' },
-            { val: 'When a team tests outreach scripts across 82,695 members or checks referral steps.' }
+            { val: 'Before launch, when staff must estimate member counts and language needs missing from state records alone.' },
+            { val: 'When a statewide leave law starts everywhere on one date, leaving zero counties without the law.' },
+            { val: 'When local budgets vary across 57 counties over 20 years and cannot be randomly assigned.' },
+            { val: 'When a health plan can randomly assign call scripts across 82,695 members or check referral steps.' }
           ]
         },
         {
-          label: 'What This Design Adds',
+          label: 'What the Method Can Show',
           cells: [
-            { val: 'Gives the exact county headcount and language shares (like 7,467 Vietnamese members) to staff outreach.' },
-            { val: 'Splits yearly wage and claim growth (+1.52% claims, +6.88% pay) from the new law jump (+39,600 claims).' },
-            { val: 'Tracks death rates across 57 counties over annual (-2.38) and 13-year cumulative (-4.32) horizons.' },
-            { val: 'Checks each referral step to show that 78.1% of reached patients link to care once reached (27.8%).' }
+            { val: 'Links exact DHCS counts (255,601 adults) with ACS language and work shares to estimate 120,239 adults.' },
+            { val: 'Separates regular claim growth (325,055 to 330,000) from the proposed leave expansion (+39,600 claims) and 90% pay rate.' },
+            { val: 'Estimates within-county spending links (-2.38 yearly; -4.32 13-yr, adj. p = 0.067) outside emergency aid.' },
+            { val: 'Shows text and email wording changes add 0% renewals vs. +8-11% from live calls, and 78.1% CHW care links.' }
           ]
         },
         {
-          label: 'Risk When Design and Question Mismatch',
+          label: 'Problem With Using Another Method',
           cells: [
-            { val: 'Using raw ACS survey counts (152,811 vs. 255,601 DHCS adults) under-budgets renewal staff by 40.2%.' },
-            { val: 'Treating a pre-law -12.31% enrollment drop (120,239 to 105,436 in 2025) as a 2027 law effect overstates loss.' },
-            { val: 'Pooling 2020-2023 emergency COVID-19 grants (+2.47) with routine budgets attenuates prevention gains.' },
-            { val: 'Spending months testing SMS text wording (0% lift) delays live phone calls that lift renewals +8% to +11%.' }
+            { val: 'Planning staff from raw ACS counts (152,811 vs. 255,601 DHCS) undercounts adult Medi-Cal members by 40.2%.' },
+            { val: 'Attributing earlier claim changes (-12.31% in 2025) or routine wage growth to a new law miscalculates reserves.' },
+            { val: 'Combining 2020-2023 emergency grants (+2.47) with regular budgets obscures the pre-COVID negative link.' },
+            { val: 'Judging CHWs on 15.0% overall completion blames field workers for the low share started by clinics (27.8%).' }
           ]
         },
         {
-          label: 'Action Plan for Agency Teams',
+          label: 'Recommended Agency Action',
           policyFit: true,
           cells: [
-            { headline: 'Link State Totals + Survey Shares', detail: 'Use DHCS rolls for total headcount and ACS microdata for language shares.' },
-            { headline: 'Model Base Slopes Before Laws', detail: 'Use multi-year trend splits to separate wage growth from new benefit jumps.' },
-            { headline: 'Use Routine-Budget Panels for ROI', detail: 'Judge multi-year county budgets with pre-COVID panels and 13-year cumulative horizons.' },
-            { headline: 'Test Outreach Calls &amp; Funnels', detail: 'Use outreach trials and funnel checks to tune call scripts and CHW caseloads.' }
+            { headline: 'Match Surveys to State Records', detail: 'Use DHCS records for total members and apply ACS survey shares to estimate language staffing.' },
+            { headline: 'Estimate Earlier Trends First', detail: 'Model multi-year claim and wage growth before estimating the added cost of a statewide law.' },
+            { headline: 'Analyze Periods Apart', detail: 'Analyze crisis aid apart, pair 4.32 with adj. p = 0.067, and mark death-risk values as if causal.' },
+            { headline: 'Test Calls &amp; Referral Steps', detail: 'Run random trials on outreach calls and check each referral step before cutting staff.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Referral Funnel Math &amp; Multi-Study Provenance',
+      notesTitle: 'Table 2 Notes: How Referral Step Rates Combine &amp; Study Sources',
       notesBullets: [
-        '<strong>CHW Referral Funnel Math (Mode B Published Trial Split):</strong> In the Bronx CHW study (N = 3,522 patients, 5,021 referrals; INTERVENTION_DESIGN.md:L185-232), total referral completion was 15.0%. That equals 27.8% started outreach &times; 69.2% of started were reached (19.2% of total) &times; 78.1% of reached linked to care (0.278 × 0.692 × 0.781 = 0.1502 = 15.0%).',
-        '<strong>Data Provenance:</strong> Exact numbers come from `scc_hr1_medicaid/SCC_HR1_MediCal_Risk_Profiles.md (L13-112), scc_hr1_medicaid/scc_dhcs_medical_enrollment.csv (L2-15), INTERVENTION_DESIGN.md (L19-232), public/tools/pfl-simulator/data/pfl_model_data.json (L20-169), and src/frontend/js/lha-calculator.js`.'
+        '<strong>Three Steps in Community Health Worker Referrals:</strong> In the published Bronx CHW study (3,522 patients, 5,021 referrals), total completion was 15.0%. Outreach started for 27.8% of patients. Staff reached 69.2% of that group (19.2% of all patients). Then 78.1% of reached patients connected with care (0.278 &times; 0.692 &times; 0.781 = 15.0%).',
+        '<strong>Where Study Data Come From:</strong> Numbers come from Santa Clara Medi-Cal and Census checks, California\'s Paid Family Leave model, the 57-county health spending study, and NBER Working Paper 34191.'
       ]
     },
     synthesis: {
-      title: 'Why Health Agencies Use All Four Methods Together',
-      p1: 'A county health director launching a Medi-Cal renewal or chronic-care plan needs four types of proof at four steps. First, record-survey linkage sizes the group (fixing the -40.2% ACS undercount to find 120,239 exposed adults and 26,515 LEP members). Second, trend models split baseline enrollment drift (-12.31%) from new laws. Third, multi-year county panels measure department returns (2.38 fewer deaths/100K annually and 4.32 over 13-year cumulative horizons, 32:1 to 59:1 BCR). Fourth, outreach trials test which contact channel works.',
-      p2: 'Checking each step of the delivery funnel turns study numbers into daily fixes. In California\'s 5-arm renewal outreach trial (N = 82,695, NBER WP 34191), changing the wording of texts and emails gave a 0% difference. Adding a live phone call lifted renewals by +8% to +11% (+1.0 to +1.8 pp). Likewise, splitting a CHW referral funnel shows that 78.1% of reached patients link to care. The 15.0% overall rate points to an early gap in starting referrals (27.8%), not a gap in CHW support.'
+      title: 'Why Each Health Budget Question Needs a Matched Study Method',
+      p1: 'Ranking study methods in general misses a clear rule: the right method depends on the question. Planning Medi-Cal outreach links records to fix the 40.2% ACS undercount (152,811 survey adults vs. 255,601 on DHCS rolls). That step finds 120,239 work-rule adults, including 26,515 with limited English skills. Costing statewide PFL law SB 951 splits regular growth (325,055 to 330,000 claims) from +39,600 modeled claims. Checking county budgets tests COVID-19 aid (+2.47) apart from regular budgets. Regular spending links with 2.38 yearly and 4.32 13-year fewer deaths per 100,000 (adj. p = 0.067). Federal Value of a Statistical Life (VSL) benchmarks imply 32:1 and 59:1. Those ratios apply only if spending caused fewer deaths and are not cash returns.',
+      p2: 'Once member counts and budgets are set, trials and step checks guide daily work. In California\'s 82,695-member renewal trial, four text and email groups showed 0% renewal gain. Adding live phone calls raised Medi-Cal renewals by 8% to 11%. Splitting a 15.0% CHW rate into outreach started (27.8%), patients reached (69.2%), and care link (78.1%) also shows which steps patients miss. Field workers link nearly four-fifths of reached patients, so clinics should improve how outreach starts first.'
     },
     methodologyParagraphs: [
-      '<strong>Mode B Studies + Mode A PFL Simulation:</strong> Rung 1 (120,239 DHCS / 152,811 ACS vs. 255,601), Rung 3 (-2.38 annual and -4.32 cumulative routine-budget panel), and Rung 4 (NBER WP 34191 N = 82,695 and Bronx CHW 27.8% × 69.2% × 78.1% = 15.0%) are observed Mode B studies. Rung 2 (330,000 vs. 369,600 PFL claims, $623.7M) is a Mode A simulation calibrated to EDD forecasts. The four rungs use four separate groups (Santa Clara adult Medi-Cal members, California PFL claimants, 57 California counties, and Medicaid outreach and CHW trial participants). Their estimates are not pooled on one scale.',
-      '<strong>Main Sources:</strong> We cite <a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">NBER Working Paper 34191 (California Medicaid Renewal Outreach 5-Arm Trial, N = 82,695)</a> and <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Enrollment Dashboards</a>. We also use <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 DI Fund Forecast</a> and <a href="https://doi.org/10.1002/hec.3031" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), Health Economics</a>.'
+      '<strong>Three Studies of Recorded Results &amp; One Policy Model:</strong> Method 1 (255,601 DHCS vs. 152,811 ACS adults = -40.2% undercount; 120,239 work-rule adults) uses observed state and survey records. Method 3 (-2.38 yearly and -4.32 13-year [multiple-testing-adjusted p = 0.067] 57-county death-rate links) uses observed county records. Method 4 uses recorded data from NBER Working Paper 34191 (82,695 members) and the Bronx CHW three-step referral study (27.8% &times; 69.2% &times; 78.1% = 15.0%). Method 2 (325,055 actual 2025 claims, 330,000 forecasted 2026 claims without the change, and 369,600 modeled claims = +39,600, $623.7M gross benefits) is a policy model matched to official California EDD forecasts.',
+      '<strong>Primary Sources:</strong> <a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">NBER Working Paper 34191 (California Medicaid Renewal Trial, N = 82,695)</a>. <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Enrollment Tables</a>. <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California EDD May 2026 Disability Insurance Fund Forecast</a>. <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), Economics &amp; Human Biology</a>.'
     ],
     faqs: [
       {
-        question: 'Why does the ACS survey undercount Santa Clara County adult Medi-Cal members by 40.2%?',
-        answer: 'Home surveys face a known Medicaid undercount. People mix up Medi-Cal plan names (like Santa Clara Family Health Plan or Anthem Blue Cross) with private plans or leave out household members. Fixing totals to DHCS state records (255,601 adults vs. 152,811 in ACS) while using ACS for language and work-hour shares fixes the group base.'
+        question: 'Why does the Census ACS undercount Santa Clara County adult Medi-Cal members by 40.2%?',
+        answer: 'Survey respondents often report local managed-care plan names as private insurance or leave out other adults in the home. As a result, ACS counts 152,811 adult members versus 255,601 certified adults in DHCS records (-40.2%). Using DHCS records for the total and applying ACS shares estimates language needs and work hours without undercounting members.'
       },
       {
-        question: 'What did the 82,695-person California Medicaid outreach trial (NBER WP 34191) show about text wording vs. live calls?',
-        answer: 'Across four written arms testing different SMS and email wording, renewal lift was 0%. Only the fifth arm, which added a live phone call, raised renewals by 8% to 11% (+1.0 to +1.8 pp). Live human help clears paperwork hurdles where text tweaks do not.'
+        question: 'What did California\'s 82,695-member renewal trial show about text messages versus live phone calls?',
+        answer: 'Across four random groups that varied text and email wording, the study found no increase in Medi-Cal renewals (0%). Only the fifth group, which added live phone navigator calls, raised renewals by 8% to 11% compared with the group without live calls (+1.0 to +1.8 percentage points). Live help resolves problems completing forms that text wording alone cannot fix.'
       },
       {
-        question: 'Why does splitting a referral funnel into start (27.8%), reach (69.2%), and link (78.1%) matter for teams?',
-        answer: 'Looking only at the 15.0% overall completion rate (0.278 × 0.692 × 0.781) makes CHW outreach look weak. Splitting the funnel shows that CHWs link 78.1% of the patients they reach. The real operational gap is starting the referral (27.8%).'
+        question: 'How does checking outreach started (27.8%), contact (69.2%), and care connection (78.1%) help clinics?',
+        answer: 'Looking only at the 15.0% overall rate (0.278 &times; 0.692 &times; 0.781) makes CHW outreach appear weak. Checking the three referral steps one by one shows that CHWs connect 78.1% of contacted patients with care. Because the largest loss occurs before clinics start outreach (27.8%), clinics should improve the steps used to start outreach first.'
       }
     ],
     related: [
-      { slug: 'medicaid-expansion', title: 'Medi-Cal Redetermination Funnel & Churn', note: 'CHW case study decomposing the 5-step verification funnel in Santa Clara County' },
-      { slug: 'observational-to-experimental', title: 'Routine County Public Health Budgets Lower Premature Deaths After Separating Outbreak Spending', note: 'Case study detailing the 57-county LHA routine-budget replication' },
-      { slug: 'before-after-trap', title: 'Evaluating Pre-Post Changes Against Baseline Trends', note: 'Case study on separating pre-policy drift from post-policy changes' }
+      { slug: 'medicaid-expansion', title: 'In the Model, Most Medi-Cal Renewal Losses Come From Unreturned Mail Forms Over Work Rules', note: 'Case study separating modeled Santa Clara County mail-form losses from work-rule losses' },
+      { slug: 'observational-to-experimental', title: 'Routine County Health Spending Links With Lower Death Rates Outside Pandemic Grant Years', note: 'Case study detailing the 57-county health spending links across yearly and 13-year spans' },
+      { slug: 'before-after-trap', title: 'Two-Year Telehealth Counts Include Earlier Increases in Clinic Use Over Time', note: 'Case study on separating earlier trend growth from post-2020 counts' }
     ]
   },
 
@@ -1264,193 +1268,193 @@ const modules = [
   {
     slug: 'p-hacking-multiple-testing',
     tier: 'public',
-    trackEyebrow: 'Track 2: Study Credibility &amp; Measurement &middot; Multiple-Group Checks (Observed 62-Cell DHCS Grid &amp; Mode A Rules)',
-    pageTitle: 'Multiple Testing Across 58 Counties | CAPHE',
-    metaDescription: 'Scan 62 Santa Clara DHCS Medi-Cal cells (472,014 to 411,722): separate small-group swings (-34.0% Samoan, n=47) from high-volume drops (-24,880 Spanish).',
-    h1: 'Minimum Group-Size Filters and Multiple-Testing Adjustments Focus Outreach on Projected Coverage Losses',
-    subtitle: 'We filter small-group swings across modeled county subgroup benchmarks so outreach funds target the largest plan drops.',
+    trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Minimum Group Sizes, Multiple Tests &amp; Size of Net Losses',
+    pageTitle: 'Minimum Group Sizes & Medi-Cal Loss Rankings | CAPHE',
+    metaDescription: 'Compare enrollment losses across 62 Medi-Cal groups in Santa Clara County, and rank groups with 100+ members by losses past the county rate.',
+    h1: 'Minimum Group Sizes and Net Member Losses Help Counties Set Medi-Cal Call Lists',
+    subtitle: 'Using a 100-member minimum and net losses across 62 Medi-Cal groups to set call lists.',
     endnotes: [
-      '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Santa Clara County Medi-Cal Certified Eligibles across 62 Demographic &amp; Language Cells (June 2025 to June 2026 snapshots, 472,014 to 411,722 enrollees).',
-      '<a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Benjamini, Y., &amp; Hochberg, Y. (1995)</a>: "Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing", <em>JRSS-B</em>, 57(1), 289&ndash;300.',
-      '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: American Community Survey (ACS) 5-Year Language Spoken at Home &amp; Residential Mobility Tables.'
+      '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Santa Clara County Medi-Cal counts across 62 age, aid, and language groups (June 2025 to June 2026: 472,014 to 411,722 members, net change -60,292 or -12.77%).',
+      '<a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Benjamini, Y., &amp; Hochberg, Y. (1995)</a>: False discovery rate method in <em>Journal of the Royal Statistical Society: Series B</em>, 57(1), 289&ndash;300.',
+      '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: Survey area pair tests using 80 error weights (<code>p = 0.469 to 0.730</code>), with CAPHE 16-delay Holm/FDR (<code>0.0788</code>) and 1,000 random-label (<code>0.593</code> max chance score) checks.'
     ],
-    policySettingHtml: 'County Medi-Cal teams track monthly enrollment across dozens of language, age, and demographic cells to spot renewal drops. In small language groups with fewer than 60 members, a few moving families can create a large percentage swing. Combining a minimum group-size floor with net headcount losses directs outreach staff to the largest coverage drops.',
-    answerHtml: 'In a multilingual county like Santa Clara (where the 62-cell DHCS grid spans both 47-member and 138,215-member language groups), pairing a modeled 62-group screen with total headcount focuses outreach on <strong>Spanish-speaking members (-24,880 net drop, or 41.3% of the county drop)</strong> and <strong>Hispanic adults ages 19 to 44 (-17,380)</strong> [1,2]. Sorting those 62 groups by raw percent drop puts tiny groups first, like <strong>Samoan (-34.04%, 47 to 31 members)</strong> and <strong>French (-25.00%, 56 to 42)</strong>, where a few moving homes shift the rate [1,3]. Setting a size floor (<strong>100+ members</strong>) with modeled drops past the county rate guides staff [2,3].',
+    policySettingHtml: 'County Medi-Cal teams check monthly Department of Health Care Services (DHCS) totals across 62 age, aid, and language groups. Sorting all 62 groups by percent loss alone puts very small groups first. A net loss of 13 to 17 members cuts a 50-person group by 25% to 34%. Running dozens of raw 5% tests on survey data can also mark random gaps as real. A 100-member minimum plus losses past the county rate keeps call lists on the largest declines.',
+    answerHtml: 'A 100-member minimum limits noisy percent ranks, and losses past the county rate show large drops [1,2]. From June 2025 to June 2026, Medi-Cal counts across 62 DHCS groups fell from <strong>472,014</strong> to <strong>411,722</strong> (<strong>-60,292</strong> net, or <strong>-12.77%</strong>) [1]. Percent rank puts small groups first: Samoan at <strong>-34.04%</strong> (-16), French at <strong>-25.00%</strong> (-14), and Thai at <strong>-20.75%</strong> (-11) [1]. Monthly overlapping totals cannot support a simple exit test [1]. When error is measured, multi-test rules cut false positives in survey areas (p = <strong>0.469 to 0.730</strong>), 16-delay checks (adj. p = <strong>0.0788</strong>), and 1,000 label swaps (<strong>0.593</strong> max chance score) [2,3]. Staff refer groups under 100 members to community-based organizations (CBOs) [1]. Ranking 100+ groups by losses past -12.77% puts Spanish first (<strong>-24,880</strong> net, <strong>41.27%</strong> of county loss, <strong>-7,230</strong> extra) [1]. Overlapping groups ages 19-44 follow (Hispanic <strong>-17,380</strong> or <strong>28.83%</strong>, <strong>-6,344</strong> extra; Men <strong>-15,496</strong>, <strong>-5,697</strong> extra) [1].',
     block2: {
-      title: 'Two Dashboard Rulers Across 62 DHCS Cells: Raw Percent Rank vs. Size-Filtered Volume Rank',
-      contextTag: 'Observed 62-Cell Santa Clara County DHCS Medi-Cal Snapshots (472,014 to 411,722, -12.77% Net Change) &amp; Mode A Screening Rules',
-      ariaLabel: 'Comparison of raw percentage ranking where small cells like Samoan (-34.04%, -16 enrollees) and French (-25.00%, -14 enrollees) top the list versus size-filtered and volume-adjusted targeting where Spanish (-18.00%, -24,880 enrollees) accounts for 41.3% of the county net drop',
+      title: 'Percentage Loss Rank vs. 100-Member Minimum & Excess-Loss Rank (62 Groups)',
+      contextTag: 'Reported 62-Group Santa Clara DHCS Medi-Cal Totals (472,014 to 411,722, -12.77%)',
+      ariaLabel: 'Comparison of percentage ranking led by Samoan (-34.04%, -16 members) versus 100-member minimum ranking led by Spanish (-24,880 members, 41.27% of county loss)',
       ruler1: {
-        title: 'Ruler 1: Raw Percent Rank Across 62 Cells (No Size Floor)',
-        stat: 'Rank #1 Samoan -34.04% (-16) | Rank #2 French -25.00% (-14)',
-        ariaLabel: 'Unfiltered percentage ranking places Samoan (-34.04%, 47 to 31) and French (-25.00%, 56 to 42) at the top of the 62-cell table despite representing only 30 enrollees combined',
+        title: 'Percentage Loss Rank Without Minimum Size (62 Groups)',
+        stat: '1st Samoan -34.04% (-16) | 2nd French -25.00% (-14)',
+        ariaLabel: 'Percentage ranking places Samoan and French first despite representing 30 lost members combined',
         segments: [
-          { cls: 'seg-Housing', width: 70, label: 'Small-n Top Ranks: Samoan -34.0% (-16) &amp; French -25.0% (-14)' },
-          { cls: 'seg-primary', width: 30, label: '0.05% of County Drop' }
+          { cls: 'seg-Housing', width: 70, label: 'Small Groups First: -34.04% & -25.00%' },
+          { cls: 'seg-primary', width: 30, label: '0.05% of Loss' }
         ],
-        desc: '<em>Mode A:</em> scanning <strong>62 independent tests</strong> at raw &alpha; = 0.05 gives <strong>3.10 expected false leads (0.05 / 62 = 0.00081 Bonferroni cutoff)</strong>. <em>Observed:</em> the top percent drops are tiny cells like <strong>Samoan (47 to 31, -16 people)</strong>, <strong>French (56 to 42, -14 people)</strong>, and <strong>Thai (53 to 42, -11 people)</strong>.'
+        desc: 'Groups with small starting counts have the largest percentage declines.'
       },
       ruler2: {
-        title: 'Ruler 2: Size Floor (n &ge; 100) Paired With Net Drop Past County Rate',
-        stat: 'Spanish -24,880 (-18.0%) | Young Adults -17,380 (-20.1%)',
-        ariaLabel: 'Applying a 100-member size floor and ranking by net drop past the -12.77% county rate highlights Spanish-speaking enrollees (-24,880 enrollees, -18.00%) and Hispanic adults 19 to 44 (-17,380 enrollees, -20.11%)',
+        title: 'Minimum Size (100+ Members) + Losses Beyond County Rate',
+        stat: 'Spanish -24,880 (-7,230 Extra) | Hispanic 19-44 -17,380 (-6,344 Extra)',
+        ariaLabel: 'Applying a 100-member minimum highlights Spanish-speaking members and adults ages 19 to 44',
         segments: [
-          { cls: 'seg-food', width: 59, label: 'Spanish Language Cell: -24,880 Net Drop (-18.00%, 41.3% of County Drop)' },
-          { cls: 'seg-primary', width: 41, label: 'Hispanic 19-44: -17,380 (-20.11%)' }
+          { cls: 'seg-food', width: 59, label: 'Spanish: -24,880 (41.27% of Loss)' },
+          { cls: 'seg-primary', width: 41, label: 'Hispanic 19-44: -17,380 (28.83%)' }
         ],
-        desc: 'Requiring cells to clear a <strong>size floor (n &ge; 100)</strong> and ranking by net drop past the <strong>-12.77% county rate</strong> finds the main targets: <strong>Spanish (-24,880 net drop; -7,230 past county rate)</strong> and <strong>Hispanic adults 19-44 (-17,380 net drop; -6,344 past county rate)</strong>.'
+        desc: 'A 100-member minimum plus losses beyond the county rate identifies the largest enrollment declines.'
       }
     },
     table1: {
-      title: 'Table 1. Checking a 62-Cell County Medi-Cal Grid: Small-Group Swings vs. Large Drops',
-      subtitle: 'We compare observed June 2025 to June 2026 Medi-Cal net snapshot changes with size floors and benchmark gaps.',
-      caption: 'Comparison of Samoan cell, French and Thai cells, Spanish cell, and Young Adult (19-44) cells across 62 Santa Clara County Medi-Cal groups.',
-      cornerLabel: '62-Group Check Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Observed DHCS Snapshot Counts &amp; Mode A Screening Rules):</strong> Observed June 2025 (472,014) and June 2026 (411,722) counts come from `scc_dhcs_medical_enrollment.csv` (county net change -60,292 or -12.773%, rounded to -12.77%). Rows 3-5 show Mode A operational rules: a minimum group-size floor (n &ge; 100) and the net drop past the -12.77% county benchmark (`Observed_Net_Change - Base_2025 × (-0.1277)`). Because monthly DHCS snapshots record net stock changes (entries minus exits), overlap across age/sex/language tables, and cluster within families, exact binomial exit p-values are not valid on net snapshot counts; see Table 2 Notes for verified replicate-weight, Holm/FDR, and permutation tests.',
+      title: 'Table 1. Comparing 62 Medi-Cal Groups: Small-Group Percentages vs. Large Net Losses',
+      subtitle: 'Checking June 2025 to June 2026 county DHCS net losses before and after a 100-member minimum.',
+      caption: 'Table 1: Compare the Samoan group, French and Thai groups, Spanish language group, and adult groups ages 19-44 across 62 Santa Clara County Medi-Cal groups.',
+      cornerLabel: 'Measure Across 62 Groups',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Reported DHCS Totals &amp; Call Priority Rules):</strong> June 2025 (472,014) and June 2026 (411,722) counts come from Santa Clara DHCS tables. The county net change is -60,292 (-12.773%, rounded to -12.77%). Multiply the June 2025 group count by -0.1277 to get the expected change, then subtract it from actual net change. Monthly tables show net change (entries minus exits). The same person can appear in several tables, and family members often leave together. Thus these totals cannot support a simple test of single-person exits. Other CAPHE studies with error data report survey pair p-values of 0.469 to 0.730, a 16-delay adjusted p of 0.0788, and a 1,000 random-label max score of 0.593.',
       columns: [
-        { tag: 'Rank #1 Raw %', tagHighlight: false, title: 'Samoan Language Cell', subtitle: '47 to 31 Members (-16).' },
-        { tag: 'Ranks #2 &amp; #5 Raw %', tagHighlight: false, title: 'French &amp; Thai Cells', subtitle: '56 to 42 (-14) | 53 to 42 (-11).' },
-        { tag: '41.3% of County Drop', tagHighlight: true, title: 'Spanish Language Cell', subtitle: '138,215 to 113,335 (-24,880).' },
-        { tag: 'High-Loss Adult Group', tagHighlight: true, title: 'Hispanic &amp; Male 19-44', subtitle: '86,421 to 69,041 (-17,380).' }
+        { tag: 'Largest % Decline', tagHighlight: false, title: 'Samoan Language Group', subtitle: '47 to 31 members (-16 net).' },
+        { tag: '2nd &amp; 5th % Declines', tagHighlight: false, title: 'French &amp; Thai Groups', subtitle: 'French: 56 to 42 (-14) | Thai: 53 to 42 (-11).' },
+        { tag: '41.27% of County Loss', tagHighlight: true, title: 'Spanish Language Group', subtitle: '138,215 to 113,335 members (-24,880 net).' },
+        { tag: 'Adults 19-44 With Large Losses', tagHighlight: true, title: 'Hispanic &amp; Men Ages 19-44', subtitle: 'Hispanic 19-44: 86,421 to 69,041 (-17,380) | Men 19-44: -15,496 net.' }
       ],
       rows: [
         {
-          label: 'Observed Count &amp; Net % Drop',
+          label: 'Net Enrollment &amp; Percentage Change',
           cells: [
-            { val: '-34.04% (47 to 31; -16 people)' },
+            { val: '-34.04% (47 to 31; -16 members)' },
             { val: '-25.00% (-14) &amp; -20.75% (-11)' },
             { val: '-18.00% (138,215 to 113,335)' },
-            { val: '-20.11% (Hisp) &amp; -20.19% (Male)' }
+            { val: '-20.11% (Hispanic) &amp; -20.19% (Men)' }
           ]
         },
         {
-          label: 'Raw % Rank vs. Volume Rank',
+          label: 'Rank by % Loss vs. Number Lost',
           cells: [
-            { val: 'Rank #1 by % | Rank #49 by vol' },
-            { val: 'Rank #2 &amp; #5 by % | #50 &amp; #52 vol' },
-            { val: 'Rank #11 by % | Rank #1 by vol' },
-            { val: 'Rank #6 &amp; #7 by % | #2 &amp; #3 vol' }
+            { val: '1st by % loss | 49th by number lost' },
+            { val: 'French: 2nd % &amp; 50th | Thai: 5th &amp; 52nd' },
+            { val: '11th by % loss | 1st by number lost' },
+            { val: 'Hispanic: 6th % &amp; 2nd | Men: 7th &amp; 3rd' }
           ]
         },
         {
-          label: 'June 2025 Enrolled Group Size',
+          label: 'Number of Members in June 2025',
+          modeled: false,
+          cells: [
+            { val: '47 members (small starting group)' },
+            { val: '56 (French) &amp; 53 (Thai) members' },
+            { val: '138,215 members (29.3% of county)' },
+            { val: '86,421 (Hispanic) &amp; 76,734 (Men)' }
+          ]
+        },
+        {
+          label: '100-Member Minimum Size Rule',
           modeled: true,
           cells: [
-            { val: '47 members (tiny cell; 3-4 homes)' },
-            { val: '56 (French) &amp; 53 (Thai)' },
-            { val: '138,215 (29.3% of county)' },
-            { val: '86,421 (Hisp) &amp; 76,734 (Male)' }
+            { val: 'Under 100 Members (Refer to Partners)', textColor: 'text-amber-900' },
+            { val: 'Under 100 Members (Refer to Partners)', textColor: 'text-rose-800' },
+            { val: 'At Least 100 Members (Include in Rank)', textColor: 'text-emerald-800' },
+            { val: 'At Least 100 Members (Include in Rank)', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Minimum Group-Size Check',
+          label: 'Additional Members Lost vs. -12.77%',
           modeled: true,
           cells: [
-            { val: 'Under 100-Member Cutoff (Partner List)', textColor: 'text-amber-900' },
-            { val: 'Under 100-Member Cutoff (Small Cell)', textColor: 'text-rose-800' },
-            { val: 'Clears 100+ Member &amp; Volume Check', textColor: 'text-emerald-800' },
-            { val: 'Clears 100+ Member &amp; Volume Check', textColor: 'text-emerald-800' }
+            { val: '-10 extra (-16 vs. -6.0 at county rate)' },
+            { val: '-6.8 (French) &amp; -4.2 (Thai) extra' },
+            { val: '-7,230 extra (-24,880 total net loss)' },
+            { val: '-6,344 (Hispanic) &amp; -5,697 (Men) extra' }
           ]
         },
         {
-          label: 'Net Drop Past -12.77% Rate',
-          modeled: true,
-          cells: [
-            { val: '-10 past rate (-16 vs -6.0 exp)' },
-            { val: '-6.8 (French) &amp; -4.2 (Thai)' },
-            { val: '-7,230 past rate (-24,880 net)' },
-            { val: '-6,344 (Hisp) &amp; -5,697 (Male)' }
-          ]
-        },
-        {
-          label: 'Share of County Net Drop (-60,292)',
+          label: 'Share of County Net Loss (-60,292)',
           highlight: true,
           cells: [
-            { val: '0.027% of drop (16 / 60,292)', barWidth: 1, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '0.027% of county loss (16 / 60,292)', barWidth: 1, barColor: '#D97706', textColor: 'text-amber-900' },
             { val: '0.041% combined (25 / 60,292)', barWidth: 1, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '41.27% of drop (24,880)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '28.83% (Hisp) | 25.70% (Male)', barWidth: 70, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '41.27% of county loss (24,880)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '28.83% (Hispanic) | 25.70% (Men)', barWidth: 70, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Balancing Multi-Group Screens and Headcount Scale Across County Subgroups',
-      subtitle: 'We set dashboard rules that filter out small-group swings and pair multi-group gates with net headcount drops.',
-      caption: 'Decision matrix evaluating group size, raw rank limits, budget risk, and dashboard rules across four subgroup types.',
+      title: 'Table 2. Rules That Separate Small-Group Percentages From Large Net Losses',
+      subtitle: 'Using a 100-member minimum, losses past the county rate, and multi-test rules when needed.',
+      caption: 'Table 2: Compare enrollment changes in four groups, errors in percentage rankings, possible staffing mistakes, and rules for county reports.',
       cornerLabel: 'Choice Factor',
       rows: [
         {
-          label: 'What Drives the Rate in This Cell',
+          label: 'Why the Group\'s Enrollment Changed',
           cells: [
-            { val: 'With n = 47 members, three families moving out of county shifts the cell rate by -34.04% (-16 people).' },
-            { val: 'Across 62 cells, seeing -25.00% in French (n = 56) or -20.75% in Thai (n = 53) fits small-group swings.' },
-            { val: 'Across 138,215 Spanish members, an -18.00% drop (-5.23 pp past the -12.77% county rate) gives a -7,230 gap.' },
-            { val: 'Young adults 19-44 see -20.11% (Hispanic, -17,380) and -20.19% (Male, -15,496) drops from moves and forms.' }
+            { val: 'In a 47-person group, a net loss of 16 people changes the group rate by -34.04%.' },
+            { val: 'In French (56 start, -25.00%) and Thai (53 start, -20.75%), a few people entering or leaving shifts percentages.' },
+            { val: 'Among 138,215 Spanish speakers, an 18.00% decline (5.23 points past 12.77%) equals -7,230 extra lost members.' },
+            { val: 'Overlapping groups ages 19-44 show -20.11% in Hispanic adults (-17,380) and -20.19% in men (-15,496).' }
           ]
         },
         {
-          label: 'Limits of Raw Percent Ranks',
+          label: 'Error of Raw Rankings &amp; Tests',
           cells: [
-            { val: 'Sorting a dashboard by raw percent drop puts a 16-person shift ahead of 24,880 Spanish-speaking drops.' },
-            { val: 'Flagging every group with raw single tests across 62 cells gives 3.10 expected false leads by chance.' },
-            { val: 'Spanish ranks #11 by raw percent (-18.00%) behind ten tiny cells, yet holds 41.3% of all county drops.' },
-            { val: 'Treating 62 overlapping age, sex, and language slices as separate wins scatters outreach staff.' }
+            { val: 'Sorting only by percentage loss puts a 16-person decline ahead of 24,880 lost Spanish speakers.' },
+            { val: 'If all 62 tests have no real difference, a 5% rule gives 3.10 false positives on average (95.8% risk if independent).' },
+            { val: 'Spanish ranks 11th by percentage loss (-18.00%) behind small groups, yet accounts for 41.27% of county loss.' },
+            { val: 'Treating overlapping age, sex, and ethnic groups as separate counts the same members more than once.' }
           ]
         },
         {
-          label: 'Budget Risk if Unchecked',
+          label: 'Possible Staffing Errors Without Rules',
           cells: [
-            { val: 'Building a media drive around Rank #1 percent change (-34.04%) reaches just 0.03% of county drops.' },
-            { val: 'Shifting translation funds toward small-group swings pulls staff hours from groups with thousands of drops.' },
-            { val: 'Under-funding Spanish outreach because -18.00% sits near the -12.77% county rate leaves a -7,230 gap.' },
-            { val: 'Skipping focused outreach for adults 19-44 leaves out over 17,000 members who move apartments often.' }
+            { val: 'Basing county ads on the largest percentage decline (-34.04%) focuses on under 0.03% of county losses.' },
+            { val: 'Moving bilingual call staff after every unadjusted group change reduces staff on high-volume renewal lines.' },
+            { val: 'The Spanish group lost 7,230 more members than -12.77% predicts, though totals alone do not measure call effects.' },
+            { val: 'Checking only language rows misses overlapping losses in adults ages 19-44 (-17,380 Hispanic, -15,496 men).' }
           ]
         },
         {
-          label: 'Dashboard &amp; Outreach Rule',
+          label: 'Recommended Rules for County Reports',
           policyFit: true,
           cells: [
-            { headline: 'Set a Size Floor (n >= 100)', detail: 'Send small cells (n < 100) to local partner lists instead of top alerts.' },
-            { headline: 'Adjust for Multiple Tests', detail: 'Use multi-group checks on valid study tests before shifting funds.' },
-            { headline: 'Rank by Net Gap (-7,230)', detail: 'Sort large groups by net drop past the county rate (-7,230 Spanish).' },
-            { headline: 'Send Texts &amp; Address Checks', detail: 'Reach adults 19-44 (-20.1% drop) with SMS texts and postal address matches.' }
+            { headline: 'Refer Under-100 Groups to CBOs', detail: 'Serve groups with under 100 members through trusted CBO partners instead of automated percent alerts.' },
+            { headline: 'Adjust When Data Support Tests', detail: 'Use survey error weights and Holm or false discovery rate (FDR) rules when testing many survey claims.' },
+            { headline: 'Rank by Extra Loss (-7,230)', detail: 'Sort 100+ member groups by losses beyond -12.77% so call priorities reflect extra members lost.' },
+            { headline: 'Prioritize Ages 19-44 Calls', detail: 'Focus outreach and contact updates on overlapping Hispanic and male adult groups ages 19-44.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Snapshot Accounting, Multi-Test Benchmarks &amp; Provenance',
+      notesTitle: 'Table 2 Notes: Enrollment Count Rules, Multiple-Test Checks &amp; Sources',
       notesBullets: [
-        '<strong>Observed 62-Cell DHCS Snapshot Math &amp; Why Binomial Exit Tests Do Not Apply:</strong> The file `scc_dhcs_medical_enrollment.csv` tracks 62 age, aid, and language cells in Santa Clara County from June 2025 (472,014 members) to June 2026 (411,722 members, net change -60,292 or -12.773%). Comparing each group\'s net change against the rounded -12.77% county rate (`Observed_Drop - Base_2025 × 0.1277`) gives a net gap of -7,230 for Spanish (-24,880 vs. -17,650 expected; -7,225 at unrounded -12.773%), -6,344 for Hispanic 19-44 (-6,341 unrounded), -5,697 for Male 19-44 (-5,700 unrounded), -10 for Samoan (47 to 31), -6.8 for French (56 to 42), and -4.2 for Thai (53 to 42). Because monthly DHCS snapshots measure net stock differences (exits minus new entries), overlap across age/sex/language tables, and cluster within households, individual member exits are not observed and binomial exit p-values are not valid on these snapshot counts.',
-        '<strong>Mode A Multiplicity Illustration &amp; Verified CAPHE Inference Benchmarks (Mode B):</strong> Across `m = 62` independent hypothesis tests at raw `α = 0.05`, a dashboard yields `62 × 0.05 = 3.10` expected false leads (`1 - 0.95^62 = 95.8%` chance of at least one false lead, with Bonferroni cutoff `0.05 / 62 = 0.00081`). In CAPHE empirical studies where valid sampling distributions exist, three checks prevent false discoveries: (1) across the top 3 Santa Clara County PUMAs for procedural Medi-Cal losses (`scc_puma_pairwise_tests.json`, 80 ACS replicate weights), South County (`08519`, `1,641 ± 186`), East San Jose (`08521`, `1,590 ± 167`), and Central/East San Jose (`08510`, `1,521 ± 166`) have pairwise `z = 0.35 to 0.72` (`p = 0.469 to 0.730`), proving the top-3 rank order is within survey noise; (2) across `m = 16` lag horizons in `Value_of_Public_Health/paper/ajph_submission.tex` (Table 3), a 4-year first-difference result with raw `p = 0.0049` shifts to `p = 0.0788` under Holm and `q = 0.0788` under Benjamini-Hochberg FDR; and (3) across `1,000` random label shuffles in `Mcaid/05_fraud_detection/paper/output/results.json`, the max null AUC is `0.593` versus `0.724` observed (`p = 0.001`).'
+        '<strong>62-Group DHCS Count Rules &amp; Why Simple Exit Tests Fail:</strong> Santa Clara DHCS tables cover 62 overlapping age, aid, and language groups from June 2025 (472,014) to June 2026 (411,722; net change -60,292 or -12.773%, rounded to -12.77%). Extra loss past -12.77% is -7,230 for Spanish (-24,880 vs. -17,650 expected), -6,344 for Hispanic 19-44, and -5,697 for Men 19-44. Small-group values are -10 for Samoan, -6.8 for French, and -4.2 for Thai (math differences, not whole people). Monthly tables show net change (entries minus exits), count the same people across rows, and group families together. Because single exits are unseen, simple exit p-values do not apply.',
+        '<strong>Multiple-Test Error Risk &amp; CAPHE Checks:</strong> If 62 tests have no true gap, a raw 0.05 rule gives 62 &times; 0.05 = 3.10 false positives on average. Bonferroni divides 0.05 by 62 (0.00081). Where CAPHE studies measure error, three checks cut false findings. First, pair tests across the top three Santa Clara Census areas (80 weights) give p = 0.469 to 0.730, so their order is unclear. Second, across 16 spending delays, a 4-year raw p = .0049 adjusts to 0.0788 under Holm and false discovery rate (FDR) rules. Third, across 1,000 random-label tests in the billing study, the max chance score is 0.593 versus 0.724 on real labels (p = 0.001).'
       ]
     },
     synthesis: {
-      title: 'Why Health Teams Pair Size Floors and Multi-Test Checks With Net Headcount Scale',
-      p1: 'When a county health team tracks Medi-Cal renewal drops across 62 age, sex, and language groups (472,014 to 411,722 members in Santa Clara County; -60,292 or -12.77% net change), two common dashboard habits pull staff off course. First, sorting groups by raw percent drop puts tiny groups at the top. Samoan (-34.04%, 47 to 31 members; -16 people), French (-25.00%, 56 to 42; -14 people), and Thai (-20.75%, 53 to 42; -11 people) rank above Spanish (-18.00%, Rank #11 by percent). Yet Spanish-speaking homes account for 24,880 net lost members, or 41.3% of the entire county drop. Second, running 62 unadjusted tests at α = 0.05 produces 3.10 expected false leads by chance alone, and treating net monthly snapshot counts as independent member exits misstates uncertainty.',
-      p2: 'Pairing a size floor (n ≥ 100), valid multiple-testing checks (such as replicate-weight pairwise tests, Holm step-down, or Benjamini-Hochberg FDR where sampling variance is observed), and net headcount drop past the -12.77% county rate links statistical care with real scale. Once small cells go to partner outreach and large groups are ranked by net drop past the county rate, two major priorities stand out. First is Spanish-speaking homes (-24,880 net drop; -7,230 past the county rate). Second is young adults ages 19 to 44 (Hispanic 19-44 at -20.11%, -17,380 net drop and -6,344 past the county rate; Male 19-44 at -20.19%, -15,496 net drop and -5,697 past the county rate).'
+      title: 'How Minimum Group Sizes, Multiple-Test Rules, and Excess Loss Guide Call Lists',
+      p1: 'Checking 62 Medi-Cal groups in Santa Clara County (472,014 to 411,722 members, or -60,292 and -12.77%) shows two ranking errors. First, ranking by percent loss alone puts small groups first: Samoan (-34.04%, -16), French (-25.00%, -14), and Thai (-20.75%, -11). Meanwhile, Spanish ranks 11th by percent (-18.00%) yet makes up 41.27% (-24,880) of county loss. Second, if 62 tested gaps are all zero, a raw 5% rule gives 3.10 false positives on average. In studies that support tests, 16-delay checks move from raw p = 0.0049 to 0.0788 after Holm and FDR rules. Likewise, gaps among the top three Census Public Use Microdata Areas (PUMAs) show p = 0.469 to 0.730 across 80 weights.',
+      p2: 'Three rules help counties use data well and focus on large losses. When data allow error checks, analysts use multi-test rules and 1,000 random-label tests. There, the max chance area under the curve (AUC) score is 0.593 versus 0.724 on real data. On monthly DHCS tables, a 100-member minimum refers small language groups to CBO partners. County call teams then rank 100+ groups by losses past the -12.77% county rate. That rule puts Spanish first (-24,880 net, -7,230 extra). Overlapping groups ages 19-44 come next: Hispanic adults (-17,380 or 28.83% of county loss, -6,344 extra) and men (-15,496, -5,697 extra).'
     },
     methodologyParagraphs: [
-      '<strong>Observed 62-Cell DHCS Grid, Mode A Multiplicity Rules &amp; Mode B Benchmarks:</strong> All 62 group counts in June 2025 (472,014 total) and June 2026 (411,722 total), net headcount changes (-60,292 total; -24,880 Spanish; -17,380 Hispanic 19-44; -15,496 Male 19-44; -16 Samoan; -14 French; -11 Thai), and percent shifts come from `scc_hr1_medicaid/scc_dhcs_medical_enrollment.csv`. Expected false leads (`62 × 0.05 = 3.10`), Bonferroni cutoff (`0.05 / 62 = 0.00081`), and net drops past the `-12.77%` county rate are Mode A calculations. Replicate-weight PUMA pairwise tests (`p = 0.469 to 0.730` in `scc_puma_pairwise_tests.json`), 16-horizon Holm/FDR adjustments (`raw p = 0.0049` to `Holm p = 0.0788` in `Value_of_Public_Health/paper/ajph_submission.tex`), and the 1,000-shuffle permutation test (`null max AUC = 0.593`, `p = 0.001` in `Mcaid/05_fraud_detection/paper/output/results.json`) are Mode B benchmarks.',
-      '<strong>Main Sources:</strong> We cite <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Benjamini, Y., &amp; Hochberg, Y. (1995), "Controlling the False Discovery Rate", JRSS-B, 57(1), 289-300</a> and <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Certified Eligibles &amp; Redetermination Dashboards</a>. We also use <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS Medicaid &amp; CHIP Enrollment Trends</a> and <a href="https://www.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">County of Santa Clara Social Services Agency &amp; Health System</a>.'
+      '<strong>Reported Counts for 62 Groups, Multiple-Test Rules &amp; Study Results:</strong> June 2025 (472,014) and June 2026 (411,722) counts, net changes (-60,292 countywide; -24,880 Spanish; -17,380 Hispanic 19-44; -15,496 Men 19-44; -16 Samoan; -14 French; -11 Thai), and percentage changes (-12.77%, -34.04%, -25.00%, -20.75%) are reported counts from Santa Clara DHCS tables. Minimum-size rules and losses beyond the county rate (-7,230, -6,344, -5,697) are fixed calculations used to rank groups. Separate CAPHE studies provide the 80-weight survey area pair p-values (0.469 to 0.730), 16-delay Holm/FDR adjusted p-value (0.0788), and 1,000 random-label max chance score (0.593).',
+      '<strong>Primary Sources:</strong> <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Benjamini, Y., &amp; Hochberg, Y. (1995), JRSS-B, 57(1), 289&ndash;300</a>. <a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Medi-Cal Enrollment Tables</a>. <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS Medicaid &amp; CHIP Enrollment Reports</a>. <a href="https://www.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">County of Santa Clara Social Services Agency</a>.'
     ],
     faqs: [
       {
-        question: 'Why do small language cells like Samoan (-34.04%) and French (-25.00%) sit at the top of raw percent tables?',
-        answer: 'In a group with just 47 members (Samoan) or 56 members (French), a net shift of 14 to 16 people (often three or four families moving or changing jobs) swings the cell rate by 25% to 34%. Without a size floor (such as n >= 100) and headcount weights, raw percent lists mostly show small-sample swings.'
+        question: 'Why do small language groups like Samoan (-34.04%) and French (-25.00%) rank first when sorted only by percentage decline?',
+        answer: 'In a group of 47 members (Samoan) or 56 members (French), a net loss of 14 to 16 people causes a 25% to 34% drop. The monthly counts do not show why those people left. Under the proposed rule, staff refer groups under 100 members to CBO partners. That way, big percent changes in small groups do not cut calls to groups with thousands of lost members.'
       },
       {
-        question: 'Why can\'t we run simple binomial exit p-values on monthly DHCS enrollment snapshots, and how do Holm or FDR gates work on valid tests?',
-        answer: 'Monthly DHCS snapshots show net stock changes (exits minus entries), overlap across age and language tables, and cluster by family, so individual exit counts are not observed. When valid sampling errors exist, such as the 80-replicate-weight PUMA tests (pairwise p = 0.469 to 0.730) or the 16-horizon public health spending check (where raw p = 0.0049 shifts to Holm p = 0.0788 and FDR q = 0.0788), Bonferroni, Holm, and Benjamini-Hochberg FDR prevent false leads.'
+        question: 'Why can\'t monthly DHCS totals support a simple test of individual exits, and when do multiple-test rules apply?',
+        answer: 'Monthly DHCS tables show net totals (entries minus exits) and count the same person across age and language rows. Family members in one home also gain or lose coverage together. Because single exits are unseen, simple exit tests fail on monthly totals. When sampling error is measured, multi-test rules cut false positives in 80-weight survey tests (p = 0.469 to 0.730), 16-delay checks (p = 0.0788), and 1,000 label swaps (0.593 max chance score).'
       },
       {
-        question: 'How is the Net Drop Past the County Rate calculated and why should dashboards show it alongside size floors?',
-        answer: 'It compares a group\'s observed net change against what would happen at the county net rate (-12.77%). For Spanish-speaking members (138,215 base), a -12.77% shift equals -17,650 members. The observed net drop of -24,880 leaves a -7,230 gap past the county rate (-7,225 unrounded). That shows where bilingual outreach staff can help the most families keep care.'
+        question: 'How does ranking by net enrollment losses beyond the county\'s 12.77% decline help set Medi-Cal call priorities?',
+        answer: 'This rule compares a group\'s actual net change with what a 12.77% drop predicts from its June 2025 count. Among 138,215 Spanish speakers, 12.77% predicts -17,650, so the -24,880 drop shows 7,230 extra lost members (-7,230). Hispanic adults 19-44 show -6,344 extra losses, and men 19-44 show -5,697 extra losses. Those counts show where to focus bilingual calls, though monthly totals do not show if calls changed coverage.'
       }
     ],
     related: [
-      { slug: 'medicaid-expansion', title: 'Case Study: Medi-Cal Redetermination Funnel & Churn', note: 'CHW case study decomposing Santa Clara County procedural vs eligibility disenrollment' },
-      { slug: 'threat-regression-to-mean', title: 'Regression to the Mean in Small Counties', note: 'Case study on Empirical Bayes shrinkage and small-denominator volatility across counties' },
-      { slug: 'study-design-ladder', title: 'Each Public Health Budget Question Requires a Distinct Empirical Study Design', note: 'Case study matching cross-sectional linkage, ITS, panel IV, and RCT designs' }
+      { slug: 'medicaid-expansion', title: 'In the Model, Most Medi-Cal Renewal Losses Come From Unreturned Mail Forms Over Work Rules', note: 'Case study separating modeled Santa Clara County mail-form losses from work-rule losses' },
+      { slug: 'threat-regression-to-mean', title: 'Five-Year County Averages Separate Lasting Rural Death Risk From High One-Year Rates', note: 'Case study on small-county yearly rate variation and five-year averages across California' },
+      { slug: 'study-design-ladder', title: 'Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method', note: 'Case study matching linked state records, trend models, county data, and call trials' }
     ]
   }
 ];

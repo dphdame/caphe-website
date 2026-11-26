@@ -2,15 +2,15 @@
 'use strict';
 
 /**
- * Wave 4B Builder: Track 4 System Dynamics & Feedback (5 Remaining Modules: #25, #26, #27, #29, #30)
+ * Wave 4B Builder: Track 4 (5 Modules: #25, #26, #27, #29, #30)
  * Note: Module #28 (food-insecurity-diabetes) was completed in Wave 2.
  *
  * Modules built:
- *  - #25 reverse-causation-feedback (Track 4, public, Mode B) — Pandemic surge +2.47 vs. pre-pandemic routine TWFE (-2.38), 13-yr cumulative OLS (-4.32), and Long-Difference 2SLS (-5.31)
- *  - #26 measurement-error-claims (Track 4, community, Mode B) — Single-registry counts vs. linked Medicaid claims, OIG LEIE, and California DHCS S&I records
- *  - #27 collider-bias (Track 4, member, Mode A) — Active-only subsample selection bias (0.442 vs. 0.724 AUC) and Bayes base-rate calibrated precision
- *  - #29 classifying-causal-mechanisms (Track 4, member, Mode A) — Confounder, mediator, collider, and instrument roles across four separate CAPHE datasets
- *  - #30 sensitivity-analysis-cea (Track 4, member, Mode A) — Single central point estimate vs. HHS 2025 VSL range, plus CHW cost-capture sensitivity
+ *  - #25 reverse-causation-feedback (Track 4, public): COVID-19 aid years +2.47 vs. pre-2020 yearly (-2.38), 13-yr (-4.32, adj. p = 0.067), and two-step check (-5.31)
+ *  - #26 measurement-error-claims (Track 4, community): One-list counts vs. matched Medicaid claims, OIG LEIE, and California DHCS S&I records
+ *  - #27 collider-bias (Track 4, public): 2024-biller subset selection bias (0.442 vs. 0.724 score) and Bayes full-list alert-rate adjustment
+ *  - #29 classifying-causal-mechanisms (Track 4, public): Confounder, care step, sample filter, and Stage 1 check across four separate CAPHE datasets
+ *  - #30 sensitivity-analysis-cea (Track 4, public): Single middle estimate vs. HHS 2025 VSL range, plus CHW payments and savings by payer
  */
 
 const { renderModuleHtml } = require('./render_option_c');
@@ -23,217 +23,217 @@ const modules = [
     slug: 'reverse-causation-feedback',
     tetsCompanion: [
       {
-        visibleLabel: 'Public Health Spending Regime Analysis',
+        visibleLabel: 'County Health Spending by Period',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 yearly county records), each extra dollar spent per person links with -0.238 deaths per 100,000 in 2003 to 2019. In 2020 to 2023, it links with +0.247 deaths per 100,000.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; Needs-Driven Spending &amp; Simultaneity (Mode B Panel)',
-    pageTitle: 'Needs-Driven Spending & Prevention ROI | CAPHE',
-    metaDescription: 'Pandemic emergency grants pull 2020-2023 slopes to +2.47 deaths/100K; pre-COVID budgets isolate -2.38 to -5.31 deaths/100K across 57 California counties.',
-    h1: 'Same-Year County Spending Averages Combine Routine Prevention Budgets With Outbreak Emergency Funds',
-    subtitle: 'Splitting emergency outbreak fund surges from steady base prevention budgets across county years.',
+    trackEyebrow: 'Track 4: Health Needs &amp; Funding Links &middot; Relief Aid vs. Pre-2020 Spending',
+    pageTitle: 'Pandemic Aid & Routine County Health Budgets | CAPHE',
+    metaDescription: 'In 2020-2023, $10 per person linked with +2.47 deaths/100K during pandemic aid. Pre-2020 models showed 2.38 to 5.31 fewer deaths, without proving cause.',
+    h1: 'Combining Pandemic Aid With Routine County Health Budgets Mixes Relief Grants With Pre-2020 Links',
+    subtitle: 'Testing 2020-2023 pandemic grant years apart from pre-2020 county spending over 1 and 13 years.',
     endnotes: [
-      '<strong>California County Public Health Spending Panel (2003-2023):</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a> linked to <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics</a> death records across 57 counties. N = 1,163 county-years (N = 943 in the 2003-2019 pre-pandemic window; N = 779 in 2003-2016 single-regime; N = 220 in the 2020-2023 COVID-19 window).',
-      '<strong>Needs-Driven Feedback vs. Routine Budget Isolation:</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), <em>Journal of Business &amp; Economic Statistics</em>, 30(1), 67-80</a> provides the heteroskedasticity-based IV framework. The CAPHE California 57-county LHA panel finds -2.38 deaths/100K per $10/capita in 2003-2019 annual TWFE OLS ($420,168/life, 32.4:1 BCR), -4.32 in 13-year cumulative long-difference OLS ($231,481/life, 58.8:1 BCR), and -5.31 in 13-year Long-Difference Lewbel 2SLS (first-stage F = 111.20, $188,324/life, 72.2:1 BCR), versus +2.47 in the 2020-2023 pandemic surge window (p = 0.0010) and -0.25 in pooled 2003-2023 TWFE (p = 0.710).',
-      '<strong>Independent Governance Check &amp; Valuation:</strong> <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), <em>Economics &amp; Human Biology</em>, 13, 34-45</a> finds protective effects of county health spending in California. <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 VSL Guidelines</a> sets a $13.6M central value.'
+      '<strong>California County Health Spending Records (2003-2023).</strong> <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a> matched with <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics</a> death records across 57 counties. The file has 1,163 yearly county records in total. It covers 943 records in 2003-2019, 779 in 2003-2016 on one reporting form, and 220 in 2020-2023.',
+      '<strong>Relief Aid in Response to Need vs. Pre-2020 Links.</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), <em>Journal of Business &amp; Economic Statistics</em>, 30(1), 67-80</a> gives the two-step check using differences in how county data vary. Before 2020, each extra $10 spent per person links with 2.38 fewer yearly deaths per 100,000. Over 13-year changes, the link is 4.32 fewer deaths (unadjusted p = 0.0052; adjusted p = 0.067 across multiple tests). The two-step check estimates 5.31 fewer deaths (first-step F = 111.20). In 2020-2023, $10 per person links with +2.47 more deaths (p = 0.0010), consistent with relief aid going to counties with rising deaths. Combining 2003-2023 gives -0.25 (p = 0.710). If spending caused fewer deaths, costs per death avoided at the $13.6M federal value are $420,168 (32.4:1), $231,481 (58.8:1, adjusted p = 0.067), and $188,324 (72.2:1).',
+      '<strong>County Government Study and Federal Death-Risk Values.</strong> <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), <em>Economics &amp; Human Biology</em>, 13, 34-45</a> studies county health spending links in California. <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Department of Health and Human Services (HHS) ASPE 2025 Guidelines</a> set the $13.6M middle Value of a Statistical Life (VSL).'
     ],
-    policySettingHtml: 'Health spending and county death rates move both ways when an outbreak hits. State and federal relief grants flow to counties where death rates jump. Splitting outbreak grant surges from base care shows how steady local health funds save lives over time.',
-    answerHtml: `Across <strong>943 pre-pandemic California county-years</strong> (2003 to 2019), routine-budget models isolate <strong>-2.38 deaths per 100,000 per $10/resident annually</strong> (<strong>$420,168 per life saved, 32.4:1 return</strong>), building to <strong>-4.32 over 13-year cumulative horizons</strong> (<strong>$231,481 per life, 58.8:1 return</strong>) and <strong>-5.31 in multi-year routine-budget models</strong> [1,2]. During 2020 to 2023, emergency COVID-19 grants surged 64.2% and show a <strong>+2.47 slope</strong> because relief funds followed pandemic death spikes, pulling the pooled 2003 to 2023 average to <strong>-0.25</strong> [2]. Checking both the <strong>-2.38</strong> annual floor and the <strong>-4.32 to -5.31</strong> cumulative slopes protects multi-year grants from early cuts [3].`,
+    policySettingHtml: 'County health spending and local death rates show opposite links before and during COVID-19. Before 2020, higher routine county spending links with lower death rates. From 2020 to 2023, higher spending instead appears in the same years as higher death rates. Reverse causation is one possible reason when agencies send more relief aid where deaths rise. Combining pandemic grant years with pre-2020 budgets mixes these two opposite periods.',
+    answerHtml: `Testing pre-2020 budgets across <strong>943 yearly county records</strong> from California (2003 to 2019) shows how routine spending links with death rates [1]. In yearly models, each extra <strong>$10 spent per resident</strong> links with <strong>2.38 fewer deaths per 100,000</strong> per year [2]. Over 13-year changes, the link is <strong>4.32 fewer deaths per 100,000</strong> per year (unadjusted <em>p</em> = 0.0052; adjusted <em>p</em> = 0.067) [2]. A second two-step check gives <strong>5.31 fewer deaths per 100,000</strong> per year over 13 years [2]. Federal rules value reduced death risk equal to one expected death at $13.6M, called the Value of a Statistical Life (VSL) [3]. If spending caused fewer deaths, costs per death avoided are <strong>$420,168</strong> (<strong>32.4:1</strong>), <strong>$231,481</strong> (<strong>58.8:1</strong>, adjusted <em>p</em> = 0.067), and <strong>$188,324</strong> (<strong>72.2:1</strong>) [2,3]. Those dollar figures are resident health values, not county cash [3]. In 2020 to 2023, spending rose 64.2% ($102.75 to $168.70 per resident) with a <strong>+2.47</strong> link, and combining 2003 to 2023 gives <strong>-0.25</strong> [1,2].`,
     block2: {
-      title: 'Two Rulers: Pandemic Surge Feedback vs. Routine-Budget Horizons',
-      contextTag: 'Mode B Panel (57 Counties, N = 943 Pre-COVID &amp; N = 220 COVID-19 County-Years, 2003 to 2023)',
-      ariaLabel: 'Comparison of the 2020-2023 pandemic surge slope of +2.47 deaths per 100,000 versus the pre-COVID routine-budget estimates of -2.38 annual and -4.32 to -5.31 cumulative deaths per 100,000',
+      title: 'Pandemic Aid Years vs. Pre-2020 Links Across 57 Counties',
+      contextTag: '57 Counties, 943 Pre-2020 Records and 220 COVID-19 Records, 2003 to 2023',
+      ariaLabel: 'Comparison of the 2020-2023 COVID-19 aid period link of +2.47 deaths per 100,000 versus pre-2020 links of -2.38 yearly and -4.32 (adjusted p = 0.067) to -5.31 over 13-year spans',
       ruler1: {
-        title: 'Ruler 1: Pandemic Emergency Surge Window (2020-2023)',
-        stat: '+2.47 Deaths / 100K (4.85-Point Sign Flip)',
-        ariaLabel: 'Pandemic 2020-2023 slope is +2.47 deaths per 100,000 per $10 per capita, sitting 4.85 points above the -2.38 pre-COVID annual slope because reactive COVID-19 grants followed mortality waves',
+        title: 'COVID-19 Aid Period (2020-2023)',
+        stat: '+2.47 Deaths / 100K (4.85-Point Sign Change)',
+        ariaLabel: 'COVID-19 2020-2023 link is +2.47 deaths per 100,000 per $10 per resident, 4.85 points above the -2.38 pre-2020 yearly link during emergency grant years',
         segments: [
-          { cls: 'seg-Housing', width: 92, label: '4.85-Point Regime Shift (+2.47 COVID Surge vs. -2.38 Pre-COVID)' },
-          { cls: 'seg-rest', width: 8, label: '+2.47 Surge' }
+          { cls: 'seg-Housing', width: 92, label: '4.85-Point Change (+2.47 COVID Aid vs. -2.38 Pre-2020)' },
+          { cls: 'seg-rest', width: 8, label: '+2.47 COVID' }
         ],
-        desc: 'When pandemic death waves hit in 2020 to 2023, emergency grants pushed county health spending up 64.2% ($99.65 to $168.70/capita). The 2020-2023 slope is <strong>+2.47</strong>, sitting <strong>4.85 points above the -2.38 pre-COVID slope</strong> and attenuating pooled 2003-2023 TWFE to <strong>-0.25</strong>.'
+        desc: 'From 2020 to 2023, average county spending rose 64.2% ($102.75 to $168.70 per resident) with a <strong>+2.47</strong> link (<strong>4.85 points above</strong> pre-2020). Combining 2003-2023 gives <strong>-0.25</strong>. Relief aid to counties with large death increases is one possible reason.'
       },
       ruler2: {
-        title: 'Ruler 2: Routine-Budget Horizons (Annual TWFE &amp; 13-Yr Cumulative)',
-        stat: '-2.38 Annual | -4.32 Cumul. | -5.31 2SLS / 100K',
-        ariaLabel: 'Routine-budget isolation yields -2.38 deaths per 100,000 annually ($420,168 per life) and -4.32 to -5.31 over 13-year cumulative horizons ($231,481 to $188,324 per life)',
+        title: 'Pre-2020 Links Over 1 and 13 Years',
+        stat: '-2.38 Yearly | -4.32 13-Yr (adj. p = 0.067) | -5.31 Check',
+        ariaLabel: 'Pre-2020 models estimate links of -2.38 deaths per 100,000 per year and -4.32 over 13-year changes (adjusted p = 0.067), plus -5.31 in two-step checks',
         segments: [
-          { cls: 'seg-primary', width: 55, label: 'Annual TWFE: -2.38 / 100K ($420,168 / Life)' },
-          { cls: 'seg-food', width: 45, label: '13-Yr Cumulative: -4.32 OLS / -5.31 2SLS' }
+          { cls: 'seg-primary', width: 55, label: 'Yearly Link: -2.38 / 100K' },
+          { cls: 'seg-food', width: 45, label: '13-Yr Link: -4.32 (adj. p = 0.067)' }
         ],
-        desc: 'Tracking pre-pandemic routine budgets isolates <strong>-2.38 deaths/100K annually ($420,168/life, 32.4:1 BCR)</strong>. Over 13-year cumulative horizons, chronic-disease prevention builds to <strong>-4.32 in OLS ($231,481/life, 58.8:1 BCR)</strong> and <strong>-5.31 in 2SLS ($188,324/life, 72.2:1 BCR)</strong>.'
+        desc: 'Pre-2020 records show links of <strong>-2.38 deaths/100K</strong> per year, <strong>-4.32</strong> over 13-year changes (<strong>adjusted p = 0.067</strong>), and <strong>-5.31</strong> in two-step checks. If spending caused fewer deaths, costs per death avoided are <strong>$420,168</strong> (<strong>32.4:1</strong>), <strong>$231,481</strong> (<strong>58.8:1</strong>, <strong>adjusted p = 0.067</strong>), and <strong>$188,324</strong> (<strong>72.2:1</strong>).'
       }
     },
     table1: {
-      title: 'Table 1. Splitting Outbreak Feedback From Annual and Cumulative Routine-Budget Effects',
-      subtitle: 'Comparing 2020-2023 pandemic surge feedback against the pre-pandemic annual county panel, 13-year cumulative differences, and 13-year routine-budget IV models.',
-      caption: 'Comparison of 2020-2023 pandemic surge panel, 2003-2019 pre-pandemic annual county panel, 13-year cumulative change, and 13-year routine-budget IV results on the $10 per resident scale.',
+      title: 'Table 1. Comparing Years With Increased Pandemic Aid and Pre-2020 Links',
+      subtitle: 'How 2020-2023 pandemic aid years compare with pre-2020 yearly and 13-year death-rate links per $10 per person.',
+      caption: 'Compare pandemic years, yearly county records before 2020, changes over 13 years, and a second-method check per $10 per person.',
       cornerLabel: 'Budget Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Panel Estimates; Mode A Valuations):</strong> Pandemic 2020-2023 TWFE OLS is +2.47 deaths per 100,000 per $10/capita (β = +0.247 per $1, SE = 0.075, p = 0.0010, N = 220), while pooled 2003-2023 TWFE OLS is -0.25 per $10 (β = -0.025, SE = 0.067, p = 0.710, N = 1,163). Pre-pandemic 2003-2019 TWFE OLS is -2.38 per $10 (β = -0.238, SE = 0.078, p = 0.0022, wild cluster bootstrap p = 0.007, N = 943; urban -2.59, p &lt; 0.0001; smaller/rural -2.42, p = 0.0136). Single-regime 13-year cumulative long-difference OLS (2003-2016, N = 57) is -4.32 per $10 (SE = 1.54, p = 0.0052; 16-year 2003-2019 excl. 5 LGRS outliers is -5.91, p = 0.0330). Single-regime 13-year Long-Difference Lewbel 2SLS (2003-2016, N = 57) is -5.31 per $10 (SE = 1.67, p = 0.0015, first-stage F = 111.20, Hansen J p = 0.2132; 16-year 2003-2019 Long-Difference 2SLS is -11.49, p = 0.0009, F = 13.09).',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Reported County Links and Dollar Estimates Assuming Cause and Effect).</strong> In 2020-2023 (220 records), the county and year model gives +2.47 deaths per 100,000 per $10 (SE = 0.75 per $10; +0.247 per $1, SE = 0.075 per $1, p = 0.0010). Combining 2003-2023 (1,163 records) gives -0.25 per $10 (SE = 0.67 per $10; -0.025 per $1, SE = 0.067 per $1, p = 0.710). Before COVID-19 in 2003-2019 (943 records), the model gives -2.38 per $10 (SE = 0.78 per $10; -0.238 per $1, SE = 0.078 per $1, p = 0.0022; repeat-sample check p = 0.007). City counties show -2.59 per $10 (p &lt; 0.0001) and smaller counties show -2.42 per $10 (p = 0.0136). Comparing 13-year changes in 2003-2016 (57 counties) gives -4.32 per $10 (SE = 1.54 per $10, unadjusted p = 0.0052, adjusted p = 0.067). Over 16 years (2003-2019, leaving out 5 reporting-change outliers), the link is -5.91 per $10 (SE = 2.77 per $10, p = 0.0330). The 13-year Lewbel two-step check gives -5.31 per $10 (SE = 1.67 per $10, p = 0.0015, first-step F = 111.20). Its Hansen J check gives p = 0.2132, which does not prove causal assumptions. Rows with * assume spending caused fewer deaths under 2025 HHS values ($6.3M, $13.6M, $20.7M) for $10 more per resident statewide.',
       columns: [
-        { tag: 'Pandemic Surge', tagHighlight: false, title: 'COVID-19 Surge Window', subtitle: 'County Panel 2020-2023, N = 220' },
-        { tag: 'Annual Baseline', tagHighlight: true, title: 'Pre-Pandemic Annual Panel', subtitle: '2003-2019 Subsample, N = 943' },
-        { tag: '13-Yr Span', tagHighlight: false, title: '13-Year Cumulative Change', subtitle: 'Single-Regime 2003-2016, N = 57' },
-        { tag: 'Routine-Budget IV', tagHighlight: true, title: 'Multi-Year Formula Check', subtitle: '13-Yr Routine-Budget Model, N = 57' }
+        { tag: 'Increased Pandemic Aid', tagHighlight: false, title: 'COVID-19 Aid Period', subtitle: '2020-2023 records, N = 220' },
+        { tag: 'Yearly Baseline', tagHighlight: true, title: 'Yearly Pre-2020 Records', subtitle: '2003-2019 records, N = 943' },
+        { tag: '13-Yr Span', tagHighlight: false, title: 'Changes Over 13 Years', subtitle: '2003-2016 form, N = 57 (adj. p = 0.067)' },
+        { tag: 'Second Check', tagHighlight: true, title: 'Second-Method 13-Yr Check', subtitle: '2003-2016 two-step check, N = 57' }
       ],
       rows: [
         {
-          label: 'Panel Sample &amp; Method',
+          label: 'Study Records &amp; Method',
           cells: [
-            { val: 'COVID-19 Panel (N = 220)' },
-            { val: 'Pre-COVID Panel (N = 943)' },
-            { val: '13-Yr Cumulative Model (N = 57)' },
-            { val: '13-Yr Routine-Budget IV (N = 57)' }
+            { val: 'COVID-19 years (2020-2023)' },
+            { val: 'Pre-2020 records (2003-2019)' },
+            { val: '13-yr changes (2003-2016)' },
+            { val: '13-yr two-step check (2003-2016)' }
           ]
         },
         {
-          label: 'Active Path in Model',
+          label: 'Reported Link With Deaths',
           cells: [
-            { val: 'Two-Way (Deaths <-> Surge Aid)' },
-            { val: 'Routine Budget -> Annual Health' },
-            { val: 'Sustained Budget -> 13-Yr Health' },
-            { val: 'Instrumented Budget -> 13-Yr Health' }
+            { val: 'Positive COVID-19 link (+2.47)' },
+            { val: 'Yearly spending and death link' },
+            { val: '13-yr change link (adj. p = 0.067)' },
+            { val: 'Check using county data spread' }
           ]
         },
         {
-          label: 'Outbreak Surge Handling',
+          label: 'How Relief Aid Is Handled',
           cells: [
-            { val: '+64.2% emergency grant surge' },
-            { val: 'Separates 2020-2023 COVID era' },
-            { val: '13-yr pre-LGRS cumulative change' },
-            { val: 'Variance-based routine-budget check' }
+            { val: 'Spending rose 64.2% in COVID-19' },
+            { val: 'Leaves out 2020-2023 COVID years' },
+            { val: '13 years on one reporting form' },
+            { val: 'Appendix check on 13-yr form' }
           ]
         },
         {
-          label: 'Mortality Shift per 100,000',
+          label: 'Yearly Death Change per 100K ($10/Person)',
           highlight: true,
           cells: [
-            { val: '+2.47 (Pandemic Surge)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '-2.38 deaths / 100K (annual)', barWidth: 45, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '-4.32 deaths / 100K (13-yr)', barWidth: 81, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '-5.31 deaths / 100K (routine IV)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '+2.47 more deaths (2020-2023 COVID)', barWidth: 2, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '-2.38 deaths / 100K (per yr)', barWidth: 45, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '-4.32 deaths / 100K (13-yr, adj. p=0.067)', barWidth: 81, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '-5.31 deaths / 100K (per yr, check)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Cost per Life ($10 Scale)',
+          label: 'Cost per Death Avoided (If Causal)*',
           modeled: true,
           cells: [
-            { val: 'Not defined (positive slope)' },
-            { val: '$420,168 per life saved' },
-            { val: '$231,481 per life saved' },
-            { val: '$188,324 per life saved' }
+            { val: 'Not calculated (+2.47 COVID link)' },
+            { val: '$420,168 per death (if causal)' },
+            { val: '$231,481 per death (if causal, adj. p=0.067)' },
+            { val: '$188,324 per death (if causal)' }
           ]
         },
         {
-          label: 'Return per $1 Spent ($13.6M Life Value)',
+          label: 'Health Value per $1 (If Causal)*',
           modeled: true,
           cells: [
-            { val: 'Reads as 0:1 (reverse feedback)' },
-            { val: '32.4:1 (15.0:1 Low to 49.3:1 High)' },
-            { val: '58.8:1 (27.2:1 Low to 89.4:1 High)' },
-            { val: '72.2:1 (33.5:1 Low to 109.9:1 High)' }
+            { val: 'Not calculated (+2.47 COVID link)' },
+            { val: '32.4:1 if causal (15.0:1-49.3:1)' },
+            { val: '58.8:1 if causal (27.2:1-89.4:1, adj. p=0.067)' },
+            { val: '72.2:1 if causal (33.5:1-109.9:1)' }
           ]
         },
         {
-          label: 'Statewide Value at 39M Pop ($10 Scale)',
+          label: 'Statewide $10/Person Total (If Causal)*',
           modeled: true,
           cells: [
-            { val: 'Surge aid tracks death waves' },
-            { val: '928 lives ($12.6B, annual)' },
-            { val: '1,685 lives ($22.9B, 13-yr)' },
-            { val: '2,071 lives ($28.2B, routine IV)' }
+            { val: 'Not calculated (+2.47 COVID link)' },
+            { val: '928 deaths/yr ($12.6B if causal)' },
+            { val: '1,685 deaths/yr ($22.9B if causal)' },
+            { val: '2,071 deaths/yr ($28.2B if causal)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Managing Budget Cycles When Outbreak Surges Cloud Base Gains',
-      subtitle: 'How separating reactive outbreak aid across calm and pandemic windows guides county budget rules.',
-      caption: 'Decision grid showing feedback paths, audit pitfalls, budget tradeoffs, and multi-year grant rules.',
+      title: 'Table 2. Testing County Health Budgets Apart From Pandemic Grants',
+      subtitle: 'How testing pandemic grant years apart from routine budgets guides county board reviews.',
+      caption: 'The table compares spending links, errors from combining periods, limits on dollar estimates, and rules for county reviews.',
       cornerLabel: 'Choice Factor',
       colHeaders: [
-        { title: 'Pandemic Surge Window', subtitle: 'N = 220 county-years, 57 CA counties; 2020-2023 panel (+2.47)' },
-        { title: 'Pre-Pandemic Annual Baseline', subtitle: 'N = 943 county-years, 57 CA counties; 2003-2019 panel (-2.38)' },
-        { title: '13-Year Cumulative Horizon', subtitle: 'N = 57 CA counties; 2003-2016 cumulative model (-4.32)' },
-        { title: '13-Yr Routine-Budget IV', subtitle: 'N = 57 CA counties; 2003-2016 routine-budget IV (-5.31)' }
+        { title: 'COVID-19 Aid Period', subtitle: '220 records, 57 CA counties; 2020-2023 (+2.47)' },
+        { title: 'Yearly Pre-2020 Records', subtitle: '943 records, 57 CA counties; 2003-2019 (-2.38)' },
+        { title: 'Changes Over 13 Years', subtitle: '57 CA counties; 2003-2016 changes (-4.32, adj. p = 0.067)' },
+        { title: 'Second-Method 13-Yr Check', subtitle: '57 CA counties; 2003-2016 check (-5.31)' }
       ],
       rows: [
         {
-          label: 'Feedback &amp; Sample Path',
+          label: 'Reported Link by Period',
           cells: [
-            { val: 'Emergency COVID-19 grants rose 64.2% ($99.65 to $168.70/capita) as death rates spiked.' },
-            { val: 'Calm-year budgets (2003-2019) test steady disease control in both urban (-2.59) and rural (-2.42) counties.' },
-            { val: 'Sustained 13-year changes capture compounding cardiovascular (-1.15, 48.4%) and chronic disease gains.' },
-            { val: '13-year routine-budget IV corrects for residual feedback with strong variance-based instruments.' }
+            { val: 'Spending rose 64.2% ($102.75 to $168.70) with a +2.47 link during relief aid.' },
+            { val: 'Pre-2020 spending links with lower death rates in city (-2.59) and rural (-2.42) counties.' },
+            { val: 'The 13-year link (-4.32, adj. p = 0.067) is larger than the yearly link (-2.38).' },
+            { val: 'A second method checks the 13-year link on records before the 2017 form change.' }
           ]
         },
         {
-          label: 'Why 1-Year Audits Misread This Stage',
+          label: 'Error When Periods Mix',
           cells: [
-            { val: 'Pooling 2020-2023 emergency grants with routine budgets attenuates the full-panel slope to -0.25.' },
-            { val: 'Single-year models capture only 55% of the 13-year cumulative mortality reduction (-2.38 vs. -4.32).' },
-            { val: 'Short one-year pilots stop chronic disease and hypertension control before multi-year gains mature.' },
-            { val: 'Single-year IV has weak first stages, whereas 13-year routine-budget IV is strongly identified.' }
+            { val: 'Combining pre-2020 years and pandemic years in 2003-2023 gives a -0.25 link.' },
+            { val: 'Reading county spending links as cash savings overstates what non-random data show.' },
+            { val: 'Reporting the 13-year link (-4.32) without adj. p = 0.067 overstates certainty.' },
+            { val: 'Log models have weak Stage 1 strength (F = 0.85), and causal rules cannot be tested.' }
           ]
         },
         {
-          label: 'Budget Tradeoff',
+          label: 'Dollar Estimates If Causal',
           cells: [
-            { val: 'Cutting base budgets after emergency grants expire removes staff needed for chronic disease control.' },
-            { val: 'Even in Year 1 alone, the -2.38 pre-pandemic baseline yields a 32.4:1 return ($420,168 per life saved).' },
-            { val: 'Over 13-year cumulative horizons, the -4.32 slope yields a 58.8:1 return ($231,481 per life saved).' },
-            { val: 'At the -5.31 routine-budget IV slope, a statewide $10/resident outlay implies ~2,071 lives saved ($188,324 per life).' }
+            { val: 'Combining relief aid with routine budgets averages out pre-2020 links in board reviews.' },
+            { val: 'The 2.38 estimate implies $420,168 per death avoided (32.4:1), if spending caused it.' },
+            { val: 'The 13-year estimate (adj. p = 0.067) implies $231,481 (58.8:1), if spending caused it.' },
+            { val: 'The second-method check (-5.31) implies $188,324 (72.2:1), if spending caused it.' }
           ]
         },
         {
-          label: 'Best-Fit Budget Rule',
+          label: 'Recommended County Budget Rule',
           policyFit: true,
           cells: [
-            { headline: 'Split Outbreak Aid From Base Budgets', detail: 'Separate emergency pandemic grants from routine prevention before scoring county results.' },
-            { headline: 'Use -2.38 (32:1) as Annual Floor', detail: 'Anchor conservative 1-year budget memos in the -2.38 pre-pandemic baseline (32.4:1 return).' },
-            { headline: 'Report Cumulative Multi-Year ROI', detail: 'Pair the annual floor with the -4.32 13-year cumulative return (58.8:1) in board reports.' },
-            { headline: 'Use Multi-Year Grant Cycles', detail: 'Fund county health grants in multi-year blocks so chronic-disease prevention can compound.' }
+            { headline: 'Test Pandemic Years Apart', detail: 'Review 2020-2023 pandemic aid years apart from pre-2020 routine county spending links.' },
+            { headline: 'State Yearly Results as Links', detail: 'Report 2.38 fewer deaths/100K as a link, and state $420,168 (32.4:1) assumes cause.' },
+            { headline: 'Show adj. p = 0.067 With 4.32', detail: 'Report the 4.32 13-year link with adj. p = 0.067, and state $231,481 (58.8:1) assumes cause.' },
+            { headline: 'Keep Two-Step Runs as Checks', detail: 'Treat -5.31 ($188,324 per death if causal) as an extra check, not cash savings.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Estimator Details, Pandemic Regime Shift, Exposure Horizons &amp; Provenance',
+      notesTitle: 'Table 2 Notes: Methods, Time Spans, and Data Sources',
       notesBullets: [
-        '<strong>Estimator Details &amp; Robustness:</strong> In the audited 57-county panel (Value_of_Public_Health/paper/ajph_submission.tex), the primary 2003-2019 pre-COVID TWFE OLS specification (N = 943) yields -2.38 deaths per 100,000 per $10/capita (β = -0.238, SE = 0.078, p = 0.0022, wild cluster bootstrap p = 0.007). The effect holds in both large urban counties (&gt;500,000 residents: -2.59, p &lt; 0.0001) and smaller/rural counties (&le;500,000 residents: -2.42, p = 0.0136), and in the single-regime 2003-2016 SCO schedule (-2.62, p = 0.0128).',
-        '<strong>Pandemic Regime Reversal &amp; Multi-Year Long Differences:</strong> In the system Mortality_it = β·Spending_it + γ·X_it + α_i + τ_t + ε_it, the 2020-2023 COVID-19 emergency window (N = 220) saw a 64.2% spending surge ($99.65 to $168.70 per capita) directed toward pandemic mortality waves, producing a positive slope of +2.47 per $10 (β = +0.247, SE = 0.075, p = 0.0010) and a 4.85-point regime shift above the pre-pandemic baseline (-2.38). Over multi-year cumulative horizons, 13-year long-difference OLS (2003-2016, N = 57) yields -4.32 per $10 (SE = 1.54, p = 0.0052), 16-year long-difference OLS (2003-2019 excl. 5 LGRS boundary outliers, N = 49) yields -5.91 per $10 (SE = 2.77, p = 0.0330), and 13-year Long-Difference Lewbel (2012) 2SLS yields -5.31 per $10 (SE = 1.67, p = 0.0015, first-stage F = 111.20, Hansen J p = 0.2132; 16-year Long-Difference 2SLS = -11.49, p = 0.0009, F = 13.09).',
-        '<strong>Unit Convention ($1 per Capita Regression Tables vs. $10 per Capita Policy Scale):</strong> In Value_of_Public_Health/paper/ajph_submission.tex (Tables 2-3 and Online Appendix Table A3), regression slopes β are reported per $1 per capita (-0.238 annual TWFE, -0.432 13-year long difference, -0.531 13-year Long-Difference 2SLS) alongside the policy-scaled effect per $10 per capita (10 × β = -2.38, -4.32, and -5.31 deaths per 100,000). Because both scales represent the exact same underlying ratio ($10 × 100,000 / 2.38 = $1 × 100,000 / 0.238 = $420,168 per statistical life saved), cost per life saved and Benefit-Cost Ratios (32.4:1 annual, 58.8:1 13-year cumulative, 72.2:1 Long-Difference 2SLS at $13.6M VSL) are invariant to whether the table is read per $1 or per $10.',
-        '<strong>Data Provenance:</strong> Panel estimates (+2.47 COVID-19 surge, -0.25 pooled 2003-2023, -2.38 pre-COVID annual TWFE, -2.42 smaller/rural, -2.59 urban, -4.32 13-year cumulative OLS, -5.91 16-year cumulative OLS, -5.31 and -11.49 Long-Difference Lewbel 2SLS) and VSL inputs come from src/frontend/js/lha-calculator.js, public/tools/lha-calculator/methodology.html, and Value_of_Public_Health/paper/ajph_submission.tex.'
+        '<strong>Methods and County Groups.</strong> Across 57 counties in 2003-2019 (943 records), the county and year model gives -2.38 deaths per 100,000 per $10 (SE = 0.78 per $10; -0.238 per $1, SE = 0.078 per $1, p = 0.0022; repeat-sample check p = 0.007). Links are also reported in large city counties (-2.59 per $10, p &lt; 0.0001) and smaller counties (-2.42 per $10, p = 0.0136). On the 2003-2016 reporting form (779 records), the yearly link is -2.62 per $10 (p = 0.0128).',
+        '<strong>Pandemic Aid Period and 13-Year Spans.</strong> Each model relates yearly county death rates to health spending while accounting for county traits, lasting county differences, and statewide yearly changes. In 2020-2023 (220 records), unadjusted spending rose 64.2% ($102.75 to $168.70 per person) during COVID-19 deaths and linked with +2.47 per $10 (SE = 0.75 per $10; +0.247 per $1, SE = 0.075 per $1, p = 0.0010). Comparing 13-year changes in 2003-2016 (57 counties) gives -4.32 per $10 (SE = 1.54 per $10, unadjusted p = 0.0052, adjusted p = 0.067). Over 16 years (2003-2019, 49 counties after dropping 5 reporting outliers), the link is -5.91 per $10 (SE = 2.77 per $10, p = 0.0330). The 13-year Lewbel two-step check gives -5.31 per $10 (SE = 1.67 per $10, p = 0.0015, first-step F = 111.20, Hansen J p = 0.2132). In log units, first-step F is only 0.85, so two-step models stay appendix checks.',
+        '<strong>Why $1 and $10 Units Give the Same Dollar Estimates.</strong> Links per $1 per person (-0.238 yearly, -0.432 over 13 years with adjusted p = 0.067, and -0.531 in the two-step check) multiply both cost and deaths by 10 at the $10 scale (-2.38, -4.32, and -5.31). Because both sides multiply by 10, both units imply the same costs per death avoided if spending caused the change: $420,168 (32.4:1), $231,481 (58.8:1, adjusted p = 0.067), and $188,324 (72.2:1) at the $13.6M HHS value.',
+        '<strong>Where the Data and Results Come From.</strong> Estimates come from the CAPHE Local Health Authority (LHA) calculator code, methods notes, and the 57-county California public health spending study.'
       ]
     },
     synthesis: {
-      title: 'Splitting Outbreak Aid From Steady Prevention Gains',
-      p1: 'Every public health budget works inside a feedback loop during public health emergencies. When pandemic death waves hit in 2020 to 2023, federal and state relief grants boosted county health spending by 64.2% ($99.65 to $168.70 per capita), producing a positive +2.47 slope per $10 (p = 0.0010). Because emergency aid chased pandemic mortality spikes, pooling 2020 to 2023 with routine years attenuates the full-panel county slope to -0.25 (p = 0.710).',
-      p2: 'Health economics separates routine pre-pandemic prevention budgets (2003 to 2019, N = 943) from emergency outbreak surges and tracks how chronic-disease prevention compounds over time. Annual within-county panel models isolate -2.38 deaths per 100,000 per $10 ($420,168 per life saved, $32.40 return per $1), holding in both urban (-2.59) and smaller/rural (-2.42) counties. Over 13-year cumulative horizons, the effect nearly doubles to -4.32 in cumulative differences ($231,481 per life, $58.80 return per $1) and -5.31 in 13-year routine-budget IV models ($188,324 per life, $72.20 return per $1). Showing boards both the annual baseline and the multi-year cumulative return helps keep effective programs funded across budget cycles.'
+      title: 'Testing Pandemic Aid Years Apart From Pre-2020 County Spending',
+      p1: 'County health spending and death rates show two distinct links across time periods. From 2020 to 2023, average county spending rose 64.2% ($102.75 to $168.70 per resident) with a +2.47 death-rate link per $10 (p = 0.0010). Reverse causation is one possible reason because state and federal agencies sent relief grants to counties with large increases in deaths. When all years from 2003 to 2023 are combined, the link is -0.25 (p = 0.710). Testing the two periods apart keeps emergency grant years separate from routine budget links.',
+      p2: 'Checking pre-2020 budgets alone (943 county records) shows how spending links compare over 1 and 13 years. Yearly models report links with 2.38 fewer deaths per 100,000 per $10 across city (-2.59) and smaller (-2.42) counties. Based on 13-year changes, the link is 4.32 fewer deaths per 100,000 per year (unadjusted p = 0.0052; adjusted p = 0.067), and a two-step check gives 5.31. At the $13.6M federal value, these imply $420,168 per death avoided (32.4:1), $231,481 (58.8:1, adjusted p = 0.067), and $188,324 (72.2:1). These figures estimate health value only if spending caused fewer deaths, not county cash savings.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode B Panel Estimates; Mode A Valuations in Table 1):</strong> All regression slopes (+2.47 COVID-19 window, -0.25 pooled 2003-2023, -2.38 pre-pandemic 2003-2019 TWFE OLS, -2.42 smaller/rural, -2.59 urban, -4.32 13-year cumulative OLS, -5.91 16-year cumulative OLS, and -5.31 / -11.49 Long-Difference Lewbel 2SLS) and 57-county California population baselines are observed Mode B inputs from src/frontend/js/lha-calculator.js, public/tools/lha-calculator/methodology.html, and Value_of_Public_Health/paper/ajph_submission.tex. Table 1 valuations apply the HHS 2025 VSL schedule ($6.3M Low, $13.6M Central, $20.7M High) to those observed slopes.',
-      '<strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>; <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), Economics &amp; Human Biology, 13, 34-45</a>; <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>; <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Mortality Data</a>; and <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 VSL Guidelines</a>.'
+      '<strong>Reported County Links and Dollar Estimates Using Federal Values.</strong> County spending links (+2.47 in 2020-2023, -0.25 across 2003-2023, -2.38 in 2003-2019, -2.42 in smaller counties, -2.59 in city counties, -4.32 over 13-year changes with unadjusted p = 0.0052 and adjusted p = 0.067, -5.91 over 16 years, and -5.31 in the 13-year Lewbel two-step check) come from the 57-county California spending study and CAPHE LHA calculator files. Costs per death avoided and value ratios ($420,168 and 32.4:1; $231,481 and 58.8:1 with adjusted p = 0.067; $188,324 and 72.2:1) apply 2025 HHS values ($6.3M, $13.6M, $20.7M) and assume spending caused fewer deaths.',
+      '<strong>Primary References &amp; Data Sources.</strong> <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES, 30(1), 67-80</a>; <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown, T. T. (2014), Economics &amp; Human Biology, 13, 34-45</a>; <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions</a>; <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Mortality Data</a>; and <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 VSL Guidelines</a>.'
     ],
     faqs: [
       {
-        question: 'What is "reverse causation" in public health budgets?',
-        answer: 'It happens when the health outcome (death or disease rates) drives changes in the budget input (public health spending). During the 2020-2023 COVID-19 pandemic, emergency relief grants raised county public health budgets by 64.2% in response to mortality spikes, producing a +2.47 slope per $10 (p = 0.0010) that masks the -2.38 pre-pandemic protective effect when the two regimes are pooled.'
+        question: 'What is reverse causation in county health budgets, and when might it occur?',
+        answer: 'Reverse causation occurs when agencies send more health aid because local health worsened, rather than spending causing deaths. From 2020 to 2023, county spending rose 64.2% with a +2.47 death-rate link per $10 (p = 0.0010). Combining 2003 to 2023 gives -0.25. Relief grants to counties with large death increases are one possible reason, though models cannot prove grant timing caused it.'
       },
       {
-        question: 'How do the $1 per capita regression coefficients and $10 per capita policy figures relate?',
-        answer: 'In the working paper (ajph_submission.tex), regression slopes β are reported per $1 per capita (-0.238 annual TWFE, -0.432 13-year cumulative OLS, -0.531 Long-Difference 2SLS) alongside the scaled impact per $10 per capita (-2.38, -4.32, and -5.31 deaths per 100,000). Both express the exact same cost-effectiveness ratio ($420,168 per life saved annually and $231,481 over 13-year cumulative horizons).'
+        question: 'How do the $1 per resident spending links relate to the $10 per resident figures?',
+        answer: 'The study reports links per $1 spent per person: -0.238 per year, -0.432 over 13 years (adjusted p = 0.067), and -0.531 in two-step checks. Multiplying both cost and death-rate change by 10 gives -2.38, -4.32 (adjusted p = 0.067), and -5.31 per $10. This unit change does not alter death rates. Both units give the same dollar values if causal ($420,168 and $231,481).'
       },
       {
-        question: 'Does county public health spending still pay off if a board uses only the Year 1 annual baseline?',
-        answer: 'Yes. Using the conservative 2003-2019 annual TWFE estimate of -2.38 deaths per 100,000 per $10/capita yields $420,168 per life saved and a 32.4:1 benefit-cost ratio at the $13.6M HHS central VSL (15.0:1 at the $6.3M Low VSL and 49.3:1 at the $20.7M High VSL).'
+        question: 'How should county boards read $420,168 per death avoided, 32.4:1, and 58.8:1 (adj. p = 0.067)?',
+        answer: 'Those figures estimate resident health value only if spending caused lower death rates. They are not cash paid to county budgets. If causal, the -2.38 yearly link implies $420,168 per death avoided and 32.4:1 at $13.6M (15.0:1 to 49.3:1). Under that same rule, the -4.32 13-year link (adjusted p = 0.067) implies $231,481 and 58.8:1 (27.2:1 to 89.4:1, adjusted p = 0.067).'
       }
     ],
     related: [
-      { slug: 'observational-to-experimental', title: 'Pandemic Surge vs. Routine-Budget Horizons', note: 'Case study comparing pandemic surge feedback (+2.47) with annual (-2.38) and cumulative (-4.32 to -5.31) prevention' },
-      { slug: 'budget-impact', title: 'Budget Impact vs. Multi-Year ROI', note: 'Case study on managing Year 1 cash-flow outlays while multi-year benefits mature' },
-      { slug: 'sensitivity-analysis-cea', title: 'Sensitivity Analysis Across HHS VSL Tiers', note: 'Case study testing the 32:1 annual and 59:1 cumulative LHA returns across HHS 2025 VSL tiers' }
+      { slug: 'observational-to-experimental', title: 'Routine County Health Spending Links With Lower Death Rates Outside Pandemic Grant Years', note: 'Case study comparing 2020-2023 pandemic spending (+2.47) with yearly (-2.38) and 13-year (-4.32, adj. p = 0.067) links' },
+      { slug: 'budget-impact', title: 'Programs With Large Long-Term Health Gains Still Need Plans for Yearly Cash and Reserves', note: 'Case study comparing death-risk dollar values, if causal, with Year-1 county payroll plans' },
+      { slug: 'sensitivity-analysis-cea', title: 'County Health Spending Links Show Higher Value Than Cost Under Three Federal Rates If Causal', note: 'Case study testing 32.4:1 yearly and 58.8:1 (adj. p = 0.067) 13-year values across federal rates if causal' }
     ]
   },
 
@@ -244,867 +244,867 @@ const modules = [
     slug: 'measurement-error-claims',
     tetsCompanion: [
       {
-        visibleLabel: 'OIG Exclusion List Label Audit',
+        visibleLabel: 'Why Federal Exclusions Differ From Fraud',
         title: 'The Label That Isn\'t: Why "Excluded" Doesn\'t Mean "Fraudulent"',
         url: 'https://tooearlytosay.com/research/methodology/medicaid-fraud-labels/',
-        claimCovered: 'Section 1128 exclusion authorities and why LEIE exclusion is a contaminated fraud label; the 40% license-revocation share and matched-provider counts are article-reported.'
+        claimCovered: 'Reasons federal law allows exclusions under Section 1128 and why an LEIE exclusion also occurs for non-fraud reasons. The 40% license-loss share and matched counts are article-reported.'
       },
       {
-        visibleLabel: 'Medicaid Provider Spending File Guide',
+        visibleLabel: 'Guide to 238 Million Medicaid Billing Rows',
         title: 'What 238 Million Medicaid Billing Rows Can Support',
         url: 'https://tooearlytosay.com/research/methodology/medicaid-data-landscape/',
-        claimCovered: 'Field definitions of the HHS Medicaid provider-spending file, including billing and servicing NPIs, suppression rules, and the 238,015,729-row artifact.'
+        claimCovered: 'Fields in the HHS Medicaid spending file, including IDs for the provider who bills and the provider who gives care, rules for withheld small counts, and its 238,015,729 rows.'
       }
     ],
     tier: 'community',
-    trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; Single-Registry Counts vs. Multi-Registry Reconciliation (Mode B Linked Claims &amp; Exclusion Records)',
-    pageTitle: 'Directory Counts vs. Active Claims | CAPHE',
-    metaDescription: 'Linking 488,032 Medicaid billing NPIs to OIG LEIE and California DHCS S&I records shows a federal-only lookup omits 199 of 648 sanctioned NPIs (30.7%).',
-    h1: 'Linked Federal and State Sanction Lists Identify More Excluded Medicaid Providers Than Federal Checks Alone',
-    subtitle: 'Linking paid Medicaid claims with federal exclusion files and state lists to check active providers.',
+    trackEyebrow: 'Track 4: Checking Program Rules by Matching Records &middot; Matching Claims With Federal &amp; State Ban Lists',
+    pageTitle: 'Matching Medicaid Claims With Ban Lists | CAPHE',
+    metaDescription: 'Matching 488,032 Medicaid billers with federal OIG and CA ban lists finds 199 California-only bans (30.7%) and a 50-month median wait after final claims.',
+    h1: 'Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out',
+    subtitle: 'Matching paid Medicaid claims with federal and state ban lists to find state-only bans and 50-month waits.',
     endnotes: [
-      '<strong>Linked Medicaid Claims &amp; Sanction Universe (2018-2024):</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> claims cover 488,032 billing NPIs and 487,384 non-excluded controls. These link to the <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG List of Excluded Individuals/Entities (LEIE)</a> with 449 federal matches, including 299 financial fraud exclusions.',
-      '<strong>California State-Only Suspension Records:</strong> <a href="https://files.medi-cal.ca.gov/pubsdoco/SandILanding.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Suspended &amp; Ineligible Provider List</a> holds 199 of 648 sanctioned NPIs (30.7%) with zero federal LEIE match.',
-      '<strong>Enforcement Lag &amp; Directory Benchmarks:</strong> Post-panel financial fraud exclusions cover 95 NPIs dated 2025 or later ($9,694.90/mo median paid vs. $3,820.94/mo controls, 50.0-month median gap from final billing to exclusion). <a href="https://doi.org/10.1377/hlthaff.2022.00383" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Zhu, J. M., et al. (2023), <em>Health Affairs</em>, 42(1), 49-57</a> reports a 58% inactive-directory benchmark.'
+      '<strong>National Medicaid Claims and Matched Ban Records (2018-2024).</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending</a> records cover 488,032 billing National Provider Identifiers (NPIs). These include 487,384 billers with no ban-list match and 449 matches on the federal <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Office of Inspector General List of Excluded Individuals/Entities (OIG LEIE)</a>. Those 449 federal matches include 299 exclusions under fraud-related rules and 150 other federal exclusions.',
+      '<strong>California-Only Suspension Records.</strong> <a href="https://files.medi-cal.ca.gov/pubsdoco/SandILanding.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Health Care Services (DHCS) Suspended &amp; Ineligible (S&amp;I) Provider List</a> is the single state ban list matched in this study. It identifies 199 of the 648 banned or suspended billers (30.7%) who have zero federal OIG LEIE match.',
+      '<strong>Wait Until a Ban and Directory Context.</strong> Exactly 95 billers banned under fraud-related rules in 2025 or later had paid claims in 2018-2024 ($9,694.90 median monthly pay vs. $3,820.94 for comparison billers). Their federal bans posted a median 50.0-month wait after their final paid claim, and 90.5% stopped billing before 2024. <a href="https://doi.org/10.1377/hlthaff.2022.00383" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Zhu, J. M., et al. (2023), <em>Health Affairs</em>, 42(1), 49-57</a> reports that 58% of listed Oregon Medicaid mental health providers saw few or no Medicaid patients.'
     ],
-    policySettingHtml: 'State and county Medicaid teams audit provider directories and sanction lists to check clinic capacity and program integrity. However, single registries record only one status snapshot and lag behind active billing by years. Linking paid Medicaid claims with both federal exclusion files and California suspension lists gives a complete provider picture.',
-    answerHtml: 'Linking <strong>488,032 Medicaid billing providers</strong> (2018 to 2024) across paid claims, federal exclusions, and California suspension lists finds <strong>487,384 active non-excluded providers</strong> and <strong>648 sanctioned providers</strong> [1]. A federal-only check leaves out <strong>199 state-suspended providers (30.7%)</strong>, while <strong>95</strong> later-excluded fraud billers took in <strong>$9,694.90 per month</strong> unflagged [2]. Because formal exclusion trails final billing by a <strong>50.0-month</strong> median gap, teams pair federal and state list checks with paid-claims volume reviews [3].',
+    policySettingHtml: 'Health plans check clinic lists and ban lists to count doctors and block banned billers. Yet federal and state ban lists do not update each other, so their records differ. Fraud cases also take years to close after a biller sends a final paid claim. So formal bans often post long after billing ends. Checking one list on one date leaves out state-only bans and misses past claims.',
+    answerHtml: 'Health and Human Services (HHS) files record <strong>488,032 national Medicaid billers</strong> from 2018 to 2024 [1]. Matching paid claims with federal OIG and state ban lists finds <strong>487,384 billers with no match</strong> [1,2]. The remaining <strong>648</strong> matched billers split into three groups [1,2]. They include <strong>299</strong> bans under federal fraud rules, <strong>199</strong> on the California list only, and <strong>150</strong> other federal bans [1,2]. Checking the federal list alone leaves out all <strong>199</strong> state-only records (30.7%) [2]. Meanwhile, <strong>95</strong> billers banned under fraud rules in 2025 or later received a median <strong>$9,694.90</strong> per month [3]. That monthly paid amount exceeds comparison billers (<strong>$3,820.94</strong>) and <strong>204</strong> billers banned in 2018 to 2024 (<strong>$6,721.78</strong>) [1,3]. The median time from final paid claim to federal ban was a <strong>50.0-month</strong> wait [3].',
     block2: {
-      title: 'Two Rulers: One Raw Registry Count vs. Linked Claims &amp; Multi-List Check',
-      contextTag: 'Mode B Observed Linked Records (HHS Medicaid Provider Spending 2018-2024, OIG LEIE February 2026, California DHCS S&amp;I List)',
-      ariaLabel: 'Comparison of 648 sanctioned NPIs counted as one registry total versus the same 648 NPIs reconciled into 299 financial fraud exclusions, 199 state-only suspensions, and 150 other federal exclusions',
+      title: 'One-List Counts vs. Matched Claims and Two Ban Lists',
+      contextTag: 'Matched Records From HHS Medicaid Spending (2018-2024), OIG LEIE (Feb 2026), and CA DHCS S&amp;I List',
+      ariaLabel: 'Comparison of 648 banned or suspended NPIs counted as one total versus the same 648 NPIs matched into 299 fraud-related exclusions, 199 California-only suspensions, and 150 other federal exclusions',
       ruler1: {
-        title: 'Ruler 1: Single-List Count',
-        stat: '488,032 Billing NPIs; 648 Sanctioned NPIs Counted as One Total',
-        ariaLabel: 'The unadjusted count lists 488,032 Medicaid billing NPIs, of which 648 appear on any sanction registry, treated as a single undifferentiated group',
+        title: 'Single Total Without Ban Type or Date',
+        stat: '488,032 Billers; 648 Banned or Suspended as One Total',
+        ariaLabel: 'The single count lists 488,032 Medicaid billing NPIs, of which 648 appear on a ban list as one combined total',
         segments: [
-          { cls: 'seg-gross', width: 100, label: '648 Sanctioned NPIs Counted as One List Total (100% Base)' }
+          { cls: 'seg-gross', width: 100, label: '648 Matched Billers Counted Without Ban Type or Date (100%)' }
         ],
-        desc: 'The single-list count shows <strong>488,032 Medicaid billing NPIs</strong>, with <strong>648 (0.13%)</strong> on a sanction list. Read as one total, it does not show which cases involve fraud. It also does not show state-only bans or how long providers billed before action.'
+        desc: 'Counting <strong>488,032 Medicaid billers</strong> and <strong>648 (0.13%)</strong> banned billers as one single total does not separate fraud-related bans, state-only records, or the 50.0-month wait after final claims.'
       },
       ruler2: {
-        title: 'Ruler 2: Linked Claims &amp; Multi-List Check',
-        stat: '299 Fraud Exclusions + 199 State-Only Suspensions + 150 Other',
-        ariaLabel: 'Reconciliation splits the 648 sanctioned NPIs into 299 financial fraud exclusions (46.1 percent), 199 California state-only suspensions with no federal match (30.7 percent), and 150 other federal exclusions (23.1 percent), against 487,384 non-excluded controls',
+        title: 'Matched Paid Claims and Both Ban Lists',
+        stat: '299 Fraud-Related + 199 CA-Only + 150 Other',
+        ariaLabel: 'Matching both lists separates the 648 NPIs into 299 fraud-related exclusions (46.1 percent), 199 California-only suspensions (30.7 percent), and 150 other federal exclusions (23.1 percent), beside 487,384 comparison billers',
         segments: [
-          { cls: 'seg-primary', width: 46, label: '299 Financial Fraud (46.1%)' },
-          { cls: 'seg-Housing', width: 31, label: '199 State S&amp;I Only (30.7%)' },
-          { cls: 'seg-food', width: 23, label: '150 Other LEIE (23.1%)' }
+          { cls: 'seg-primary', width: 46, label: '299 Fraud-Related (46.1%)' },
+          { cls: 'seg-Housing', width: 31, label: '199 CA Only (30.7%)' },
+          { cls: 'seg-food', width: 23, label: '150 Other Federal (23.1%)' }
         ],
-        desc: 'Linking claims to both lists splits <strong>487,384 non-excluded controls</strong> from <strong>299 financial fraud exclusions</strong> (204 in 2018-2024 and 95 in 2025 or later). It also finds <strong>199 California-only suspensions</strong> with no federal match. A federal-only check sees <strong>449 of 648</strong> sanctioned NPIs (69.3%).'
+        desc: 'Matching paid claims with both lists separates <strong>487,384 billers with no match</strong> from <strong>299 fraud-related federal bans</strong> (204 in 2018-2024; 95 in 2025+), <strong>199 California-only records (30.7%)</strong>, and <strong>150 other federal bans</strong>.'
       }
     },
     table1: {
-      title: 'Table 1. Linked Billing and Sanction Records Across Four Provider Groups',
-      subtitle: 'Observed 2018 to 2024 Medicaid paid claims linked to federal OIG and California DHCS sanction lists.',
-      caption: 'Four provider groups compared on group size, source list, monthly paid amounts, total payments, billing timing, and directory benchmarks.',
-      cornerLabel: 'Linked Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode B Observed Linked Records):</strong> Observed 2018-2024 HHS Medicaid Provider Spending claims linked to OIG LEIE (February 2026) and the California DHCS S&amp;I list. Each column states its own group total. Cells report medians within that column. Post-panel gap is 50.0 months median (mean 50.7) from final billing month to LEIE exclusion. External benchmark: Zhu et al. (2023) found 58% of listed Oregon Medicaid mental health providers saw few or no Medicaid patients.',
+      title: 'Table 1. Paid Claims and Ban Timing Across Four Provider Groups',
+      subtitle: 'How paid Medicaid claims from 2018-2024 match federal OIG and California ban records.',
+      caption: 'Compare four provider groups by number of providers, ban-list source, monthly payments, patient counts, and time until a ban.',
+      cornerLabel: 'Matched Measure',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Matched Payment and Ban Records).</strong> This study matches 2018-2024 HHS Medicaid payment records using each biller\'s National Provider Identifier (NPI), which may identify a person or an organization. It checks the February 2026 federal OIG LEIE and California\'s Suspended and Ineligible (S&amp;I) list. Each column reports medians for its group. For billers banned in 2025 or later, the median time from the final paid claim to a federal ban is 50.0 months (average 50.7 months). Separate directory study context: Zhu et al. (2023) found that 58% of listed Oregon Medicaid mental health providers saw few or no Medicaid patients.',
       columns: [
-        { tag: 'Group 1: Baseline', tagHighlight: false, title: 'Active Non-Excluded Controls', subtitle: 'N = 487,384 NPIs; unit: billing NPI, 2018-2024 claims' },
-        { tag: 'Group 2: In-Panel', tagHighlight: true, title: 'Sanctioned in 2018-2024', subtitle: 'N = 204 financial fraud NPIs (LEIE Spec A); unit: billing NPI' },
-        { tag: 'Group 3: Delayed', tagHighlight: true, title: 'Sanctioned in 2025 or Later', subtitle: 'N = 95 NPIs billing unflagged in 2018-2024; unit: billing NPI' },
-        { tag: 'Group 4: State File', tagHighlight: true, title: 'California State-Only List', subtitle: 'N = 199 of 648 sanctioned NPIs with zero LEIE match; unit: billing NPI' }
+        { tag: 'Group 1: Baseline', tagHighlight: false, title: 'No Match on Either Ban List', subtitle: '487,384 billing IDs in 2018-2024 claims' },
+        { tag: 'Group 2: 2018-2024 Ban', tagHighlight: true, title: 'Banned in 2018-2024', subtitle: '204 billing IDs under Spec A fraud rules' },
+        { tag: 'Group 3: Later Ban', tagHighlight: true, title: 'Banned in 2025 or Later', subtitle: '95 billing IDs paid in 2018-2024 before ban' },
+        { tag: 'Group 4: State File', tagHighlight: true, title: 'California List Only', subtitle: '199 of 648 matched IDs with no federal record' }
       ],
       rows: [
         {
-          label: 'Group Size',
+          label: 'Provider Group Count (% of 488,032)',
           cells: [
-            { val: '487,384 NPIs (99.87% of all)' },
-            { val: '204 NPIs (0.042% of all)' },
-            { val: '95 NPIs (0.019% of all)' },
-            { val: '199 NPIs (30.7% of 648)' }
+            { val: '487,384 providers (99.87%)' },
+            { val: '204 providers (0.042%)' },
+            { val: '95 providers (0.019%)' },
+            { val: '199 providers (0.041%; 30.7% of 648)' }
           ]
         },
         {
-          label: 'List Recording Status',
+          label: 'Source of Ban or Suspension Record',
           cells: [
-            { val: 'No LEIE or S&amp;I match' },
-            { val: 'OIG LEIE fraud (2018-2024)' },
-            { val: 'OIG LEIE fraud (2025+)' },
-            { val: 'DHCS S&amp;I list only (no LEIE)' }
+            { val: 'No federal or CA ban match' },
+            { val: 'Federal OIG list (2018-2024)' },
+            { val: 'Federal OIG list (2025 or later)' },
+            { val: 'California list only (no federal match)' }
           ]
         },
         {
-          label: 'Monthly Paid (Median)',
+          label: 'Monthly Paid Claims (Median)',
           highlight: true,
           cells: [
-            { val: '$3,820.94 (base)', barWidth: 39, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '$6,721.78 (1.76x base)', barWidth: 69, barColor: '#D97706', textColor: 'text-amber-900' },
-            { val: '$9,694.90 (2.54x base)', barWidth: 100, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '$3,820.94 (comparison median)', barWidth: 39, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '$6,721.78 (1.76x comparison)', barWidth: 69, barColor: '#D97706', textColor: 'text-amber-900' },
+            { val: '$9,694.90 (2.54x comparison)', barWidth: 100, barColor: '#D97706', textColor: 'text-amber-900' },
             { val: 'Not reported in source tables' }
           ]
         },
         {
-          label: 'Patients &amp; Total Paid',
+          label: 'Patients per Month &amp; Total Paid',
           cells: [
-            { val: '33.42 patients | $83,867 paid' },
-            { val: '50.76 patients | $81,474 paid' },
-            { val: '$242,405 paid (64.8th pct)' },
+            { val: '33.42 patients/mo | $83,867 paid' },
+            { val: '50.76 patients/mo | $81,474 paid' },
+            { val: 'Median total paid: $242,405' },
             { val: 'Not reported in source tables' }
           ]
         },
         {
-          label: 'Billing Timing',
+          label: 'Ban Timing &amp; File Status',
           cells: [
-            { val: 'No sanction date (base group)' },
-            { val: 'Sanction dated in 2018-2024' },
-            { val: '50.0-month gap to exclusion' },
-            { val: 'No date on state S&amp;I list' }
+            { val: 'Paid claims without ban match' },
+            { val: 'Banned during 2018-2024' },
+            { val: '50.0-month wait after final claim' },
+            { val: 'CA suspension (no date in file)' }
           ]
         },
         {
-          label: 'Published Benchmark',
+          label: 'Claims &amp; List Details',
           cells: [
-            { val: 'Zhu 2023 (58% low-volume)' },
-            { val: 'No matched external study' },
-            { val: 'No matched external study' },
-            { val: 'Single lists omit linked cases' }
+            { val: 'National HHS Medicaid billers' },
+            { val: 'Includes months before and after bans' },
+            { val: '90.5% stopped billing before 2024' },
+            { val: '199 CA-only records (30.7% of 648)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Reading Each Provider Group Before Drawing Access or Audit Rules',
-      subtitle: 'Why one list count needs a link to paid claims and to both federal and state lists.',
-      caption: 'Decision grid showing what the linked file sees, the data gap, planning risks, and the matching data step.',
+      title: 'Table 2. How Differences Between Ban Lists Affect Provider Counts and Audits',
+      subtitle: 'How matching paid claims with both ban lists guides provider counts and monthly checks.',
+      caption: 'Compare billing findings, records that one list leaves out, risks for health plans, and checks using both lists.',
       cornerLabel: 'Choice Factor',
       colHeaders: [
-        { title: 'Active Non-Excluded Controls', subtitle: 'N = 487,384 NPIs; unit: billing NPI; HHS Medicaid Provider Spending 2018-2024' },
-        { title: 'Sanctioned in 2018-2024', subtitle: 'N = 204 financial fraud NPIs; unit: billing NPI; OIG LEIE Specification A' },
-        { title: 'Sanctioned in 2025 or Later', subtitle: 'N = 95 NPIs; unit: billing NPI; LEIE exclusion dated after the claims window' },
-        { title: 'California State-Only List', subtitle: 'N = 199 of 648 sanctioned NPIs; unit: billing NPI; no federal LEIE match' }
+        { title: 'No Match on Either Ban List', subtitle: '487,384 billing IDs in 2018-2024 HHS claims' },
+        { title: 'Banned in 2018-2024', subtitle: '204 billing IDs under OIG Spec A fraud rules' },
+        { title: 'Banned in 2025 or Later', subtitle: '95 billing IDs banned after the 2018-2024 period' },
+        { title: 'California List Only', subtitle: '199 of 648 matched IDs with no federal record' }
       ],
       rows: [
         {
-          label: 'What the Linked File Sees',
+          label: 'Matched Claims Finding',
           cells: [
-            { val: 'Controls bill $3,820.94 per month to 33.42 patients and serve as the base group.' },
-            { val: 'In-panel fraud billers take in $6,721.78 per month, or 1.76 times the base median.' },
-            { val: 'Post-2025 exclusions bill $9,694.90 per month, or 2.54 times controls, with no flag.' },
-            { val: '199 providers sit on the state list with no federal LEIE record.' }
+            { val: 'Billers with no ban-list match received a median $3,820.94 per month for 33.42 patients.' },
+            { val: 'Billers banned in 2018-2024 received $6,721.78 per month (1.76x comparison) while billing.' },
+            { val: 'Billers banned in 2025 or later received $9,694.90 per month (2.54x comparison) while billing.' },
+            { val: 'Exactly 199 billers appear on the California list with zero federal OIG match.' }
           ]
         },
         {
-          label: 'Data Gap the Group Shows',
+          label: 'What One List Check Leaves Out',
           cells: [
-            { val: 'A directory headcount treats every listed provider the same, while claims show real volume.' },
-            { val: 'A sanction date inside the window mixes pre-action billing with post-action stops.' },
-            { val: 'A 50.0-month median lag passes between final billing and formal federal exclusion.' },
-            { val: 'Checking only the federal list leaves out 30.7% of sanctioned providers (199 of 648).' }
+            { val: 'Provider lists can count a doctor who sees no Medicaid patients like a busy clinic.' },
+            { val: 'A match without a ban date cannot separate pay before a ban from stops after it.' },
+            { val: 'Formal federal bans post a median 50.0 months after a provider\'s final paid claim.' },
+            { val: 'Federal OIG checks leave out 30.7% of matched billers listed only by California.' }
           ]
         },
         {
-          label: 'Planning Risk From One List',
+          label: 'Risk When Not Matched',
           cells: [
-            { val: 'Counting all 487,384 controls as equal capacity equates one-time billers with full-time clinics.' },
-            { val: 'Treating 204 excluded providers as never active leaves out claims paid before action.' },
-            { val: 'Directories built in 2024 list all 95 post-panel fraud billers as clean.' },
-            { val: 'Audits that check only the federal LEIE list 199 state-suspended providers as clean.' }
+            { val: 'Counting all 487,384 billers as equal care supply overstates patient access.' },
+            { val: 'Removing all records for 204 banned billers also deletes their paid claims before bans.' },
+            { val: 'A 2024 federal list check shows no recorded ban for 95 billers who were banned later.' },
+            { val: 'Plans that check only the federal list do not catch California bans for 199 billers.' }
           ]
         },
         {
-          label: 'Best-Fit Data &amp; Audit Fix',
+          label: 'Recommended Audit Rule',
           policyFit: true,
           cells: [
-            { headline: 'Weight Lists by Paid Claims', detail: 'Report billing providers next to monthly pay and patient counts to measure real access.' },
-            { headline: 'Track Sanction Dates by Month', detail: 'Store the sanction date with the last billed month to split pre-ban claims.' },
-            { headline: 'Pair List Checks With Claims', detail: 'Monitor high-volume billing during the 50-month lag and relink past claims when bans post.' },
-            { headline: 'Match Federal and State Lists', detail: 'Check every provider against both OIG LEIE and the state list before reporting totals.' }
+            { headline: 'Count Paid Claims and Patients', detail: 'Measure care access using paid claims and monthly patient counts, not list names.' },
+            { headline: 'Match Ban Dates to Claim Months', detail: 'Match ban dates to monthly claims to separate pre-ban pay from post-ban changes.' },
+            { headline: 'Re-Check Past Claims With New Lists', detail: 'Match updated ban lists to older claims because bans post 50 months after final claims.' },
+            { headline: 'Check Federal and State Lists', detail: 'Match every billing ID against both federal OIG and state ban lists each month.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Reconciliation Math, Payment Ratios &amp; External Benchmarks',
+      notesTitle: 'Table 2 Notes: How Counts Add Up, Payment Ratios, and Directory Studies',
       notesBullets: [
-        '<strong>Reconciliation Math (Mode B):</strong> 488,032 billing NPIs equal 487,384 non-excluded controls plus 648 sanctioned NPIs. The 648 sanctioned NPIs split into 299 Specification A financial fraud exclusions (204 dated 2018-2024 and 95 dated 2025 or later; statutes 1128(a)(1), 1128(a)(3), 1128(b)(1)). Another 199 are California S&amp;I-only suspensions. The remaining 150 are other LEIE exclusions (patient abuse, license actions, controlled substances, and pre-2018 cases). The state-only share is 199 / 648 = 30.7%. The federal share is 449 / 648 = 69.3%.',
-        '<strong>Payment Ratios &amp; Enforcement Lag (Mode B):</strong> Median monthly paid compared to controls is 6,721.78 / 3,820.94 = 1.76x for in-panel cases. For post-panel cases, it is 9,694.90 / 3,820.94 = 2.54x. The enforcement lag is the historical median gap from a provider\'s final billing month to formal LEIE exclusion (50.0 months, mean 50.7, IQR 32.5-68.0). Refreshing registry linkages updates historical labels once exclusions post, but does not shorten OIG\'s investigation-to-exclusion timeline.',
-        '<strong>External Benchmark:</strong> The Zhu et al. (2023) Oregon Medicaid number (58% of listed mental health providers) is cited in public/tools/access-explorer/methodology.html. It describes directory lists in another state and is not subtracted from any count here.',
-        '<strong>Data Provenance:</strong> All counts and medians come from Mcaid/05_fraud_detection/paper/output/results.json (controls_total_n, in_panel_fraud_n, prospective_fraud_n, ctrl_paid_per_month_median, during_paid_per_month_median, post_paid_per_month_median, post_pct_rank_total_paid, gap_median_months) and output/tables/tab_a2_exclusions.tex (199 S&amp;I-only, 648 total, 488,032 universe).'
+        '<strong>Matching Counts Across Ban Lists.</strong> Out of 488,032 Medicaid billing IDs (487,384 with no match plus 648 matched), the 648 matched providers include 299 federal exclusions under fraud-related rules (204 dated 2018-2024 and 95 dated 2025 or later under Social Security Act sections 1128(a)(1), 1128(a)(3), and 1128(b)(1)). They also include 199 California-only suspensions (30.7%) and 150 other federal exclusions (449 federal matches in total, or 69.3%).',
+        '<strong>Monthly Payments and Wait Until a Ban.</strong> Median monthly payments are 1.76 times as high as comparison billers for 2018-2024 fraud-related bans ($6,721.78 vs. $3,820.94) and 2.54 times as high for 2025+ bans ($9,694.90 vs. $3,820.94). The 50.0-month median wait (average 50.7; middle half 32.5 to 68.0 months) measures time from the final paid claim to a federal ban. Matching updated lists corrects past records, while plans still need to watch current claims.',
+        '<strong>Separate Findings on Provider Directories.</strong> Zhu et al. (2023, <em>Health Affairs</em>) found that 58% of listed Oregon Medicaid mental health providers saw few or no Medicaid patients. That finding shows why plans should check paid claims alongside provider lists.',
+        '<strong>Data Sources.</strong> Counts, payment medians, and wait times come from the Medicaid claims and ban-list matching study tables.'
       ]
     },
     synthesis: {
-      title: 'Why Counting Names on a List Differs From Measuring Active Billers',
-      p1: 'Provider directories and sanction files are both static lists. Each records a status on the day it was last updated. Read alone, the HHS Medicaid file lists 488,032 billing NPIs and 648 sanctioned providers as one sum. Linked to paid claims and to both federal and state lists, those 648 split into 299 fraud exclusions, 199 California-only suspensions, and 150 other cases.',
-      p2: 'Health economics treats list records as a data system that needs cross-checks on both sides. Directories keep listing providers who see few Medicaid patients. For example, Zhu et al. (2023) found 58% of listed Oregon Medicaid mental health providers saw few or no patients. Sanction lists also lag behind billing by years. The 95 providers excluded in 2025 or later billed a median $9,694.90 per month through 2024 without a flag. Formal exclusion arrived a median 50.0 months after final billing, so list lookups alone cannot flag active billing during that pre-exclusion window and must be paired with paid-claims volume checks.'
+      title: 'Matching Paid Claims With Both Federal and State Ban Lists',
+      p1: 'Clinic lists and ban lists show records from one date. They show who held a license or ban that day, not who billed for care. Across 488,032 Medicaid billers and 648 matched billers, one list leaves out two facts. First, clinic lists keep doctors who see few or no Medicaid patients (58% in Oregon). Second, federal OIG checks leave out 199 billers on the state list (30.7% of 648).',
+      p2: 'Checking both ban lists still shows closed cases rather than fraud occurring now. Formal bans often post years after billing stops. Here, 95 billers banned under fraud rules in 2025 or later received $9,694.90 per month (2.54x the $3,820.94 median). Among those 95 billers, 90.5% stopped billing before 2024. Their federal bans posted a median 50.0-month wait after their final paid claim. Matching monthly paid claims with both lists helps plans count care and check past bills.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode B Observed Linked Records &amp; Published Literature):</strong> All provider counts (488,032 total; 487,384 controls; 204 in-panel and 95 post-panel fraud exclusions; 199 S&amp;I-only; 648 sanctioned) are observed Mode B records in output/results.json and output/tables/tab_a2_exclusions.tex. Median monthly payments ($3,820.94, $6,721.78, $9,694.90), patient counts (33.42, 50.76), and the 50.0-month lag come from the same files. The 58% Oregon figure (Zhu et al., 2023) is external context in public/tools/access-explorer/methodology.html.',
-      '<strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1377/hlthaff.2022.00383" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Zhu, J. M., Charlesworth, C. J., Polsky, D., &amp; McConnell, K. J. (2023), <em>Health Affairs</em>, 42(1), 49-57</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG List of Excluded Individuals/Entities (LEIE)</a>; and the <a href="https://files.medi-cal.ca.gov/pubsdoco/SandILanding.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Suspended &amp; Ineligible Provider List</a>.'
+      '<strong>Sources for the Matched Payment and Ban Records.</strong> Provider counts (488,032 billing IDs; 487,384 with no match; 204 during-period and 95 later federal fraud-related bans; 199 California-only suspensions; 150 other federal bans; 648 matched in total) come from the Medicaid claims matching study. Monthly payment medians ($3,820.94, $6,721.78, $9,694.90), patient medians (33.42, 50.76), and the 50.0-month median wait come from the same linked records. The 58% Oregon directory share comes from Zhu et al. (2023).',
+      '<strong>Primary References &amp; Data Sources.</strong> <a href="https://doi.org/10.1377/hlthaff.2022.00383" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Zhu, J. M., Charlesworth, C. J., Polsky, D., &amp; McConnell, K. J. (2023), <em>Health Affairs</em>, 42(1), 49-57</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG List of Excluded Individuals/Entities (LEIE)</a>; and the <a href="https://files.medi-cal.ca.gov/pubsdoco/SandILanding.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS Suspended &amp; Ineligible Provider List</a>.'
     ],
     faqs: [
       {
-        question: 'What does a single sanction list leave out in Medicaid provider data?',
-        answer: 'A single list records one status per provider as of its last update. In the linked 2018-2024 Medicaid file, 199 of 648 sanctioned NPIs (30.7%) appear only on the California DHCS Suspended and Ineligible list. A check of the federal LEIE alone does not return them.'
+        question: 'Why does checking only the federal OIG ban list miss suspended Medi-Cal billers?',
+        answer: 'State Medicaid rules let states suspend billers without updating the federal OIG list right away. As a result, state and federal files can list different billers. Out of 648 matched Medicaid billers in the 2018 to 2024 file, 199 (30.7%) appear on the California list only, with zero federal match.'
       },
       {
-        question: 'Why do some sanctioned providers show up as active billers in claims data?',
-        answer: 'Formal exclusion lags behind billing. Among providers excluded for financial fraud, the median gap from the final billing month to the LEIE exclusion date is 50.0 months. The 95 providers excluded in 2025 or later billed a median $9,694.90 per month during 2018-2024 with no list flag.'
+        question: 'Why do billers later banned for fraud have no recorded ban in checks from the billing year?',
+        answer: 'Fraud cases and formal ban orders take years to close after a biller stops filing claims. Here, the median wait from the final paid claim to a federal ban is 50.0 months. Among 95 billers banned in 2025 or later, 90.5% stopped paid claims before 2024. While billing, they received a median $9,694.90 per month.'
       },
       {
-        question: 'How should analysts link directory, claims, and sanction records?',
-        answer: 'Match every NPI against paid claims, the federal LEIE, and the state suspension list. Record exclusion dates next to the last billed month, relink past claims when new bans post, and monitor high-volume paid claims during the 50.0-month window before formal exclusion.'
+        question: 'What steps should health plans and audit teams use to check provider lists?',
+        answer: 'Plans should match every billing ID each month against paid claims, the federal OIG list, and state ban files. Next, teams should count care access using paid claims and patients, not names on a clinic list. Finally, staff should match new ban lists to older claims when checking past bills.'
       }
     ],
     related: [
-      { slug: 'collider-bias', title: 'Active-Only Subsample Selection Bias', note: 'Case study on how conditioning on active billers shifts screening AUC from 0.724 to 0.442 and rescales precision to the full billing universe' },
-      { slug: 'threat-measurement-instrumentation', title: 'Instrumentation Shifts in Retail & Transit Data', note: 'Case study comparing 6,613 commercial food listings against 514 SNAP-verified EBT stores' },
-      { slug: 'identical-data-opposite-policies', title: 'Nominal vs. Real Reimbursement Indices', note: 'Case study comparing CMS Practice Expense GPCI (1.506 vs. 0.900) against Area Deprivation Index need' }
+      { slug: 'collider-bias', title: 'Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early', note: 'Case study comparing full-list scores (0.724) with 2024 billers (0.442) and adjusting alert rates to all billers' },
+      { slug: 'threat-measurement-instrumentation', title: 'Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same', note: 'Case study comparing map directories with SNAP-listed grocers and deduplicated health permits' },
+      { slug: 'identical-data-opposite-policies', title: 'Fixed Medi-Cal Visit Fees Do Not Meet City Clinic Costs While Poor Inland Areas Lack Care', note: 'Case study comparing clinic wage and rent scores with local poverty ranks' }
     ]
   },
 
   // =========================================================================
-  // MODULE #27: collider-bias (Track 4, member)
+  // MODULE #27: collider-bias (Track 4, public)
   // =========================================================================
   {
     slug: 'collider-bias',
     tetsCompanion: [
       {
-        visibleLabel: 'Medicaid Fraud Classifier Validation Guide',
+        visibleLabel: 'Testing Fraud Models on Later Bans',
         title: 'Can a Classifier Find What Investigators Miss?',
         url: 'https://tooearlytosay.com/research/methodology/medicaid-fraud-classifier/',
-        claimCovered: 'Temporal validation and interpretable baselines for fraud screening; the article-reported classifier metrics are under reconciliation because sample sizes and base rates conflict.'
+        claimCovered: 'Testing fraud models on later cases and comparing them with simpler models. The article-reported model scores are under reconciliation because reported sample sizes and case rates do not agree.'
       },
       {
-        visibleLabel: 'Rare-Outcome Classifier Evaluation Workflow',
+        visibleLabel: 'How to Test a Model When Cases Are Rare',
         title: 'Imbalanced Classification: An Article-Reported Example',
         url: 'https://tooearlytosay.com/research/methodology/imbalanced-classifier-python/',
-        claimCovered: 'Instructional scikit-learn workflow for rare outcomes, including why a model that labels every case negative can score about 91% accuracy; dataset counts and metrics are article-reported.'
+        claimCovered: 'A teaching example in scikit-learn for rare events, showing why a model that calls every case negative can score about 91% accuracy. Counts and scores are article-reported.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; Selection Skew &amp; Base-Rate Calibration (Mode A Calibration on Observed Screening Results)',
-    pageTitle: 'Active-Only Subsample Selection Bias | CAPHE',
-    metaDescription: 'A Medicaid fraud screen scores 0.724 AUC on 487,479 billers vs. 0.442 in the 2024 active subset; Top 1% precision rescales from 0.922% to 0.186%.',
-    h1: 'Active-Only Provider Subsets Omit Earlier-Exiting Sanctioned Billers in Modeled Risk Audits',
-    subtitle: 'Comparing modeled full-list provider risk screens against active-biller subsets that drop providers who left early.',
+    trackEyebrow: 'Track 4: Fraud Testing &amp; Alert-Rate Adjustments &middot; Billing Stop Dates &amp; Full-List Rates',
+    pageTitle: 'Full-List vs. Current-Biller Fraud Checks | CAPHE',
+    metaDescription: 'Testing fraud scores only on 2024 billers leaves out 86 of 95 later-banned billers (0.724 vs 0.442). Adjusted to all billers, Top 1% alerts match 0.186%.',
+    h1: 'Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early',
+    subtitle: 'Comparing full-list fraud scores with 2024 billers and adjusting alert rates to all billers.',
     endnotes: [
-      '<strong>Full Medicaid Billing Universe Evaluation (2018-2024):</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> claims cover 487,479 billing providers (95 post-panel fraud exclusions vs. 487,384 non-excluded controls). Linked to <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>, the full-list ranking score is 0.724 AUC (95% CI 0.667-0.777, 9.5x lift in Top 1%).',
-      '<strong>Observed Active-Only Subgroup Comparison &amp; Tenure Differences:</strong> In the subset of 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls), the observed ranking score is 0.442 AUC (95% CI 0.212-0.664). Sanctioned providers also show shorter observed billing tenure (38.0th vs. 50.0th median peer percentile of active months; 90.5% exited before 2024 vs. 43.6% of controls, with exit-year reweighted AUC = 0.653). Because the 2024 active subset contains only 9 excluded providers and a wide confidence interval, the subgroup difference does not isolate early exit as the sole cause of the lower score.',
-      '<strong>Population Base-Rate Calibration:</strong> Exact Bayes base-rate math rescales Top 1% precision from the 20%-control holdout (0.922%) to the full 487,479-provider billing list (0.186%, vs. 0.0195% random base rate).'
+      '<strong>Test of the Full Medicaid Biller List (2018-2024).</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS Medicaid Provider Spending</a> records cover 487,479 billing providers: 95 banned in 2025 or later under fraud-related rules and 487,384 comparison billers. Matched with <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>, the full-list ranking score (AUC) is 0.724 (95% range 0.667-0.777, with 9.53x lift in the highest-scoring 1%). After adjusting comparison billers to match billing stop dates, the score is 0.653.',
+      '<strong>2024 Current-Biller Group and Early Stop Dates.</strong> Limiting the test to 55,018 providers still billing in 2024 (9 later-banned billers and 55,009 comparison billers) gives an AUC of 0.442 (95% range 0.212-0.664). That result provides no clear evidence of useful ranking among current billers in this small group. Across the full list, 90.5% of later-banned billers stopped billing before 2024, compared with 43.6% of comparison billers (38.0th vs. 50.0th percentile for months billed).',
+      '<strong>Adjusting Alert Rates to the Full List and Review Counts.</strong> Bayes\' rule adjusts the correct alert rate in the highest-scoring 1% from the 1-in-5 comparison sample (0.922%) to the full 487,479-biller list (0.186% vs. 0.0195% exclusion rate). For context, Medicaid Fraud Control Units (MFCUs) had 16,688 active cases at an average cost of $23,719 per active case.'
     ],
-    policySettingHtml: 'Program integrity teams use billing alerts to decide which Medicaid providers to audit first. Many sanctioned providers stop billing years before a formal ban posts, and confirmed fraud cases make up a tiny fraction of all active billers. Checking alerts across every historical biller helps audit managers plan investigator workloads.',
-    answerHtml: 'Across <strong>487,479 Medicaid billing providers</strong>, the screening model flags sanctioned providers at <strong>9.5 times the random rate</strong> in the top 1% of alerts (<strong>9 caught cases</strong> across <strong>4,844 flags</strong>) [1]. In the subset of <strong>55,018 providers still billing in 2024</strong> (<strong>9</strong> exclusions), the screen falls below a coin-flip rank alongside shorter prior tenure (<strong>38.0th vs. 50.0th</strong> percentile), an observed subgroup difference rather than an isolated causal effect [2]. Calibrated alert rates across the full provider list set realistic caseload goals for audit staff [3].',
+    policySettingHtml: 'Audit teams use risk scores to rank Medicaid billers and send top cases for review. Two test rules shape what those scores show. First, full-list tests keep billers who stopped billing before 2024 ahead of later bans. By contrast, 2024-only tests check billers who still bill now. Second, test sets that keep 1 in 5 comparison billers cut false alerts. That choice overstates the share of alerts that find later-banned billers.',
+    answerHtml: 'Across all <strong>487,479</strong> Medicaid billers (<strong>95</strong> banned in 2025+ and <strong>487,384</strong> comparison billers, a <strong>0.0195%</strong> rate), the test scores <strong>0.724</strong> on AUC [1]. An AUC of 0.50 means chance ranking, while 1.00 ranks all banned billers higher [1]. Yet 90.5% of later-banned billers stopped before 2024, and stop-date reweighting gives <strong>0.653</strong> [1,2]. Among <strong>55,018</strong> billers active in 2024 (<strong>55,009</strong> comparison and <strong>9</strong> bans), the score is <strong>0.442</strong> [2]. That small group gives no clear sign of ranking above chance [2]. A 1-in-5 sample reports a <strong>0.922%</strong> correct alert rate in the top 1% [3]. Adjusted to the full list, the rate is <strong>0.186%</strong>: <strong>9</strong> bans in <strong>4,844</strong> alerts (<strong>9.53x lift</strong>) [1,3]. Fraud units had <strong>16,688</strong> active cases at <strong>$23,719</strong> per case on average, not per alert [3].',
     block2: {
-      title: 'Two Rulers: Active-Only &amp; Holdout Subset vs. Full-List Base-Rate Calibration',
-      contextTag: 'Mode A Calibration Applied to Observed Screening Results (Random Forest, 95 Post-Panel Exclusions vs. 487,384 Controls)',
-      ariaLabel: 'Comparison of a fraud screen evaluated on providers active in 2024, AUC 0.442, versus the full billing universe, AUC 0.724, with Top 1 percent precision of 0.922 percent on the downsampled holdout and 0.186 percent at the full-population base rate',
+      title: 'Test-Sample Results vs. Results Adjusted to the Full List',
+      contextTag: 'Alert-Rate Adjustment Applied to Random Forest Scores (95 Later-Banned Billers vs. 487,384 Comparison Billers)',
+      ariaLabel: 'Comparison of a fraud test evaluated on providers billing in 2024, score 0.442, versus the full list, score 0.724, with Top 1 percent correct alerts at 0.922 percent in the 1-in-5 sample and 0.186 percent on the full list',
       ruler1: {
-        title: 'Ruler 1: Active-Only &amp; Holdout Check',
-        stat: '0.442 AUC Active-Only; 0.922% Top 1% Holdout Precision',
-        ariaLabel: 'Among providers still billing in 2024, 9 excluded versus 55,009 controls, the screen scores AUC 0.442 with 95 percent interval 0.212 to 0.664',
+        title: 'Providers Still Billing in 2024 and 1-in-5 Sample',
+        stat: '0.442 Score in 2024 Group; 0.922% Sample Alert Rate',
+        ariaLabel: 'Among providers still billing in 2024, 9 later-banned versus 55,009 comparison billers, the test scores 0.442 with 95 percent range 0.212 to 0.664',
         segments: [
-          { cls: 'seg-Housing', width: 44, label: 'AUC 0.442 (Active in 2024)' },
-          { cls: 'seg-gross', width: 56, label: 'Remaining Distance to AUC 1.0' }
+          { cls: 'seg-Housing', width: 44, label: '0.442 Score (2024 Billers, 9 Bans)' },
+          { cls: 'seg-gross', width: 56, label: 'Remaining Distance to 1.0' }
         ],
-        desc: 'In the subset of providers <strong>still billing in 2024</strong> (9 excluded vs. 55,009 controls), observed AUC is <strong>0.442</strong> (95% CI 0.212-0.664; exit-year reweighted AUC is <strong>0.653</strong>). Excluded providers sit at the <strong>38.0th</strong> vs. <strong>50.0th</strong> median peer percentile of active months. A holdout with <strong>97,476 controls</strong> (20%) shows <strong>0.922%</strong> Top 1% precision.'
+        desc: 'Testing only providers <strong>still billing in 2024</strong> (9 later-banned billers and 55,009 comparison billers) gives a ranking score of <strong>0.442</strong>. The separate full-list score is <strong>0.653</strong> after adjusting for billing stop dates. A 1-in-5 comparison sample reports a <strong>0.922%</strong> correct alert rate.'
       },
       ruler2: {
-        title: 'Ruler 2: Full-List Base-Rate Calibrated Check',
-        stat: '0.724 AUC; 0.186% Top 1% Precision at 0.0195% Base Rate',
-        ariaLabel: 'Across the full billing universe of 487,479 providers, the screen scores AUC 0.724 with 95 percent interval 0.667 to 0.777, and Top 1 percent precision rescales to 0.186 percent',
+        title: 'Full-List Score and Adjusted Correct Alert Rate',
+        stat: '0.724 Full-List Score; 0.186% Adjusted Top 1% Rate',
+        ariaLabel: 'Across the full list of 487,479 providers, the test scores 0.724 with 95 percent range 0.667 to 0.777, and the Top 1 percent correct alert rate adjusts to 0.186 percent',
         segments: [
-          { cls: 'seg-food', width: 72, label: 'AUC 0.724 (Full List)' },
-          { cls: 'seg-gross', width: 28, label: 'Remaining Distance to AUC 1.0' }
+          { cls: 'seg-food', width: 72, label: '0.724 Score (Full 487,479 List)' },
+          { cls: 'seg-gross', width: 28, label: 'Remaining Distance to 1.0' }
         ],
-        desc: 'Across all <strong>487,479 providers</strong> (95 post-panel exclusions, a <strong>0.0195%</strong> base rate), the same model reaches <strong>0.724 AUC</strong> (95% CI 0.667-0.777). Rescaled to that base rate, the Top 1% cutoff gives <strong>4,844 flags</strong>, <strong>9 caught cases</strong>, <strong>0.186% precision</strong>, and <strong>9.53x lift</strong> over random choice.'
+        desc: 'Across all <strong>487,479 billers</strong> (<strong>0.0195%</strong> later-ban rate), the model scores <strong>0.724</strong>. Adjusting the top 1% cutoff to the full list gives <strong>4,844 alerts</strong>, <strong>9 identified bans</strong>, a <strong>0.186%</strong> correct alert rate, and <strong>9.53x lift</strong>.'
       }
     },
     table1: {
-      title: 'Table 1. Subset Results vs. Full-List Calibrated Results for One Fraud Screen',
-      subtitle: 'Observed screening scores with Bayes base-rate rescaling of holdout precision across four test settings.',
-      caption: 'Four test settings compared on group size, ranking score, holdout and full-list precision, flags and caught cases, lift, and caseload.',
-      cornerLabel: 'Screen Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Observed Screening Results; Mode A Base-Rate Calibration):</strong> Each column states its own group size. The target is a formal LEIE financial fraud exclusion. Ranges are 95% CI bounds on AUC: full universe AUC = 0.724 (95% CI 0.667-0.777, 487,479 providers); active-only subset AUC = 0.442 (95% CI 0.212-0.664; 9 exclusions vs. 55,009 controls; exit-year reweighted AUC = 0.653). Holdout precision is rescaled to the 0.0195% full-population base rate.',
+      title: 'Table 1. Fraud Test Scores, Correct Alert Rates, and Review Counts',
+      subtitle: 'How ranking scores and correct alert rates adjusted to the full list compare across four test settings.',
+      caption: 'Compare four test settings by provider count, ranking score, correct alert rate in the sample and full list, alert count, lift over random selection, and months billed.',
+      cornerLabel: 'Test Measure',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Recorded Test Results and Full-List Adjustments).</strong> A case is positive when a provider has a formal financial-fraud exclusion on the federal OIG LEIE dated 2025 or later (Settings 1-3) or during 2018-2024 (Setting 4). AUC scores how well the model ranks excluded providers above comparison providers (0.50 means chance ranking; 1.00 means all excluded providers rank higher). Full-list AUC is 0.724 (95% range 0.667-0.777, N = 487,479; 0.653 after stop-date reweighting). For providers still billing in 2024 (9 excluded and 55,009 comparison billers), AUC is 0.442 (95% range 0.212-0.664). Comparing similar providers banned during 2018-2024 gives AUC = 0.818, which may reflect billing that ended at the ban. The test sample keeps 20% of comparison providers, and Bayes\' rule adjusts its correct alert rate to the full list\'s 0.0195% rate.',
       columns: [
-        { tag: 'Setting 1: Unfiltered', tagHighlight: false, title: 'All Billers, Top 1% Cutoff', subtitle: 'N = 487,479 providers (95 exclusions + 487,384 controls); unit: billing NPI' },
-        { tag: 'Setting 2: Filtered', tagHighlight: true, title: 'Active-Biller Subset Only', subtitle: 'N = 55,018 providers billing in 2024 (9 exclusions + 55,009 controls); unit: billing NPI' },
-        { tag: 'Setting 3: Caseload', tagHighlight: true, title: 'Top 5% Cutoff, Caseload Check', subtitle: 'N = 487,479 providers; 16,688 national MFCU active cases; unit: billing NPI' },
-        { tag: 'Setting 4: Peer Check', tagHighlight: false, title: 'Peer-Group &amp; Matched Checks', subtitle: 'N = 204 exclusions vs. 487,384 controls (peer ranks); 230 vs. 1,150 (matched); unit: billing NPI' }
+        { tag: 'Setting 1: Full List', tagHighlight: false, title: 'All Billers, Top 1% Cutoff', subtitle: '487,479 billing IDs (95 later bans + 487,384 comparison)' },
+        { tag: 'Setting 2: 2024 Billers', tagHighlight: true, title: 'Still Billing in 2024', subtitle: '55,018 billing IDs in 2024 (9 later bans + 55,009 comparison)' },
+        { tag: 'Setting 3: Top 5%', tagHighlight: true, title: 'Top 5% Cutoff Check', subtitle: '487,479 billing IDs; 16,688 active MFCU cases' },
+        { tag: 'Setting 4: 2018-2024 Bans', tagHighlight: false, title: 'Banned During 2018-2024', subtitle: '204 bans (peer ranks) and 230 vs. 1,150 matched IDs' }
       ],
       rows: [
         {
           label: 'Test Group Size',
           cells: [
-            { val: '95 | 487,384 (0.0195% base rate)' },
-            { val: '9 | 55,009 (active in 2024)' },
-            { val: '95 | 487,384 (0.0195% base rate)' },
-            { val: '204 | 487,384 (230 vs. 1,150)' }
+            { val: '95 bans | 487,384 comparison (0.0195%)' },
+            { val: '9 bans | 55,009 comparison in 2024' },
+            { val: '95 bans | 487,384 comparison (0.0195%)' },
+            { val: '230 bans vs. 1,150 matched comparison' }
           ]
         },
         {
-          label: 'Risk Ranking Pattern',
+          label: 'Ranking Score (0.50 = Chance)',
           highlight: true,
           cells: [
-            { val: '0.724 rank score (full list)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '0.442 rank score (active billers)', barWidth: 44, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '0.724 rank score (Top 5%)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '0.818 rank score (peer match)', barWidth: 82, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '0.724 score (0.653 reweighted)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '0.442 score (2024 billers)', barWidth: 44, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '0.724 score (full list)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '0.818 score (records end at ban)', barWidth: 82, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Precision: Holdout vs. Full List',
+          label: 'Correct Alerts: Sample vs. Full List',
           cells: [
-            { val: '0.922% holdout | 0.186% full list' },
-            { val: 'Not reported at a cutoff (9 cases, wide bounds)' },
-            { val: '0.512% holdout | 0.103% full list' },
-            { val: 'Not reported at a cutoff (in-panel)' }
+            { val: '0.922% sample | 0.186% full list' },
+            { val: 'Not scored at cutoff (9 bans)' },
+            { val: '0.512% sample | 0.103% full list' },
+            { val: 'Not comparable (2018-2024 bans)' }
           ]
         },
         {
-          label: 'Flags &amp; Caught Cases',
+          label: 'Alerts &amp; Later Bans Identified',
           cells: [
-            { val: '4,844 flags | 9 caught (9.47%)' },
+            { val: '4,844 alerts | 9 identified (9.47%)' },
             { val: 'No cutoff scored' },
-            { val: '24,295 flags | 25 caught (26.32%)' },
+            { val: '24,295 alerts | 25 identified (26.32%)' },
             { val: 'No cutoff scored' }
           ]
         },
         {
-          label: 'Lift &amp; Audit Caseload',
+          label: 'Lift &amp; MFCU Case Comparison',
           cells: [
-            { val: '9.53x lift | 29.0% of caseload' },
+            { val: '9.53x lift | 29.0% of active cases' },
             { val: 'Not scored' },
-            { val: '5.28x lift | 145.6% of caseload' },
+            { val: '5.28x lift | 145.6% of active cases' },
             { val: 'Not scored' }
           ]
         },
         {
-          label: 'Active Months Peer Percentile',
+          label: 'Peer Rank for Months Billed',
           cells: [
-            { val: 'Months active kept (no filter)' },
-            { val: '38.0th vs. 50.0th (0.653 reweighted)' },
-            { val: 'Months active kept (no filter)' },
-            { val: '38.0th vs. 50.0th (peer cells)' }
+            { val: '90.5% stopped billing before 2024' },
+            { val: '38.0th vs. 50.0th percentile' },
+            { val: '90.5% stopped billing before 2024' },
+            { val: '204 bans: 38.0th vs. 50.0th percentile' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. How Filtering on a Shared Effect Shifts Screen Scores',
-      subtitle: 'Why subset scores should be rescaled to the full billing list before setting audit cutoffs.',
-      caption: 'Decision grid showing the filter path, how it shifts accuracy and precision, the staffing impact, and the calibration rule.',
+      title: 'Table 2. Accounting for Early Billing Stops and 1-in-5 Samples in Reviews',
+      subtitle: 'How pre-2024 billing stops and 1-in-5 comparison samples change alert rates and staffing plans.',
+      caption: 'This table explains how choosing records changes test scores, correct alert rates, and staffing estimates.',
       cornerLabel: 'Choice Factor',
       colHeaders: [
-        { title: 'Full Unfiltered List, Top 1%', subtitle: 'N = 487,479 providers (95 exclusions, 0.0195% base rate); unit: billing NPI' },
-        { title: 'Active-Biller Subset Only', subtitle: 'N = 55,018 providers billing in 2024 (9 exclusions); unit: billing NPI' },
-        { title: 'Top 5% Cutoff, Caseload Check', subtitle: 'N = 487,479 providers; 24,295 flags vs. 16,688 MFCU active cases; unit: billing NPI' },
-        { title: 'Peer-Group &amp; Matched Checks', subtitle: 'N = 204 vs. 487,384 (peer ranks) and 230 vs. 1,150 (matched); unit: billing NPI' }
+        { title: 'All Billers, Top 1% Cutoff', subtitle: '487,479 billing IDs (95 later bans, 0.0195% rate)' },
+        { title: 'Still Billing in 2024', subtitle: '55,018 billing IDs in 2024 (9 later bans)' },
+        { title: 'Top 5% Cutoff Check', subtitle: '24,295 alerts vs. 16,688 active MFCU cases' },
+        { title: 'Banned During 2018-2024', subtitle: '204 peer-ranked and 230 vs. 1,150 matched IDs' }
       ],
       rows: [
         {
-          label: 'Filter Path in Each Setting',
+          label: 'How Records Are Chosen',
           cells: [
-            { val: 'Every billing provider stays in the list, so active months remain a model input.' },
-            { val: 'Keeping only 2024 billers leaves 9 of 95 excluded providers after 90.5% exited before 2024.' },
-            { val: 'The full list stays in place, while a wider cutoff sends more flags to staff.' },
-            { val: 'Ranks are scored inside state and specialty peer cells, and matching reweights controls.' }
+            { val: 'Includes all 2018-2024 billers, including providers who stopped billing before 2024.' },
+            { val: 'Includes only 2024 billers after 86 of 95 later-banned billers (90.5%) stopped.' },
+            { val: 'Scores all 487,479 billers and selects the highest-scoring 5% instead of 1%.' },
+            { val: 'Scores providers banned in 2018-2024 whose billing records ended at the ban date.' }
           ]
         },
         {
-          label: 'How the Setting Shifts Scores',
+          label: 'Effect on Test Numbers',
           cells: [
-            { val: 'Holdout precision (0.922%) is 4.96 times full-list precision (0.186%) due to 20% control sampling.' },
-            { val: 'Ranks fall below a coin flip in the 9-case 2024 subset and recover when exit years are reweighted.' },
-            { val: 'Full-list precision drops to 0.103% while flags rise to 24,295, or 145.6% of caseload.' },
-            { val: 'Matched and balanced checks keep strong risk ranking on in-panel cases.' }
+            { val: 'Full-list score is 0.724 (0.653 reweighted); the 1-in-5 sample rate is 4.96x higher.' },
+            { val: 'Score is 0.442, giving no clear evidence of ranking above chance in 2024 billers.' },
+            { val: 'Adjusted correct alerts drop to 0.103% as alerts reach 24,295 (145.6% of MFCU cases).' },
+            { val: 'The 0.818 score may reflect billing that ended at the ban, not pre-ban detection.' }
           ]
         },
         {
-          label: 'Staffing Impact for Audit Teams',
+          label: 'Review Staffing Context',
           cells: [
-            { val: 'At $23,719 per case, 4,844 Top 1% flags cost $114.9M to review and catch 9 cases.' },
-            { val: 'With only 9 excluded billers left in 2024, active-only claims scores have wide bounds.' },
-            { val: 'A Top 5% cutoff exceeds the 16,688-case national caseload, so cutoffs need capacity checks.' },
-            { val: 'Peer-group ranks keep normal state and specialty billing differences from triggering flags.' }
+            { val: 'At the $23,719 active-case average, 4,844 alerts equal $114.9M and identify 9 bans.' },
+            { val: 'Treating the 0.724 full-list score as current-biller accuracy overstates performance.' },
+            { val: 'The 24,295 alerts exceed all 16,688 active national MFCU cases (not spare capacity).' },
+            { val: 'Using 2018-2024 scores to buy tools mistakes post-ban stops for pre-ban detection.' }
           ]
         },
         {
-          label: 'Best-Fit Calibration Rule',
+          label: 'Recommended Adjustment Rule',
           policyFit: true,
           cells: [
-            { headline: 'Rescale Precision to the Full List', detail: 'Adjust downsampled holdout precision to the 0.0195% full-list base rate before setting rules.' },
-            { headline: 'Keep All Providers in the Test Set', detail: 'Score the full provider list first and show active-only results as a separate subgroup check.' },
-            { headline: 'Match Cutoffs to Staff Caseload', detail: 'Compare total flags against the 16,688 active MFCU cases before picking a cutoff.' },
-            { headline: 'Rank Within Peer Cells', detail: 'Score billing features inside state and specialty cells and report matched checks.' }
+            { headline: 'Adjust Alert Rates to Full List', detail: 'Adjust 1-in-5 sample alert rates to the 0.0195% full-list rate before planning reviews.' },
+            { headline: 'Report Full and 2024 Scores', detail: 'Show the 0.724 full-list score (0.653 reweighted) beside the 0.442 2024-biller score.' },
+            { headline: 'Set Alerts by Review Capacity', detail: 'Compare alerts with 16,688 active MFCU cases ($23,719 average) and measure review time.' },
+            { headline: 'Keep In-Period Bans Separate', detail: 'Do not judge pre-ban detection using bans whose billing records ended at the ban date.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Bayes Base-Rate Rescaling, Subgroup Selection Structure &amp; Data Provenance',
+      notesTitle: 'Table 2 Notes: Adjusting Alert Rates, Choosing Groups, and Data Sources',
       notesBullets: [
-        '<strong>Target Definition:</strong> The positive class is a formal OIG LEIE exclusion under Specification A financial fraud statutes (1128(a)(1), 1128(a)(3), 1128(b)(1)). The prospective check scores the 95 providers excluded in 2025 or later against 487,384 non-excluded controls (487,479 total).',
-        '<strong>Bayes Base-Rate Rescaling (Mode A Calibration):</strong> The holdout keeps all 95 cases and 97,476 of 487,384 controls (20%). False positives scale by 1 / 0.20 = 5. In odds form, Odds_pop = Odds_holdout / 5. For Top 1%, 0.922% / 99.078% = 0.009306, and dividing by 5 gives 0.001861, or 0.186% precision. For Top 5%, 0.512% rescales to 0.103%. Lift equals precision divided by base rate: 0.1858% / 0.0195% = 9.53x, and 0.1029% / 0.0195% = 5.28x.',
-        '<strong>Observed Subgroup Difference &amp; Exit-Timing Sensitivity:</strong> In the empirical data, 90.5% of post-panel fraud providers stopped billing prior to 2024 (vs. 43.6% of controls), and excluded providers sit at the 38.0th vs. 50.0th median peer percentile of active months (Months Active SHAP correlation r = -0.9009). Reweighting controls to match the fraud exit-year distribution shifts prospective AUC from 0.724 to 0.653, and restricting to the 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls) yields an observed AUC of 0.442 (95% CI 0.212-0.664). These descriptive subgroup and reweighting comparisons document how conditioning on active 2024 billing alters the evaluation sample, but do not separately isolate early exit as the sole cause of the 0.442 subgroup score.',
-        '<strong>Caseload &amp; Cost:</strong> MFCU unit cost is $23,719 ($395.8M / 16,688 active cases, HHS-OIG FY 2024). Top 1% gives 4,844 × $23,719 = $114.9M and 4,844 / 16,688 = 29.0% of caseload. Top 5% gives 24,295 / 16,688 = 145.6%.',
-        '<strong>Data Provenance:</strong> Values come from Mcaid/05_fraud_detection/paper/output/results.json (prospective_auc, active_subset_auc, top1_prec_holdout, top1_prec_pop, top1_flags, top1_captured, top1_lift, top5_*, mfcu_*, shap_months_active_r, matched_sample_rf_auc, entropy_balanced_rf_auc), Mcaid/05_fraud_detection/paper/main.tex (L398-402: 90.5% vs. 43.6% pre-2024 exit, 0.653 exit-year reweighted AUC), output/tables/tab6_economics.tex (N = 487,479, 0.0195%), and output/tables/tab_a3_base_rates.tex (peer percentiles).'
+        '<strong>How Cases Are Defined.</strong> Positive cases are federal OIG LEIE exclusions under the fraud-related laws in the study\'s Specification A (Social Security Act sections 1128(a)(1), 1128(a)(3), and 1128(b)(1)). Testing earlier claims against later bans compares 95 providers banned in 2025 or later with 487,384 comparison billers (487,479 total).',
+        '<strong>Adjusting Alert Rates With Bayes\' Rule.</strong> The separate test sample keeps all 95 later-banned billers and 20% of comparison billers (97,476 of 487,384). In the full list, comparison billers are 5 times as numerous, so full-list odds equal sample odds divided by 5 (<code>Odds_pop = Odds_holdout / 5</code>). For the top 1%, the 0.922% sample rate (odds 0.009306) divides by 5 to give <strong>0.186%</strong> on the full list (lift = 0.1858% / 0.0195% = 9.53x). For the top 5%, 0.512% adjusts to <strong>0.103%</strong> (5.28x lift).',
+        '<strong>2024 Biller Group and Billing Stop Dates.</strong> In the full file, 90.5% of later-banned billers stopped billing before 2024, compared with 43.6% of comparison billers (38.0th vs. 50.0th peer percentile for months billed). Shorter billing length links strongly with higher model scores (SHAP correlation r = -0.9009, describing model predictions rather than cause). Reweighting comparison billers by stop year gives AUC = 0.653, and testing the 55,018 billers active in 2024 (9 bans and 55,009 comparison billers) gives AUC = 0.442 (95% range 0.212-0.664). These checks show how choosing 2024 billers changes which providers are tested, without claiming stop dates alone explain the 9-case score.',
+        '<strong>Active MFCU Cases and Average Cost.</strong> National Medicaid Fraud Control Units averaged $23,719 per active case ($395.8M across 16,688 active cases in FY 2024). Applying that active-case average to 4,844 top 1% alerts gives an illustrative $114.9M comparison (not a measured cost of reviewing one alert), while 24,295 top 5% alerts equal 145.6% of active cases.',
+        '<strong>Data Sources.</strong> Scores, alert counts, and cost comparisons come from the Medicaid fraud model study outputs and HHS-OIG FY 2024 MFCU tables.'
       ]
     },
     synthesis: {
-      title: 'Why Limiting a File to "Providers Still Billing" Shifts Every Ratio',
-      p1: 'Collider bias was first noted by Joseph Berkson in 1946 in hospital data. A related sample-selection shift appears in health claims when a team keeps only providers still billing in the latest year. In the linked Medicaid file, 90.5% of post-panel excluded billers stopped billing before 2024 (vs. 43.6% of controls), and reweighting controls by exit year shifts AUC from 0.724 to 0.653. In the subset of 55,018 providers still billing in 2024 (9 exclusions), the observed AUC is 0.442 (95% CI 0.212 to 0.664), reflecting both sample selection and the small number of remaining cases.',
-      p2: 'Downsampling shifts precision in a similar way. A holdout that keeps all 95 cases and 20% of controls reports 0.922% Top 1% precision. At the full-list base rate of 0.0195%, that same cutoff gives 0.186% precision, or 9 caught cases among 4,844 flags. Rescaling every subset score to the full billing list and checking the 16,688-case national MFCU caseload keeps agencies from sizing audit budgets on a filtered sample.'
+      title: 'Why Fraud Tests Must Account for Billing Stop Dates and Sample Rates',
+      p1: 'Choosing billers by later billing status can bias a test when past bills and inquiries shape stops. Researchers call this selection, or collider, bias. Across 487,479 billers, 90.5% of billers banned in 2025+ stopped before 2024, vs. 43.6% of comparison billers. The model uses billing length, which may help explain the 0.724 score (0.653 reweighted). Testing only 55,018 billers active in 2024 leaves out 86 stopped bans and keeps 9 of 95, scoring 0.442 (0.50 is chance).',
+      p2: 'Testing alert rates on a 1-in-5 sample creates a second planning error. Keeping 95 banned billers with 1 in 5 comparison billers cuts false alerts and gives a 0.922% sample rate. Adjusted to the full list\'s 0.0195% ban rate across 487,479 billers, the top 1% rate is 0.186% (9 bans in 4,844 alerts). Fraud units had 16,688 active cases averaging $23,719 per active case, though single-alert costs were not measured. Showing full-list, reweighted, and 2024 scores with adjusted rates keeps plans clear.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Calibration on Observed Screening Results):</strong> AUC scores (0.724 full list, 0.653 exit-year reweighted, and 0.442 active-only subgroup), holdout precision, flags, caught cases, lift, and peer percentiles are observed outputs in output/results.json, main.tex (L398-402), output/tables/tab6_economics.tex, and output/tables/tab_a3_base_rates.tex. Rescaling from holdout to full-list precision is a Mode A calibration using Bayes rule. It matches the full-population precision in output/results.json (0.1858%).',
-      '<strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.2307/2526310" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Berkson, J. (1946), "Limitations of the Application of Fourfold Table Analysis to Hospital Data", Biometrics Bulletin, 2(3), 47-53</a>; <a href="https://doi.org/10.1038/s41467-020-19478-2" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Griffith, G. J., et al. (2020), "Collider bias undermines our understanding of COVID-19 disease risk and severity", Nature Communications, 11, 5749</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>; and HHS-OIG Medicaid Fraud Control Unit FY 2024 annual statistics.'
+      '<strong>Data Sources: Recorded Test Results and Adjusted Correct Alert Rates.</strong> Ranking scores (0.724 full list, 0.653 stop-date reweighted, 0.442 in the 55,018 billers active in 2024, and 0.818 for matched 2018-2024 bans), sample alert rates, alert counts, excluded providers identified, lift over random selection, and months-billed percentiles come from the Medicaid fraud model study tables. Full-list correct alert rates apply Bayes\' rule and match the full-list rate in the study outputs (0.1858%).',
+      '<strong>Primary References &amp; Data Sources.</strong> <a href="https://doi.org/10.2307/2526310" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Berkson, J. (1946), "Limitations of the Application of Fourfold Table Analysis to Hospital Data", Biometrics Bulletin, 2(3), 47-53</a>; <a href="https://doi.org/10.1038/s41467-020-19478-2" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Griffith, G. J., et al. (2020), "Collider bias undermines our understanding of COVID-19 disease risk and severity", Nature Communications, 11, 5749</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>; and HHS-OIG Medicaid Fraud Control Unit FY 2024 annual statistics.'
     ],
     faqs: [
       {
-        question: 'What is a "collider" in a causal diagram, and how does it differ from a confounder?',
-        answer: 'A confounder is a shared CAUSE of both the treatment and the outcome (A &lt;- C -&gt; Y). Analysts control for it to remove bias. A collider is a shared EFFECT of two variables (A -&gt; C &lt;- Y). Filtering or controlling on a collider opens a false link between its causes.'
+        question: 'How does filtering to 2024 billers differ from adjusting for a pre-program factor?',
+        answer: 'A pre-program factor like poverty exists before care starts and affects both program entry and health. Adjusting for it can cut bias when model rules hold. By contrast, still billing in 2024 comes later and reflects past bills and inquiries. Keeping only 2024 billers leaves out 90.5% of later-banned billers who stopped early and changes the test group.'
       },
       {
-        question: 'How does the active-only subgroup score compare with the full-list score?',
-        answer: 'Across all 487,479 providers, the screen scores 0.724 AUC (95% CI 0.667 to 0.777). Because 90.5% of post-panel excluded providers stopped billing before 2024 (38.0th vs. 50.0th active-months percentile), reweighting controls by exit year shifts AUC to 0.653, and the 2024 active-biller subset (9 exclusions vs. 55,009 controls) shows an observed AUC of 0.442 (95% CI 0.212 to 0.664). That subgroup difference reflects sample restriction and the small 9-case sample rather than isolating a single cause.'
+        question: 'Why do 2024 billers score 0.442 while the full 487,479 list scores 0.724?',
+        answer: 'On all 487,479 billers, the model uses short billing spans and scores 0.724. Because 90.5% of later-banned billers stopped before 2024 (38.0th vs. 50.0th rank for months billed), stop-date reweighting gives 0.653. Keeping only 55,018 billers in 2024 leaves 9 bans and a 0.442 score, with no clear ranking above chance.'
       },
       {
-        question: 'How should analysts report precision from a downsampled holdout?',
-        answer: 'Rescale it to the full-list base rate. The holdout here keeps every case and 20% of controls. Top 1% precision of 0.922% rescales to 0.186% across the full billing list (0.0195% base rate), or 9 caught cases among 4,844 flags.'
+        question: 'Why must correct alert rates from a 1-in-5 sample be adjusted before planning reviews?',
+        answer: 'The correct alert rate is the share of alerts matching the formal bans studied here. That share depends on how rare bans are. Keeping 95 banned billers with 1 in 5 comparison billers cuts false alerts and gives a 0.922% sample rate. Adjusting to the full list\'s 0.0195% rate gives 0.186% (9 bans in 4,844 alerts).'
       }
     ],
     related: [
-      { slug: 'classifying-causal-mechanisms', title: 'Separating Mediators From Confounders', note: 'Case study providing a decision rule for confounders, mediators, colliders, and instruments' },
-      { slug: 'measurement-error-claims', title: 'Directory Counts vs. Active Claims', note: 'Case study reconciling 488,032 Medicaid billing NPIs with federal and California sanction registries' },
-      { slug: 'p-hacking-multiple-testing', title: 'Testing Subgroup Drops With Multiple-Group Checks', note: 'Case study on separating real subgroup drops from small-group swings' }
+      { slug: 'classifying-causal-mechanisms', title: 'Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays', note: 'Case study separating pre-start causes, post-start care steps, 2024-biller filters, and Stage 1 checks' },
+      { slug: 'measurement-error-claims', title: 'Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out', note: 'Case study matching 488,032 Medicaid billers across federal OIG and California suspension lists' },
+      { slug: 'p-hacking-multiple-testing', title: 'Minimum Group Sizes and Net Member Losses Help Counties Set Medi-Cal Call Lists', note: 'Case study separating large county group losses from small-group rate changes' }
     ]
   },
 
   // =========================================================================
-  // MODULE #29: classifying-causal-mechanisms (Track 4, member)
+  // MODULE #29: classifying-causal-mechanisms (Track 4, public)
   // =========================================================================
   {
     slug: 'classifying-causal-mechanisms',
     tier: 'public',
-    trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; Confounders, Mediators, Colliders &amp; Instruments (Mode A Synthesis)',
-    pageTitle: 'Separating Mediators From Confounders | CAPHE',
-    metaDescription: 'Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.',
-    h1: 'Post-Enrollment Clinic-Visit Controls Remove the Primary Care Pathway From Modeled Hospital Evaluations',
-    subtitle: 'Splitting pre-program background factors from care steps on the path in modeled hospital savings checks.',
+    trackEyebrow: 'Track 4: Choosing Model Controls &middot; Shared Causes, Care Steps &amp; Record Filters',
+    pageTitle: 'Baseline Controls vs. Care Steps in Models | CAPHE',
+    metaDescription: 'Separate pre-start shared causes, post-start care steps, current-biller filters, and two-step checks across four California health data sets.',
+    h1: 'Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays',
+    subtitle: 'Separating pre-start causes from post-start care steps, sample filters, and Stage 1 checks in health models.',
     endnotes: [
-      '<strong>Pre-Program Baseline Confounders vs. Program Mechanisms:</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a> California urban tract panel covers 408 tracts (baseline poverty explains 62.2% of food-need variance). <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), <em>Health Affairs</em></a> shows 71.7% vs. 57.1% primary care visits (OR = 1.90) and -30% hospital stays.',
-      '<strong>Filtered Subsample &amp; Supply-Side Variables:</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> linked to <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a> shows a 0.724 full-list AUC vs. 0.442 AUC in the 2024 active-biller subset (0.653 when exit-year reweighted). The 57-county LHA spending panel finds a -2.38 annual TWFE slope, -4.32 13-year cumulative OLS slope, and -5.31 Long-Difference Lewbel 2SLS slope (first-stage F = 111.20, Hansen J p = 0.2132).',
-      '<strong>Methodological Reference on Control Selection:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), <em>Sociological Methods &amp; Research</em></a>.'
+      '<strong>Earlier Shared Causes vs. Later Care Steps.</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census American Community Survey (ACS)</a> data for Santa Clara County cover 408 census tracts. Tract poverty accounts for 62.2% of differences in food-need scores, and the store-distance estimate changes from -0.578 before adjustment to -0.017 after poverty adjustment (-0.0026 on a common scale, p = 0.827). <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), <em>Health Affairs</em></a> reports 71.7% vs. 57.1% primary care completion (odds ratio 1.90) and 30% fewer hospital stays.',
+      '<strong>Later Sample Filters and Two-Step Model Checks.</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> matched with <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a> gives a 0.724 full-list AUC (0.653 stop-date reweighted) vs. 0.442 among providers still billing in 2024 (9 of 95 bans). Across 57 California counties, models report links of 2.38 fewer yearly deaths per 100,000, 4.32 fewer over 13-year changes (unadjusted p = 0.0052, adjusted p = 0.067), and 5.31 fewer in Lewbel two-step checks (first-step F = 111.20, Hansen J p = 0.2132).',
+      '<strong>Guide to Choosing Model Controls.</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", <em>Sociological Methods &amp; Research</em></a>.'
     ],
-    policySettingHtml: 'Health teams decide which household and clinic measures to hold constant before scoring a program. Pre-existing conditions like family poverty come before the program starts, whereas scheduled doctor visits happen as part of the care plan. Keeping pre-existing traits separate from active care steps shows the full program impact.',
-    answerHtml: 'In California Community Health Worker evaluations, leaving post-start clinic visits open keeps the full <strong>30% drop in hospital stays</strong> tied to a <strong>14.6 point rise in primary care visits (71.7% vs. 57.1%)</strong> [1]. Controlling for post-start clinic visits removes that care path, while restricting a provider test set to <strong>55,018 active 2024 billers</strong> leaves only <strong>9 of 95 excluded providers</strong> (after <strong>90.5%</strong> exited before 2024) [2]. Adjusting only for pre-program traits keeps the full policy impact intact [3].',
+    policySettingHtml: 'Before testing a health program, analysts pick which family, clinic, and biller factors to adjust for. Timing sets each factor\'s role. A factor like poverty may affect both who joins a program and health. When it exists before program start, researchers call it a baseline confounder. By contrast, clinic visits occur after start as a care step. Adjusting for every column without checking timing can leave out program gains or bias the test group.',
+    answerHtml: 'In Community Health Worker (CHW) trials, not adjusting for later doctor visits keeps gains that occur through visits [1,3]. Those trials found <strong>30%</strong> fewer hospital stays, and primary care visits rose from <strong>57.1% to 71.7%</strong> (odds ratio <strong>1.90</strong>) [1]. Adjusting for later visits can remove primary care gains, though the trial did not measure that share alone [1,3]. Three other data sets show the next roles. Poverty accounts for <strong>62.2%</strong> of Santa Clara food-need differences, moving store distance from <strong>-0.578 to -0.017</strong> [1]. Limiting a fraud test to <strong>55,018</strong> billers in 2024 leaves out 86 stopped billers and keeps <strong>9 of 95</strong> bans [2]. A two-step check (<strong>111.20</strong> first-step F) estimates <strong>5.31</strong> fewer deaths per 100,000 per $10 beside <strong>4.32</strong> over 13 years (adjusted <em>p</em> = 0.067) [2].',
     block2: {
-      title: 'Two Rulers: Full-Control Model vs. Path-Matched Model',
-      contextTag: 'Mode A Synthesis With Observed CAPHE Estimates as Base Inputs',
-      ariaLabel: 'Comparison of a full-control regression that controls for the preventive care step and reports only the direct effect versus a path-matched model that reports the total causal effect',
+      title: 'Adjusting for Later Visits vs. Adjusting Only for Pre-Start Factors',
+      contextTag: 'Summary Built on Observed Inputs From Separate CAPHE Studies',
+      ariaLabel: 'Comparison of a regression that adjusts for post-enrollment primary care visits versus a model that adjusts only for pre-start shared causes',
       ruler1: {
-        title: 'Ruler 1: Model Controlling for the Care Step',
-        stat: 'Reports β_direct Only (Care Path α·γ Held Fixed)',
-        ariaLabel: 'Controlling for post-enrollment preventive care visits holds the care pathway fixed, so the coefficient reports only the direct effect; the size of the care share varies by study',
+        title: 'Model Adjusting for Post-Start Clinic Visits',
+        stat: 'Aims to Estimate Effects Apart From Visits',
+        ariaLabel: 'Adjusting for post-enrollment primary care visits holds the care step fixed',
         segments: [
-          { cls: 'seg-primary', width: 50, label: 'Direct Part Kept (β_direct)' },
-          { cls: 'seg-Housing', width: 50, label: 'Care Path Absorbed by Control (Share Varies)' }
+          { cls: 'seg-primary', width: 50, label: 'Direct Part Kept' },
+          { cls: 'seg-Housing', width: 50, label: 'Care Step Removed' }
         ],
-        desc: 'Adding post-start primary care visits as a control holds the care step fixed. The model then reports only the direct part. It leaves out the gain that runs through the <strong>+14.6 point rise in clinic visits (71.7% vs. 57.1%)</strong>.'
+        desc: 'Adjusting for clinic visits after enrollment can leave out hospital stays avoided through primary care, and needs added assumptions.'
       },
       ruler2: {
-        title: 'Ruler 2: Path-Matched Model (Total Effect)',
-        stat: 'Reports τ_total = β_direct + α·γ',
-        ariaLabel: 'Controlling only for pre-treatment factors such as baseline poverty and leaving preventive care use open recovers the total causal effect, which corresponds to a 30 percent reduction in hospital stays in the CHW evidence base',
+        title: 'Model Adjusting Only for Pre-Start Factors',
+        stat: 'Aims to Estimate Total Program Effect',
+        ariaLabel: 'Adjusting only for pre-start factors keeps the total causal effect',
         segments: [
-          { cls: 'seg-primary', width: 50, label: 'Direct Part (β_direct)' },
-          { cls: 'seg-food', width: 50, label: 'Care Path Kept Open (α·γ)' }
+          { cls: 'seg-primary', width: 50, label: 'Direct Part' },
+          { cls: 'seg-food', width: 50, label: 'Care Step Included' }
         ],
-        desc: 'Controlling only for pre-program traits like baseline poverty, and leaving clinic visits open, keeps the <strong>total effect</strong>. In the CHW trials, that total effect is a <strong>30% drop in hospital stays</strong>.'
+        desc: 'Adjusting for pre-start factors while not adjusting for later clinic visits keeps effects that occur through primary care in the 30% hospital stay drop.'
       }
     },
     table1: {
-      title: 'Table 1. Four Variable Roles in Health Policy Data and Models',
-      subtitle: 'Each column uses a separate CAPHE dataset to show how variable roles guide model controls.',
-      caption: 'Four-column grid showing the source file, causal path, estimate when left out or added as a control, base input, and model rule.',
-      cornerLabel: 'Variable Role',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode A Synthesis on Exact Source Statistics):</strong> Each column draws on a separate CAPHE dataset; the four roles are not estimated in one joint regression. Role 1: raw distance β = -0.578 (p &lt; 0.0001); with poverty controlled, distance β = -0.017 (p = 0.827); poverty model R² = 62.2%. Role 2: visit uptake 71.7% vs. 57.1%, OR = 1.90 (TOT). Role 3: full-universe screening AUC = 0.724 (95% CI 0.667-0.777) vs. observed active-only subgroup AUC = 0.442 (95% CI 0.212-0.664; exit-year reweighted AUC = 0.653). Role 4: -5.31 Long-Difference Lewbel 2SLS slope per $10/capita (first-stage F = 111.20; Hansen J p = 0.2132; alongside -2.38 annual TWFE and -4.32 13-year cumulative OLS).',
+      title: 'Table 1. Four Examples of How a Model Uses Different Factors',
+      subtitle: 'Each column uses one data set to show an earlier shared cause, a care step, a record filter, or a Stage 1 check.',
+      caption: 'Compare four data sets by when each factor occurs, how adjusting for it changes results, source numbers, and rules for using it.',
+      cornerLabel: 'Factor Role',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Summary of Results From Separate Data Sets).</strong> Each column uses a separate CAPHE data set rather than one combined model. Role 1 (Baseline Confounder): before adjustment, greater store distance links with a lower food-need score (-0.578, p &lt; 0.0001). After adjusting for tract poverty (accounting for 62.2% of score differences across 408 tracts), the estimate is -0.017 (p = 0.827). Role 2 (Care Step): primary care visits rose from 57.1% to 71.7% (odds ratio 1.90 among treated patients) alongside 30% fewer hospital stays. Role 3 (Later Record Filter): a later selection rule affected by earlier billing and inquiries can bias the test group. The fraud test\'s ranking score (AUC) is 0.724 (95% range 0.667-0.777) across 487,479 billers vs. 0.442 (95% range 0.212-0.664) among 55,018 providers still billing in 2024 (9 of 95 bans; 0.653 after stop-date reweighting). Role 4 (Two-Step Check): Lewbel\'s two-step method using 13-year changes and differences in data spread estimates 5.31 fewer deaths per 100,000 per $10 (first-step F = 111.20) beside the 4.32 13-year link (unadjusted p = 0.0052; adjusted p = 0.067). The Hansen J check gives p = 0.2132, which checks input agreement rather than proving causal assumptions.',
       columns: [
-        { tag: 'Role 1: Confounder', tagHighlight: true, title: 'Baseline County Poverty', subtitle: 'Shared Cause (X <- C -> Y) | N = 408 California urban tracts (ACS); unit: tract' },
-        { tag: 'Role 2: Care Step', tagHighlight: true, title: 'Primary Care Visits', subtitle: 'Program Path (X -> M -> Y) | IMPaCT CHW RCTs / CA CHW model (TOT); unit: member' },
-        { tag: 'Role 3: Collider', tagHighlight: false, title: 'Active Billing Subset', subtitle: 'Shared Effect (X -> K <- Y) | N = 488,032 Medicaid billing NPIs (55,018 active in 2024); unit: billing NPI' },
-        { tag: 'Role 4: Instrument', tagHighlight: false, title: 'Supply-Side Budget Shift', subtitle: 'Stage 1 Shift (Z -> X -> Y) | 57 CA counties, 2003-2016 long-diff; unit: county' }
+        { tag: 'Role 1: Confounder', tagHighlight: true, title: 'Pre-Start Tract Poverty', subtitle: '408 Santa Clara County census tracts (ACS)' },
+        { tag: 'Role 2: Care Step', tagHighlight: true, title: 'Post-Start Clinic Visits', subtitle: 'CHW randomized trials; patient level' },
+        { tag: 'Role 3: Sample Filter', tagHighlight: false, title: 'Still Billing in 2024', subtitle: '488,032 Medicaid billers (55,018 billing in 2024)' },
+        { tag: 'Role 4: Stage 1 Check', tagHighlight: false, title: 'Two-Step Data-Spread Check', subtitle: '57 CA counties, 2003-2016 13-yr changes' }
       ],
       rows: [
         {
-          label: 'Source File',
+          label: 'Source Data',
           cells: [
-            { val: 'Food access tracts (408 tracts)' },
-            { val: 'CHW trial data (TOT rates)' },
-            { val: 'Medicaid claims &amp; OIG list' },
-            { val: 'County spending panel (57 counties)' }
+            { val: 'Santa Clara County tracts (408 tracts)' },
+            { val: 'Community Health Worker randomized trials' },
+            { val: 'National Medicaid claims &amp; ban list' },
+            { val: 'County health budgets (57 counties)' }
           ]
         },
         {
-          label: 'Causal Path',
+          label: 'When It Occurs &amp; What It Affects',
           cells: [
-            { val: 'Poverty -> Distance &amp; Food Need' },
-            { val: 'CHW -> Clinic Visits -> Stays' },
-            { val: 'Bans -> Tenure <- Bill Features' },
-            { val: 'Shift -> Spending -> Deaths' }
+            { val: 'Exists before store sites &amp; food needs' },
+            { val: 'Rises after start alongside lower stays' },
+            { val: 'Past billing &amp; inquiries affect 2024 stops' },
+            { val: 'Data spread helps predict budget changes' }
           ]
         },
         {
-          label: 'Result When Left Out',
+          label: 'Result Without Adjusting or Filtering',
           cells: [
-            { val: 'Distance looks helpful (-0.578 slope)' },
-            { val: 'Total effect kept (-30% stays)' },
-            { val: 'Full list kept: 95 of 95 exclusions' },
-            { val: 'Pandemic slope mixes surge aid (+2.47)' }
+            { val: 'Unadjusted distance estimate: -0.578' },
+            { val: 'Includes visit step in 30% stay drop' },
+            { val: 'All past billers: 0.724 score (95 bans)' },
+            { val: '13-yr link: -4.32 / 100K (adj. p = 0.067)' }
           ]
         },
         {
-          label: 'Result When Added as Control',
+          label: 'Result When Adjusted or Filtered',
           cells: [
-            { val: 'Distance: -0.017 flat slope', textColor: 'text-emerald-800' },
-            { val: 'Direct part only (path dropped)', textColor: 'text-amber-900' },
-            { val: 'Active-only subset: 9 of 95 left', textColor: 'text-rose-800' },
-            { val: 'Stage 1 use: -5.31 deaths / 100K', textColor: 'text-[#003080]' }
+            { val: 'Distance changes to -0.017 (p = 0.827)', textColor: 'text-emerald-800' },
+            { val: 'Can leave out gains from clinic visits', textColor: 'text-amber-900' },
+            { val: '9 of 95 bans (0.442 in 2024 billers)', textColor: 'text-rose-800' },
+            { val: 'Two-step check: 5.31 fewer / 100K', textColor: 'text-[#003080]' }
           ]
         },
         {
-          label: 'Observed Base Input',
+          label: 'Observed Source Figure',
           highlight: true,
           cells: [
-            { val: 'Poverty explains 62.2% of gap', barWidth: 62, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '71.7% vs. 57.1% visits (1.90x)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: 'Active months: 38.0th vs. 50.0th', barWidth: 38, barColor: '#DC2626', textColor: 'text-rose-800' },
-            { val: '13-yr IV: 5.31 fewer / 100K', barWidth: 98, barColor: '#0041A5', textColor: 'text-[#003080]' }
+            { val: 'Poverty accounts for 62.2% of score differences', barWidth: 62, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '71.7% vs. 57.1% clinic visits (1.90 odds ratio)', barWidth: 72, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: 'Months billed: 38.0th vs. 50.0th percentile', barWidth: 38, barColor: '#DC2626', textColor: 'text-rose-800' },
+            { val: '5.31 fewer / 100K (F = 111.20 strength check)', barWidth: 98, barColor: '#0041A5', textColor: 'text-[#003080]' }
           ]
         },
         {
-          label: 'Model Rule',
+          label: 'Rule for Using the Factor',
           cells: [
-            { val: 'ADD as baseline control' },
-            { val: 'LEAVE OPEN in total model' },
-            { val: 'DO NOT filter or control' },
-            { val: 'USE in Stage 1 only' }
+            { val: 'Adjust for as a pre-start factor' },
+            { val: 'Do not adjust when estimating total effect' },
+            { val: 'Report all past billers &amp; 2024 billers' },
+            { val: 'Use only in Stage 1 as an extra check' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. Decision Guide: When to Control, Leave Open, or Use Stage 1',
-      subtitle: 'Choosing model controls that match each variable\'s role in county health evaluations.',
-      caption: 'Decision grid mapping each variable role to its timing, model choice, budget impact, and audit rule.',
+      title: 'Table 2. Picking Model Controls Without Leaving Out Care Steps',
+      subtitle: 'How each factor\'s timing sets a model rule that cuts bias and keeps key records.',
+      caption: 'Table matching pre-start shared causes, post-start care steps, later record filters, and two-step checks to model rules.',
       cornerLabel: 'Choice Factor',
       colHeaders: [
-        { title: 'Confounder: Baseline Poverty', subtitle: 'Food access tract panel, N = 408 California urban census tracts (ACS); unit: tract' },
-        { title: 'Care Step: Primary Care Visits', subtitle: 'IMPaCT CHW RCTs / California CHW model (TOT estimates); unit: member' },
-        { title: 'Collider: Active Billing Subset', subtitle: 'N = 488,032 Medicaid billing NPIs; 55,018 active in 2024 (9 exclusions); unit: billing NPI' },
-        { title: 'Instrument: Supply-Side Shift', subtitle: '57 CA counties, 2003-2023 panel; unit: county-year' }
+        { title: 'Confounder: Tract Poverty', subtitle: '408 Santa Clara County census tracts (ACS)' },
+        { title: 'Care Step: Clinic Visits', subtitle: 'CHW randomized trials; patient level' },
+        { title: 'Filter: 2024 Billers', subtitle: '488,032 billers; 55,018 billing in 2024 (9 bans)' },
+        { title: 'Two-Step Data-Spread Check', subtitle: '57 CA counties, 2003-2016 13-yr changes' }
       ],
       rows: [
         {
-          label: 'Timing &amp; Path Check',
+          label: 'How to Spot the Role',
           cells: [
-            { val: 'Set before the program starts, such as baseline tract poverty (62.2% of food need gap).' },
-            { val: 'Changed by the program on the way to health gains, such as CHW clinic visits (+14.6 points).' },
-            { val: 'A post-billing status where 90.5% of excluded billers exited before 2024.' },
-            { val: 'Shifts county health spending in Stage 1 without a direct link to death rates.' }
+            { val: 'Measured before the program and accounts for 62.2% of food-need score differences.' },
+            { val: 'Changes after enrollment as CHW support raises clinic visits from 57.1% to 71.7%.' },
+            { val: 'Reflects later billing after 90.5% of later-banned billers stopped before 2024.' },
+            { val: 'Predicts county budget changes in Stage 1 rather than serving as an outcome control.' }
           ]
         },
         {
-          label: 'Model Choice by Role',
+          label: 'Right Model Rule',
           cells: [
-            { val: 'Add baseline poverty as a control so income gaps do not slant store distance slopes.' },
-            { val: 'Measure the CHW effect on hospital stays without controlling for post-start clinic visits.' },
-            { val: 'Keep the full provider list rather than limiting the test set to 2024 active billers.' },
-            { val: 'Put the budget shift in Stage 1 and report first-stage strength in the table notes.' }
+            { val: 'Adjust for poverty so differences linked to poverty are not assigned to store distance.' },
+            { val: 'Do not adjust for later visits when estimating the total reduction in hospital stays.' },
+            { val: 'Report all 487,479 past billers (0.724; 0.653 reweighted) beside 2024 billers (0.442).' },
+            { val: 'Compare the -5.31 check with the -4.32 13-year link (adj. p = 0.067) in study notes.' }
           ]
         },
         {
-          label: 'Budget Consequence',
+          label: 'Error When Misused',
           cells: [
-            { val: 'Skipping baseline controls can steer food grants toward high-income areas.' },
-            { val: 'Controlling for clinic visits removes the care path and understates CHW hospital savings.' },
-            { val: 'The 2024 active subset drops 86 of 95 excluded billers and falls below a coin-flip rank.' },
-            { val: 'Adding the Stage 1 shift as a control absorbs the clean spending changes.' }
+            { val: 'Leaving poverty out may wrongly assign poverty differences to store distance.' },
+            { val: 'Adjusting for later doctor visits can remove effects that occur through clinic care.' },
+            { val: 'Full-list scores overstate 2024 accuracy, while 2024-only filters leave out 86 bans.' },
+            { val: 'Treating two-step checks like trials overstates proof because causal rules are untestable.' }
           ]
         },
         {
-          label: 'Best-Fit Audit Rule',
+          label: 'Best-Fit Review Rule',
           policyFit: true,
           cells: [
-            { headline: 'Lock Pre-Program Controls', detail: 'Measure and control for background factors at baseline before enrollment starts.' },
-            { headline: 'Report Total Effect First', detail: 'Estimate the total program effect first, then show care-path shares in a second step.' },
-            { headline: 'Keep Full List Totals', detail: 'Run full-list checks before looking at active-biller or admitted-patient subsets.' },
-            { headline: 'Keep Instruments in Stage 1', detail: 'Use instruments only in Stage 1 and never add them as outcome controls.' }
+            { headline: 'Use Factors Before Start', detail: 'Measure income and age before program start so care cannot change those controls.' },
+            { headline: 'Estimate Total Effect First', detail: 'Report total hospital stay reductions before testing how much occurred through visits.' },
+            { headline: 'Compare All &amp; Current Billers', detail: 'Check stop-date reweighted full scores and 2024 biller scores before buying tools.' },
+            { headline: 'Keep Stage 1 as a Check', detail: 'Report two-step results only as extra checks beside county links (adj. p = 0.067).' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Over-Control Math, Collider &amp; Instrument Notes, Data Provenance',
+      notesTitle: 'Table 2 Notes: Clinic-Visit Effects, Group Rules, and Data Sources',
       notesBullets: [
-        '<strong>Mediator Over-Control Math:</strong> Suppose treatment X shifts care step M (M = α·X + u) and Y = β_direct·X + γ·M + ε. The total effect of X on Y is τ_total = β_direct + α·γ. Adding M as a control estimates only β_direct. The share removed is α·γ / τ_total. It reaches 100% only when β_direct = 0. The CAPHE CHW inputs (71.7% vs. 57.1%, OR = 1.90; -30% hospital stays) do not split those two pieces.',
-        '<strong>Separate Datasets (Mode A Synthesis):</strong> The four columns show roles using four separate CAPHE files. Values are observed base inputs from each file. They are not from one joint regression and should not be compared across columns.',
-        '<strong>Subgroup Selection Note:</strong> In the linked Medicaid file, the 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls) show an observed screening AUC of 0.442 (95% CI 0.212-0.664), compared with 0.724 (95% CI 0.667-0.777) across all 487,479 providers and 0.653 when exit-year reweighted. Months Active has a SHAP correlation of r = -0.9009, and excluded providers sit at the 38.0th vs. 50.0th median peer percentile of active months, though with 9 active cases the subgroup difference does not isolate early exit as the sole cause.',
-        '<strong>Instrument &amp; Unit Note:</strong> Instruments play a different role from controls. In the LHA panel (57 California counties, 2003-2023), long-difference Lewbel (2012) instruments isolate multi-year budget changes from residual endogeneity. The -5.31 deaths/100K per $10/capita Long-Difference 2SLS estimate (2003-2016, first-stage F = 111.20, Hansen J p = 0.2132; and -11.49 in 2003-2019 excl. 5 LGRS outliers, F = 13.09, J p = 0.4726) uses these instruments in Stage 1 of 2SLS rather than as outcome controls.',
-        '<strong>Data Provenance:</strong> Inputs come from FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv and regression_model_statistics.csv (R² = 62.2%), METHODOLOGICAL_REVIEW_ARTICLES_5-12.md (disability OR = 1.76), CHWs/08_PhD_Final/DERIVATIONS.md and Kangovi et al. (2020) (71.7% vs. 57.1% TOT, OR = 1.90, -30% hospital stays), Mcaid/05_fraud_detection/paper/output/results.json (prospective_auc = 0.724, active_subset_auc = 0.442, shap_months_active_r; peer ranks in output/tables/tab_a3_base_rates.tex), and public/tools/lha-calculator/methodology.html (-2.38 annual TWFE, -4.32 13-yr cumulative OLS, -5.31 Long-Difference 2SLS, F = 111.20, Hansen J p = 0.2132, 57 counties).'
+        '<strong>How Adjusting for Later Clinic Visits Changes the Estimate.</strong> In this model, X means program entry, M means primary care visits, and Y means hospital stays. The total effect combines the direct effect with any effect through visits (<code>&tau;_total = &beta;_direct + &alpha;&middot;&gamma;</code>). Adjusting for later visits M removes <code>&alpha;&middot;&gamma;</code>. Trials show CHWs raised primary care visits (71.7% vs. 57.1%, odds ratio 1.90) and cut hospital stays by 30%, though the exact share caused by visits requires added assumptions to measure.',
+        '<strong>Separate Data Sets and Common-Scale Estimate.</strong> Each column uses its own CAPHE study rather than one shared model. Across 408 Santa Clara County tracts, adjusting for poverty and putting measures on a common scale gives a store-distance estimate of -0.0026 (p = 0.827; -0.578 unadjusted and -0.017 in original units).',
+        '<strong>Past Billers vs. 2024 Billers.</strong> Across all 487,479 billers, the fraud test\'s AUC is 0.724 (95% range 0.667-0.777), compared with 0.653 after stop-date reweighting and 0.442 (95% range 0.212-0.664) among 55,018 providers still billing in 2024 (9 bans vs. 55,009 comparison billers; months billed ranked at the 38.0th vs. 50.0th peer percentile).',
+        '<strong>Checks on Stage 1 Predictors.</strong> Across 57 counties in 2003-2016, Lewbel\'s predictors created from differences in data spread get a first-step F-statistic of 111.20. That F-score tests Stage 1 prediction strength, not the untestable assumption that predictors affect deaths only through budgets. Hansen J gives p = 0.2132, and the check estimates 5.31 fewer deaths per 100,000 per $10 beside 2.38 yearly and 4.32 over 13 years (adjusted p = 0.067).',
+        '<strong>Data Sources.</strong> Results come from CAPHE Santa Clara tract tables, CHW trial summaries, Medicaid fraud test outputs, and LHA county spending files.'
       ]
     },
     synthesis: {
-      title: 'Why Mapping the System Path Comes Before Running the Model',
-      p1: 'Adding every health and income variable to a tract regression mixes pre-program income gaps with health steps that sit on the path between food and chronic disease. If a variable is a pre-program confounder (such as poverty explaining 62.2% of tract food-need variance), leaving it out slants the slope. If a variable is a post-start care step, such as a Community Health Worker linking a patient to primary care (raising visits from 57.1% to 71.7%, OR = 1.90) to prevent a hospital stay, controlling for clinic visits subtracts part of the program\'s gain.',
-      p2: 'Before running a model, health economists map each variable in a causal diagram. Confounders are shared causes measured before treatment, so analysts control for them. Care steps sit on the causal path, so analysts leave them open when measuring total impact. Colliders and post-outcome filters like active 2024 billing alter the evaluation sample (where the 2024 active subset shows an observed 0.442 AUC vs. 0.724 on the full list), so analysts avoid filtering on them. Instruments shift treatment with no direct link to the outcome, so analysts use them in Stage 1 (as the LHA 13-year routine-budget IV model does with F = 111.20).'
+      title: 'Why Factor Timing Comes Before Choosing Model Controls',
+      p1: 'Putting all columns into one model treats pre-start causes like care steps after start. A shared cause like neighborhood poverty exists before the factors it may affect. Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-need score differences. Before poverty adjustment, store distance is -0.578, vs. -0.017 after poverty adjustment. By contrast, clinic visits in CHW trials rise from 57.1% to 71.7% (odds ratio 1.90) alongside 30% fewer hospital stays.',
+      p2: 'Checking when each factor occurs keeps every column in its proper role. Analysts adjust for pre-start causes and do not adjust for later care steps when estimating total effects. Audit teams likewise show full-list fraud scores (0.724; 0.653 reweighted) beside 2024 billers (0.442 across 9 of 95 bans). County checks keep budget predictors in Stage 1 (first-step F = 111.20), not in outcome controls. If predictors affect deaths only through budgets, that check gives 5.31 fewer deaths per 100,000 beside 4.32 (adjusted p = 0.067).'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Synthesis on Observed Inputs):</strong> The role rules and model guide are a Mode A synthesis. The numbers in Table 1 (tract poverty R² = 62.2%; CHW primary care visits 71.7% vs. 57.1% TOT, OR = 1.90, and -30% hospital stays; Medicaid screening AUC = 0.724 full list vs. observed AUC = 0.442 in the 2024 active subset; LHA Long-Difference 2SLS -5.31, first-stage F = 111.20, Hansen J p = 0.2132) are observed outputs from four separate CAPHE files.',
-      '<strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", Sociological Methods &amp; Research</a>; <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), Health Affairs (IMPaCT CHW RCTs)</a>; <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES</a>; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; and <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>.'
+      '<strong>Data Sources: A Summary of Results From Separate Studies.</strong> These rules bring together findings from four separate CAPHE studies. First, Santa Clara tract models report 62.2% poverty variance share and -0.578 vs. -0.017 store-distance slopes. Second, CHW trials report 71.7% vs. 57.1% clinic visits (1.90 odds ratio) and 30% fewer hospital stays. Third, the Medicaid fraud test gives 0.724 on the full list vs. 0.442 in 55,018 current 2024 billers (9 of 95 bans). Fourth, 57-county checks give 5.31 fewer deaths per 100,000 (first-step F = 111.20; Hansen J p = 0.2132) beside 4.32 over 13 years (adjusted p = 0.067).',
+      '<strong>Primary References &amp; Data Sources.</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", Sociological Methods &amp; Research</a>; <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), Health Affairs</a>; <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), Journal of Business &amp; Economic Statistics</a>; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; and <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>.'
     ],
     faqs: [
       {
-        question: 'Why shouldn\'t an analyst control for post-start clinic visits when measuring whether CHWs cut hospital stays?',
-        answer: 'Raising primary care visits (from 57.1% to 71.7% TOT, OR = 1.90) is a main care step through which CHWs prevent hospital stays (-30%). Controlling for post-start clinic visits holds that step fixed. That blocks part of the program path and understates total CHW value.'
+        question: 'Why can adjusting for post-start clinic visits understate CHW hospital drops?',
+        answer: 'More clinic visits (rising from 57.1% to 71.7%, odds ratio 1.90) may help explain 30% fewer hospital stays. The trial did not measure that share alone. Adjusting for later visits aims to test effects apart from clinic care and needs added assumptions. So adjusting for visits can remove hospital drops that happen through primary care.'
       },
       {
-        question: 'How can an analyst tell whether a variable is a confounder or a care step?',
-        answer: 'Check the clock and the direction of cause. A confounder is set BEFORE the program starts (like baseline age, pre-program poverty, or county land area) and affects both participation and health. A care step changes AFTER the program starts because of the program.'
+        question: 'How can an analyst tell a baseline confounder from a post-start care step?',
+        answer: 'Check whether the factor existed before start or changed after the program began. A baseline confounder like pre-start poverty or age exists first and affects both entry and health. Adjusting for it can cut bias when model rules hold. By contrast, a care step changes after start and may cause part of the gain.'
       },
       {
-        question: 'What is an instrument, and why is it kept out of the outcome controls?',
-        answer: 'An instrument shifts the policy input (here, county public health spending) without a direct path to the health outcome. It enters Stage 1 of two-stage least squares to isolate spending shifts that are not driven by mortality shocks. In the LHA long-difference model of 57 California counties (2003-2016), the Lewbel instruments have a first-stage F of 111.20 and Hansen J p-value of 0.2132. Adding an instrument as an outcome control would absorb the clean spending variation.'
+        question: 'Why is the budget predictor used in the first step of the two-step model?',
+        answer: 'Two-step models assume the Stage 1 predictor affects death rates only through county spending. Adding it as an outcome control instead adjusts for budget changes that Stage 1 uses. Here, first-step F = 111.20 tests predictor strength, not whether that untestable causal rule holds. Because that rule cannot be tested directly, 5.31 stays an extra check beside 4.32 (adjusted p = 0.067).'
       }
     ],
     related: [
-      { slug: 'collider-bias', title: 'Active-Only Subsample Selection Bias', note: 'Case study on conditioning on active billers or admissions and rescaling precision to population base rates' },
-      { slug: 'reverse-causation-feedback', title: 'Needs-Driven Spending & Prevention ROI', note: 'Case study separating reverse causation from preventive health returns' },
-      { slug: 'chw-health-outcomes', title: 'Evaluating CHW Impact & Medi-Cal Billing', note: 'Flagship case study on 58-county California CHW clinical and fiscal outcomes' }
+      { slug: 'collider-bias', title: 'Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early', note: 'Case study on 2024-biller record selection and full-list alert-rate adjustments' },
+      { slug: 'reverse-causation-feedback', title: 'Combining Pandemic Aid With Routine County Health Budgets Mixes Relief Grants With Pre-2020 Links', note: 'Case study separating 2020-2023 relief grants from pre-2020 county spending links' },
+      { slug: 'chw-health-outcomes', title: 'Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs', note: 'Case study on 58-county California Community Health Worker clinical trials and payer savings' }
     ]
   },
 
   // =========================================================================
-  // MODULE #30: sensitivity-analysis-cea (Track 4, member)
+  // MODULE #30: sensitivity-analysis-cea (Track 4, public)
   // =========================================================================
   {
     slug: 'sensitivity-analysis-cea',
     tetsCompanion: [
       {
-        visibleLabel: 'Public Health Spending Regime Analysis',
+        visibleLabel: 'County Health Spending by Period',
         title: 'Public Health Spending: When Emergency Aid Flips the Sign',
         url: 'https://tooearlytosay.com/research/health-policy/public-health-spending-regime-shifts/',
-        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 county-years), each dollar per capita corresponds to -0.238 fewer deaths per 100,000 in 2003 to 2019 versus +0.247 in 2020 to 2023.'
+        claimCovered: 'Across 57 California counties from 2003 to 2023 (1,163 yearly county records), each extra dollar spent per person links with -0.238 deaths per 100,000 in 2003 to 2019. In 2020 to 2023, it links with +0.247 deaths per 100,000.'
       },
       {
-        visibleLabel: 'Statewide CHW Reimbursement Analysis',
+        visibleLabel: 'California Care Worker Pay Analysis',
         title: 'Why Flat Medi-Cal Rates Underfund Community Health Care',
         url: 'https://tooearlytosay.com/research/health-policy/chw-spatial-financing-medi-cal/',
-        claimCovered: 'Across 58 California counties and 9,039 census tracts, a flat $31.74 Medi-Cal fee schedule covers 3.2% to 8.9% of modeled field community health worker costs.'
+        claimCovered: 'Across 58 California counties and 9,039 census tracts, a fixed $31.74 Medi-Cal fee covers 3.2% to 8.9% of modeled field care worker costs.'
       }
     ],
     tier: 'public',
-    trackEyebrow: 'Track 4: System Dynamics &amp; Feedback &middot; VSL Tiers &amp; Parameter Uncertainty (Mode A Scenario Grid)',
-    pageTitle: 'Sensitivity Analysis in Funding Choices | CAPHE',
-    metaDescription: 'Test California\'s county public health benefit-cost ratio across HHS 2025 VSL tiers ($6.3M-$20.7M, 15:1 to 89:1 return) and CHW cost-capture cases.',
-    h1: 'Modeled County Public Health Prevention Clears Cost-Neutral Thresholds Across All Federal Valuation Standards',
-    subtitle: 'Testing modeled returns across low, middle, and high federal life value tiers. Checking both point estimates and lower bounds.',
+    trackEyebrow: 'Track 4: Costs, Benefits &amp; Tested Ranges &middot; Death-Risk Values &amp; Payments by Payer',
+    pageTitle: 'Death-Risk Dollar Values & County Links | CAPHE',
+    metaDescription: 'Compare federal death-risk values ($6.3M-$20.7M; 15:1-89:1 if county links are causal) next to separate Community Health Worker payment and savings cases.',
+    h1: 'County Health Spending Links Show Higher Value Than Cost Under Three Federal Rates If Causal',
+    subtitle: 'Testing death-risk dollar values for pre-2020 county links, if causal, next to clinic pay offsets.',
     endnotes: [
-      '<strong>Federal Value of a Statistical Life (VSL) Tiers (2025):</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 Guidelines for Regulatory Impact Analysis</a> ($6.3M Low, $13.6M Central, and $20.7M High VSL tiers; <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">EPA VSL</a> benchmark $11.2M = 26.7:1 annual and 48.4:1 cumulative).',
-      '<strong>California County Public Health Mortality Reduction, Bounds &amp; Exposure Horizons:</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology (Cholette et al., 2026)</a> evaluates both the annual pre-pandemic TWFE slope of -2.38 deaths/100K per $10/capita (95% CI -3.91 to -0.85; $420,168 per life saved, 15.0:1 to 49.3:1 across HHS tiers, and 5.4:1 at the joint lower bound) and the 13-year cumulative long-difference slope of -4.32 deaths/100K per $10/capita (95% CI -7.34 to -1.30; $231,481 per life saved, 27.2:1 to 89.4:1 across HHS tiers, and 8.2:1 at the joint lower bound).',
-      '<strong>California CHW Cost-Capture Scenarios:</strong> <a href="https://www.dhcs.ca.gov/formsandpubs/laws/Pages/CalAIM-SPA.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a> fee-for-service reimbursement (6.5% to 9.8% wage capture) vs. inpatient/emergency cost offsets ($285,900/yr vs. $98,469/yr wage) and net cost per healthy year gained ($7,771/QALY at +8.18 QALYs over 2 years).'
+      '<strong>Federal Death-Risk Values (2025).</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE 2025 Guidelines for Regulatory Impact Analysis</a> set low ($6.3M), middle ($13.6M), and high ($20.7M) Value of a Statistical Life (VSL) rates. Using the <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. EPA VSL</a> of $11.2M implies $26.70 per $1 (26.7:1) yearly and $48.40 (48.4:1) over 13 years if spending caused fewer deaths (13-year adjusted p = 0.067, above 0.05).',
+      '<strong>County Death-Rate Links and Uncertainty Ranges.</strong> <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology (Cholette et al., 2026)</a> reports the pre-2020 yearly county link of 2.38 fewer deaths per 100,000 per $10 (unadjusted 95% range -3.91 to -0.85). If causal, cost per death avoided is $420,168, giving 15.0:1 to 49.3:1 across HHS values and 5.4:1 in the unadjusted low case. Over 13-year changes, the link is 4.32 fewer deaths (unadjusted p = 0.0052; adjusted p = 0.067, above 0.05; unadjusted 95% range -7.34 to -1.30). If causal, cost per death avoided is $231,481, giving 27.2:1 to 89.4:1 across HHS values (adjusted p = 0.067) and 8.2:1 using the unadjusted -1.30 bound.',
+      '<strong>Payments and Savings Compared With Care Worker Costs.</strong> <a href="https://www.dhcs.ca.gov/formsandpubs/laws/Pages/CalAIM-SPA.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS SPA 22-0001</a> per-visit fees pay $6,775 to $10,162 per year (6.5% to 9.8% of a $103,719 worker position). By contrast, Medi-Cal plan hospital savings equal $107,006 (103.2%) and hospital savings across all payers equal $291,171 (280.7%).'
     ],
-    policySettingHtml: 'County boards and budget officers ask whether a public health program still pays off under cautious assumptions. Federal agencies publish low, middle, and high dollar values for each saved life alongside different hospital savings rules. Checking program returns across all of those cases shows which funding choices stay above breakeven.',
-    answerHtml: 'Across all <strong>three federal tiers ($6.3M, $13.6M, and $20.7M per life)</strong>, California county public health spending yields a modeled <strong>15.0:1 to 49.3:1</strong> annual return at <strong>-2.38 deaths per 100,000</strong> and a <strong>27.2:1 to 89.4:1</strong> cumulative return at <strong>-4.32 deaths per 100,000</strong> [1,2]. Using one middle number (<strong>32.4:1 annual or 58.8:1 cumulative at $13.6M</strong>) leaves a plan open to debate over one input [2]. Showing that the lowest joint bound still yields <strong>5.4:1 annually</strong> (<strong>8.2:1 cumulatively</strong>) confirms that the spending pays off under every federal rule [3].',
+    policySettingHtml: 'In county budget talks, boards ask how dollar estimates change under stricter inputs. A one-way test changes one input at a time, such as using a lower federal value per death avoided. A joint test changes two inputs at once. Here, it pairs the smallest death drop in the unadjusted 95% range with the lowest federal rate. Showing all cases beside separate worker fees and savings helps boards see what matters.',
+    answerHtml: 'Health and Human Services (HHS) sets three rates: <strong>$6.3M</strong>, <strong>$13.6M</strong>, and <strong>$20.7M</strong> per Value of a Statistical Life (VSL) [1]. VSL puts a dollar rate on small death-risk drops summing to one expected death [1]. Pre-2020 county links ($10 per resident) give dollar value only if spending caused fewer deaths, not cash [1,2]. At <strong>2.38</strong> fewer deaths per 100,000 per year (<strong>$420,168</strong> per death if causal), ratios span <strong>15.0:1</strong> to <strong>49.3:1</strong> (<strong>32.4:1</strong> middle) [2]. Over 13 years, <strong>4.32</strong> fewer deaths (adjusted <em>p</em> = 0.067, above 0.05) gives <strong>$231,481</strong> and <strong>27.2:1 to 89.4:1</strong> (<strong>58.8:1</strong> middle) if causal [2]. Pairing 0.85 from the unadjusted range with $6.3M gives <strong>5.4:1</strong> if causal [2]. Separately, worker fees pay <strong>$6,775</strong> to <strong>$10,162</strong>, while plan and hospital savings reach <strong>$107,006</strong> and <strong>$291,171</strong> [3].',
     block2: {
-      title: 'Two Valuation Rulers: Single Central Point Estimate vs. HHS VSL Range',
-      contextTag: 'Mode A Scenario Grid Built on Observed Effect Estimates and Published HHS 2025 VSL Tiers',
-      ariaLabel: 'Comparison of a single central point estimate of 32.4 to 1 annual and 58.8 to 1 cumulative at the $13.6M HHS central VSL versus the HHS VSL range of $6.3M to $20.7M',
+      title: 'One Dollar Value vs. Tested Range of Federal Values',
+      contextTag: 'Estimates Using Pre-2020 County Links and 2025 HHS Dollar Values, Assuming Spending Caused Fewer Deaths',
+      ariaLabel: 'Comparison of a single middle ratio at $13.6M VSL versus the full HHS VSL range from $6.3M to $20.7M',
       ruler1: {
-        title: 'Ruler 1: Single Central Point Estimate ($13.6M VSL)',
-        stat: '32.4 : 1 (Annual) | 58.8 : 1 (13-Yr Cumulative)',
-        ariaLabel: 'At the point estimate of -2.38 annual and -4.32 cumulative deaths per 100,000, cost per statistical life is $420,168 annually or $231,481 cumulatively, yielding a 32.4 to 1 or 58.8 to 1 benefit-cost ratio at the $13.6M HHS central VSL',
+        title: 'Middle Federal Value Only ($13.6M, If Causal)',
+        stat: '32.4:1 (Yearly) | 58.8:1 (13-Yr, adj. p = 0.067)',
+        ariaLabel: 'Ratios of 32.4 to 1 yearly and 58.8 to 1 over 13 years with adjusted p = 0.067, assuming cause and effect',
         segments: [
-          { cls: 'seg-primary', width: 66, label: 'Central: -2.38 Yr (32.4:1) & -4.32 Cumul. (58.8:1) at $13.6M' },
-          { cls: 'seg-rest', width: 34, label: 'Range Not Shown' }
+          { cls: 'seg-primary', width: 66, label: 'Middle $13.6M: 32.4:1 / 58.8:1 (adj. p=0.067)' },
+          { cls: 'seg-rest', width: 34, label: 'Other Rates Omitted' }
         ],
-        desc: 'Holding the effect at <strong>-2.38 deaths/100K annually ($420,168 per life)</strong> or <strong>-4.32 cumulatively ($231,481 per life)</strong> and using the HHS central <strong>$13.6M</strong> gives one number: <strong>32.4:1</strong> (or <strong>58.8:1</strong>). Debate over one value input can then stall the budget choice.'
+        desc: 'Reporting only one VSL ratio can focus board talks on a single federal dollar rate instead of causal evidence.'
       },
       ruler2: {
-        title: 'Ruler 2: HHS VSL Range ($6.3M-$20.7M Across Annual &amp; Cumulative Horizons)',
-        stat: '15.0:1 to 49.3:1 (Yr) | 27.2:1 to 89.4:1 (13-Yr)',
-        ariaLabel: 'Across HHS 2025 VSL tiers, the annual benefit-cost ratio spans 15.0 to 1 through 49.3 to 1 and the 13-year cumulative ratio spans 27.2 to 1 through 89.4 to 1',
+        title: 'All Three HHS Values and Unadjusted Low Case ($6.3M-$20.7M, If Causal)',
+        stat: '5.4:1 Unadjusted Case | 15.0:1 to 89.4:1 Main Range (13-yr adj. p = 0.067)',
+        ariaLabel: 'Range from 5.4 to 1 in the unadjusted yearly case through 89.4 to 1 across HHS VSL rates',
         segments: [
-          { cls: 'seg-gross', width: 30, label: 'Low $6.3M: 15.0:1 / 27.2:1' },
-          { cls: 'seg-primary', width: 36, label: 'Central $13.6M: 32.4:1 / 58.8:1' },
-          { cls: 'seg-food', width: 34, label: 'High $20.7M: 49.3:1 / 89.4:1' }
+          { cls: 'seg-gross', width: 30, label: 'Low $6.3M: 15.0:1 / 27.2:1 (adj. p=0.067)' },
+          { cls: 'seg-primary', width: 36, label: 'Middle $13.6M: 32.4:1 / 58.8:1 (adj. p=0.067)' },
+          { cls: 'seg-food', width: 34, label: 'High $20.7M: 49.3:1 / 89.4:1 (adj. p=0.067)' }
         ],
-        desc: 'Varying the HHS 2025 VSL tier moves the annual ratio from <strong>15.0:1 ($6.3M Low)</strong> through <strong>32.4:1 ($13.6M Central)</strong> to <strong>49.3:1 ($20.7M High)</strong> (and <strong>27.2:1 to 89.4:1</strong> over 13-year cumulative horizons). Every tier stays far above the <strong>1.0:1 cost-neutral line</strong>.'
+        desc: 'If spending caused fewer deaths, main estimates span 15.0:1 to 89.4:1 across HHS values (13-year adjusted p = 0.067, above 0.05), and the unadjusted low case is 5.4:1 per year.'
       }
     },
     table1: {
-      title: 'Table 1. Four Value and Cost Recovery Cases Across HHS 2025 Tiers',
-      subtitle: 'Unit A rows value county spending across annual and 13-year cumulative horizons. Unit B rows show CHW cost recovery per worker.',
-      caption: 'Four-column grid comparing the Joint Floor, Low VSL, Central VSL, and High VSL cases for county spending, with CHW cost recovery shown in separate rows.',
-      cornerLabel: 'Case Input',
-      footnote: '<strong class="text-slate-800">Table 1 Notes (Mode A Scenario Grid on Mode B Inputs &amp; Exposure Horizons):</strong> Unit A and Unit B are never multiplied or summed. In Unit A, the annual pre-pandemic TWFE OLS slope is -2.38 deaths per 100,000 per $10/capita (SE = 0.78, 95% CI -3.91 to -0.85; cost per life = $10 × 100,000 / |β_10| = $420,168 at -2.38 and $1,176,471 at the -0.85 lower 95% CI bound), yielding 5.4:1 at the joint floor and 15.0:1 to 49.3:1 across HHS tiers. Over the 13-year cumulative long-difference horizon (-4.32 per 100,000 per $10/capita, SE = 1.54, 95% CI -7.34 to -1.30), cost per life is $231,481 at -4.32 ($769,231 at the -1.30 lower bound), yielding 8.2:1 at the joint floor and 27.2:1 to 89.4:1 across HHS tiers.',
+      title: 'Table 1. Death-Risk Dollar Estimates (If Causal) and Separate Care Worker Costs',
+      subtitle: 'Top rows apply federal rates to 57-county death links if causal. Bottom rows compare worker costs, fees, and savings.',
+      caption: 'Four columns compare an unadjusted low case with low, middle, and high federal dollar values alongside separate care worker cost rows.',
+      cornerLabel: 'Tested Case',
+      footnote: '<strong class="text-slate-800">Table 1 Notes (Separate Programs and How Estimates Are Calculated).</strong> County rows (Unit A) and Community Health Worker rows (Unit B) measure separate programs and are never added together. In Unit A, dollar figures apply only if $10 more per resident caused fewer deaths. The pre-2020 yearly link is -2.38 deaths per 100,000 per $10 (SE = 0.78 per $10, unadjusted 95% range -3.91 to -0.85). If causal, cost per death avoided is $420,168 at -2.38 ($1,176,471 at -0.85), giving 5.4:1 in the unadjusted case and 15.0:1 to 49.3:1 across HHS values. Over 13-year changes (-4.32 per $10, SE = 1.54 per $10, unadjusted p = 0.0052, adjusted p = 0.067, unadjusted 95% range -7.34 to -1.30), cost per death avoided is $231,481 at -4.32 ($769,231 at -1.30), giving 8.2:1 in the unadjusted case and 27.2:1 to 89.4:1 across HHS values. Because adjusted p = 0.067 is above the 0.05 cutoff, the -1.30 and 8.2:1 figures use the unadjusted range rather than an adjusted lower limit.',
       columns: [
-        { tag: 'Case 1: Joint Floor', tagHighlight: true, title: 'Low Effect Bound + Low Life Value', subtitle: 'Societal &amp; Clinic | -0.85 Yr / -1.30 Cumul &amp; $6.3M | CHW FFS, 213 Units' },
-        { tag: 'Case 2: Conservative', tagHighlight: false, title: 'Main Effect + Low Life Value', subtitle: 'Societal &amp; Clinic | -2.38 Yr / -4.32 Cumul &amp; $6.3M | CHW FFS, 320 Units' },
-        { tag: 'Case 3: Central', tagHighlight: true, title: 'Main Effect + Middle Life Value', subtitle: 'Societal &amp; Plan | -2.38 Yr / -4.32 Cumul &amp; $13.6M | CHW Plan Offsets' },
-        { tag: 'Case 4: Upper Tier', tagHighlight: false, title: 'Main Effect + High Life Value', subtitle: 'Societal &amp; System | -2.38 Yr / -4.32 Cumul &amp; $20.7M | CHW System Offsets' }
+        { tag: 'Case 1: Unadjusted Low Case', tagHighlight: true, title: 'Unadjusted 95% Range + Low Rate', subtitle: '0.85 yr / 1.30 13-yr unadj. range (adj. p = 0.067) &amp; $6.3M | 213 billable units' },
+        { tag: 'Case 2: Low Federal Rate', tagHighlight: false, title: 'Main Estimate + Low Rate', subtitle: '2.38 yr / 4.32 13-yr (adj. p = 0.067) &amp; $6.3M | 320 billable units' },
+        { tag: 'Case 3: Middle Federal Rate', tagHighlight: true, title: 'Main Estimate + Middle Rate', subtitle: '2.38 yr / 4.32 13-yr (adj. p = 0.067) &amp; $13.6M | Medi-Cal plan savings' },
+        { tag: 'Case 4: High Federal Rate', tagHighlight: false, title: 'Main Estimate + High Rate', subtitle: '2.38 yr / 4.32 13-yr (adj. p = 0.067) &amp; $20.7M | All-payer hospital savings' }
       ],
       rows: [
         {
-          label: 'Deaths Averted per 100,000',
+          label: 'Fewer Deaths per 100K per $10',
           cells: [
-            { val: '0.85 yr | 1.30 cumul fewer (low CI)' },
-            { val: '2.38 yr | 4.32 cumul fewer (main)' },
-            { val: '2.38 yr | 4.32 cumul fewer (main)' },
-            { val: '2.38 yr | 4.32 cumul fewer (main)' }
+            { val: '0.85 yr | 1.30 cumul fewer (unadj. range)' },
+            { val: '2.38 yr | 4.32 cumul fewer (main, adj. p=0.067)' },
+            { val: '2.38 yr | 4.32 cumul fewer (main, adj. p=0.067)' },
+            { val: '2.38 yr | 4.32 cumul fewer (main, adj. p=0.067)' }
           ]
         },
         {
-          label: 'Assumed Federal Life Value Tier (Model Input)',
+          label: 'Federal Death-Risk Value (Input)',
           cells: [
-            { val: '$6.3M (HHS Low)' },
-            { val: '$6.3M (HHS Low)' },
-            { val: '$13.6M (HHS Central)' },
-            { val: '$20.7M (HHS High)' }
+            { val: '$6.3M (HHS Low Rate)' },
+            { val: '$6.3M (HHS Low Rate)' },
+            { val: '$13.6M (HHS Middle Rate)' },
+            { val: '$20.7M (HHS High Rate)' }
           ]
         },
         {
-          label: 'Cost per Life (Annual | 13-Yr)',
+          label: 'Cost per Death Avoided (If Causal)*',
           modeled: true,
           cells: [
-            { val: '$1,176,471 (Yr) | $769,231 (13-Yr)' },
-            { val: '$420,168 (Yr) | $231,481 (13-Yr)' },
-            { val: '$420,168 (Yr) | $231,481 (13-Yr)' },
-            { val: '$420,168 (Yr) | $231,481 (13-Yr)' }
+            { val: '$1,176,471 (Yr) | $769,231 (13-Yr unadj.)' },
+            { val: '$420,168 (Yr) | $231,481 (13-Yr, adj. p=0.067)' },
+            { val: '$420,168 (Yr) | $231,481 (13-Yr, adj. p=0.067)' },
+            { val: '$420,168 (Yr) | $231,481 (13-Yr, adj. p=0.067)' }
           ]
         },
         {
-          label: 'Return per $1 Spent (Annual | 13-Yr)',
+          label: 'Estimated Value per $1 (If Causal)*',
           modeled: true,
           highlight: true,
           cells: [
-            { val: '5.4:1 (Yr) | 8.2:1 (13-Yr)', barWidth: 9, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '15.0:1 (Yr) | 27.2:1 (13-Yr)', barWidth: 30, barColor: '#0041A5', textColor: 'text-[#003080]' },
-            { val: '32.4:1 (Yr) | 58.8:1 (13-Yr)', barWidth: 66, barColor: '#0D9488', textColor: 'text-emerald-800' },
-            { val: '49.3:1 (Yr) | 89.4:1 (13-Yr)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
+            { val: '5.4:1 (Yr) | 8.2:1 (13-Yr unadj.)', barWidth: 9, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '15.0:1 (Yr) | 27.2:1 (13-Yr, adj. p=0.067)', barWidth: 30, barColor: '#0041A5', textColor: 'text-[#003080]' },
+            { val: '32.4:1 (Yr) | 58.8:1 (13-Yr, adj. p=0.067)', barWidth: 66, barColor: '#0D9488', textColor: 'text-emerald-800' },
+            { val: '49.3:1 (Yr) | 89.4:1 (13-Yr, adj. p=0.067)', barWidth: 100, barColor: '#0D9488', textColor: 'text-emerald-800' }
           ]
         },
         {
-          label: 'Statewide 57-County Value ($10 Scale)',
+          label: '57-County $10/Person Total (If Causal)*',
           modeled: true,
           cells: [
-            { val: '332 yr | 507 cumul lives ($2.1B-$3.2B)' },
-            { val: '928 yr | 1,685 cumul lives ($5.8B-$10.6B)' },
-            { val: '928 yr | 1,685 cumul lives ($12.6B-$22.9B)' },
-            { val: '928 yr | 1,685 cumul lives ($19.2B-$34.9B)' }
+            { val: '332 yr | 507 13-yr deaths ($2.1B-$3.2B)' },
+            { val: '928 yr | 1,685 13-yr deaths ($5.8B-$10.6B)' },
+            { val: '928 yr | 1,685 13-yr deaths ($12.6B-$22.9B)' },
+            { val: '928 yr | 1,685 13-yr deaths ($19.2B-$34.9B)' }
           ]
         },
         {
-          label: 'Assumed CHW Billing &amp; Offset Case (Model Input)',
+          label: 'Separate Worker Cost Case ($103,719)*',
           modeled: true,
           cells: [
-            { val: '$6,775 (visit bills, 213 units)' },
-            { val: '$10,162 (visit bills, 320 units)' },
-            { val: '$107,006 (Medi-Cal plan offsets)' },
-            { val: '$291,171 (system hospital offsets)' }
+            { val: '$6,775 (213 billable service units)' },
+            { val: '$10,162 (320 billable service units)' },
+            { val: '$107,006 (Medi-Cal plan savings)' },
+            { val: '$291,171 (all-payer hospital savings)' }
           ]
         },
         {
-          label: 'CHW Cost Recovery Ratio',
+          label: 'Payments or Savings vs. Worker Cost*',
           modeled: true,
           cells: [
-            { val: '0.07 : 1 (6.5% of cost)' },
-            { val: '0.10 : 1 (9.8% of cost)' },
-            { val: '1.03 : 1 (103.2% of cost)' },
-            { val: '2.81 : 1 (280.7% of cost)' }
+            { val: '0.07 : 1 (6.5% of worker cost)' },
+            { val: '0.10 : 1 (9.8% of worker cost)' },
+            { val: '1.03 : 1 (103.2% of worker cost)' },
+            { val: '2.81 : 1 (280.7% of worker cost)' }
           ]
         }
       ]
     },
     table2: {
-      title: 'Table 2. How Sensitivity Analysis Turns Input Debates into Funding Choices',
-      subtitle: 'Showing which inputs change the return, and which keep it above 1.0:1, focuses budget talks.',
-      caption: 'Decision grid showing the question each case answers, distance from the 1.0:1 line, multi-way checks, and budget steps.',
+      title: 'Table 2. Keeping Death-Risk Values Apart From Causal Checks and Pay Rules',
+      subtitle: 'How death-risk dollar rates, if causal, differ from care worker fees and hospital stay savings.',
+      caption: 'The table shows who receives benefits or payments in each case, how benefits compare with costs, and how counties can fund workers.',
       cornerLabel: 'Choice Factor',
       colHeaders: [
-        { title: 'Case 1: Joint Floor', subtitle: 'Unit A: 57-county LHA spending (-0.85 yr / -1.30 cumul, $6.3M life value); Unit B: one CHW FTE/year, $103,719 statewide cost (FFS, 213 units)' },
-        { title: 'Case 2: Low Life Value', subtitle: 'Unit A: 57-county LHA spending (-2.38 yr / -4.32 cumul, $6.3M life value); Unit B: one CHW FTE/year, $103,719 statewide cost (FFS, 320 units)' },
-        { title: 'Case 3: Middle Life Value', subtitle: 'Unit A: 57-county LHA spending (-2.38 yr / -4.32 cumul, $13.6M life value); Unit B: one CHW FTE/year, $103,719 statewide cost (payer offsets)' },
-        { title: 'Case 4: High Life Value', subtitle: 'Unit A: 57-county LHA spending (-2.38 yr / -4.32 cumul, $20.7M life value); Unit B: one CHW FTE/year, $103,719 statewide cost (societal offsets)' }
+        { title: 'Case 1: Unadjusted Low Case', subtitle: 'Unit A: unadjusted 95% range (-0.85 yr / -1.30 13-yr, adj. p = 0.067, $6.3M); Unit B: 213 billable units ($103,719 cost)' },
+        { title: 'Case 2: Low Federal Rate', subtitle: 'Unit A: main link (-2.38 yr / -4.32 13-yr, adj. p = 0.067, $6.3M); Unit B: 320 billable units' },
+        { title: 'Case 3: Middle Federal Rate', subtitle: 'Unit A: main link (-2.38 yr / -4.32 13-yr, adj. p = 0.067, $13.6M); Unit B: Medi-Cal plan savings' },
+        { title: 'Case 4: High Federal Rate', subtitle: 'Unit A: main link (-2.38 yr / -4.32 13-yr, adj. p = 0.067, $20.7M); Unit B: all-payer hospital savings' }
       ],
       rows: [
         {
           label: 'Where the Return Shows Up',
           cells: [
-            { val: 'Communities gain saved lives at the $6.3M floor while clinics recover 6.5% via FFS.' },
-            { val: 'Communities gain saved lives at the $6.3M life-value tier while clinics recover 9.8% via FFS.' },
-            { val: 'Communities gain saved lives at the $13.6M life-value tier while Medi-Cal plans recover 103.2% of CHW pay.' },
-            { val: 'Communities gain saved lives at the $20.7M life-value tier while hospital systems save 280.7% of CHW pay.' }
+            { val: 'Resident value uses $6.3M in this unadjusted case; clinics receive 6.5% of worker cost.' },
+            { val: 'Resident value uses $6.3M if causal; clinics receive 9.8% of worker cost at 320 units.' },
+            { val: 'Resident value uses $13.6M if causal; hospital savings equal 103.2% of cost for plans.' },
+            { val: 'Resident value uses $20.7M if causal; hospital savings across payers equal 280.7% of cost.' }
           ]
         },
         {
-          label: 'Which Question This Case Answers',
+          label: 'Inputs Tested in Each Case',
           cells: [
-            { val: 'Tests the low effect bound at the $6.3M life-value tier and 213 CHW visit units.' },
-            { val: 'Tests the main effect at the $6.3M life-value tier and 320 CHW visit units.' },
-            { val: 'Tests the annual and 13-yr effects at the $13.6M life-value tier with plan offsets.' },
-            { val: 'Tests the $20.7M high life-value tier alongside full system hospital savings.' }
+            { val: 'Pairs the unadjusted 95% range bound with the $6.3M federal rate.' },
+            { val: 'Keeps the main death-rate estimate and uses the low federal rate of $6.3M.' },
+            { val: 'Applies the $13.6M middle rate to yearly (-2.38) and 13-year (-4.32, adj. p = 0.067) links.' },
+            { val: 'Applies the $20.7M rate to county results and reports hospital savings across payers.' }
           ]
         },
         {
-          label: 'Distance From the 1.0:1 Line',
+          label: 'Benefits Compared With Costs',
           cells: [
-            { val: 'County spending returns 5.4:1 annually (8.2:1 cumulatively), while CHW visit billing covers 6.5% of pay.' },
-            { val: 'County spending returns 15.0:1 annually (27.2:1 cumulatively), while CHW visit billing covers 9.8% of pay.' },
-            { val: 'County spending returns 32.4:1 annually (58.8:1 cumulatively), and CHW plan offsets return 1.03:1.' },
-            { val: 'County spending returns 49.3:1 annually (89.4:1 cumulatively), and CHW hospital savings return 2.81:1.' }
+            { val: 'Unadjusted case gives 5.4:1 yr (8.2:1 unadj. 13-yr; adj. p = 0.067); fees pay 6.5%, leaving 93.5% unpaid.' },
+            { val: 'If causal, links give 15.0:1 (27.2:1 13-yr, adj. p = 0.067); fees pay 9.8%, leaving 90.2% unpaid.' },
+            { val: 'If causal, links give 32.4:1 (58.8:1 13-yr, adj. p = 0.067); plan savings reach 1.03:1.' },
+            { val: 'If causal, links give 49.3:1 (89.4:1 13-yr, adj. p = 0.067); all-payer savings reach 2.81:1.' }
           ]
         },
         {
-          label: 'Why Multi-Way Checks Help Here',
+          label: 'What These Tests Show',
           cells: [
-            { val: 'Varying the effect and life-value tier together still clears the 1.0:1 line by 5.4 to 1 annually and 8.2 to 1 cumulatively.' },
-            { val: 'Varying the life-value tier alone spans 15.0:1 to 49.3:1 annually (27.2:1 to 89.4:1 cumulatively).' },
-            { val: 'Matching both HHS $13.6M and EPA $11.2M rules fits federal grant forms.' },
-            { val: 'Keeping Unit A and Unit B apart avoids mixing per-worker and per-resident scales.' }
+            { val: 'Estimated value exceeds cost at all federal rates if causal; 13-yr adj. p = 0.067 exceeds 0.05.' },
+            { val: 'Raising billable service units 50% (213 to 320) raises paid worker costs only from 6.5% to 9.8%.' },
+            { val: 'Showing $6.3M to $20.7M rates beside adj. p = 0.067 keeps uncertainty clear.' },
+            { val: 'Keeping death-risk values separate from worker payments avoids adding distinct dollars.' }
           ]
         },
         {
           label: 'Best-Fit Budget Rule',
           policyFit: true,
           cells: [
-            { headline: 'Lead With the Joint Floor', detail: 'Grant the lowest life-value tier and lower effect bound together to show a 5.4:1 annual (8.2:1 cumulative) return.' },
-            { headline: 'Show the Full HHS Range', detail: 'Pair the 32.4:1 annual (58.8:1 cumulative) central ratio with the full HHS life-value range.' },
-            { headline: 'Use Central HHS Tier as Base', detail: 'Anchor county benefit-cost memos in the $13.6M HHS Central tier at 32.4:1 annual and 58.8:1 cumulative.' },
-            { headline: 'Split Cash Capture From Health Value', detail: 'Report CHW visit billing and plan savings apart from saved-life values.' }
+            { headline: 'State Causal &amp; Range Rules', detail: 'State VSL ratios assume cause and label Case 1 (5.4:1 yr; 8.2:1 unadj.) as unadjusted.' },
+            { headline: 'Use Plan Contracts Over Quotas', detail: 'Do not rely on higher visit quotas when fixed fees pay under 10% of worker cost.' },
+            { headline: 'Show Rates With adj. p = 0.067', detail: 'Show $6.3M-$20.7M ratios (58.8:1 at 13 yrs) beside adj. p = 0.067 (above 0.05).' },
+            { headline: 'Keep Cash &amp; VSL Tables Apart', detail: 'Fund workers through health plan contracts and keep VSL tables separate if causal.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Scenario Inputs, Benefit-Cost Formula, Exposure Horizons &amp; Fencing',
+      notesTitle: 'Table 2 Notes: Inputs, Calculations, Time Spans, and Separate Measures',
       notesBullets: [
-        '<strong>Inputs (Observed and Published):</strong> Mode B empirical coefficients (-2.38 annual TWFE per $10/capita, SE = 0.78, 95% CI [-3.91, -0.85]; -4.32 13-year cumulative long-difference OLS per $10/capita, SE = 1.54, 95% CI [-7.34, -1.30]; -5.31 Long-Difference Lewbel 2SLS) from src/frontend/js/lha-calculator.js, public/tools/lha-calculator/methodology.html, and Value_of_Public_Health/paper/ajph_submission.tex. Published HHS 2025 VSL schedule ($6.3M / $13.6M / $20.7M) and EPA VSL ($11.2M). CHW cost-capture inputs ($103,719 statewide loaded FTE cost; $6,775 to $10,162 direct FFS billing at 213 to 320 units under DHCS SPA 22-0001; $107,006 Medi-Cal payer offsets; $291,171 societal hospital offsets) from the CHW case study (scripts/build_wave2_flagships.js) and CHWs/08_PhD_Final/DERIVATIONS.md.',
-        '<strong>Benefit-Cost Formula &amp; Exposure Horizons (Mode A Scenario Grid, Unit A):</strong> On the LHA Calculator $10/capita scale (src/frontend/js/lha-calculator.js: coefficientPer10 = -2.38 annual, cumulativeCoefficientPer10 = -4.32), BCR(β_10, VSL) = (|β_10| / 100,000) × VSL / $10. Annual central case (|β_10| = 2.38, VSL = $13.6M): BCR = 0.0000238 × $13,600,000 / $10 = 32.4 (joint floor at |β_10| = 0.85, VSL = $6.3M: 5.4; cost-neutral |β_10*| at $13.6M = 0.0735 deaths/100K per $10/capita). Over the 13-year cumulative horizon (|β_10| = 4.32), cost per life is $231,481 and BCR spans 8.2:1 (joint floor at |β_10| = 1.30, $6.3M VSL), 27.2:1 ($6.3M Low), 58.8:1 ($13.6M Central), and 89.4:1 ($20.7M High).',
-        '<strong>Unit-of-Analysis Fencing:</strong> Unit A rows value county public health mortality reductions with VSL. Unit B rows describe one CHW FTE per year and use cash or resource offsets with no VSL. CHW scenarios are placed in columns by conservatism order only; they are not linked to the VSL tier in the same column.'
+        '<strong>Observed Links and Published Inputs.</strong> County death-rate links (-2.38 yearly per $10, SE = 0.78 per $10, unadjusted 95% range [-3.91, -0.85]; -4.32 over 13-year changes per $10, SE = 1.54 per $10, unadjusted p = 0.0052, adjusted p = 0.067, unadjusted 95% range [-7.34, -1.30]; and -5.31 in the Lewbel two-step check) come from CAPHE LHA files. Federal death-risk values follow 2025 HHS guidance ($6.3M, $13.6M, $20.7M) and EPA ($11.2M). Care worker inputs ($103,719 full-time worker cost with pay and benefits; $6,775 to $10,162 visit pay for 213 to 320 units under DHCS SPA 22-0001; $107,006 Medi-Cal plan savings; $291,171 hospital savings across payers) come from CAPHE CHW study files.',
+        '<strong>How County Value per Dollar Is Calculated (Unit A).</strong> If $10 more in county public health spending per resident caused the estimated decrease in deaths, value per dollar equals <code>(fewer deaths per 100,000 / 100,000) &times; federal value / $10</code>. At 2.38 fewer deaths per 100,000 and $13.6M, this gives <code>0.0000238 &times; $13,600,000 / $10 = 32.4:1</code> ($420,168 per death avoided). Equal benefits and costs (1.0:1) would require 0.0735 fewer deaths per 100,000 at $13.6M.',
+        '<strong>Why County Results and Worker Costs Stay Separate.</strong> The county cases show how changing the death estimate or federal dollar value changes resident health value if causal. The worker cases show how clinic fees and hospital savings compare with one $103,719 worker position by payer. Their dollar amounts are never added together.'
       ]
     },
     synthesis: {
-      title: 'Why the Goal of Sensitivity Analysis Is Decision Robustness, Not Parameter Perfection',
-      p1: 'County fiscal reviews test whether a public health investment remains cost-effective across conservative and upper-bound federal valuation tiers: should the analysis use the U.S. EPA $11.2M Value of a Statistical Life, the HHS $13.6M central benchmark, or the $6.3M HHS low tier? When an analyst presents only a single point estimate (32.4:1 annual or 58.8:1 cumulative), any disagreement over one input casts doubt on the entire recommendation.',
-      p2: 'Sensitivity analysis reframes the conversation around which assumptions change the decision. Across the HHS 2025 VSL range, county public health spending returns 15.0:1 to 49.3:1 annually and 27.2:1 to 89.4:1 over 13-year cumulative horizons, and the joint floor (lower confidence bound at $6.3M) still returns 5.4:1 annually and 8.2:1 cumulatively, so the funding verdict does not depend on the VSL tier or exposure horizon. CHW cost capture behaves differently: direct FFS billing recovers 6.5% to 9.8% of a $103,719 position and payer offsets recover 103%, so for CHW programs the financing perspective, not the valuation tier, determines whether the budget closes.'
+      title: 'Keeping Death-Risk Dollar Rates Apart From Causal Checks and Clinic Pay',
+      p1: 'Boards should check whether spending caused fewer deaths and how wide the 13-year range is. Across 2025 HHS values ($6.3M to $20.7M), all three rates exceed cost if spending caused fewer deaths. These figures are resident health values, not cash paid to counties. If causal, the -2.38 yearly link spans 15.0:1 to 49.3:1 (32.4:1 middle, or $420,168 per death). Under that rule, the -4.32 13-year link (adjusted p = 0.067, above 0.05) spans 27.2:1 to 89.4:1 (58.8:1 middle). Pairing unadjusted bounds with $6.3M gives 5.4:1 yearly and 8.2:1 over 13 years.',
+      p2: 'For care workers, changing who pays matters more than billing more clinic visits. Raising service units by 50%, from 213 to 320, moves paid worker costs from 6.5% ($6,775) to 9.8% ($10,162) of $103,719. By contrast, savings from fewer hospital stays reach 103.2% ($107,006) for Medi-Cal plans. Across all hospital payers, hospital stay savings reach 280.7% ($291,171). Thus, county estimates depend on causal proof and 13-year bounds (adjusted p = 0.067), while worker teams need plan contracts.'
     },
     methodologyParagraphs: [
-      '<strong>Mode Classification (Mode A Scenario Grid on Observed and Published Inputs):</strong> The cross-multiplied scenario cells in Table 1 (5.4:1 to 49.3:1 annual, 8.2:1 to 89.4:1 13-year cumulative, model-implied statewide valuations across 39M California residents, and CHW recovery ratios 0.07:1 to 2.81:1) are Mode A sensitivity calculations. Their inputs are observed econometric estimates (-2.38 annual TWFE, 95% CI [-3.91, -0.85]; -4.32 13-year cumulative OLS, 95% CI [-7.34, -1.30]), published HHS 2025 VSL schedules ($6.3M / $13.6M / $20.7M), the EPA VSL ($11.2M), and calibrated CHW cost and offset values from the CHW case study.',
-      '<strong>Primary References &amp; Data Sources:</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE Guidelines for Regulatory Impact Analysis (2025 VSL Schedule: $6.3M Low, $13.6M Central, $20.7M High)</a>; <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. EPA Mortality Risk Valuation ($11.2M VSL)</a>; <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Sanders, G. D., et al. (2016), "Recommendations for Conduct, Methodological Practices, and Reporting of Cost-effectiveness Analyses: Second Panel on Cost-Effectiveness in Health and Medicine", JAMA, 316(10), 1093-1103</a>; <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS Medi-Cal CHW Benefit (SPA 22-0001)</a>; and <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a>.'
+      '<strong>How the Estimates Were Made: Observed County Results and Published Federal Values.</strong> Unit A ratios and dollar figures (5.4:1 to 49.3:1 yearly, 8.2:1 in the unadjusted case, 27.2:1 to 89.4:1 over 13 years with adjusted p = 0.067, and $420,168 and $231,481 per death avoided) are calculated from fixed inputs, assuming spending caused fewer deaths. They combine pre-2020 California county links (-2.38 yearly, unadjusted 95% range [-3.91, -0.85]; -4.32 over 13 years, unadjusted p = 0.0052, adjusted p = 0.067, unadjusted 95% range [-7.34, -1.30]) with 2025 HHS values ($6.3M, $13.6M, $20.7M). Unit B worker ratios (0.07:1 to 2.81:1) use Medi-Cal fees set by law, California worker cost estimates, and hospital savings.',
+      '<strong>Primary References &amp; Data Sources.</strong> <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS ASPE Guidelines for Regulatory Impact Analysis (2025 VSL Schedule)</a>; <a href="https://www.epa.gov/environmental-economics/mortality-risk-valuation" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. EPA Mortality Risk Valuation ($11.2M VSL)</a>; <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Sanders, G. D., et al. (2016), Second Panel on Cost-Effectiveness in Health and Medicine, JAMA, 316(10), 1093-1103</a>; <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">DHCS Medi-Cal CHW Benefit (SPA 22-0001)</a>; and <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a>.'
     ],
     faqs: [
       {
-        question: 'What is the difference between one-way and multi-way sensitivity analysis?',
-        answer: 'One-way sensitivity analysis varies a single parameter at a time while holding all other inputs at their central values (for example, varying VSL from $6.3M to $20.7M at the -2.38 annual effect size, yielding 15.0:1 to 49.3:1, or 27.2:1 to 89.4:1 at the -4.32 cumulative effect size). Multi-way sensitivity analysis varies two or more uncertain parameters together (such as combining the $6.3M Low VSL with the -0.85 annual or -1.30 cumulative lower 95% confidence bound to test a 5.4:1 to 8.2:1 conservative joint floor).'
+        question: 'How do tests that change one or two inputs help explain these dollar estimates?',
+        answer: 'A one-way test changes one input, such as testing $6.3M, $13.6M, and $20.7M rates on the -2.38 yearly link (15.0:1 to 49.3:1 if causal). A two-input test pairs 0.85 from the unadjusted 95% range with $6.3M to give 5.4:1 per year if causal. Over 13 years, 8.2:1 uses the unadjusted -1.30 bound, while 4.32 has adjusted p = 0.067 (above 0.05). Showing all cases keeps causal rules and ranges clear.'
       },
       {
-        question: 'What is a "cost-neutral threshold analysis" in cost-benefit modeling?',
-        answer: 'Cost-neutral analysis asks how small the program effect would have to be for benefits to just equal costs (BCR = 1.0:1). At the $13.6M HHS Central VSL, a $10/capita investment reaches cost neutrality if it averts 0.0735 deaths per 100,000 residents, meaning the observed -2.38 annual effect is 32 times larger (and the -4.32 cumulative effect is 59 times larger) than the cost-neutral minimum.'
+        question: 'How small could the decrease in deaths be before estimated benefits no longer exceed costs?',
+        answer: 'This check asks how many deaths $10 more per resident must prevent for value to equal cost (1.0:1) at federal rates. At the $13.6M middle HHS rate, equal value and cost need 0.0735 fewer deaths per 100,000 people. Pre-2020 links are 2.38 fewer deaths per 100,000 per year and 4.32 over 13 years (adjusted p = 0.067).'
       },
       {
-        question: 'Why are CHW cost-capture scenarios reported in separate rows from VSL-based returns?',
-        answer: 'The two measure different units. VSL-based returns value mortality reductions from county public health spending, while CHW cost capture compares cash or resource offsets with the $103,719 annual cost of one California CHW position. Direct FFS billing recovers 6.5% to 9.8% of that cost and Medi-Cal payer offsets recover about 103%, so the CHW financing question depends on who captures the savings rather than on the VSL tier.'
+        question: 'Why are care worker cost comparisons kept separate from death-risk dollar ratios?',
+        answer: 'County ratios estimate resident health value only if spending caused fewer deaths. They do not show cash paid to counties. Worker rows instead compare visit fees ($6,775-$10,162) and hospital stay savings ($107,006-$291,171) with one $103,719 worker. Keeping them apart shows worker teams need Medi-Cal plan contracts, not VSL talks.'
       }
     ],
     related: [
-      { slug: 'cost-effectiveness-ratio', title: 'Cost per QALY, Net Value & 1,000-Draw Sensitivity Checks', note: 'Case study on probabilistic sensitivity analysis and willingness-to-pay thresholds' },
-      { slug: 'measuring-health-common-unit', title: 'Measuring Health in QALYs & VSL Tiers', note: 'Case study explaining how HHS 2025 VSL tiers and QALY weights are constructed' },
-      { slug: 'chw-health-outcomes', title: 'Evaluating CHW Impact & Medi-Cal Billing', note: 'Case study on CHW direct billing, payer offsets, and societal hospital savings' }
+      { slug: 'cost-effectiveness-ratio', title: 'Five-Year Contracts Divide First-Year Care Team Setup Costs Across Five Years of Care', note: 'Case study on cost per healthy year gained, net value, and five-year setup costs' },
+      { slug: 'measuring-health-common-unit', title: 'Distinct Healthy-Year and Death-Risk Units Help Counties Compare Care and Prevention', note: 'Case study explaining how healthy life-years and federal death-risk values stay in separate tables' },
+      { slug: 'chw-health-outcomes', title: 'Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs', note: 'Case study on Community Health Worker visit fees, health plan savings, and hospital savings' }
     ]
   }
 ];

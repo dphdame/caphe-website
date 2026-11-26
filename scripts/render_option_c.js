@@ -55,211 +55,9 @@ function simplifyToGrade7(inputStr) {
     return part
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      // Plain-English vocabulary replacements (safe A7 allowlist)
-      .replace(/\bReimbursements\b/g, 'Payments')
-      .replace(/\breimbursements\b/g, 'payments')
-      .replace(/\bReimbursement\b/g, 'Pay')
-      .replace(/\breimbursement\b/g, 'pay')
-      .replace(/\bReimburses\b/g, 'Pays')
-      .replace(/\breimburses\b/g, 'pays')
-      .replace(/\bReimbursed\b/g, 'Paid')
-      .replace(/\breimbursed\b/g, 'paid')
-      .replace(/\bUtilization\b/g, 'Use')
-      .replace(/\butilization\b/g, 'use')
-      .replace(/\bPreventable Hospitalizations\b/gi, 'Avoidable Hospital Stays')
-      .replace(/\bHospitalizations\b/g, 'Hospital Stays')
-      .replace(/\bhospitalizations\b/g, 'hospital stays')
-      .replace(/\bHospitalization\b/g, 'Hospital Stay')
-      .replace(/\bhospitalization\b/g, 'hospital stay')
-      .replace(/\bInpatient\b/g, 'Hospital')
-      .replace(/\binpatient\b/g, 'hospital')
-      .replace(/\bEmergency Department\b/g, 'ER')
-      .replace(/\bemergency department\b/g, 'ER')
-      .replace(/\bUncompensated\b/g, 'Unpaid')
-      .replace(/\buncompensated\b/g, 'unpaid')
-      .replace(/\bBeneficiaries\b/g, 'Members')
-      .replace(/\bbeneficiaries\b/g, 'members')
-      .replace(/\bBeneficiary\b/g, 'Member')
-      .replace(/\bbeneficiary\b/g, 'member')
-      .replace(/\bEnrollees\b/g, 'Members')
-      .replace(/\benrollees\b/g, 'members')
-      .replace(/\bEnrollee\b/g, 'Member')
-      .replace(/\benrollee\b/g, 'member')
-      .replace(/\bEmpaneled\b/g, 'Regular')
-      .replace(/\bempaneled\b/g, 'regular')
-      .replace(/\bHigh-Acuity\b/g, 'High-Need')
-      .replace(/\bhigh-acuity\b/g, 'high-need')
-      .replace(/\bheteroskedasticity-based\b/gi, 'variance-based')
-      .replace(/\bheteroskedastic\b/gi, 'variance-based')
-      .replace(/\bHeteroskedasticity\b/g, 'Residual Variance')
-      .replace(/\bheteroskedasticity\b/g, 'residual variance')
-      .replace(/\bMultiplicity Control\b/gi, 'Multiple-Group Check')
-      .replace(/\bMultiplicity\b/g, 'Multiple Testing')
-      .replace(/\bmultiplicity\b/g, 'multiple testing')
-      .replace(/\bTrajectories\b/g, 'Trends')
-      .replace(/\btrajectories\b/g, 'trends')
-      .replace(/\bTrajectory\b/g, 'Trend')
-      .replace(/\btrajectory\b/g, 'trend')
-      .replace(/\bLongitudinal\b/g, 'Multi-Year')
-      .replace(/\blongitudinal\b/g, 'multi-year')
-      .replace(/\bCross-Sectional\b/g, 'Single-Year')
-      .replace(/\bcross-sectional\b/g, 'single-year')
-      .replace(/\bInterventions\b/g, 'Programs')
-      .replace(/\binterventions\b/g, 'programs')
-      .replace(/\bIntervention\b/g, 'Program')
-      .replace(/\bintervention\b/g, 'program')
-      .replace(/\bJurisdictions\b/g, 'Counties')
-      .replace(/\bjurisdictions\b/g, 'counties')
-      .replace(/\bJurisdiction\b/g, 'County')
-      .replace(/\bjurisdiction\b/g, 'county')
-      .replace(/\bSubpopulations\b/g, 'Groups')
-      .replace(/\bsubpopulations\b/g, 'groups')
-      .replace(/\bSubpopulation\b/g, 'Group')
-      .replace(/\bsubpopulation\b/g, 'group')
-      .replace(/\bProcurement\b/g, 'Contracting')
-      .replace(/\bprocurement\b/g, 'contracting')
-      .replace(/\bAllocations\b/g, 'Funding')
-      .replace(/\ballocations\b/g, 'funding')
-      .replace(/\bAllocation\b/g, 'Funding')
-      .replace(/\ballocation\b/g, 'funding')
-      .replace(/\bApproximately\b/g, 'About')
-      .replace(/\bapproximately\b/g, 'about')
-      .replace(/\bConsequently\b/g, 'So')
-      .replace(/\bconsequently\b/g, 'so')
-      .replace(/\bSubsequently\b/g, 'Later')
-      .replace(/\bsubsequently\b/g, 'later')
-      .replace(/\bSimultaneously\b/g, 'At once')
-      .replace(/\bsimultaneously\b/g, 'at once')
-      .replace(/\bDisproportionately\b/g, 'Heavily')
-      .replace(/\bdisproportionately\b/g, 'heavily')
-      .replace(/\bAll-Cause Mortality\b/g, 'Overall Deaths')
       .replace(/`([^`]+)`/g, '$1')
-      .replace(/\ball-cause mortality\b/g, 'overall deaths')
-      .replace(/\bPremature Mortality\b/g, 'Early Deaths')
-      .replace(/\bpremature mortality\b/g, 'early deaths')
-      .replace(/\bHigh-Mortality\b/g, 'High-Death-Rate')
-      .replace(/\bhigh-mortality\b/g, 'high-death-rate')
-      .replace(/\bMortality Prevention\b/g, 'Preventing Early Deaths')
-      .replace(/\bmortality prevention\b/g, 'preventing early deaths')
-      .replace(/\bMortality Effect\b/g, 'Avoidable Death Reduction')
-      .replace(/\bmortality effect\b/g, 'avoidable death reduction')
-      .replace(/\bmortality valuations\b/gi, 'valuations of lives saved')
-      .replace(/\bmortality spikes\b/gi, 'death spikes')
-      .replace(/\bNavigation\b/g, 'Outreach')
-      .replace(/\bnavigation\b/g, 'outreach')
-      .replace(/\bNavigator\b/g, 'Helper')
-      .replace(/\bnavigator\b/g, 'helper')
-      .replace(/\bInfrastructure\b/g, 'Systems')
-      .replace(/\binfrastructure\b/g, 'systems')
-      .replace(/\bAppropriations\b/g, 'Budgets')
-      .replace(/\bappropriations\b/g, 'budgets')
-      .replace(/\bOveridentification\b/g, 'Model Check')
-      .replace(/\boveridentification\b/g, 'model check')
-      .replace(/\bCardiometabolic\b/g, 'Heart and diabetes')
-      .replace(/\bcardiometabolic\b/g, 'heart and diabetes')
-      .replace(/\bProximity\b/g, 'Distance')
-      .replace(/\bproximity\b/g, 'distance')
-      .replace(/\bMedications\b/g, 'Medicines')
-      .replace(/\bmedications\b/g, 'medicines')
-      .replace(/\bMedication\b/g, 'Medicine')
-      .replace(/\bmedication\b/g, 'medicine')
-      .replace(/\beducational attainment\b/gi, 'schooling')
-      .replace(/\(population\s+([0-9,]+)\)/gi, '($1 residents)')
-      .replace(/\bUnadjusted Observational Correlation\b/gi, 'Raw Yearly Average')
-      .replace(/\bSimultaneous OLS Association\b/gi, 'Raw Yearly Average')
-      .replace(/\bUnadjusted Panel OLS\b/gi, 'Raw Yearly Average')
-      .replace(/\bUnadjusted OLS\b/gi, 'Raw Yearly Average')
-      .replace(/\bQuasi-Experimental Instrumental Variables\b/gi, 'Routine-Budget Analysis')
-      .replace(/\bQuasi-experimental Instrumental Variables \(IV\)/gi, 'Routine-budget analysis')
-      .replace(/\bInstrumental Variables Isolation\b/gi, 'Routine-Budget Analysis')
-      .replace(/\bInstrumental Variables \(IV\)/gi, 'Routine-Budget Analysis')
-      .replace(/\bInstrumental variables\b/gi, 'Routine-budget models')
-      .replace(/\bQuasi-Experimental\b/gi, 'Real-World')
-      .replace(/\bquasi-experimental\b/gi, 'real-world')
-      .replace(/\bLewbel \(2012\) heteroskedastic IV\b/gi, '21-Year County Budget Model')
-      .replace(/\bLewbel higher-moment IV\b/gi, '21-Year County Budget Model')
-      .replace(/\bLewbel IV\b/gi, '21-Year Budget Model')
-      .replace(/\bCalifornian fiscal governance IV\b/gi, 'County Board Budget Rules')
-      .replace(/\bValidated county governance IV\b/gi, 'County board rule comparison')
-      .replace(/\bWhen RCTs Are Impossible\b/gi, 'for County Budget Decisions')
-      .replace(/\bSolves the Ethics Barrier to Public Health RCTs\b/gi, 'Builds Confidence for County Budget Decisions')
-      .replace(/\bCross-Method Replication\b/g, 'Two Independent Checks')
-      .replace(/\bcross-method replication\b/g, 'two independent checks')
-      .replace(/\bHow the Design Handles Endogeneity\b/gi, 'How Outbreak Spending Is Handled')
-      .replace(/\bEndogenous \+ needs-driven budgets\b/gi, 'Routine + outbreak budgets mixed')
-      .replace(/\bno instrument \(endogenous OLS\)/gi, 'No adjustment for outbreak surges')
-      .replace(/\bEndogeneity\b/g, 'Outbreak Spending Mix')
-      .replace(/\bendogeneity\b/g, 'outbreak spending mix')
-      .replace(/\bEndogenous\b/g, 'Needs-Driven')
-      .replace(/\bendogenous\b/g, 'needs-driven')
-      .replace(/\bExogenous\b/g, 'Routine')
-      .replace(/\bexogenous\b/g, 'routine')
-      .replace(/\bInstrument Strength &amp; (?:Overidentification|Model Check)\b/gi, 'Method Reliability Check')
-      .replace(/\bInstrument Strength\b/gi, 'Method Reliability')
-      .replace(/\bInterrupted Time Series\b/gi, 'Multi-Year Trend Split')
-      .replace(/\bDifference-in-Differences\b/gi, 'Side-by-Side Group Comparison')
-      .replace(/\bPre-Trend F-test\b/gi, 'pre-policy trend check')
-      .replace(/\bfalse-discovery-rate control\b/gi, 'multiple-group reliability check')
-      .replace(/\bFalse Discoveries\b/gi, 'Small-Group Swings')
-      .replace(/\bp-Hacking\b/gi, 'Cherry-Picking')
-      .replace(/\bMediators\b/g, 'Program Steps')
-      .replace(/\bmediators\b/g, 'program steps')
-      .replace(/\bMediator\b/g, 'Program Step')
-      .replace(/\bmediator\b/g, 'program step')
-      .replace(/\bselection gates\b/gi, 'filters')
-      .replace(/\bselection gate\b/gi, 'filter')
-      .replace(/\bmorbidity gains\b/gi, 'health improvements')
-      .replace(/(?:\b5-year\s+)?\bKoyck(?:\s+geometric)?(?:\s+distributed)?\s+lag\b/gi, '5-year phase-in schedule')
-      .replace(/\bhierarchy of evidence\b/gi, 'study-design toolkit')
-      .replace(/\bFirefighters at Fires\b/gi, 'Outbreak Budget Surge')
-      .replace(/\bMonte Carlo PSA\b/gi, '1,000-Scenario Check')
-      .replace(/\bArea Deprivation Index \(ADI\)/gi, 'Neighborhood Need Index')
-      .replace(/\bCompletely\s+/g, '')
-      .replace(/\bcompletely\b\s+/g, '')
-      .replace(/\bSpecifically\s+/g, '')
-      .replace(/\bspecifically\b\s+/g, '')
-      // Replace algebraic minus-sign shorthand on event/count nouns (e.g. "-9.16 deaths" -> "9.16 fewer deaths")
-      .replace(/(^|[\s(])-(\d+(?:,\d+)*(?:\.\d+)?)\s+(deaths|cases|stays|visits|ED|ER|hospital stays|readmissions)\b/gi, '$1$2 fewer $3')
-      .replace(/,?\s+rather than\s+/gi, ' instead of ')
-      .replace(/Swipe horizontally to view all 4 columns/gi, 'Scroll side to side to see all 4 columns')
-      .replace(/\bPreventable\b/g, 'Avoidable')
-      .replace(/\bpreventable\b/g, 'avoidable')
-      .replace(/\bQuantifying\b/g, 'Measuring')
-      .replace(/\bquantifying\b/g, 'measuring')
-      .replace(/\bQuantifies\b/g, 'Measures')
-      .replace(/\bquantifies\b/g, 'measures')
-      .replace(/\bMethodology\b/g, 'Method')
-      .replace(/\bmethodology\b/g, 'method')
-      .replace(/\bMetropolitan\b/g, 'Metro')
-      .replace(/\bmetropolitan\b/g, 'metro')
-      .replace(/\bMunicipalities\b/g, 'Cities')
-      .replace(/\bmunicipalities\b/g, 'cities')
-      .replace(/\bMunicipality\b/g, 'City')
-      .replace(/\bmunicipality\b/g, 'city')
-      .replace(/\bComprehensive\b/g, 'Full')
-      .replace(/\bcomprehensive\b/g, 'full')
-      .replace(/\bMandatory\b/g, 'Required')
-      .replace(/\bmandatory\b/g, 'required')
-      .replace(/\bRecruitment\b/g, 'Hiring')
-      .replace(/\brecruitment\b/g, 'hiring')
-      .replace(/\bAppointments\b/g, 'Visits')
-      .replace(/\bappointments\b/g, 'visits')
-      .replace(/\bAppointment\b/g, 'Visit')
-      .replace(/\bappointment\b/g, 'visit')
-      .replace(/\bCardiovascular\b/g, 'Heart')
-      .replace(/\bcardiovascular\b/g, 'heart')
-      .replace(/\bHypertension\b/g, 'High Blood Pressure')
-      .replace(/\bhypertension\b/g, 'high blood pressure')
-      .replace(/\bLimitations\b/g, 'Limits')
-      .replace(/\blimitations\b/g, 'limits')
-      .replace(/\bLimitation\b/g, 'Limit')
-      .replace(/\blimitation\b/g, 'limit')
-      .replace(/\bAdditionally\b/g, 'Also')
-      .replace(/\badditionally\b/g, 'also')
-      .replace(/\bFurthermore\b/g, 'Also')
-      .replace(/\bfurthermore\b/g, 'also')
-      .replace(/\bNevertheless\b/g, 'Still')
-      .replace(/\bnevertheless\b/g, 'still');
+      // Replace algebraic minus-sign shorthand on event/count nouns (e.g. "-2.38 deaths" -> "2.38 fewer deaths")
+      .replace(/(^|[\s(])-(\d+(?:,\d+)*(?:\.\d+)?)\s+(deaths|cases|stays|visits|ED|ER|hospital stays|readmissions)\b/gi, '$1$2 fewer $3');
   }).join('');
 }
 
@@ -582,8 +380,8 @@ function renderModuleHtml(spec) {
   }
   const renderedPolicySettingHtml = formatAnswerWithEndnotes(spec.policySettingHtml);
   const policySettingWords = countWords(renderedPolicySettingHtml);
-  if (policySettingWords < 20 || policySettingWords > 70) {
-    throw new Error(`[${spec.slug}] policySettingHtml word count (${policySettingWords}) out of 20-70 target window`);
+  if (policySettingWords < 20 || policySettingWords > 115) {
+    throw new Error(`[${spec.slug}] policySettingHtml word count (${policySettingWords}) out of 20-115 target window`);
   }
 
   const renderedAnswerHtml = formatAnswerWithEndnotes(spec.answerHtml);
@@ -602,8 +400,8 @@ function renderModuleHtml(spec) {
   }
 
   const answerWords = countWords(renderedAnswerHtml);
-  if (answerWords < 40 || answerWords > 130) {
-    throw new Error(`[${spec.slug}] answerHtml word count (${answerWords}) out of 40-130 target window`);
+  if (answerWords < 40 || answerWords > 170) {
+    throw new Error(`[${spec.slug}] answerHtml word count (${answerWords}) out of 40-170 target window`);
   }
 
   const articleLd = {
@@ -678,22 +476,18 @@ function renderModuleHtml(spec) {
 
   const separateTableSubtitle = (rawSub, fallbackTitle) => {
     const cleaned = stripVisibleModeTag(simplifyToGrade7(String(rawSub || '').trim()));
-    const hasTech = /(\bN\s*=\s*\d|\bB\d{5}\b|regression parameters|area-median|SPA\s+\d)/i;
+    const hasTech = /(\bN\s*=\s*\d|\bB\d{5}\b|regression parameters)/i;
     const words = cleaned.split(/\s+/).filter(Boolean);
-    if (!hasTech.test(cleaned) && words.length <= 22) {
+    if (!hasTech.test(cleaned) && words.length <= 36) {
       return { visibleSub: cleaned, noteSub: '' };
     }
     let short = cleaned
       .replace(/\s*\([^()]*\)/g, '')
       .replace(/\bN\s*=\s*[\d,]+-?\s*/gi, '')
-      .replace(/\s+alongside\s+.*$/i, '')
-      .replace(/\s+calibrated\s+on\s+.*$/i, '')
-      .replace(/\s+from\s+the\s+official\s+.*$/i, '')
-      .replace(/\s+across\s+\d[\d,]*\s+.*$/i, '')
       .split(/(?<=[a-z0-9%])\.\s+|\s*;\s*|\s+-\s+/i)[0]
       .trim()
       .replace(/[,;:]$/, '');
-    if (hasTech.test(short) || short.split(/\s+/).filter(Boolean).length > 20 || short.split(/\s+/).filter(Boolean).length < 5) {
+    if (hasTech.test(short) || short.split(/\s+/).filter(Boolean).length > 34 || short.split(/\s+/).filter(Boolean).length < 5) {
       short = `Key data and policy results across the four ${fallbackTitle} columns.`;
     } else if (!/[.?!]$/.test(short)) {
       short += '.';
@@ -753,17 +547,18 @@ ${cells}
   const t1SubNoteHtml = t1SubSplit.noteSub
     ? `<p class="mt-1.5"><strong>Sample &amp; Benchmark Scope.</strong> ${t1SubSplit.noteSub}</p>`
     : '';
+  const cleanArchiveTitle = (s) => simplifyToGrade7(String(s || '')).replace(/^(?:Ruler|Mode)\s*[12AB]\s*[:\-]\s*/i, '').trim();
   const block2ArchiveNote = spec.block2
-    ? `<p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> ${simplifyToGrade7(spec.block2.contextTag || '')}. ${simplifyToGrade7(spec.block2.ruler1.title)}: <strong>${simplifyToGrade7(spec.block2.ruler1.stat)}</strong>. ${simplifyToGrade7(spec.block2.ruler1.desc)} ${simplifyToGrade7(spec.block2.ruler2.title)}: <strong>${simplifyToGrade7(spec.block2.ruler2.stat)}</strong>. ${simplifyToGrade7(spec.block2.ruler2.desc)}</p>`
+    ? `<p class="mt-1.5"><strong>Simple Comparison vs. Adjusted Comparison.</strong> ${simplifyToGrade7(spec.block2.contextTag || '')}. ${cleanArchiveTitle(spec.block2.ruler1.title)}: <strong>${simplifyToGrade7(spec.block2.ruler1.stat)}</strong>. ${simplifyToGrade7(spec.block2.ruler1.desc)} ${cleanArchiveTitle(spec.block2.ruler2.title)}: <strong>${simplifyToGrade7(spec.block2.ruler2.stat)}</strong>. ${simplifyToGrade7(spec.block2.ruler2.desc)}</p>`
     : '';
   const colScopeHtml = colScopeNotes.length > 0
-    ? `<p class="mt-1.5"><strong>Column Scope.</strong> ${colScopeNotes.join('. ')}.</p>`
+    ? `<p class="mt-1.5"><strong>Areas and Groups in Each Column.</strong> ${colScopeNotes.map(n => String(n).replace(/\.+$/, '')).join('. ')}.</p>`
     : '';
   const overflowNotesHtml = overflowNotes.length > 0
-    ? `<p class="mt-1.5"><strong>Cell Sub-Label Details.</strong> ${overflowNotes.join(' ')}</p>`
+    ? `<p class="mt-1.5"><strong>Additional Cell Details.</strong> ${overflowNotes.join(' ')}</p>`
     : '';
-  const estimatorCrosswalkHtml = /(OLS|TWFE|Lewbel|Instrumental Variables|F\s*=\s*314\.1)/i.test(JSON.stringify(spec.table1))
-    ? `<p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p>`
+  const estimatorCrosswalkHtml = ['observational-to-experimental', 'reverse-causation-feedback'].includes(spec.slug)
+    ? `<p class="mt-1.5"><strong>How the Table Labels Match the Study Methods.</strong> The table labels refer to statistical models that compare observed county records across 57 counties without randomly assigning spending. <em>Pandemic Emergency Aid Years (2020&ndash;2023)</em> compares spending and death rates in the same years while accounting for lasting county differences and statewide yearly changes during COVID-19 relief grants. <em>Yearly County Records Before COVID-19 (2003&ndash;2019)</em> uses a two-way fixed-effects model for regular years before the pandemic. <em>Changes Over 13 Years (2003&ndash;2016)</em> compares 13-year spending changes with yearly death-rate changes under one financial reporting format (unadjusted p = 0.0052; p = 0.067 after adjustment for multiple tests). <em>Second-Method Check</em> applies Lewbel's 2012 method, following Brown (2016), using differences in how population traits vary across counties as an appendix check alongside Brown (2014) county government comparisons; this method relies on assumptions the data cannot fully test.</p>`
     : '';
   const table1FootnoteHtml = `
       <details class="group bg-slate-50 border-t border-slate-200 text-sm text-slate-700">
@@ -772,26 +567,26 @@ ${cells}
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Calculated Estimates</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
         <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
-          <p>${simplifyToGrade7(spec.table1.footnote || '<strong class="text-slate-800">Table 1 Notes &amp; * Modeled Estimates.</strong> Rows marked with <strong class="text-slate-800">*</strong> apply published fee rates or trial parameters to observed baseline data. Open the notes below for full formulas and data sources.')}</p>${t1SubNoteHtml}${colScopeHtml}${estimatorCrosswalkHtml}${overflowNotesHtml}${block2ArchiveNote}
+          <p>${simplifyToGrade7(spec.table1.footnote || '<strong class="text-slate-800">Table 1 Notes &amp; * Calculated Estimates.</strong> Rows marked with <strong class="text-slate-800">*</strong> report estimates calculated from the stated policy rules, published values, or starting data. Open the notes below for formulas and data sources.')}</p>${t1SubNoteHtml}${colScopeHtml}${estimatorCrosswalkHtml}${overflowNotesHtml}${block2ArchiveNote}
         </div>
       </details>`;
 
   const tetsStripHtml = tetsCompanions.length > 0 ? `
       <div class="px-5 pb-4">
         <p class="mt-2.5 px-3.5 py-2 bg-[#F4F7FB] border-l-2 border-[#0041A5] rounded-r text-xs text-slate-700 leading-relaxed">
-          <strong class="text-[#0041A5]">Method &amp; Data Audit (TooEarlyToSay.com):</strong>
+          <strong class="text-[#0041A5]">Methods and Data Checks (TooEarlyToSay.com):</strong>
           ${tetsCompanions.map(item => `<a href="${escapeHtmlText(item.url)}" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold ml-1">${escapeHtmlText(item.visibleLabel)} &rarr;</a>`).join(' &middot; ')}
         </p>
       </div>` : '';
 
   const tetsCalloutHtml = tetsCompanions.length > 0 ? `
           <div class="tets-companion-callout mt-5 pt-4 border-t border-slate-200">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Companion Method &amp; Code Guides (TooEarlyToSay.com)</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0041A5] mb-2">Related Guides to Methods and Code (TooEarlyToSay.com)</h3>
             <ul class="space-y-1.5 text-xs text-slate-700">
               ${tetsCompanions.map(item => `<li>
                 <a href="${escapeHtmlText(item.url)}" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#0041A5] underline">${escapeHtmlText(item.title)}</a>.
@@ -810,51 +605,13 @@ ${cells}
   }).join('\n');
 
   const t2OverflowNotes = [];
-  const isFlagshipSlug = ['chw-health-outcomes', 'medicaid-expansion', 'food-insecurity-diabetes'].includes(spec.slug);
-  const stripRepeatedTable2Stem = (txt, isPolicyFit = false, rowLabel = '', colTitle = '') => {
-    const fullClean = stripVisibleModeTag(String(txt || ''))
-      .replace(/^Best when\s+/i, '')
-      .replace(/^Best for\s+/i, 'Fits ')
-      .trim();
-    const targetW = isFlagshipSlug ? (isPolicyFit ? 14 : 16) : (isPolicyFit ? 18 : 20);
-    let s = fullClean.replace(/\s+/g, ' ').trim();
-    if (/^[A-Z][A-Za-z0-9\s\/&;-]{2,42}:\s+/.test(s)) {
-      s = s.replace(/^[A-Z][A-Za-z0-9\s\/&;-]{2,42}:\s+/, '');
-    }
-    if (s.split(/\s+/).length > targetW || /\([^)]*(?:N\s*=|\bpp\b|\bscale\b|\bUIC\b|\bKangovi\b|\b19\d\d\b|\b20\d\d\b|,\s*|\bvs\.)[^)]*\)/i.test(s)) {
-      s = s.replace(/\s*\([^()]*\)/g, '').replace(/\s+/g, ' ').trim();
-    }
-    const sentences = s.split(/(?<=[a-z0-9%])\.\s+(?=[a-zA-Z0-9])/);
-    if (sentences.length > 1 && sentences[0].split(/\s+/).length >= 5) {
-      s = sentences[0];
-    }
-    if (s.split(/\s+/).length > targetW) {
-      s = s
-        .replace(/,\s*with\s+[^,]{3,45},/gi, '')
-        .replace(/\s+without an? (?:independent|split) historical check\b/gi, '')
-        .replace(/\s+for the Jan 1,\s*2024 wage-cap repeal and the Jan 1,\s*2025 90% replacement tier/gi, 'for the 2024 and 2025 statutory changes')
-        .replace(/\s+in the net social surplus\.?$/i, '')
-        .replace(/\s+and a (?:comparison|check) series rising\s+\+[\d.]+%\.?$/i, '')
-        .replace(/\s+away from languages with thousands of (?:paperwork|form) drops\.?$/i, '');
-    }
-    if (s.split(/\s+/).length > targetW) {
-      const intro = s.match(/^(?:With|In|Across|Under|When|If|Without|Because|While|Although|Even though|Before|After|Among|For|At|By|Despite|From|Against|Once)\s+(?:[^,]|,\d{3}){3,95},\s+([a-zA-Z0-9$].*)$/i);
-      if (intro && intro[1].split(/\s+/).length >= 5) {
-        s = intro[1];
-      }
-    }
-    if (s.split(/\s+/).length > targetW) {
-      const trail = s.split(/\s*(?:;|(?<!\d):(?!\d)|—|\s-\s|,\s*(?:but|yet|whereas|while|leaving|where|which|because|so|although|though|even though|unless|when|since|after|before|paired with|instead of|rather than|yielding|generating|producing|creating|causing|forcing|allowing|requiring|making|meaning|showing|confirming|resulting in|compared with|compared to|relative to|despite|without|including|such as|consistent with|with the|lowering|cutting|adding|focusing|finally|falsely classifying)|\s+(?:unless|(?<!\b(?:as|see|check|ask|test|know)\s)if|while|whereas|instead of|rather than|compared with|compared to|against\s+\+|despite\s+\d|to satisfy|based on a|and\s+(?:cuts?|reduces?|highlights?|diverts?|we\s+use)|or\s+holds\b|during\s+the\s+exact\s+year|ahead\s+of\b|in\s+the\s+Bay\s+Area))\s*/i);
-      if (trail[0] && trail[0].split(/\s+/).length >= 6 && !/\b(as|on|in|to|for|with|from|of|by|at|into|under|see|check|ask|test)\b$/i.test(trail[0].trim())) {
-        s = trail[0];
-      }
-    }
-    s = s.trim().replace(/[,;:]$/, '');
-    if (s && !/[.?!"]$/.test(s)) s += '.';
+  const stripRepeatedTable2Stem = (txt, isPolicyFit = false, rowLabel = '', colTitle = '', isMono = false) => {
+    let s = stripVisibleModeTag(String(txt || ''))
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/[,;:]$/, '');
+    if (!isMono && s && !/[.?!")]$/.test(s)) s += '.';
     s = s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
-    if (s && fullClean.split(/\s+/).length > s.split(/\s+/).length + 2 && rowLabel && colTitle) {
-      t2OverflowNotes.push(`<strong>${rowLabel} (${colTitle}).</strong> ${fullClean}`);
-    }
     return s;
   };
 
@@ -880,7 +637,7 @@ ${cells}
     }
     const cells = row.cells.map((cell, cIdx) => {
       const colTitle = (spec.table1.columns[cIdx] && spec.table1.columns[cIdx].title) || `Col ${cIdx + 1}`;
-      const cellVal = stripRepeatedTable2Stem(simplifyToGrade7(String(cell.val || '').trim()), false, rowTh, simplifyToGrade7(colTitle));
+      const cellVal = stripRepeatedTable2Stem(simplifyToGrade7(String(cell.val || '').trim()), false, rowTh, simplifyToGrade7(colTitle), Boolean(row.mono));
       const cls = row.mono
         ? `py-3.5 px-4 font-mono font-bold align-top ${cell.color || 'text-slate-950'} border-l border-slate-200`
         : `py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200`;
@@ -912,8 +669,8 @@ ${cells}
       const c = countyPayload.counties[k];
       return `<option value="${k}">${c.name}</option>`;
     }).join('');
-    const sectionTitle = spec.countyLookup.badge || '58-County Lookup &amp; Impact Check';
-    const sectionSubtitle = spec.countyLookup.subtitle || 'Pick a county, a program model, and a health impact level below.';
+    const sectionTitle = spec.countyLookup.badge || '58-County Cost and Savings Calculator';
+    const sectionSubtitle = spec.countyLookup.subtitle || 'Choose a county, a program type, and an assumed health effect below.';
     countyLookupHtml = `
     <!-- INTERACTIVE 58-COUNTY CHW BENCHMARK & SENSITIVITY CALCULATOR -->
     <div class="mb-3">
@@ -933,7 +690,7 @@ ${cells}
           </select>
         </div>
         <div>
-          <label for="chwScenarioSelect" class="block text-xs font-bold text-slate-800 mb-1">2. Program Model &amp; Cost Ledger</label>
+          <label for="chwScenarioSelect" class="block text-xs font-bold text-slate-800 mb-1">2. Program Model &amp; Payer View</label>
           <select id="chwScenarioSelect" class="w-full px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0041A5]">
             <option value="1">Scenario 1: Hospital Care (Medi-Cal Plan Claims, Assumed 55 Patients)</option>
             <option value="2">Scenario 2: Hospital Care (Hospital Bed Costs, Assumed 55 Patients)</option>
@@ -969,7 +726,7 @@ ${cells}
         </div>
         <div id="chwTotalCard" class="bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5">
           <span class="block text-xs font-bold text-emerald-950">Net Year-1 Fiscal Impact &amp; Cost per QALY*</span>
-          <span id="chwTotalStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5">Pays for itself in Year 1</span>
+          <span id="chwTotalStat" class="block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5">Savings exceed cost in Year 1</span>
           <span id="chwTotalSub" class="block text-xs text-slate-800 mt-1 leading-snug">~$3,300 net savings &middot; ~3.0 QALYs</span>
         </div>
       </div>
@@ -978,12 +735,12 @@ ${cells}
       <div class="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
         <div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-2">
           <h3 class="text-sm font-bold text-slate-900">Year-1 Dollar Comparison: Worker Cost vs. Visit Pay &amp; Hospital Savings</h3>
-          <span class="text-xs text-slate-600">Shared annual dollar scale ($0 to $380,000) &middot; Dashed line marks worker cost breakeven</span>
+          <span class="text-xs text-slate-600">Shared annual dollar scale ($0 to $380,000) &middot; Dashed line marks full annual worker cost</span>
         </div>
         <div class="overflow-x-auto">
           <svg id="chwCostOffsetSvg" class="w-full min-w-[640px]" viewBox="0 0 760 198" role="img" aria-labelledby="chwChartTitle chwChartDesc" xmlns="http://www.w3.org/2000/svg">
             <title id="chwChartTitle">Paired Horizontal Bar Chart of Annual Worker Cost, Medi-Cal Visit Pay, and Year-1 Hospital Savings</title>
-            <desc id="chwChartDesc">Three separate horizontal bars comparing full-time CHW cost, direct Medi-Cal visit billing, and Year-1 hospital savings against a dashed worker-cost breakeven line.</desc>
+            <desc id="chwChartDesc">Three separate horizontal bars comparing full-time CHW cost, direct Medi-Cal visit billing, and Year-1 hospital savings against a dashed line showing full annual worker cost.</desc>
             <rect x="0" y="0" width="760" height="198" rx="6" fill="#F8FAFC"/>
             <!-- Axis Grid Lines ($0, $100K, $200K, $300K, $380K; 1px = $1,000 from x=230 to x=610) -->
             <line x1="230" y1="30" x2="230" y2="168" stroke="#CBD5E1" stroke-width="1.5"/>
@@ -1000,7 +757,7 @@ ${cells}
             <text x="12" y="56" fill="#0F172A" font-size="12" font-weight="700">1. Hiring Agency Worker Cost</text>
             <rect x="230" y="38" width="380" height="24" rx="4" fill="#E2E8F0"/>
             <rect id="chwBarCost" x="230" y="38" width="104" height="24" rx="4" fill="#334155"/>
-            <text id="chwBarCostVal" x="342" y="55" fill="#0F172A" font-size="12" font-weight="700">$103,719 / yr (100% baseline)</text>
+            <text id="chwBarCostVal" x="342" y="55" fill="#0F172A" font-size="12" font-weight="700">$103,719 / yr (full worker cost)</text>
             <!-- Bar 2: Direct Medi-Cal Per-Visit Billing -->
             <text x="12" y="104" fill="#0F172A" font-size="12" font-weight="700">2. Direct Medi-Cal Visit Pay*</text>
             <rect x="230" y="86" width="380" height="24" rx="4" fill="#E2E8F0"/>
@@ -1010,19 +767,19 @@ ${cells}
             <text id="chwBarOffsetLabel" x="12" y="152" fill="#0F172A" font-size="12" font-weight="700">3. Year-1 Hospital Savings*</text>
             <rect x="230" y="134" width="380" height="24" rx="4" fill="#E2E8F0"/>
             <rect id="chwBarOffset" x="230" y="134" width="107" height="24" rx="4" fill="#0D9488"/>
-            <text id="chwBarOffsetVal" x="345" y="151" fill="#065F46" font-size="12" font-weight="700">~$107,000 / yr (Pays for itself)</text>
-            <!-- Vertical Dashed Breakeven Line at Worker Cost -->
+            <text id="chwBarOffsetVal" x="345" y="151" fill="#065F46" font-size="12" font-weight="700">~$107,000 / yr (Exceeds cost)</text>
+            <!-- Vertical Dashed Line at Full Worker Cost -->
             <line id="chwBreakevenLine" x1="334" y1="26" x2="334" y2="168" stroke="#003080" stroke-width="2" stroke-dasharray="5,4"/>
-            <text id="chwBreakevenLabel" x="334" y="19" text-anchor="middle" fill="#003080" font-size="11" font-weight="700">1x Worker Cost ($103,719)</text>
+            <text id="chwBreakevenLabel" x="334" y="19" text-anchor="middle" fill="#003080" font-size="11" font-weight="700">Full Worker Cost ($103,719)</text>
           </svg>
         </div>
         <!-- Separate Two-Year Health Value Callout (Kept Distinct from Dollar Bars) -->
         <div id="chwHealthCallout" class="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm text-slate-800">
           <div>
-            <strong class="text-emerald-950">Separate Two-Year Health Ledger (Not Added to Cash Bars):</strong>
+            <strong class="text-emerald-950">Separate Two-Year Health Gain (Not Added to Cash Bars):</strong>
             <span id="chwHealthCalloutText" class="ml-1">~3.0 QALYs gained (~$300,000 health value at $100,000 / QALY).</span>
           </div>
-          <span id="chwHealthBadge" class="inline-block font-mono text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 rounded px-2.5 py-1 whitespace-nowrap">Pays for itself in Year 1</span>
+          <span id="chwHealthBadge" class="inline-block font-mono text-xs font-bold text-emerald-900 bg-emerald-50 border border-emerald-200 rounded px-2.5 py-1 whitespace-nowrap">Savings exceed cost in Year 1</span>
         </div>
       </div>
       <script>
@@ -1106,7 +863,7 @@ ${cells}
             qalyStat.textContent = '~' + qalys.toFixed(1) + ' QALYs';
             qalySub.textContent = curScen === 4 ? 'Over 2 years + ~38 early checks' : 'Over 2 years ($100k/QALY benchmark)';
             if (net >= 0) {
-              totalStat.textContent = 'Pays for itself in Year 1';
+              totalStat.textContent = 'Savings exceed cost in Year 1';
               totalSub.textContent = fmtRound(net) + ' net savings · ~' + qalys.toFixed(1) + ' QALYs';
             } else {
               const netOutlay = loaded - gross;
@@ -1120,7 +877,7 @@ ${cells}
             const offsetW = scalePx(gross);
             barCost.setAttribute('width', String(costW));
             barCostVal.setAttribute('x', String(230 + costW + 8));
-            barCostVal.textContent = fmt(loaded) + ' / yr (100% baseline)';
+            barCostVal.textContent = fmt(loaded) + ' / yr (full worker cost)';
             barVisit.setAttribute('width', String(visitW));
             const bxLine = 230 + costW;
             barVisitVal.setAttribute('x', String(Math.max(230 + visitW + 8, bxLine + 10)));
@@ -1137,16 +894,16 @@ ${cells}
               barOffsetVal.setAttribute('text-anchor', 'start');
               barOffsetVal.setAttribute('fill', net >= 0 ? '#065F46' : '#1E3A8A');
             }
-            barOffsetVal.textContent = fmtRound(gross) + ' / yr (' + (net >= 0 ? 'Pays for itself' : fmtRound(loaded - gross) + ' net outlay') + ')';
+            barOffsetVal.textContent = fmtRound(gross) + ' / yr (' + (net >= 0 ? 'Exceeds cost' : fmtRound(loaded - gross) + ' net outlay') + ')';
             const bx = 230 + costW;
             breakevenLine.setAttribute('x1', String(bx));
             breakevenLine.setAttribute('x2', String(bx));
             breakevenLabel.setAttribute('x', String(bx));
-            breakevenLabel.textContent = 'Breakeven (' + fmt(loaded) + ')';
+            breakevenLabel.textContent = 'Full Cost (' + fmt(loaded) + ')';
             healthCalloutText.textContent = '~' + qalys.toFixed(1) + ' QALYs gained (' + fmtRound(qalyVal) + ' health value at $100,000 / QALY)' + (curScen === 4 ? ' plus ~38 early checks.' : '.');
             const badgeBase = 'inline-block font-mono text-xs font-bold border rounded px-2.5 py-1 whitespace-nowrap ';
             if (net >= 0) {
-              healthBadge.textContent = 'Pays for itself in Year 1';
+              healthBadge.textContent = 'Savings exceed cost in Year 1';
               healthBadge.className = badgeBase + 'text-emerald-900 bg-emerald-50 border-emerald-200';
               totalCard.className = 'bg-emerald-50/70 border border-emerald-200 rounded-lg p-3.5';
               totalStat.className = 'block font-mono text-base sm:text-lg font-bold text-emerald-900 mt-0.5';
@@ -1176,11 +933,11 @@ ${cells}
 
     if (spec.slug === 'food-insecurity-diabetes' || spec.slug === 'food-affordability-tradeoffs') {
       const isDiabetes = spec.slug === 'food-insecurity-diabetes';
-      chartTitle = 'Visual Comparison: Monthly Food Share Before vs. After Rent Across the 4 Areas';
-      chartSub = 'Separate paired horizontal bars (non-stacked) comparing the $973/month USDA family food plan as a share of pre-rent income (slate) vs. post-rent disposable income (blue/teal), with a 30% post-rent budget stress reference line.';
+      chartTitle = 'Monthly Family Grocery Cost Share Before and After Rent in Four Areas';
+      chartSub = 'Paired bars compare the $973 monthly food plan as a share of income before rent (gray) and income left after rent (blue or teal). The dashed line marks 30% of income left after rent.';
       chartSummary = isDiabetes
-        ? 'Table 1 takeaway: Subtracting monthly rent lifts the $973 food plan from 17.7% to 30.5% of remaining income in the High-Rent Working Area and from 31.4% to 46.4% in the Low-Income City Core, compared with 6.9% to 8.9% in the High-Income Suburb and 14.4% to 18.9% in the Rural Town Area.'
-        : 'Table 1 takeaway: Subtracting monthly rent lifts the $973 food plan from 17.7% to 30.5% of remaining income in the High-Rent Working Tract and from 31.4% to 46.4% in the Low-Pay City Core, compared with 13.8% to 17.9% in the Rural Foothills County and 7.3% to 9.3% in the High-Pay Suburb County.';
+        ? `Paying rent raises the $973 food plan above 30% of remaining income in ${colNames[0] || 'Marin Canal Tract'} (17.7% to 30.5%). Rent also raises the food share in ${colNames[1] || 'Central Fresno Tract'} (31.4% to 46.4%). By contrast, post-rent food shares stay lower in ${colNames[2] || 'Saratoga Suburb'} (6.9% to 8.9%) and ${colNames[3] || 'Nevada Foothills'} (14.4% to 18.9%).`
+        : `Paying rent raises the $973 food plan above 30% of remaining income in ${colNames[0] || 'Marin Canal Tract'} (17.7% to 30.5%). Rent also raises the food share in ${colNames[1] || 'Central Fresno Tract'} (31.4% to 46.4%). By contrast, post-rent food shares stay below 30% in ${colNames[2] || 'Nevada Foothills'} (13.8% to 17.9%) and ${colNames[3] || 'Santa Clara County'} (7.3% to 9.3%).`;
       svgHeight = 236;
       const items = isDiabetes
         ? [
@@ -1214,15 +971,15 @@ ${cells}
           <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#B45309">30% Post-Rent Food Share Reference</text>
 ${rowsSvg}`;
     } else if (spec.slug === 'medicaid-expansion') {
-      chartTitle = 'Visual Comparison: Total Six-Month Coverage Losses vs. Avoidable Form Losses (Adult Counts)';
-      chartSub = 'Separate paired horizontal bars (non-stacked) comparing total modeled six-month coverage losses (slate, Row 4) vs. avoidable paperwork losses among still-eligible adults (blue, Row 5).';
-      chartSummary = 'Table 1 takeaway: Rule Exemptions have the largest volume of avoidable paperwork losses (6,831 of 9,435 total losses, or 72.4%), followed by Gig & Part-Time Workers (3,319 of 5,138, or 64.6%), Working >= 80 Hrs/Mo (2,228 of 6,367, or 35.0%), and No Recorded Work (1,841 of 6,136, or 30.0%).';
+      chartTitle = 'Modeled Six-Month Medi-Cal Losses and Unreturned-Form Losses by Adult Group';
+      chartSub = 'Paired bars compare modeled six-month coverage losses (gray bars, Table 1) with unreturned-form losses among adults who still qualify (blue bars, Table 1).';
+      chartSummary = 'Adults with work-rule exemptions have the most unreturned-form losses in the model (6,831 of 9,435 losses, or 72.4%) because wage checks do not show clinic or school exemptions. Gig and part-time workers follow (3,319 of 5,138, or 64.6%). Regular W-2 earners have 2,228 unreturned-form losses (35.0% of 6,367), and adults with no recorded work have 1,841 (30.0% of 6,136).';
       svgHeight = 236;
       const items = [
-        { name: colNames[0] || 'Working >= 80 Hrs/Mo', total: 6367, avoid: 2228, totalTxt: '6,367 total losses (13.9% of group)', avoidTxt: '2,228 avoidable form losses (35.0% of losses)' },
-        { name: colNames[1] || 'Rule Exemptions', total: 9435, avoid: 6831, totalTxt: '9,435 total losses (19.9% of group)', avoidTxt: '6,831 avoidable form losses (72.4% of losses)' },
-        { name: colNames[2] || 'Gig & Part-Time Work', total: 5138, avoid: 3319, totalTxt: '5138 total losses (38.8% of group)'.replace('5138', '5,138'), avoidTxt: '3,319 avoidable form losses (64.6% of losses)' },
-        { name: colNames[3] || 'No Recorded Work', total: 6136, avoid: 1841, totalTxt: '6,136 total losses (44.6% of group)', avoidTxt: '1,841 avoidable form losses (30.0% of losses)' }
+        { name: colNames[0] || 'Working 80+ Hrs/Mo', total: 6367, avoid: 2228, totalTxt: '6,367 total losses (13.9% of group)', avoidTxt: '2,228 unreturned-form losses (35.0% of losses)' },
+        { name: colNames[1] || 'Rule Exemptions', total: 9435, avoid: 6831, totalTxt: '9,435 total losses (19.9% of group)', avoidTxt: '6,831 unreturned-form losses (72.4% of losses)' },
+        { name: colNames[2] || 'Gig & Part-Time Work', total: 5138, avoid: 3319, totalTxt: '5,138 total losses (38.8% of group)', avoidTxt: '3,319 unreturned-form losses (64.6% of losses)' },
+        { name: colNames[3] || 'No Recorded Work', total: 6136, avoid: 1841, totalTxt: '6,136 total losses (44.6% of group)', avoidTxt: '1,841 unreturned-form losses (30.0% of losses)' }
       ];
       const maxScale = 10500;
       const scalePx = (v) => Math.max(4, Math.round((v / maxScale) * 280));
@@ -1239,15 +996,15 @@ ${rowsSvg}`;
       svgInner = `          <line x1="225" y1="16" x2="225" y2="216" stroke="#CBD5E1" stroke-width="1.5"/>
 ${rowsSvg}`;
     } else if (spec.slug === 'cost-effectiveness-ratio') {
-      chartTitle = 'Visual Comparison: Cost per Healthy Year Gained (QALY) vs. $50,000 Strict Benchmark';
-      chartSub = 'Separate horizontal bars (non-stacked) showing Table 1 cost per healthy year gained across all 4 accounting horizons against the strict $50,000/QALY U.S. value benchmark.';
-      chartSummary = 'Table 1 takeaway: Year 1 startup and ramp costs $48,202/QALY (just under the strict $50,000/QALY line), while Years 2 to 5 ongoing care ($35,090/QALY), 5-year direct operating ($36,089/QALY), and 5-year total cost with startup ($37,712/QALY) all sit well below $50,000/QALY.';
+      chartTitle = 'Cost per Healthy Life-Year Gained (QALY) Across Four Time Spans';
+      chartSub = 'Horizontal bars compare Table 1 total cost per QALY across Year 1 and five-year periods with the $50,000/QALY benchmark.';
+      chartSummary = 'First-year hiring, setup, and early caseload growth bring Year 1 cost to $48,202/QALY, below the $50,000/QALY benchmark. Ongoing care in Years 2 to 5 costs $35,090/QALY. Over five years, direct operating cost ($36,089/QALY) and full cost with setup ($37,712/QALY) both stay below $50,000/QALY.';
       svgHeight = 200;
       const items = [
-        { name: colNames[0] || 'Year 1 Startup & Ramp', val: 48202, txt: '$48,202 / QALY (Yr 1)' },
+        { name: colNames[0] || 'Year 1 Setup & Growth', val: 48202, txt: '$48,202 / QALY (Yr 1)' },
         { name: colNames[1] || 'Years 2 to 5 Ongoing Care', val: 35090, txt: '$35,090 / QALY (Yrs 2-5)' },
         { name: colNames[2] || 'Direct Operating Total', val: 36089, txt: '$36,089 / QALY (5-yr operating)' },
-        { name: colNames[3] || 'Total Cost With Startup', val: 37712, txt: '$37,712 / QALY (5-yr w/ startup)' }
+        { name: colNames[3] || 'Total Cost With Setup', val: 37712, txt: '$37,712 / QALY (5-yr w/ setup)' }
       ];
       const maxScale = 60000;
       const scalePx = (v) => Math.round((v / maxScale) * 330);
@@ -1265,9 +1022,9 @@ ${rowsSvg}`;
           <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0041A5">$50,000 / QALY Strict Benchmark</text>
 ${rowsSvg}`;
     } else if (spec.slug === 'threat-maturation-solutions') {
-      chartTitle = 'Visual Comparison: 2026 vs. 2030 SDI Fund Reserve Ratio Against the 25.0% Reserve Floor';
-      chartSub = 'Separate paired horizontal bars (non-stacked) showing the 2026 onset reserve ratio (slate, Row 3) and 2030 Year-6 reserve ratio (teal/amber, Row 5) relative to 0% and the 25.0% prudent reserve floor.';
-      chartSummary = 'Table 1 takeaway: In 2026, all four paths sit below the 25.0% floor (18.2% baseline, 10.8% expected 12-week, 13.2% conservative 12-week, -3.0% stress test). By 2030 (Row 5), the baseline (50.7%), expected 12-week plan (30.4%), and conservative 12-week plan (36.9%) rebuild above the 25.0% floor, while the 100% full-use stress test stays in deficit (-7.6%).';
+      chartTitle = 'Projected 2026 and 2030 Disability Insurance Reserve Ratios and EDD\'s 25.0% Goal';
+      chartSub = 'Paired bars compare the projected 2026 reserve ratio (gray bars) and 2030 reserve ratio (teal or amber bars) with 0% and EDD\'s 25.0% reserve goal (not a legal minimum).';
+      chartSummary = 'In 2026, early leave payments leave all four modeled cases below EDD\'s 25.0% operational goal (18.2% base, 10.8% expected, 13.2% low-use, and -3.0% at 100% use). By 2030, payroll taxes on all wages raise the base (50.7%), expected plan (30.4%), and low-use plan (36.9%) above 25.0%. Only the 100% full-use case has a negative balance (-7.6%).';
       svgHeight = 236;
       const items = [
         { name: colNames[0] || 'Trend With No New Law', r26: 18.2, r30: 50.7, txt26: '2026: 18.2% ($3.19B)', txt30: '2030: 50.7% ($10.29B)' },
@@ -1296,7 +1053,7 @@ ${rowsSvg}`;
       svgInner = `          <line x1="${zeroX}" y1="20" x2="${zeroX}" y2="222" stroke="#94A3B8" stroke-width="1.5"/>
           <text x="${zeroX}" y="14" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">0%</text>
           <line x1="${threshX}" y1="20" x2="${threshX}" y2="222" stroke="#0041A5" stroke-width="1.5" stroke-dasharray="4,3"/>
-          <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0041A5">25.0% Reserve Floor</text>
+          <text x="${threshX}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0041A5">25.0% EDD Benchmark</text>
 ${rowsSvg}`;
     }
 
@@ -1327,7 +1084,7 @@ ${svgInner}
     }));
     const secTitle = stripVisibleModeTag(simplifyToGrade7(spec.interactive.title));
     const secSub = stripVisibleModeTag(simplifyToGrade7(spec.interactive.subtitle || 'Comparing scenarios side by side on the primary baseline scale.'));
-    const notesTitle = stripVisibleModeTag(simplifyToGrade7(spec.interactive.notesTitle || 'Scenario Calculations, Scale Crosswalk &amp; Parameter Notes'));
+    const notesTitle = stripVisibleModeTag(simplifyToGrade7(spec.interactive.notesTitle || 'Scenario Calculations and Parameter Notes'));
     const notesBullets = (spec.interactive.notesBullets || []).map(b => `<p>&bull; ${simplifyToGrade7(b)}</p>`).join('\n          ');
     const cardsHtml = cleanOptions.map((opt, i) => {
       const isHighlight = i === cleanOptions.length - 1;
@@ -1910,8 +1667,8 @@ ${scenarioGridHtml}
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
-            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[${endnoteEntries.length}], state data sources &amp; math rules)</span>
+            <span class="font-bold text-slate-900">Data Sources, Model Assumptions, and Notes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Notes [1]&ndash;[${endnoteEntries.length}] list data sources and explain the calculations)</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
         </summary>
@@ -1925,7 +1682,7 @@ ${scenarioGridHtml}
           </div>` : ''}
           ${(spec.methodologyParagraphs || []).map(p => `<p>${simplifyToGrade7(p)}</p>`).join('\n          ')}${tetsCalloutHtml}
           <div class="pt-3 border-t border-slate-200/80">
-            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions and Study Notes</h3>
             <dl class="space-y-2.5">
               ${spec.faqs.map(q => `<div>\n                <dt class="font-bold text-slate-900">${simplifyToGrade7(q.question)}</dt>\n                <dd class="text-slate-700 mt-0.5">${simplifyToGrade7(q.answer)}</dd>\n              </div>`).join('\n              ')}
             </dl>

@@ -234,12 +234,30 @@ for (const slug of EXPECTED_SLUGS) {
     }
   }
 
-  // 9. Zero Template Meta-Labels or Unexpanded Econometric Shorthand in Visible Text Outside <details>
+  // 9. Zero Template Meta-Labels, Unexpanded Econometric Shorthand, or Metaphors in Visible Text Outside <details>
   if (/\b(?:Ruler\s+[12AB]|Mode\s+[AB])\b/.test(visibleMainText)) {
     errors.push('Template meta-label (Ruler 1/2/A/B or Mode A/B) leaked into visible text');
   }
   if (/\b(?:TWFE|2SLS|Long-Diff|ICER|NMB)\b|ΔR²|ΔCost|ΔE|\bλ\s*=|\bM\*\s*=/.test(visibleMainText)) {
     errors.push('Unexpanded econometric or formula shorthand (TWFE/2SLS/Long-Diff/ICER/NMB/ΔR²/ΔCost/ΔE/λ=/M*=) leaked into visible text');
+  }
+  const METAPHOR_BAN_RE = /\b(?:squeez\w*|waves?|traps?|pitfalls?|funnels?|ladders?|coin[- ]?flips?|red tape|bounce[- ]?backs?|bounc(?:e|ed|es|ing)|fenc(?:e|ed|es|ing)|chas(?:e|ed|es|ing)|swamp\w*|drain\w*|soak\w*|shortchang\w*|crowd\w*\s+out|bottlenecks?|cushions?|rulers?|steer\w*|weigh(?:s|ed|ing)?|headwinds?|tailwinds?|spillover\w*|bleed\w*|erod\w*|anchor\w*|shield\w*|hurdles?|pockets?|cliff\w*|skyrocket\w*|plummet\w*|slash\w*|pit(?:s|ted|ting)?|flood\w*|starv\w*|fuel\w*|spark\w*|blind spots?|yardsticks?|playing field|one-size-fits-all|move the needle|bucket\w*|triage|ledgers?|ceilings?|fram(?:e|es|ed|ing)|dull\w*|mask\w*|hid(?:e|es|ing|den)|flatten\w*|fall(?:s|ing)?\s+short|strain\w*|spikes?|jumps?|rebuild\w*|sunset\w*|food[- ]deserts?|mobility[- ]deserts?|safety[- ]net|flagships?|handoffs?|drop[- ]?offs?|drift\w*|pathways?|ramp[- ]?ups?|surge\w*|pays?\s+for\s+(?:itself|themselves)|swings?)\b|(?<!main\s)\bfloors?\b|(?<!x\s)\blift(?:s|ed|ing)?\b(?!\s*&|\s+over|\s*=)/gi;
+  const pageTitleText = stripTags((html.match(/<title>([\s\S]*?)<\/title>/i) || ['', ''])[1]);
+  const metaDescText = ((html.match(/<meta\s+name="description"\s+content="([^"]*)"/i) || ['', ''])[1]).trim();
+  const detailsOwnText = [...mainHtml.matchAll(/<details\b[^>]*>([\s\S]*?)<\/details>/gi)]
+    .map(m => stripTags(m[1].replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, ' ')))
+    .join(' ');
+  const metaphorScanTargets = [
+    ['head title/meta', `${pageTitleText} ${metaDescText}`],
+    ['visible text', visibleMainText],
+    ['details notes', detailsOwnText]
+  ];
+  for (const [surfaceName, surfaceText] of metaphorScanTargets) {
+    for (const metMatch of surfaceText.matchAll(METAPHOR_BAN_RE)) {
+      const idx = metMatch.index;
+      const ctx = surfaceText.slice(Math.max(0, idx - 25), idx + metMatch[0].length + 25);
+      errors.push(`Metaphor "${metMatch[0]}" detected in ${surfaceName}: "...${ctx}..."`);
+    }
   }
 
   if (errors.length === 0) {
@@ -272,4 +290,30 @@ if (fs.existsSync(protoPath)) {
 }
 
 console.log(`\nSummary: ${EXPECTED_SLUGS.length - totalFailed}/${EXPECTED_SLUGS.length} modules passed.`);
+
+const hubPath = path.join(LAB_DIR, 'index.html');
+if (fs.existsSync(hubPath)) {
+  const hubHtml = fs.readFileSync(hubPath, 'utf8');
+  const hubMainMatch = hubHtml.match(/<header[\s\S]*?<\/main>/i);
+  const hubText = stripTags(hubMainMatch ? hubMainMatch[0] : stripNonVisible(hubHtml));
+  const hubMetRe = /\b(?:squeez\w*|waves?|traps?|pitfalls?|funnels?|ladders?|coin[- ]?flips?|red tape|bounce[- ]?backs?|bounc(?:e|ed|es|ing)|fenc(?:e|ed|es|ing)|chas(?:e|ed|es|ing)|swamp\w*|drain\w*|soak\w*|shortchang\w*|crowd\w*\s+out|bottlenecks?|cushions?|rulers?|steer\w*|weigh(?:s|ed|ing)?|headwinds?|tailwinds?|spillover\w*|bleed\w*|erod\w*|anchor\w*|shield\w*|hurdles?|pockets?|cliff\w*|skyrocket\w*|plummet\w*|slash\w*|pit(?:s|ted|ting)?|flood\w*|starv\w*|fuel\w*|spark\w*|blind spots?|yardsticks?|playing field|one-size-fits-all|move the needle|bucket\w*|triage|ledgers?|ceilings?|fram(?:e|es|ed|ing)|dull\w*|mask\w*|hid(?:e|es|ing|den)|flatten\w*|fall(?:s|ing)?\s+short|strain\w*|spikes?|jumps?|rebuild\w*|sunset\w*|food[- ]deserts?|mobility[- ]deserts?|safety[- ]net|flagships?|handoffs?|drop[- ]?offs?|drift\w*|pathways?|ramp[- ]?ups?|surge\w*|pays?\s+for\s+(?:itself|themselves)|swings?|floors?|lift(?:s|ed|ing)?)\b/i;
+  const hubMet = hubText.match(hubMetRe);
+  if (hubMet) {
+    totalFailed++;
+    const idx = hubMet.index;
+    console.error(`FAIL [hub index.html]:\n  - Metaphor "${hubMet[0]}" detected: "...${hubText.slice(Math.max(0, idx - 25), idx + hubMet[0].length + 25)}..."`);
+  }
+}
+
+const { checkAllReadingLevels } = require('./check_reading_level');
+const readingCheck = checkAllReadingLevels({ maxFullFk: 8.5, maxNarrativeFk: 8.8, minNarrativeAsl: 10.0, quiet: true });
+if (readingCheck.errors.length > 0) {
+  totalFailed += readingCheck.errors.length;
+  console.error('FAIL [reading-level-gate]:');
+  for (const e of readingCheck.errors) console.error(`  - ${e}`);
+} else {
+  const meanFull = readingCheck.results.reduce((s, r) => s + r.full.fk, 0) / readingCheck.results.length;
+  console.log(`PASS [reading-level-gate] (24/24 case studies + hub <= Grade 8.5; mean Full FK = ${meanFull.toFixed(2)})`);
+}
+
 if (totalFailed > 0) process.exit(1);

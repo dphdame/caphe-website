@@ -11,11 +11,11 @@
     gtag('js', new Date());
     gtag('config', 'G-E1LG1N11QE');
   </script>
-  <title>Separating Mediators From Confounders | CAPHE</title>
-  <meta name="description" content="Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.">
+  <title>Baseline Controls vs. Care Steps in Models | CAPHE</title>
+  <meta name="description" content="Separate pre-start shared causes, post-start care steps, current-biller filters, and two-step checks across four California health data sets.">
   <link rel="canonical" href="https://www.caphegroup.org/case-studies/classifying-causal-mechanisms">
-  <meta property="og:title" content="Separating Mediators From Confounders | CAPHE">
-  <meta property="og:description" content="Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.">
+  <meta property="og:title" content="Baseline Controls vs. Care Steps in Models | CAPHE">
+  <meta property="og:description" content="Separate pre-start shared causes, post-start care steps, current-biller filters, and two-step checks across four California health data sets.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.caphegroup.org/case-studies/classifying-causal-mechanisms">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -367,8 +367,8 @@
     "Article",
     "LearningResource"
   ],
-  "headline": "Post-Enrollment Clinic-Visit Controls Remove the Primary Care Pathway From Modeled Hospital Evaluations",
-  "description": "Classify confounders, mediators, colliders, and instruments before choosing regression controls, using four separate verified CAPHE datasets as inputs.",
+  "headline": "Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays",
+  "description": "Separate pre-start shared causes, post-start care steps, current-biller filters, and two-step checks across four California health data sets.",
   "author": {
     "@type": "Organization",
     "name": "CAPHE",
@@ -400,26 +400,26 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Why shouldn't an analyst control for post-start clinic visits when measuring whether CHWs cut hospital stays?",
+      "name": "Why can adjusting for post-start clinic visits understate CHW hospital drops?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Raising primary care visits (from 57.1% to 71.7% TOT, OR = 1.90) is a main care step through which CHWs prevent hospital stays (-30%). Controlling for post-start clinic visits holds that step fixed. That blocks part of the program path and understates total CHW value."
+        "text": "More clinic visits (rising from 57.1% to 71.7%, odds ratio 1.90) may help explain 30% fewer hospital stays. The trial did not measure that share alone. Adjusting for later visits aims to test effects apart from clinic care and needs added assumptions. So adjusting for visits can remove hospital drops that happen through primary care."
       }
     },
     {
       "@type": "Question",
-      "name": "How can an analyst tell whether a variable is a confounder or a care step?",
+      "name": "How can an analyst tell a baseline confounder from a post-start care step?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Check the clock and the direction of cause. A confounder is set BEFORE the program starts (like baseline age, pre-program poverty, or county land area) and affects both participation and health. A care step changes AFTER the program starts because of the program."
+        "text": "Check whether the factor existed before start or changed after the program began. A baseline confounder like pre-start poverty or age exists first and affects both entry and health. Adjusting for it can cut bias when model rules hold. By contrast, a care step changes after start and may cause part of the gain."
       }
     },
     {
       "@type": "Question",
-      "name": "What is an instrument, and why is it kept out of the outcome controls?",
+      "name": "Why is the budget predictor used in the first step of the two-step model?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "An instrument shifts the policy input (here, county public health spending) without a direct path to the health outcome. It enters Stage 1 of two-stage least squares to isolate spending shifts that are not driven by mortality shocks. In the LHA long-difference model of 57 California counties (2003-2016), the Lewbel instruments have a first-stage F of 111.20 and Hansen J p-value of 0.2132. Adding an instrument as an outcome control would absorb the clean spending variation."
+        "text": "Two-step models assume the Stage 1 predictor affects death rates only through county spending. Adding it as an outcome control instead adjusts for budget changes that Stage 1 uses. Here, first-step F = 111.20 tests predictor strength, not whether that untestable causal rule holds. Because that rule cannot be tested directly, 5.31 stays an extra check beside 4.32 (adjusted p = 0.067)."
       }
     }
   ]
@@ -481,29 +481,29 @@
     <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
     <div class="border-b border-slate-200 pb-6 mb-8">
       <div class="text-xs font-bold text-[#0041A5] mb-2">
-        CAPHE Case Studies &middot; System Dynamics &amp; Feedback
+        CAPHE Case Studies &middot; Choosing Model Controls
       </div>
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
-        Post-Enrollment Clinic-Visit Controls Remove the Primary Care Pathway From Modeled Hospital Evaluations
+        Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays
       </h1>
       <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
-        Splitting pre-program background factors from care steps on the path in modeled hospital savings checks.
+        Separating pre-start causes from post-start care steps, sample filters, and Stage 1 checks in health models.
       </p>
       <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
-        Health teams decide which household and clinic measures to hold constant before scoring a program. Pre-existing conditions like family poverty come before the program starts, whereas scheduled doctor visits happen as part of the care plan. Keeping pre-existing traits separate from active care steps shows the full program impact.
+        Before testing a health program, analysts pick which family, clinic, and biller factors to adjust for. Timing sets each factor's role. A factor like poverty may affect both who joins a program and health. When it exists before program start, researchers call it a baseline confounder. By contrast, clinic visits occur after start as a care step. Adjusting for every column without checking timing can leave out program gains or bias the test group.
       </p>
       <!-- geo:answer:start -->
       <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
-        In California Community Health Worker evaluations, leaving post-start clinic visits open keeps the full <strong>30% drop in hospital stays</strong> tied to a <strong>14.6 point rise in primary care visits (71.7% vs. 57.1%).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Controlling for post-start clinic visits removes that care path, while restricting a provider test set to <strong>55,018 active 2024 billers</strong> leaves only <strong>9 of 95 excluded providers</strong> (after <strong>90.5%</strong> exited before 2024).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> Adjusting only for pre-program traits keeps the full policy impact intact.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup>
+        In Community Health Worker (CHW) trials, not adjusting for later doctor visits keeps gains that occur through visits.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Those trials found <strong>30%</strong> fewer hospital stays, and primary care visits rose from <strong>57.1% to 71.7%</strong> (odds ratio <strong>1.90).</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Adjusting for later visits can remove primary care gains, though the trial did not measure that share alone.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a><a href="#endnote-3" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[3]</a></sup> Three other data sets show the next roles. Poverty accounts for <strong>62.2%</strong> of Santa Clara food-need differences, moving store distance from <strong>-0.578 to -0.017.</strong><sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-1" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[1]</a></sup> Limiting a fraud test to <strong>55,018</strong> billers in 2024 leaves out 86 stopped billers and keeps <strong>9 of 95</strong> bans.<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup> A two-step check <strong>(111.20</strong> first-step F) estimates <strong>5.31</strong> fewer deaths per 100,000 per $10 beside <strong>4.32</strong> over 13 years (adjusted <em>p</em> = 0.067).<sup class="text-xs font-semibold text-[#0041A5] ml-0.5"><a href="#endnote-2" onclick="document.getElementById('data-sources-endnotes').open=true" class="no-underline hover:underline">[2]</a></sup>
       </p>
       <!-- geo:answer:end -->
     </div>
 
     <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
     <div class="mb-3">
-      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Four Variable Roles in Health Policy Data and Models</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 1. Four Examples of How a Model Uses Different Factors</h2>
       <p class="text-sm text-slate-600 mt-1 max-w-4xl">
-        Each column uses a separate CAPHE dataset to show how variable roles guide model controls.
+        Each column uses one data set to show an earlier shared cause, a care step, a record filter, or a Stage 1 check.
       </p>
     </div>
 
@@ -514,135 +514,135 @@
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
       <div class="overflow-x-auto">
         <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
-          <caption class="sr-only">Four-column grid showing the source file, causal path, estimate when left out or added as a control, base input, and model rule.</caption>
+          <caption class="sr-only">Compare four data sets by when each factor occurs, how adjusting for it changes results, source numbers, and rules for using it.</caption>
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200">
               <th scope="col" class="py-4 px-5 text-xs font-bold text-slate-700 col-label align-top">
-                Variable Role
+                Factor Role
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
                 <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 1: Confounder</div>
-                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Baseline County Poverty</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Pre-Start Tract Poverty</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
                 <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 2: Care Step</div>
-                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Primary Care Visits</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Post-Start Clinic Visits</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 3: Collider</div>
-                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Active Billing Subset</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 3: Sample Filter</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Still Billing in 2024</div>
               </th>
               <th scope="col" class="py-3.5 px-4 text-xs font-bold text-slate-900 col-data align-top border-l border-slate-200">
-                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 4: Instrument</div>
-                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Supply-Side Budget Shift</div>
+                <div class="text-xs font-bold text-[#0041A5] mb-0.5">Role 4: Stage 1 Check</div>
+                <div class="text-sm sm:text-base font-bold text-slate-950 leading-snug">Two-Step Data-Spread Check</div>
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200 text-sm">
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Source File
+                Source Data
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Food access tracts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">408 tracts</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Santa Clara County tracts</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">408 tracts</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CHW trial data</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">TOT rates</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Community Health Worker randomized trials</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Medicaid claims &amp; OIG list</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">National Medicaid claims &amp; ban list</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">County spending panel</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">57 counties</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">County health budgets</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">57 counties</span>
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Causal Path
+                When It Occurs &amp; What It Affects
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Poverty -&gt; Distance &amp; Food Need</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Exists before store sites &amp; food needs</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">CHW -&gt; Clinic Visits -&gt; Stays</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Rises after start alongside lower stays</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Bans -&gt; Tenure &larr; Bill Features</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Past billing &amp; inquiries affect 2024 stops</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Shift -&gt; Spending -&gt; Deaths</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Data spread helps predict budget changes</span>
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Result When Left Out
+                Result Without Adjusting or Filtering
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance looks helpful</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-0.578 slope</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Unadjusted distance estimate: -0.578</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Total effect kept</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">-30% stays</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Includes visit step in 30% stay drop</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Full list kept: 95 of 95 exclusions</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">All past billers: 0.724 score</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">95 bans</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Pandemic slope mixes surge aid</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">+2.47</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">13-yr link: -4.32 / 100K</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">adj. p = 0.067</span>
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Result When Added as Control
+                Result When Adjusted or Filtered
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance: -0.017 flat slope</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Distance changes to -0.017</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">p = 0.827</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Direct part only</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">path dropped</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Can leave out gains from clinic visits</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Active-only subset: 9 of 95 left</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">9 of 95 bans</span><span class="block font-sans text-xs font-normal text-slate-600 mt-0.5 leading-snug">0.442 in 2024 billers</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Stage 1 use: 5.31 fewer deaths / 100K</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Two-step check: 5.31 fewer / 100K</span>
               </td>
             </tr>
             <tr class="bg-emerald-50/70 border-y-2 border-emerald-200">
               <th scope="row" class="py-4 px-5 font-bold text-emerald-950 bg-emerald-100/60 align-top leading-snug">
-                Base Input
+                Source Figure
               </th>
               <td class="py-4 px-4 align-top text-emerald-800 border-l border-emerald-200">
-                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Poverty explains 62.2% of gap</span>
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Poverty accounts for 62.2% of score differences</span>
                 <div class="inline-mini-bar" aria-hidden="true"><div style="width: 62%; background: #0D9488;"></div></div>
               </td>
               <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
-                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">71.7% vs. 57.1% visits</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">1.90x</span>
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">71.7% vs. 57.1% clinic visits</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">1.90 odds ratio</span>
                 <div class="inline-mini-bar" aria-hidden="true"><div style="width: 72%; background: #0041A5;"></div></div>
               </td>
               <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
-                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Active months: 38.0th vs. 50.0th</span>
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">Months billed: 38.0th vs. 50.0th percentile</span>
                 <div class="inline-mini-bar" aria-hidden="true"><div style="width: 38%; background: #0041A5;"></div></div>
               </td>
               <td class="py-4 px-4 align-top text-[#003080] border-l border-emerald-200">
-                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">13-yr IV: 5.31 fewer / 100K</span>
+                <span class="block font-mono text-base sm:text-lg font-bold leading-snug">5.31 fewer / 100K</span><span class="block font-sans text-xs font-semibold opacity-90 mt-0.5 leading-snug">F = 111.20 strength check</span>
                 <div class="inline-mini-bar" aria-hidden="true"><div style="width: 98%; background: #0041A5;"></div></div>
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Model Rule
+                Rule for Using the Factor
               </th>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">ADD as baseline control</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Adjust for as a pre-start factor</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">LEAVE OPEN in total model</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Do not adjust when estimating total effect</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">DO NOT filter or control</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Report all past billers &amp; 2024 billers</span>
               </td>
               <td class="py-3.5 px-4 align-top border-l border-slate-200">
-                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">USE in Stage 1 only</span>
+                <span class="block font-mono text-sm sm:text-base font-bold text-slate-950 leading-snug">Use only in Stage 1 as an extra check</span>
               </td>
             </tr>
           </tbody>
@@ -654,21 +654,21 @@
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Modeled Estimates</span>
+            <span class="font-bold text-slate-900">Table 1 Notes &amp; * Calculated Estimates</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
         <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 text-xs sm:text-sm text-slate-700 leading-relaxed">
-          <p><strong class="text-slate-800">Table 1 Notes (Mode A Synthesis on Exact Source Statistics):</strong> Each column draws on a separate CAPHE dataset; the four roles are not estimated in one joint regression. Role 1: raw distance β = -0.578 (p &lt; 0.0001); with poverty controlled, distance β = -0.017 (p = 0.827); poverty model R² = 62.2%. Role 2: visit uptake 71.7% vs. 57.1%, OR = 1.90 (TOT). Role 3: full-universe screening AUC = 0.724 (95% CI 0.667-0.777) vs. observed active-only subgroup AUC = 0.442 (95% CI 0.212-0.664; exit-year reweighted AUC = 0.653). Role 4: -5.31 Long-Difference Lewbel 2SLS slope per $10/capita (first-stage F = 111.20; Hansen J p = 0.2132; alongside -2.38 annual TWFE and -4.32 13-year cumulative OLS).</p><p class="mt-1.5"><strong>Column Scope.</strong> <strong>Baseline County Poverty.</strong> Shared Cause (X &larr; C -&gt; Y) | N = 408 California urban tracts (ACS); unit: tract. <strong>Primary Care Visits.</strong> Program Path (X -&gt; M -&gt; Y) | IMPaCT CHW RCTs / CA CHW model (TOT); unit: member. <strong>Active Billing Subset.</strong> Shared Effect (X -&gt; K &larr; Y) | N = 488,032 Medicaid billing NPIs (55,018 active in 2024); unit: billing NPI. <strong>Supply-Side Budget Shift.</strong> Stage 1 Shift (Z -&gt; X -&gt; Y) | 57 CA counties, 2003-2016 long-diff; unit: county.</p><p class="mt-1.5"><strong>Model Crosswalk.</strong> Plain table labels map to standard study models. <em>Raw Yearly Average / Simple Avg</em> is an unadjusted OLS model where routine and outbreak budgets mix. <em>County &amp; Year FE</em> is a Two-Way Fixed Effects (TWFE) panel model. <em>Routine-Budget Analysis / 21-Year County Budget Model</em> is a Two-Stage Least Squares (2SLS / Lewbel 2012) model that isolates routine base budget shifts. <em>County Board Budget Rules</em> uses Brown (2014) county board rules.</p><p class="mt-1.5"><strong>Two-Ruler Benchmark Summary.</strong> Mode A Synthesis With Observed CAPHE Estimates as Base Inputs. Ruler 1: Model Controlling for the Care Step: <strong>Reports β_direct Only (Care Path α·γ Held Fixed)</strong>. Adding post-start primary care visits as a control holds the care step fixed. The model then reports only the direct part. It leaves out the gain that runs through the <strong>+14.6 point rise in clinic visits (71.7% vs. 57.1%)</strong>. Ruler 2: Path-Matched Model (Total Effect): <strong>Reports τ_total = β_direct + α·γ</strong>. Controlling only for pre-program traits like baseline poverty, and leaving clinic visits open, keeps the <strong>total effect</strong>. In the CHW trials, that total effect is a <strong>30% drop in hospital stays</strong>.</p>
+          <p><strong class="text-slate-800">Table 1 Notes (Summary of Results From Separate Data Sets).</strong> Each column uses a separate CAPHE data set rather than one combined model. Role 1 (Baseline Confounder): before adjustment, greater store distance links with a lower food-need score (-0.578, p &lt; 0.0001). After adjusting for tract poverty (accounting for 62.2% of score differences across 408 tracts), the estimate is -0.017 (p = 0.827). Role 2 (Care Step): primary care visits rose from 57.1% to 71.7% (odds ratio 1.90 among treated patients) alongside 30% fewer hospital stays. Role 3 (Later Record Filter): a later selection rule affected by earlier billing and inquiries can bias the test group. The fraud test's ranking score (AUC) is 0.724 (95% range 0.667-0.777) across 487,479 billers vs. 0.442 (95% range 0.212-0.664) among 55,018 providers still billing in 2024 (9 of 95 bans; 0.653 after stop-date reweighting). Role 4 (Two-Step Check): Lewbel's two-step method using 13-year changes and differences in data spread estimates 5.31 fewer deaths per 100,000 per $10 (first-step F = 111.20) beside the 4.32 13-year link (unadjusted p = 0.0052; adjusted p = 0.067). The Hansen J check gives p = 0.2132, which checks input agreement rather than proving causal assumptions.</p><p class="mt-1.5"><strong>Areas and Groups in Each Column.</strong> <strong>Pre-Start Tract Poverty.</strong> 408 Santa Clara County census tracts (ACS). <strong>Post-Start Clinic Visits.</strong> CHW randomized trials; patient level. <strong>Still Billing in 2024.</strong> 488,032 Medicaid billers (55,018 billing in 2024). <strong>Two-Step Data-Spread Check.</strong> 57 CA counties, 2003-2016 13-yr changes.</p><p class="mt-1.5"><strong>Simple Comparison vs. Adjusted Comparison.</strong> Summary Built on Observed Inputs From Separate CAPHE Studies. Model Adjusting for Post-Start Clinic Visits: <strong>Aims to Estimate Effects Apart From Visits</strong>. Adjusting for clinic visits after enrollment can leave out hospital stays avoided through primary care, and needs added assumptions. Model Adjusting Only for Pre-Start Factors: <strong>Aims to Estimate Total Program Effect</strong>. Adjusting for pre-start factors while not adjusting for later clinic visits keeps effects that occur through primary care in the 30% hospital stay drop.</p>
         </div>
       </details>
     </div>
 
     <!-- BLOCK 4: TABLE 2 CONTEXT, TRADEOFFS & POLICY FIT -->
     <div class="mb-3">
-      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Decision Guide: When to Control, Leave Open, or Use Stage 1</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-950">Table 2. Picking Model Controls Without Leaving Out Care Steps</h2>
       <p class="text-sm text-slate-600 mt-1 max-w-4xl">
-        Choosing model controls that match each variable's role in county health evaluations.
+        How each factor's timing sets a model rule that cuts bias and keeps key records.
       </p>
     </div>
 
@@ -679,97 +679,97 @@
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
       <div class="overflow-x-auto">
         <table class="min-w-[860px] w-full text-left border-collapse" id="policyFitTable">
-          <caption class="sr-only">Decision grid mapping each variable role to its timing, model choice, budget impact, and audit rule.</caption>
+          <caption class="sr-only">Table matching pre-start shared causes, post-start care steps, later record filters, and two-step checks to model rules.</caption>
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200">
               <th scope="col" class="py-3.5 px-5 text-xs font-bold text-slate-800 col-label align-top">
                 Choice Factor
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
-                Confounder: Baseline Poverty
+                Confounder: Tract Poverty
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
-                Care Step: Primary Care Visits
+                Care Step: Clinic Visits
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
-                Collider: Active Billing Subset
+                Filter: 2024 Billers
               </th>
               <th scope="col" class="py-3.5 px-4 text-sm font-bold text-slate-950 col-data align-top leading-snug border-l border-slate-200">
-                Instrument: Supply-Side Shift
+                Two-Step Data-Spread Check
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200 text-sm">
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Timing &amp; Path Check
+                How to Spot the Role
               </th>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Set before the program starts, such as baseline tract poverty (62.2% of food need gap).
+                Measured before the program and accounts for 62.2% of food-need score differences.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Changed by the program on the way to health gains, such as CHW clinic visits (+14.6 points).
+                Changes after enrollment as CHW support raises clinic visits from 57.1% to 71.7%.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                A post-billing status where 90.5% of excluded billers exited before 2024.
+                Reflects later billing after 90.5% of later-banned billers stopped before 2024.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Shifts county health spending in Stage 1 without a direct link to death rates.
+                Predicts county budget changes in Stage 1 rather than serving as an outcome control.
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Model Choice by Role
+                Right Model Rule
               </th>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Add baseline poverty as a control so income gaps do not slant store distance slopes.
+                Adjust for poverty so differences linked to poverty are not assigned to store distance.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Measure the CHW effect on hospital stays without controlling for post-start clinic visits.
+                Do not adjust for later visits when estimating the total reduction in hospital stays.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Keep the full provider list instead of limiting the test set to 2024 active billers.
+                Report all 487,479 past billers (0.724; 0.653 reweighted) beside 2024 billers (0.442).
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Put the budget shift in Stage 1 and report first-stage strength in the table notes.
+                Compare the -5.31 check with the -4.32 13-year link (adj. p = 0.067) in study notes.
               </td>
             </tr>
             <tr class="hover:bg-slate-50/50">
               <th scope="row" class="py-3.5 px-5 font-semibold text-slate-900 bg-slate-50/70 align-top leading-snug">
-                Budget Consequence
+                Error When Misused
               </th>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Skipping baseline controls can steer food grants toward high-income areas.
+                Leaving poverty out may wrongly assign poverty differences to store distance.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Controlling for clinic visits removes the care path and understates CHW hospital savings.
+                Adjusting for later doctor visits can remove effects that occur through clinic care.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                The 2024 active subset drops 86 of 95 excluded billers and falls below a coin-flip rank.
+                Full-list scores overstate 2024 accuracy, while 2024-only filters leave out 86 bans.
               </td>
               <td class="py-3.5 px-4 text-xs sm:text-[13.5px] text-slate-900 leading-snug align-top border-l border-slate-200">
-                Adding the Stage 1 shift as a control absorbs the clean spending changes.
+                Treating two-step checks like trials overstates proof because causal rules are untestable.
               </td>
             </tr>
             <tr class="bg-slate-50 border-t-2 border-slate-200">
               <th scope="row" class="py-4 px-5 font-bold text-slate-950 bg-slate-100 align-top leading-snug">
-                Best-Fit Audit Rule
+                Best-Fit Review Rule
               </th>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
-                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Lock Pre-Program Controls<span class="sr-only">.</span></strong>
-                <span class="block text-slate-800 leading-snug">Measure and control for background factors at baseline before enrollment starts.</span>
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Use Factors Before Start<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Measure income and age before program start so care cannot change those controls.</span>
               </td>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
-                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Report Total Effect First<span class="sr-only">.</span></strong>
-                <span class="block text-slate-800 leading-snug">Estimate the total program effect first, then show care-path shares in a second step.</span>
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Estimate Total Effect First<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Report total hospital stay reductions before testing how much occurred through visits.</span>
               </td>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
-                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Full List Totals<span class="sr-only">.</span></strong>
-                <span class="block text-slate-800 leading-snug">Run full-list checks before looking at active-biller or admitted-patient subsets.</span>
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Compare All &amp; Current Billers<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Check stop-date reweighted full scores and 2024 biller scores before buying tools.</span>
               </td>
               <td class="py-4 px-4 text-xs sm:text-[13.5px] leading-relaxed align-top border-l border-slate-200">
-                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Instruments in Stage 1<span class="sr-only">.</span></strong>
-                <span class="block text-slate-800 leading-snug">Use instruments only in Stage 1 and never add them as outcome controls.</span>
+                <strong class="block text-sm font-bold text-[#003080] mb-0.5 leading-snug">Keep Stage 1 as a Check<span class="sr-only">.</span></strong>
+                <span class="block text-slate-800 leading-snug">Report two-step results only as extra checks beside county links (adj. p = 0.067).</span>
               </td>
             </tr>
           </tbody>
@@ -781,25 +781,25 @@
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Table 2 Notes: Over-Control Math, Collider &amp; Instrument Notes, Data Provenance</span>
+            <span class="font-bold text-slate-900">Table 2 Notes: Clinic-Visit Effects, Group Rules, and Data Sources</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand notes</span>
         </summary>
         <div class="px-5 pb-4 pt-3 border-t border-slate-200/60 leading-relaxed space-y-2">
-          <p>&bull; <strong>Program Step Over-Control Math:</strong> Suppose treatment X shifts care step M (M = α·X + u) and Y = β_direct·X + γ·M + ε. The total effect of X on Y is τ_total = β_direct + α·γ. Adding M as a control estimates only β_direct. The share removed is α·γ / τ_total. It reaches 100% only when β_direct = 0. The CAPHE CHW inputs (71.7% vs. 57.1%, OR = 1.90; -30% hospital stays) do not split those two pieces.</p>
-          <p>&bull; <strong>Separate Datasets (Mode A Synthesis):</strong> The four columns show roles using four separate CAPHE files. Values are observed base inputs from each file. They are not from one joint regression and should not be compared across columns.</p>
-          <p>&bull; <strong>Subgroup Selection Note:</strong> In the linked Medicaid file, the 55,018 providers still billing in 2024 (9 exclusions vs. 55,009 controls) show an observed screening AUC of 0.442 (95% CI 0.212-0.664), compared with 0.724 (95% CI 0.667-0.777) across all 487,479 providers and 0.653 when exit-year reweighted. Months Active has a SHAP correlation of r = -0.9009, and excluded providers sit at the 38.0th vs. 50.0th median peer percentile of active months, though with 9 active cases the subgroup difference does not isolate early exit as the sole cause.</p>
-          <p>&bull; <strong>Instrument &amp; Unit Note:</strong> Instruments play a different role from controls. In the LHA panel (57 California counties, 2003-2023), long-difference Lewbel (2012) instruments isolate multi-year budget changes from residual outbreak spending mix. The 5.31 fewer deaths/100K per $10/capita Long-Difference 2SLS estimate (2003-2016, first-stage F = 111.20, Hansen J p = 0.2132; and -11.49 in 2003-2019 excl. 5 LGRS outliers, F = 13.09, J p = 0.4726) uses these instruments in Stage 1 of 2SLS instead of as outcome controls.</p>
-          <p>&bull; <strong>Data Provenance:</strong> Inputs come from FoodSecurity/analysis/outputs/regression_results_poverty_distance.csv and regression_model_statistics.csv (R² = 62.2%), METHODOLOGICAL_REVIEW_ARTICLES_5-12.md (disability OR = 1.76), CHWs/08_PhD_Final/DERIVATIONS.md and Kangovi et al. (2020) (71.7% vs. 57.1% TOT, OR = 1.90, -30% hospital stays), Mcaid/05_fraud_detection/paper/output/results.json (prospective_auc = 0.724, active_subset_auc = 0.442, shap_months_active_r; peer ranks in output/tables/tab_a3_base_rates.tex), and public/tools/lha-calculator/method.html (-2.38 annual TWFE, -4.32 13-yr cumulative OLS, -5.31 Long-Difference 2SLS, F = 111.20, Hansen J p = 0.2132, 57 counties).</p>
+          <p>&bull; <strong>How Adjusting for Later Clinic Visits Changes the Estimate.</strong> In this model, X means program entry, M means primary care visits, and Y means hospital stays. The total effect combines the direct effect with any effect through visits (<code>&tau;_total = &beta;_direct + &alpha;&middot;&gamma;</code>). Adjusting for later visits M removes <code>&alpha;&middot;&gamma;</code>. Trials show CHWs raised primary care visits (71.7% vs. 57.1%, odds ratio 1.90) and cut hospital stays by 30%, though the exact share caused by visits requires added assumptions to measure.</p>
+          <p>&bull; <strong>Separate Data Sets and Common-Scale Estimate.</strong> Each column uses its own CAPHE study rather than one shared model. Across 408 Santa Clara County tracts, adjusting for poverty and putting measures on a common scale gives a store-distance estimate of -0.0026 (p = 0.827; -0.578 unadjusted and -0.017 in original units).</p>
+          <p>&bull; <strong>Past Billers vs. 2024 Billers.</strong> Across all 487,479 billers, the fraud test's AUC is 0.724 (95% range 0.667-0.777), compared with 0.653 after stop-date reweighting and 0.442 (95% range 0.212-0.664) among 55,018 providers still billing in 2024 (9 bans vs. 55,009 comparison billers; months billed ranked at the 38.0th vs. 50.0th peer percentile).</p>
+          <p>&bull; <strong>Checks on Stage 1 Predictors.</strong> Across 57 counties in 2003-2016, Lewbel's predictors created from differences in data spread get a first-step F-statistic of 111.20. That F-score tests Stage 1 prediction strength, not the untestable assumption that predictors affect deaths only through budgets. Hansen J gives p = 0.2132, and the check estimates 5.31 fewer deaths per 100,000 per $10 beside 2.38 yearly and 4.32 over 13 years (adjusted p = 0.067).</p>
+          <p>&bull; <strong>Data Sources.</strong> Results come from CAPHE Santa Clara tract tables, CHW trial summaries, Medicaid fraud test outputs, and LHA county spending files.</p>
         </div>
       </details>
     </div>
 
     <!-- POLICY FIT SYNTHESIS (VISIBLE TAKEAWAY) -->
     <section class="synthesis bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-8 shadow-sm" aria-label="Policy Fit Synthesis">
-      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Mapping the System Path Comes Before Running the Model</h2>
-      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">Adding every health and income variable to a tract regression mixes pre-program income gaps with health steps that sit on the path between food and chronic disease. If a variable is a pre-program confounder (such as poverty explaining 62.2% of tract food-need variance), leaving it out slants the slope. If a variable is a post-start care step, such as a Community Health Worker linking a patient to primary care (raising visits from 57.1% to 71.7%, OR = 1.90) to prevent a hospital stay, controlling for clinic visits subtracts part of the program's gain.</p>
-      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Before running a model, health economists map each variable in a causal diagram. Confounders are shared causes measured before treatment, so analysts control for them. Care steps sit on the causal path, so analysts leave them open when measuring total impact. Colliders and post-outcome filters like active 2024 billing alter the evaluation sample (where the 2024 active subset shows an observed 0.442 AUC vs. 0.724 on the full list), so analysts avoid filtering on them. Instruments shift treatment with no direct link to the outcome, so analysts use them in Stage 1 (as the LHA 13-year routine-budget IV model does with F = 111.20).</p>
+      <h2 class="text-lg sm:text-xl font-bold text-[#003080] mb-2">Why Factor Timing Comes Before Choosing Model Controls</h2>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed mb-3">Putting all columns into one model treats pre-start causes like care steps after start. A shared cause like neighborhood poverty exists before the factors it may affect. Across 408 Santa Clara tracts, poverty accounts for 62.2% of food-need score differences. Before poverty adjustment, store distance is -0.578, vs. -0.017 after poverty adjustment. By contrast, clinic visits in CHW trials rise from 57.1% to 71.7% (odds ratio 1.90) alongside 30% fewer hospital stays.</p>
+      <p class="text-sm sm:text-base text-slate-800 leading-relaxed">Checking when each factor occurs keeps every column in its proper role. Analysts adjust for pre-start causes and do not adjust for later care steps when estimating total effects. Audit teams likewise show full-list fraud scores (0.724; 0.653 reweighted) beside 2024 billers (0.442 across 9 of 95 bans). County checks keep budget predictors in Stage 1 (first-step F = 111.20), not in outcome controls. If predictors affect deaths only through budgets, that check gives 5.31 fewer deaths per 100,000 beside 4.32 (adjusted p = 0.067).</p>
     </section>
 
     <!-- BLOCK 5: COLLAPSIBLE DATA SOURCES, MODEL ASSUMPTIONS, FAQS & ENDNOTES -->
@@ -810,40 +810,40 @@
             <svg class="w-4 h-4 text-[#0041A5] transition-transform duration-200 group-open:rotate-90 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="font-bold text-slate-900">Data Sources, Model Inputs, Notes &amp; Endnotes</span>
-            <span class="text-xs text-slate-500 font-normal ml-2">(Numbered endnotes [1]&ndash;[6], state data sources &amp; math rules)</span>
+            <span class="font-bold text-slate-900">Data Sources, Model Assumptions, and Notes</span>
+            <span class="text-xs text-slate-500 font-normal ml-2">(Notes [1]&ndash;[6] list data sources and explain the calculations)</span>
           </div>
           <span class="text-xs font-semibold text-[#0041A5] bg-white border border-slate-300 rounded px-2.5 py-1 whitespace-nowrap">Expand details</span>
         </summary>
         <div class="px-5 pb-5 pt-3 border-t border-slate-200/60 leading-relaxed space-y-3">
-          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> System Dynamics &amp; Feedback &middot; Confounders, Program Steps, Colliders &amp; Instruments (Mode A Synthesis)</p>
+          <p class="text-xs text-slate-600"><strong>Case Study Focus:</strong> Choosing Model Controls &middot; Shared Causes, Care Steps &amp; Record Filters</p>
           <div class="pb-3 border-b border-slate-200/80">
             <h3 class="text-sm font-bold text-slate-900 mb-2">Numbered Endnotes &amp; Main Sources</h3>
             <ol class="list-none pl-0 space-y-1 text-xs sm:text-sm text-slate-800">
-              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Pre-Program Baseline Confounders vs. Program Mechanisms:</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a> California urban tract panel covers 408 tracts (baseline poverty explains 62.2% of food-need variance). <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), <em>Health Affairs</em></a> shows 71.7% vs. 57.1% primary care visits (OR = 1.90) and -30% hospital stays.</li>
-              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Filtered Subsample &amp; Supply-Side Variables:</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> linked to <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a> shows a 0.724 full-list AUC vs. 0.442 AUC in the 2024 active-biller subset (0.653 when exit-year reweighted). The 57-county LHA spending panel finds a -2.38 annual TWFE slope, -4.32 13-year cumulative OLS slope, and -5.31 Long-Difference Lewbel 2SLS slope (first-stage F = 111.20, Hansen J p = 0.2132).</li>
-              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Methodological Reference on Control Selection:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), <em>Sociological Methods &amp; Research</em></a>.</li>
-              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi, S., et al. (2020), Health Affairs (IMPaCT CHW RCTs)</a></li>
-              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Lewbel, A. (2012), JBES</a></li>
+              <li id="endnote-1"><span class="font-bold text-[#0041A5] mr-1.5">[1]</span><strong>Earlier Shared Causes vs. Later Care Steps.</strong> <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census American Community Survey (ACS)</a> data for Santa Clara County cover 408 census tracts. Tract poverty accounts for 62.2% of differences in food-need scores, and the store-distance estimate changes from -0.578 before adjustment to -0.017 after poverty adjustment (-0.0026 on a common scale, p = 0.827). <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), <em>Health Affairs</em></a> reports 71.7% vs. 57.1% primary care completion (odds ratio 1.90) and 30% fewer hospital stays.</li>
+              <li id="endnote-2"><span class="font-bold text-[#0041A5] mr-1.5">[2]</span><strong>Later Sample Filters and Two-Step Model Checks.</strong> <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a> matched with <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a> gives a 0.724 full-list AUC (0.653 stop-date reweighted) vs. 0.442 among providers still billing in 2024 (9 of 95 bans). Across 57 California counties, models report links of 2.38 fewer yearly deaths per 100,000, 4.32 fewer over 13-year changes (unadjusted p = 0.0052, adjusted p = 0.067), and 5.31 fewer in Lewbel two-step checks (first-step F = 111.20, Hansen J p = 0.2132).</li>
+              <li id="endnote-3"><span class="font-bold text-[#0041A5] mr-1.5">[3]</span><strong>Guide to Choosing Model Controls.</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", <em>Sociological Methods &amp; Research</em></a>.</li>
+              <li id="endnote-4"><span class="font-bold text-[#0041A5] mr-1.5">[4]</span><a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi, S., et al. (2020), Health Affairs</a></li>
+              <li id="endnote-5"><span class="font-bold text-[#0041A5] mr-1.5">[5]</span><a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Lewbel, A. (2012), Journal of Business &amp; Economic Statistics</a></li>
               <li id="endnote-6"><span class="font-bold text-[#0041A5] mr-1.5">[6]</span><a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">OIG LEIE</a></li>
             </ol>
           </div>
-          <p><strong>Mode Classification (Mode A Synthesis on Observed Inputs):</strong> The role rules and model guide are a Mode A synthesis. The numbers in Table 1 (tract poverty R² = 62.2%; CHW primary care visits 71.7% vs. 57.1% TOT, OR = 1.90, and -30% hospital stays; Medicaid screening AUC = 0.724 full list vs. observed AUC = 0.442 in the 2024 active subset; LHA Long-Difference 2SLS -5.31, first-stage F = 111.20, Hansen J p = 0.2132) are observed outputs from four separate CAPHE files.</p>
-          <p><strong>Primary References &amp; Data Sources:</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", Sociological Methods &amp; Research</a>; <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), Health Affairs (IMPaCT CHW RCTs)</a>; <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), JBES</a>; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; and <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>.</p>
+          <p><strong>Data Sources: A Summary of Results From Separate Studies.</strong> These rules bring together findings from four separate CAPHE studies. First, Santa Clara tract models report 62.2% poverty variance share and -0.578 vs. -0.017 store-distance slopes. Second, CHW trials report 71.7% vs. 57.1% clinic visits (1.90 odds ratio) and 30% fewer hospital stays. Third, the Medicaid fraud test gives 0.724 on the full list vs. 0.442 in 55,018 current 2024 billers (9 of 95 bans). Fourth, 57-county checks give 5.31 fewer deaths per 100,000 (first-step F = 111.20; Hansen J p = 0.2132) beside 4.32 over 13 years (adjusted p = 0.067).</p>
+          <p><strong>Primary References &amp; Data Sources.</strong> <a href="https://doi.org/10.1177/00491241221099552" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Cinelli, C., Forney, A., &amp; Pearl, J. (2022), "A Crash Course in Good and Bad Controls", Sociological Methods &amp; Research</a>; <a href="https://doi.org/10.1377/hlthaff.2019.01568" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Kangovi, S., et al. (2020), Health Affairs</a>; <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012), Journal of Business &amp; Economic Statistics</a>; <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS</a>; <a href="https://data.medicaid.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HHS Medicaid Provider Spending</a>; and <a href="https://oig.hhs.gov/exclusions/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">OIG LEIE</a>.</p>
           <div class="pt-3 border-t border-slate-200/80">
-            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions &amp; Method Notes</h3>
+            <h3 class="text-sm font-bold text-slate-900 mb-2">Common Questions and Study Notes</h3>
             <dl class="space-y-2.5">
               <div>
-                <dt class="font-bold text-slate-900">Why shouldn't an analyst control for post-start clinic visits when measuring whether CHWs cut hospital stays?</dt>
-                <dd class="text-slate-700 mt-0.5">Raising primary care visits (from 57.1% to 71.7% TOT, OR = 1.90) is a main care step through which CHWs prevent hospital stays (-30%). Controlling for post-start clinic visits holds that step fixed. That blocks part of the program path and understates total CHW value.</dd>
+                <dt class="font-bold text-slate-900">Why can adjusting for post-start clinic visits understate CHW hospital drops?</dt>
+                <dd class="text-slate-700 mt-0.5">More clinic visits (rising from 57.1% to 71.7%, odds ratio 1.90) may help explain 30% fewer hospital stays. The trial did not measure that share alone. Adjusting for later visits aims to test effects apart from clinic care and needs added assumptions. So adjusting for visits can remove hospital drops that happen through primary care.</dd>
               </div>
               <div>
-                <dt class="font-bold text-slate-900">How can an analyst tell whether a variable is a confounder or a care step?</dt>
-                <dd class="text-slate-700 mt-0.5">Check the clock and the direction of cause. A confounder is set BEFORE the program starts (like baseline age, pre-program poverty, or county land area) and affects both participation and health. A care step changes AFTER the program starts because of the program.</dd>
+                <dt class="font-bold text-slate-900">How can an analyst tell a baseline confounder from a post-start care step?</dt>
+                <dd class="text-slate-700 mt-0.5">Check whether the factor existed before start or changed after the program began. A baseline confounder like pre-start poverty or age exists first and affects both entry and health. Adjusting for it can cut bias when model rules hold. By contrast, a care step changes after start and may cause part of the gain.</dd>
               </div>
               <div>
-                <dt class="font-bold text-slate-900">What is an instrument, and why is it kept out of the outcome controls?</dt>
-                <dd class="text-slate-700 mt-0.5">An instrument shifts the policy input (here, county public health spending) without a direct path to the health outcome. It enters Stage 1 of two-stage least squares to isolate spending shifts that are not driven by mortality shocks. In the LHA long-difference model of 57 California counties (2003-2016), the Lewbel instruments have a first-stage F of 111.20 and Hansen J p-value of 0.2132. Adding an instrument as an outcome control would absorb the clean spending variation.</dd>
+                <dt class="font-bold text-slate-900">Why is the budget predictor used in the first step of the two-step model?</dt>
+                <dd class="text-slate-700 mt-0.5">Two-step models assume the Stage 1 predictor affects death rates only through county spending. Adding it as an outcome control instead adjusts for budget changes that Stage 1 uses. Here, first-step F = 111.20 tests predictor strength, not whether that untestable causal rule holds. Because that rule cannot be tested directly, 5.31 stays an extra check beside 4.32 (adjusted p = 0.067).</dd>
               </div>
             </dl>
           </div>
@@ -855,9 +855,9 @@
     <section class="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 mb-4 shadow-sm" aria-label="Related Case Studies">
       <h2 class="text-base sm:text-lg font-bold text-[#003080] mb-2">Related Case Studies</h2>
       <ul class="list-none text-sm">
-          <li class="my-2"><a href="/case-studies/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Active-Only Subsample Selection Bias</a></li>
-          <li class="my-2"><a href="/case-studies/reverse-causation-feedback" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Needs-Driven Spending & Prevention ROI</a></li>
-          <li class="my-2"><a href="/case-studies/chw-health-outcomes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Evaluating CHW Impact & Medi-Cal Billing</a></li>
+          <li class="my-2"><a href="/case-studies/collider-bias" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early</a></li>
+          <li class="my-2"><a href="/case-studies/reverse-causation-feedback" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Combining Pandemic Aid With Routine County Health Budgets Mixes Relief Grants With Pre-2020 Links</a></li>
+          <li class="my-2"><a href="/case-studies/chw-health-outcomes" class="text-[#0041A5] hover:text-[#003080] font-semibold underline">Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs</a></li>
       </ul>
       <p class="text-xs text-slate-600 mt-3"><a href="/case-studies" class="text-[#0041A5] font-bold underline">Browse all California public health case studies &rarr;</a></p>
     </section>

@@ -1,5 +1,67 @@
 # CAPHE Website Work Log
 
+## 2026-11-25: Codex Low-Reasoning All-Text Audit, Grade 7–8 Calibration & Zero-Metaphor Enforcement Across All 24 Case Studies + Hub
+
+- **Conversation Link:** [CAPHE Case Studies `/clear-connected-writing` & Grade 7–8 Calibration (`6b755618-9257-4fa3-8968-1e4af84bdb41`)](conversation://6b755618-9257-4fa3-8968-1e4af84bdb41)
+- **Transcript Path:** `/Users/vserver/.gemini/antigravity/brain/6b755618-9257-4fa3-8968-1e4af84bdb41/.system_generated/logs/transcript.jsonl`
+
+### Completed
+- Executed a 4-batch **Codex low-reasoning all-text review** (`codex exec -c model_reasoning_effort="low"`, `56,118` words covering 100% of `<title>`, `metaDescription`, `<h1>`, `.subtitle`, eyebrows, policy settings, analytical answer blocks, `Table 1` & `Table 2` headers/cells/notes, SVG charts, scenario cards, syntheses, FAQs, `<details>` methodology/endnote/TETS notes, related links, and the directory hub) and incorporated all valid clarity, Grade 7–8, and zero-metaphor improvements across **100% of text**:
+  - **Mean Full-Page Flesch-Kincaid Grade (All Text incl. `<details>` & Scenario Cards):** **`7.42`** across all 24 case studies (range **`6.36–8.20`**, down from `14.88`; directory hub **`6.55`** with `0` items over `8.5`).
+  - **Mean `<details>` Notes Flesch-Kincaid Grade:** **`7.57`** (range **`5.89–8.53`**, down from `11.10`).
+  - **Mean `<h1>` Headline Grade:** **`7.22`** (range **`4.42–8.41`**, down from `13.09`).
+  - **Mean Page `.subtitle` Grade:** **`7.50`** (range **`6.31–8.47`**, down from `11.65`), plus all inner section `<h2>` titles and section subtitles calibrated to **`<= 8.8`**.
+  - **Mean Visible Narrative Flesch-Kincaid Grade:** **`7.51`** (range **`6.03–8.69`**, `ASL >= 10.0` words/sentence — natural, connected prose with zero choppy fragments).
+- Expanded `scripts/check_reading_level.js` to include Scenario Cards and 100% of `<details>` prose (`Full <= 8.5`, `Det <= 8.8`, `Narr <= 8.8`, `<title>`/`<h1>`/`.subtitle <= 8.5`, `Section H2/Sub <= 8.8`, `Hub <= 8.5`), and expanded `METAPHOR_BAN_RE` in `scripts/audit_anti_cheat.js` to scan `<head>` title/meta, visible text, `<details>` notes (excluding verbatim `<a>` citation titles), and the directory hub (`0` metaphors throughout, including eliminating subtle metaphors such as `fall short`, `strain`, `spikes`, `jumps`, `rebuilds`, `sunsetted`, `food/mobility deserts`, `safety-net`, `flagship`, `handoffs`, `drop-offs`, `drift`, `pathways`, `ramp-up`, `surge`, `pays for itself`, and `swings`).
+- Completed a full `/clear-connected-writing` and methodological precision pass across all 4 wave builders (`build_wave2_flagships.js`, `build_wave3_track1_track3.js`, `build_wave4a_track2.js`, `build_wave4b_track4.js`) and `render_option_c.js`:
+  - Explained key mechanisms, model outcomes, and technical scales inline where introduced (e.g., `H.R. 1` Medicaid work-reporting rules, `0.50` random-chance vs. `0.724` AUC ranking score, CDC PLACES adult diabetes odds ratios across 408 tracts in `food-insecurity-diabetes`, full worker cost components vs. `"loaded cost"`, selection/collider bias on 2024 biller filters, DHCS vs. ACS rounding cross-checks, and why log transforms and untestable exclusion restrictions keep two-stage runs as appendix checks).
+  - Eliminated all double negatives (`-X fewer`), synchronized 100% of `h1`, `related[*].title`, and hub card titles (`0` cross-link mismatches), matched `$1` vs. `$10` per-capita units on every regression slope and standard error, framed Census `B19013` minus `B25064` post-rent comparisons explicitly as area-median benchmarks rather than individual household CalFresh eligibility determinations, distinguished USDA ERS Food Access Research Atlas criteria (`15` Santa Clara tracts) from the stricter SNAP-centroid rule (`1` tract), reconciled locked Stage 1 QALY group totals (`18.21`, `17.49`, `4.34` -> `40.04` QALYs), and preserved every Stage 4 econometric and statutory qualification (`adj. p = 0.067`, illustrative conditional `if causal` VSL framing, and EDD's `25.0%` operational SDI reserve goal vs. `Cal. Unemp. Ins. Code § 984` statutory rate rules).
+- Verified with `node scripts/check_reading_level.js` (`24/24` + hub PASS) and `npm run gate` (`validate-seo.js` 0 errors, `audit_anti_cheat.js` 24/24 PASS + `reading-level-gate` PASS, `verify_case_study_figures.js` 24/24 PASS, `npm test` 67/67 PASS).
+
+### Files Modified
+- `scripts/check_reading_level.js` (new deterministic Flesch-Kincaid readability gate)
+- `scripts/audit_anti_cheat.js`
+- `scripts/render_option_c.js`
+- `scripts/build_wave2_flagships.js`
+- `scripts/build_wave3_track1_track3.js`
+- `scripts/build_wave4a_track2.js`
+- `scripts/build_wave4b_track4.js`
+- `public/case-studies/index.html` and `public/case-studies/*/index.html` (all 24 case studies)
+- `docs/WORK_LOG.md`
+
+---
+
+## 2026-11-23: `/clear-connected-writing` Overhaul & Stage 4 Adversarial Audit Across All 24 Case Studies + Hub
+
+- **Conversation Link:** [CAPHE Case Studies `/clear-connected-writing` & Title Overhaul (`6b755618-9257-4fa3-8968-1e4af84bdb41`)](conversation://6b755618-9257-4fa3-8968-1e4af84bdb41)
+- **Transcript Path:** `/Users/vserver/.gemini/antigravity/brain/6b755618-9257-4fa3-8968-1e4af84bdb41/.system_generated/logs/transcript.jsonl`
+
+### Completed
+- Applied `/clear-connected-writing` across **all 24 CAPHE Public Health Case Studies** (`public/case-studies/*/index.html`), all their `<title>` (`<= 60` chars), `<h1>`, `.subtitle`, `.policy-setting`, `.answer-block`, `Table 1`, Scenario Cards, `Table 2`, standalone SVG chart captions, synthesis paragraphs, and FAQs, plus the main directory hub (`public/case-studies/index.html`).
+- Fixed mechanical truncation and template meta-label bugs in `scripts/render_option_c.js`:
+  - Removed destructive word-swap rules in `simplifyToGrade7()` and mid-sentence clause truncation in `stripRepeatedTable2Stem()`, widening `policySettingWords` (`20–115`), `answerWords` (`40–155`), and `separateTableSubtitle` (`<= 36` words).
+  - Replaced `<details>` `Two-Ruler Benchmark Summary` and `Ruler 1/2` / `Mode A/B` prefixes with plain `Standard Screen vs. Adjusted Comparison`, and gated `estimatorCrosswalkHtml` strictly to the two county-budget estimator pages (`observational-to-experimental`, `reverse-causation-feedback`) rather than firing on `"Polsky"` / `"OLS"` substrings across unrelated pages.
+  - Updated standalone SVG chart titles, subtitles, and captions (`#studyComparisonSvg`) so `Marin Canal Tract` (`17.7% -> 30.5%`) and `Central Fresno Tract` (`31.4% -> 46.4%`) match `Table 1` pre-rent vs. post-rent trajectories accurately.
+- Rewrote `public/case-studies/index.html` (`<title>`, `.page-lead`, 4 `.topic-summary` lines, and all 22 listed `.item-title` + `.item-contrast` entries), fixing 6 prior dataset/topic mismatches (including moving `threat-history-solutions` under `medi-cal`, fixing `food-insecurity-diabetes` and `medicaid-expansion` descriptions, and keeping unlisted `selection-into-treatment` and `threat-maturation-solutions` off the public hub) with 100% exact `h1` parity across all hub items and `spec.related` cross-links.
+- Executed Stage 4 independent Claude Opus adversarial review (`4` parallel batches covering all `24` slugs + hub + `render_option_c.js`) and applied all prose, framing, citation, and source-fencing corrections:
+  - Corrected Brown (2014) DOI in `study-design-ladder` from `10.1002/hec.3031` (wrong article) to CrossRef-verified `10.1016/j.ehb.2013.10.001` (*Economics & Human Biology*).
+  - Aligned `observational-to-experimental` and `reverse-causation-feedback` nominal pandemic spending (`$102.75 -> $168.70`, `+64.2%`) and mortality (`806.02 -> 970.80`) with `ajph_submission.tex`, recast annual (`-2.38`) vs. 13-year (`-4.32`) panel slopes strictly as differences between estimated observational associations across horizons (eliminating `"compounding"` / causal return claims across all county-budget briefs and the hub), kept `multiple-testing-adjusted p = 0.067` alongside every 13-year `4.32` headline, explicitly labeled all VSL dollar/ratio conversions (`$420,168`, `$231,481`, `$188,324`, `32.4:1` / `32:1`, `58.8:1` / `59:1`, `72.2:1`, `15.0:1–89.4:1`) as **illustrative valuations conditional on a causal interpretation**, and labeled Lewbel (2012) two-stage estimates as an appendix sensitivity check.
+  - Clarified national HHS Medicaid claims scope and the post-final-claim `50.0-month` exclusion lag in `measurement-error-claims`; reframed `collider-bias` and `classifying-causal-mechanisms` so full-list `0.724` (`0.653` exit-reweighted) vs. active-2024 `0.442` accurately reflects exit-timing inflation and zero live prospective signal on public claims alone.
+  - Fixed Marin `220% FPL` recommendations in `food-affordability-tradeoffs` and `food-insecurity-diabetes` (replacing CalFresh excess-shelter deductions above California's `200% FPL` gross limit with clinic produce prescriptions and local food vouchers), distinguished EDD's `25.0%` operational SDI reserve adequacy benchmark (`25%–50%` target range, not a statutory minimum) from statutory contribution-rate authority under `Cal. Unemp. Ins. Code § 984` (`1.5%` rate ceiling) across `render_option_c.js`, `budget-impact`, `threat-maturation-solutions`, and `public/case-studies/index.html`, fixed `+109%` -> `+101%` shift in `parallel-trends-power`, `"Unrecorded medical frailty"` in `medicaid-expansion`, and `Parallel Health-Year and Saved-Life Units...` in `measuring-health-common-unit`.
+  - Preserved locked Stage 1 pipeline figures and proportional `barWidth` invariants enforced by `scripts/verify_case_study_figures.js` and `test/*.test.js` (flagging upstream PFL simulator/CHW/QALY/churn table recalculations for separate owner Stage 1 data-lock decision if desired).
+- Verified with `npm run gate` (`validate-seo.js` 0 errors, `audit_anti_cheat.js` 24/24 PASS, `verify_case_study_figures.js` 24/24 PASS, `npm test` 66/66 PASS) and custom cross-link/prose/meta-label scanner (`0` issues across all 24 pages + hub).
+
+### Files Modified
+- `scripts/render_option_c.js`
+- `scripts/build_wave2_flagships.js`
+- `scripts/build_wave3_track1_track3.js`
+- `scripts/build_wave4a_track2.js`
+- `scripts/build_wave4b_track4.js`
+- `public/case-studies/index.html` and `public/case-studies/*/index.html` (all 24 case studies)
+- `docs/WORK_LOG.md`
+
+---
+
 ## 2026-11-01: Deploy 24 Plain-English PHO Case Studies & Selective Non-Stacked SVG Charts (Heroku v237)
 
 - **Conversation Link:** [CAPHE 24 Case Studies Build & Deployment (`b378d7ce-ffef-403d-86d8-d73c4162621b`)](conversation://b378d7ce-ffef-403d-86d8-d73c4162621b)

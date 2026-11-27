@@ -50,7 +50,7 @@ const modules = [
       },
       {
         lead: 'What California records show',
-        html: 'In Marin\'s Canal tract (<strong>$5,507</strong> median pay, 220% FPL), subtracting <strong>$2,318</strong> median rent leaves <strong>$3,189</strong> [2]. A <strong>$973</strong> food plan then rises from <strong>17.7% to 30.5%</strong> of money left, and reaches <strong>46.4%</strong> in Central Fresno vs. <strong>17.9%</strong> in Nevada County and <strong>9.3%</strong> in Santa Clara [1,2].'
+        html: 'In Marin\'s Canal tract, Census medians are <strong>$5,507</strong> all-home pay (220% FPL) and <strong>$2,318</strong> renter rent, leaving an estimated <strong>$3,189</strong> [2]. Against that area estimate, a <strong>$973</strong> food plan rises from <strong>17.7% to 30.5%</strong> (<strong>46.4%</strong> in Central Fresno vs. <strong>17.9%</strong> in Nevada County and <strong>9.3%</strong> in Santa Clara) [1,2].'
       },
       {
         lead: 'Policy option',
@@ -271,7 +271,7 @@ const modules = [
       },
       {
         lead: 'What California records show',
-        html: 'Across <strong>943</strong> pre-COVID county records (2003–2019), each <strong>$10 per person</strong> in routine health spending links to <strong>2.38</strong> fewer yearly deaths per 100,000 [1,2]. Over 13 years, the link is <strong>4.32</strong> fewer deaths (adj. <em>p</em> = 0.067, above 0.05; <strong>$32</strong> and <strong>$59 per $1</strong> if causal, not cash) [2,3].'
+        html: 'In panel models of <strong>943</strong> pre-COVID county records (2003–2019), each <strong>$10 per person</strong> links to <strong>2.38</strong> fewer yearly deaths per 100,000 [1,2]. Over 13 years, the estimated link is <strong>4.32</strong> fewer deaths (adj. <em>p</em> = 0.067, above 0.05; valued at <strong>$32</strong> and <strong>$59 per $1</strong> only if causal, not cash) [2,3].'
       },
       {
         lead: 'Policy option',
@@ -500,7 +500,7 @@ const modules = [
       },
       {
         lead: 'What California records show',
-        html: 'Across <strong>408</strong> Santa Clara tracts, poverty explains <strong>62.2%</strong> of food-need score gaps while store miles add <strong>0.003 pp</strong> (<em>p</em> = 0.827) [1,2]. Of <strong>27</strong> tracts past 1 mile, <strong>26</strong> have under 20% poverty, while USDA rules cover <strong>30 of 225</strong> Fresno tracts (up to <strong>15.53 miles</strong>) [1,3].'
+        html: 'In a score model across <strong>408</strong> Santa Clara tracts, poverty explains <strong>62.2%</strong> of food-need score gaps while store miles add <strong>0.003 pp</strong> (<em>p</em> = 0.827) [1,2]. Of <strong>27</strong> tracts past 1 mile, <strong>26</strong> have under 20% poverty, while USDA rules cover <strong>30 of 225</strong> Fresno tracts (up to <strong>15.53 miles</strong>) [1,3].'
       },
       {
         lead: 'Policy option',
@@ -714,7 +714,7 @@ const modules = [
       },
       {
         lead: 'What California records show',
-        html: 'Clinic cost scores reach <strong>1.506</strong> in San Francisco vs. <strong>0.900</strong> in Imperial, while hardship ranks place Imperial and Central Fresno at the <strong>85th</strong> percentile vs. the <strong>15th</strong> in San Francisco [1,2]. Medicaid billing loses <strong>17.6%</strong> of claim value to denials, and higher fees raised visit slots from <strong>58.7% to 66.4%</strong> [3].'
+        html: 'Clinic cost scores reach <strong>1.506</strong> in San Francisco vs. <strong>0.900</strong> in Imperial, while hardship ranks place Imperial and Central Fresno at the <strong>85th</strong> percentile vs. the <strong>15th</strong> in San Francisco [1,2]. Separate national and 10-state studies find <strong>17.6%</strong> Medicaid billing loss and visit gains from <strong>58.7% to 66.4%</strong> [3].'
       },
       {
         lead: 'Policy option',

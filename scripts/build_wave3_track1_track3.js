@@ -39,7 +39,7 @@ const wave3Modules = [
       }
     ],
     tier: 'public',
-    briefType: 'California Data Brief &middot; Medi-Cal &amp; Claims',
+    briefType: 'Evidence Guide &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 1: Program Impact &middot; Two-Year Counts Compared With Earlier Growth Rates',
     pageTitle: 'Two-Year Counts vs. Prior Medicaid Trends | CAPHE',
     metaDescription: 'Compare 2019 and 2023 national Medicaid telehealth-eligible biller counts with 2018-2019 growth (+6,977/yr) and other Medicaid care over 84 months.',
@@ -51,8 +51,8 @@ const wave3Modules = [
         html: 'Medicaid reviews often subtract 2019 provider counts from 2023 counts to judge telehealth pay rules [1,3]. Yet clinics were already adding active billers each year before 2020 [1,2].'
       },
       {
-        lead: 'What Medicaid records show',
-        html: 'Across 84 months of federal records, monthly telehealth-code billers grew from <strong>91,399</strong> in 2019 to <strong>113,638</strong> in 2023 (<strong>+24.33%</strong>) [1]. Yet counts already grew <strong>+6,977/yr</strong> before 2020 (leaving 2023 <strong>-5,669</strong> below trend), while other Medicaid codes grew <strong>+18.71%</strong> [2,3].'
+        lead: 'What the comparison shows',
+        html: 'Across 84 months of federal Medicaid records, monthly telehealth-code billers grew from <strong>91,399</strong> in 2019 to <strong>113,638</strong> in 2023 (<strong>+24.33%</strong>), after adding <strong>+6,977/yr</strong> before 2020 [1,2]. Extending that 1-year gain projects <strong>119,307</strong> billers in 2023 (<strong>-5,669</strong> below projection), while other Medicaid codes grew <strong>+18.71%</strong> [2,3].'
       },
       {
         lead: 'Policy option',
@@ -518,7 +518,7 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
-    briefType: 'California Data Brief &middot; County Health Budgets',
+    briefType: 'Evidence Guide &middot; County Health Budgets',
     trackEyebrow: 'Track 1: Program Impact &middot; Small-County Rate Changes, Return Toward Average, and Five-Year Means',
     pageTitle: 'High One-Year Death Rates & Five-Year Means | CAPHE',
     metaDescription: 'Separate random yearly changes in small-county death rates (89% weight on regional averages in tiny counties) from lasting need with 5-year means.',
@@ -527,11 +527,11 @@ const wave3Modules = [
     openingBeats: [
       {
         lead: 'In practice today',
-        html: 'Grant programs sometimes rank counties on one year of death rates per 100,000 residents [2]. In small rural counties, two or three extra deaths raise that rate sharply before returning toward average next year [2].'
+        html: 'Grant programs sometimes rank counties on one year of death rates per 100,000 people [2]. In small rural counties, two or three extra deaths raise that rate sharply before returning toward average next year [2].'
       },
       {
-        lead: 'What California records show',
-        html: 'In Alpine County (<strong>1,204</strong> residents), one death changes the yearly rate by <strong>83.06</strong> points, and picking top-10% one-year rises produces an <strong>89.4% (-20.3 per 100K)</strong> chance drop next year [2]. Across 17 pre-pandemic years, <strong>$10</strong> per resident links to <strong>-2.42</strong> deaths per 100K in counties up to 500K (<strong>-4.32</strong> over 13 years statewide, adj. <em>p</em> = 0.067) [1].'
+        lead: 'What the comparison shows',
+        html: 'In Alpine County (<strong>1,204</strong> residents), one death changes the yearly rate by <strong>83.06</strong> points, and a count model estimates that <strong>89.4% (-20.3 per 100K)</strong> of a top-10% 1-year rise returns toward average next year [2]. Across 17 pre-COVID years of county records, <strong>$10</strong> per person links to <strong>-2.42</strong> deaths per 100K in counties up to 500K (<strong>-4.32</strong> over 13 years statewide, adj. <em>p</em> = 0.067) [1].'
       },
       {
         lead: 'Policy option',
@@ -741,7 +741,7 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
-    briefType: 'California Data Brief &middot; Medi-Cal &amp; Claims',
+    briefType: 'Evidence Guide &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 1: Program Impact &middot; Comparing Code Groups During Wider Medicaid Enrollment',
     pageTitle: 'Telehealth vs. Other Medicaid Care Growth | CAPHE',
     metaDescription: 'Compare national biller counts for telehealth-eligible (+24.33%) and other Medicaid codes (+18.71%) over 84 months (+0.78 to +5.62 pp difference).',
@@ -753,8 +753,8 @@ const wave3Modules = [
         html: 'From 2020 to 2023, federal rules paused Medicaid renewals and kept millions more adults enrolled [3]. Checking telehealth-eligible billing codes alone mixes wider enrollment growth into telehealth counts [1,3].'
       },
       {
-        lead: 'What Medicaid records show',
-        html: 'From 2019 to 2023, monthly telehealth-code billers rose <strong>+24.33%</strong> (<strong>91,399</strong> to <strong>113,638</strong>), while other Medicaid codes rose <strong>+18.71%</strong> (<strong>109,087</strong> to <strong>129,492</strong>) [1]. Subtracting that growth leaves a descriptive <strong>+5.62 percentage-point</strong> difference, or <strong>+0.78 pp</strong> if extending the 2018–2019 gap [1,2].'
+        lead: 'What the comparison shows',
+        html: 'Across federal Medicaid records from 2019 to 2023, monthly telehealth-code billers rose <strong>+24.33%</strong> (<strong>91,399</strong> to <strong>113,638</strong>), while other Medicaid codes rose <strong>+18.71%</strong> (<strong>109,087</strong> to <strong>129,492</strong>) [1]. Subtracting that growth leaves a descriptive <strong>+5.62 pp</strong> gap, or <strong>+0.78 pp</strong> in a trend projection from 2018–2019 [1,2].'
       },
       {
         lead: 'Policy option',

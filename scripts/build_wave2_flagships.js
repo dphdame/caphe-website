@@ -492,7 +492,7 @@ const flagshipModules = [
       },
       {
         lead: 'What California records show',
-        html: 'In Marin\'s Canal area (<strong>$5,507</strong> median pay, 220% FPL), subtracting <strong>$2,318</strong> median rent raises a <strong>$973</strong> food plan from <strong>17.7% to 30.5%</strong> of remaining money (<strong>46.4%</strong> in West Fresno) [1,2]. Across 9,033 state tracts, poverty accounts for <strong>62.2%</strong> of food-score gaps versus <strong>1.8%</strong> for store miles [3].'
+        html: 'In Marin\'s Canal tract (<strong>$5,507</strong> all-home median pay; <strong>$2,318</strong> renter rent), subtracting rent raises a <strong>$973</strong> food plan from <strong>17.7%</strong> to an estimated <strong>30.5%</strong> (<strong>46.4%</strong> in West Fresno) [1,2]. Across 9,033 state tracts, poverty models explain <strong>62.2%</strong> of food-score gaps vs. <strong>1.8%</strong> for store miles [3].'
       },
       {
         lead: 'Policy option',

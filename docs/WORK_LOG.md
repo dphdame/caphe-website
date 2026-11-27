@@ -7,9 +7,9 @@
 
 ### Completed
 - Reorganized `public/case-studies/index.html` into **3 plain-English epistemic brief types** while preserving a single-row sticky Topic filter bar (`All Topics`, `Medi-Cal & Claims`, `Community Health Workers`, `Food & Cost of Living`, `County Health Budgets`) that filters across all three sections:
-  1. **1. What California Data Show** (`11` empirical California/Medicaid data briefs)
+  1. **1. What California Data Show** (`8` empirical California state/county data briefs, with explicit labels where cross-table area estimates, panel regressions, or published national benchmarks appear alongside California records)
   2. **2. Program Cost & Impact Models** (`4` listed `"what-if"` cost and staffing models + `2` unlisted Paid Family Leave simulation models)
-  3. **3. How to Check Policy Studies** (`7` practical evidence-review guides)
+  3. **3. How to Check Policy Studies** (`10` practical evidence-review guides, including `threat-regression-to-mean` with its Poisson count model and the national Medicaid trend/claims guides)
 - Rolled out the spacious **3-Beat Executive Opening (`spec.openingBeats`)** and plain-English **Brief-Type Kicker (`spec.briefType`)** across **all 24 case studies** (`scripts/render_option_c.js`, `scripts/build_wave2_flagships.js`, `scripts/build_wave3_track1_track3.js`, `scripts/build_wave4a_track2.js`, `scripts/build_wave4b_track4.js`):
   - Replaced the ~205-word 2-paragraph opening prose wall (`policySettingHtml` + `answerHtml`) with 3 airy 2-sentence beats (`107–138` words total, ~40%–45% fewer opening words, increased top white space `pb-8 mb-10` / `mb-12`, and zero defensive top boxes or dataset code lists):
     - **Beat 1:** `In practice today:` (or `Upcoming rule in 2027:`)

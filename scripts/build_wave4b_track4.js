@@ -43,7 +43,7 @@ const modules = [
       },
       {
         lead: 'What California records show',
-        html: 'Across <strong>943</strong> pre-2020 county records (2003–2019), each <strong>$10 per person</strong> links with <strong>2.38</strong> fewer yearly deaths per 100,000 [1,2]. Over 13 years, the link is <strong>4.32</strong> fewer deaths (adj. <em>p</em> = 0.067; <strong>32.4:1</strong> and <strong>58.8:1</strong> value if causal, not cash) [2,3].'
+        html: 'In panel models of <strong>943</strong> pre-2020 county records (2003–2019), each <strong>$10 per person</strong> links with <strong>2.38</strong> fewer yearly deaths per 100,000 [1,2]. Over 13 years, the estimated link is <strong>4.32</strong> fewer deaths (adj. <em>p</em> = 0.067; valued at <strong>32.4:1</strong> and <strong>58.8:1</strong> only if causal, not cash) [2,3].'
       },
       {
         lead: 'Policy option',
@@ -955,7 +955,7 @@ const modules = [
       },
       {
         lead: 'What the comparison shows',
-        html: 'If pre-2020 county spending links caused fewer deaths, yearly ratios span <strong>15.0:1 to 49.3:1</strong> (<strong>5.4:1</strong> unadjusted low case), and 13-year links (adj. <em>p</em> = 0.067, above 0.05) span <strong>27.2:1 to 89.4:1</strong> [1,2]. Separately, care worker visit fees pay <strong>6.5% to 9.8%</strong> of <strong>$103,719</strong> worker cost, while plan and hospital savings reach <strong>$107,006</strong> and <strong>$291,171</strong> [3].'
+        html: 'If pre-2020 county spending links caused fewer deaths, yearly ratios span <strong>15.0:1 to 49.3:1</strong> (<strong>5.4:1</strong> unadjusted low case), and 13-year links (adj. <em>p</em> = 0.067, above 0.05) span <strong>27.2:1 to 89.4:1</strong> [1,2]. Separately, care worker visit fees pay <strong>6.5% to 9.8%</strong> of <strong>$103,719</strong> worker cost, while modeled plan and hospital savings reach <strong>$107,006</strong> and <strong>$291,171</strong> [3].'
       },
       {
         lead: 'Policy option',

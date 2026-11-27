@@ -24,19 +24,32 @@ const flagshipModules = [
     ],
     tier: 'community',
     hideBlock2: true,
+    briefType: 'Program Cost &amp; Impact Model &middot; Community Health Workers',
     trackEyebrow: 'Track 1: Program Impact &middot; Main Case Study',
     pageTitle: 'Medi-Cal Visit Fees vs. Care Worker Costs | CAPHE',
     metaDescription: 'Compare four California care worker models across fixed $31.74 Medi-Cal visit fees, full worker costs in 58 counties, hospital savings, and health gains.',
     h1: 'Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs',
     subtitle: 'Comparing fixed per-visit fees with county worker wages, hospital stay savings, and two-year health gains.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Medi-Cal pays a fixed <strong>$31.74</strong> per 30-minute group visit for Community Health Workers statewide [1]. Meanwhile, hiring counties pay <strong>$92,684 to $122,102</strong> per year in full worker costs across 58 counties [2].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'Suppose one worker (<strong>$103,719</strong> statewide cost) serves <strong>55</strong> high-need patients and matches trial reductions [2,3]. Visit billing covers <strong>6.5% to 9.8%</strong> of pay, while Year-1 hospital savings reach <strong>~$107,000</strong> in plan claims (or <strong>~$291,000</strong> in bed costs) [1,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Hospital savings go to Medi-Cal health plans and hospitals rather than the hiring clinic [1,3]. Counties can pair monthly health-plan pay or hospital funds with public health grants for outreach (<strong>~$7,800</strong> per QALY) [3,4].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS) State Plan Amendment (SPA) 22-0001</a>: State fee rules pay a fixed $31.74 per 30-minute group session and $26.66 per one-on-one session. Rates do not change for higher county wages.',
       '<a href="https://www.bls.gov/cew/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Bureau of Labor Statistics (BLS) Quarterly Census of Employment and Wages (2024)</a> &amp; <a href="https://data.chhs.ca.gov/dataset/rates-of-preventable-hospitalizations-for-selected-medical-conditions-by-county" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Access and Information (HCAI) Prevention Quality Indicators (2024)</a>: County data show full worker costs of $92,684 to $122,102 per year across 58 counties. State hospital records list 279,905 adult stays that timely care may help prevent.',
       '<a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Kangovi et al. (2020), Health Affairs</a> &amp; <a href="https://hcai.ca.gov/data/healthcare-utilization/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">HCAI / AHRQ HCUP Hospital Cost Benchmarks</a>: Clinical trials that assigned patients by chance found 22% fewer ER visits and 30% fewer hospital stays. Those trials also found 23% fewer 30-day return stays.',
       '<a href="https://doi.org/10.1056/NEJMp1405158" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Neumann, Cohen &amp; Weinstein (2014), New England Journal of Medicine</a> &amp; <a href="https://healthforce.ucsf.edu/publications" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">UCSF Healthforce Center</a>: Health studies often compare costs against $100,000 per year of full health gained, alongside state worker retention surveys.'
     ],
-    policySettingHtml: 'Community Health Workers (CHWs), including workers known as Promotoras, help low-income families manage illness and avoid emergency room (ER) visits. Medi-Cal pays a fixed per-visit fee for scheduled clinic teaching sessions across the state. Yet outreach workers spend most of each week driving to homes and helping families get food, housing, and care. Because Medi-Cal does not pay for travel time, hiring counties pay full worker costs up front. Meanwhile, lower hospital costs benefit separate health plan and hospital budgets.',
-    answerHtml: 'Medi-Cal visit fees cover only <strong>6.5% to 9.8%</strong> of full costs for hospital outreach workers [1,2]. Full worker cost includes pay, benefits, training, and supervision, and runs <strong>$92,684 to $122,102</strong> per year [1,2]. Meanwhile, Medi-Cal pays a fixed <strong>$31.74</strong> per 30-minute group session across all 58 counties [1]. Even so, modeled first-year savings reach <strong>~$107,000</strong> in plan claims or <strong>~$182,000 to $291,000</strong> in bed costs [2,3]. In those three models, first-year savings exceed worker cost [2,3]. Local outreach adds <strong>~8.2 Quality-Adjusted Life Years (QALYs)</strong> over two years, scored from 0 for death to 1 for full health [3,4]. Subtracting first-year hospital savings leaves a net outlay of <strong>~$7,800 per QALY</strong> [3,4]. Tracking fees, bed savings, and QALYs apart matches each team to a payer [3,4].',
     block2: null,
     table1: {
       title: 'Table 1. Annual Costs, Hospital Savings &amp; Health Gains Across Four CHW Care Models',
@@ -72,7 +85,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Annual Per-Visit Medi-Cal Pay',
+          label: 'Estimated Per-Visit Medi-Cal Pay',
           modeled: true,
           cells: [
             { val: '6.5% to 9.8% ($6,775 to $10,162)' },
@@ -82,7 +95,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Year-1 Hospital Savings',
+          label: 'Estimated Year-1 Hospital Savings',
           modeled: true,
           cells: [
             { val: '$107,006 (27 ER, 11.6 stays)' },
@@ -92,7 +105,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Two-Year Health Gains (QALYs)',
+          label: 'Estimated Two-Year Health Gains (QALYs)',
           modeled: true,
           cells: [
             { val: '+3.00 QALYs (55 patients, 2 yrs)' },
@@ -102,7 +115,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'First-Year Net Cost or Cost per QALY',
+          label: 'Estimated Net Cost or Cost per QALY',
           modeled: true,
           highlight: true,
           cells: [
@@ -148,13 +161,13 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Matching County Funding Plan',
+          label: 'Policy &amp; Contracting Options',
           policyFit: true,
           cells: [
-            { headline: 'Monthly Health Plan Pay', detail: 'Pair visit fees with monthly Medi-Cal care management pay per member.' },
-            { headline: 'Hospital Stay Cost Funding', detail: 'Fund worker costs from county hospital budgets as inpatient stays fall.' },
-            { headline: 'Visit Fees + Plan Bonus', detail: 'Combine scheduled 30-minute visit fees with health plan quality bonuses.' },
-            { headline: 'Public Health Grant + Savings', detail: 'Combine public health grants with funding based on lower first-year hospital costs.' }
+            { headline: 'Health Plan Option: Monthly Pay', detail: 'Pair visit billing with monthly Medi-Cal care-management pay per member.' },
+            { headline: 'Hospital Option: Bed-Cost Funding', detail: 'Fund worker costs from county hospital budgets as inpatient stays fall.' },
+            { headline: 'Clinic Option: Visit Fees + Bonus', detail: 'Combine scheduled 30-minute visit fees with health-plan quality bonuses.' },
+            { headline: 'County Option: Prevention Grant', detail: 'Fund neighborhood outreach through public health grants paired with plan partnerships.' }
           ]
         }
       ],
@@ -209,18 +222,31 @@ const flagshipModules = [
   {
     slug: 'medicaid-expansion',
     tier: 'community',
+    briefType: 'Program Cost &amp; Impact Model &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 1: Program Impact &middot; Main Case Study',
     pageTitle: 'Unreturned Mail Forms & Medi-Cal Work Rules | CAPHE',
     metaDescription: 'Compare two modeled reasons adults lose Medi-Cal in Santa Clara County: unreturned mail forms among qualified members and lost work-rule eligibility.',
     h1: 'In the Model, Most Medi-Cal Renewal Losses Come From Unreturned Mail Forms Over Work Rules',
     subtitle: 'The model separates adults who miss mail forms from adults who do not meet work rules.',
+    openingBeats: [
+      {
+        lead: 'Upcoming rule in 2027',
+        html: 'Federal H.R. 1 rules will make <strong>120,239</strong> county adult Medi-Cal members prove work hours or an exemption every six months [1]. Members get paper forms in the mail whenever state wage files do not confirm status [1,2].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'In Census data, <strong>88.5%</strong> of those adults work or hold an exemption [2]. Still, if half of paper forms go unreturned, <strong>27,076</strong> adults lose care per cycle, and <strong>52.5% (14,219)</strong> are eligible members who missed the form [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Pre-filling exemptions from clinic and school records would keep eligible caregivers and students covered [3]. Adding a six-month hour check for gig workers would prevent <strong>71.4% (10,150)</strong> of missed-form losses [3].'
+      }
+    ],
     endnotes: [
       '<a href="https://data.chhs.ca.gov/dataset/medi-cal-certified-eligibles-with-demographics-by-month" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Health and Human Services (CHHS) Open Data Portal: Medi-Cal Certified Eligibles with Demographics by Month</a> (<code>scc_dhcs_medical_enrollment.csv:1-134</code>). Observed county Medi-Cal counts in June 2025 were 472,014 in all and 120,239 expansion adults (2.5949% of 4,633,636 statewide; 255,601 adults ages 19 to 64). By June 2026, expansion counts fell 12.31% to 105,436 before the new rules. Five-step rates come from the <a href="https://www.dhcs.ca.gov/DataAndStats/statistics/Pages/Medi-Cal-Certified-Eligibles.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California DHCS Implementation Plan for New Eligibility and Enrollment Changes under H.R. 1</a> (Feb 5, 2026; <code>dhcs_verification_funnel_scc.csv:1-11</code>). Statewide, 1,842,155 adults (39.8%) renew at Steps 1 to 4. With no jobless waiver, 9,689 more county adults enter Step 5 paper checks (82,126 vs. 72,437; 41,100 vs. 36,218 losses at 50%).',
       '<a href="https://www2.census.gov/programs-surveys/acs/data/pums/2023/5-Year/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau American Community Survey (ACS) 2019-2023 5-Year PUMS</a> (<code>extract_pums.py</code> &amp; <code>scc_hr1_medicaid_risk_profiles.csv:1-46</code>). Across 97,933 survey records in 15 county areas (08501-08515), 6,297 adults ages 19 to 64 report Medi-Cal without Medicare or SSI at pay &le;138% FPL. Weights represent 133,998 adults (&plusmn;3,905). Scaled to 120,239 state enrollees, Group 1 has 38.01% working &ge;80 hours per month (45,703; 50,934 ACS). Group 2 has 39.53% with an exemption (47,530; 52,971 ACS across child care &lt;14 [30,074], birth or disability [11,129], and school [11,768]). Together, Groups 1 and 2 equal <strong>77.5% (93,233)</strong>. Group 3 adds <strong>11.01%</strong> in gig or part-time work (13,226; 14,752 ACS). Groups 1 to 3 total <strong>88.5%</strong>: rounded groups sum to 106,459, while 88.55% before rounding gives 106,472. Group 4 has <strong>11.45% (13,767; 15,341 ACS)</strong>.',
       '<a href="https://www.kff.org/medicaid/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">KFF Medicaid Unwinding &amp; Work Requirement Research</a> &amp; <strong>CAPHE Renewal Retention Model.</strong> Files: <code>churn_reduction_model.py</code>, <code>churn_reduction_model_scc.csv:1-24</code>, and <code>scc_hr1_synthesis.csv:8-15</code>. In the model, 54,152 adults get Step 5 paper forms (12,734 + 18,870 + 10,275 + 12,273). At a 50% loss rate, six-month losses equal 27,076 (6,367 + 9,435 + 5,138 + 6,136). Assumed missed-form shares (35.0%, 72.4%, 64.6%, 30.0%) give <strong>14,219 of 27,076 (52.5%)</strong> avoidable losses (10,150 in Groups 2 and 3). Phone uploads raise prevented losses to <strong>15,642 of 27,076 (57.8%)</strong> (+1,423). On the Census base, scaling 27,076 to 133,998 gives 30,174 losses. Summing the eight unrounded survey groups gives 30,007 losses (17,350 prevented, or 57.8%).'
     ],
-    policySettingHtml: 'Under federal H.R. 1 rules, adults subject to work checks must renew Medi-Cal every six months. Members must show work hours or qualify for an exemption. State systems first check employer wage files and public aid lists on their own. When state files confirm a member, Medi-Cal renews care with no form needed. Yet state wage files often lack records on child care, college classes, and gig work. Adults not confirmed by state files get paper forms in the mail. Members who do not return those forms lose coverage even when they still qualify.',
-    answerHtml: 'More than half of modeled Medi-Cal losses in Santa Clara County come from unreturned forms [1,3]. Each six-month period, <strong>14,219 of 27,076</strong> modeled losses (<strong>52.5%</strong>) involve adults who still qualify [1,3]. Using one state match rate for all adults predicts <strong>36,218 to 41,100</strong> losses [1]. Yet Census shares scaled to the observed count of <strong>120,239</strong> expansion adults give more group detail [1,2]. Those shares show <strong>77.5%</strong> work 80+ hours per month or have an exemption [2]. Another <strong>11.0%</strong> do gig or part-time work (<strong>88.5%</strong> in all), reducing modeled losses to <strong>27,076</strong> [2,3]. Wage files lack care, school, and gig records [2]. In the model, filling in exemptions before mailing forms helps thousands keep coverage [3].',
     block2: {
       title: 'Statewide Rate Estimate vs. Four-Group Renewal Model (Santa Clara County)',
       contextTag: 'Six-Month Renewal Model Adjusted to the Observed State Count of 120,239 Adults',
@@ -354,13 +380,13 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Targeted County Action',
+          label: 'County &amp; State Options',
           policyFit: true,
           cells: [
-            { headline: 'Wage Check + Text Upload', detail: 'Renew matched W-2 workers first and text a paystub upload link (2,228 modeled retains).' },
-            { headline: 'Clinic &amp; School Record Checks', detail: 'Fill in parent, disability, and student exemptions from clinic and school files (6,831 modeled retains).' },
-            { headline: 'Six-Month Work Review + Form', detail: 'Count any 80-hour month in six and accept one-page gig pay forms (3,319 modeled retains).' },
-            { headline: 'Clinic Health Check + Referral', detail: 'Check for medical frailty at clinic visits and refer to work programs (1,841 modeled retains).' }
+            { headline: 'County Option: Wage Check + Text', detail: 'Renew matched W-2 workers first and text a paystub upload link (2,228 modeled retains).' },
+            { headline: 'County &amp; State: Pre-Fill Exemptions', detail: 'Fill in parent, disability, and student exemptions from clinic and school files (6,831 modeled retains).' },
+            { headline: 'County Option: Six-Month Review', detail: 'Count any 80-hour month in six and accept one-page gig pay forms (3,319 modeled retains).' },
+            { headline: 'Clinic Option: Health Check + Link', detail: 'Check for medical frailty at clinic visits and refer to work programs (1,841 modeled retains).' }
           ]
         }
       ],
@@ -453,19 +479,32 @@ const flagshipModules = [
       }
     ],
     tier: 'community',
+    briefType: 'California Data Brief &middot; Food &amp; Cost of Living',
     trackEyebrow: 'Track 4: Costs, Food Need &amp; Health &middot; Main Case Study',
     pageTitle: 'High Rent, Tract Poverty & Diabetes Rates | CAPHE',
     metaDescription: 'Compare family food costs before and after rent alongside tract poverty, store miles, and adult diabetes rates across California neighborhoods.',
     h1: 'High Rent and Local Poverty Explain Food Need and Diabetes Rates Better Than Store Miles',
     subtitle: 'Checking family food costs before and after rent next to tract poverty and store miles.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'CalFresh checks whether working-age home pay is at or below <strong>200%</strong> of poverty before rent counts [1]. County food maps also often mark tracts by store miles alone [3].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'In Marin\'s Canal area (<strong>$5,507</strong> median pay, 220% FPL), subtracting <strong>$2,318</strong> median rent raises a <strong>$973</strong> food plan from <strong>17.7% to 30.5%</strong> of remaining money (<strong>46.4%</strong> in West Fresno) [1,2]. Across 9,033 state tracts, poverty accounts for <strong>62.2%</strong> of food-score gaps versus <strong>1.8%</strong> for store miles [3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Clinics can check rent at visits to offer produce vouchers above the 200% FPL limit [1,4]. Counties can use poverty maps for city aid and send delivery vans to rural areas [3,4].'
+      }
+    ],
     endnotes: [
       '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau American Community Survey (ACS) 2019-2023 5-Year Estimates</a>: Table B19013 gives median income for all households, and Table B25064 gives median rent for renters in Marin Tract 1122.03, Fresno Tract 2, Santa Clara Tract 5119.15, and Nevada Tract 7.01.',
       '<a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service Thrifty Food Plan</a>: Federal reference food plan set at $973 per month for a family of four.',
       '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service Food Access Research Atlas (FARA)</a>: Comparison of food-risk score differences across 9,033 state census tracts for poverty (R&sup2; = 62.2%) and store distance (R&sup2; = 1.8%).',
       '<a href="https://www.cdc.gov/places/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">CDC PLACES Local Data for Better Health</a>: Tract adult diabetes rates linked with disability (odds ratio 1.76) and not finishing high school (odds ratio 2.47) across 408 Santa Clara County tracts.'
     ],
-    policySettingHtml: 'Clinics and counties often use pre-rent income limits and store maps to place food aid. In California, CalFresh runs the Supplemental Nutrition Assistance Program (SNAP). Most working-age homes face a 200% Federal Poverty Level (FPL) income limit before rent counts. That state gross limit sits above the 130% federal gross limit. Federal maps also mark areas with low pay and long store trips. To compare areas on one scale, this brief subtracts median rent from median home income. Here, a median is the middle value. Those area numbers compare cash left for food across tracts rather than checking single homes.',
-    answerHtml: 'Money left after rent and local poverty explain food need and diabetes rates better than store miles [1,3]. In Marin\'s Canal area, median home pay is <strong>$5,507</strong>, or 220% FPL for four people [1]. That amount exceeds California\'s 200% FPL CalFresh limit [1]. Median rent there is <strong>$2,318</strong>, or <strong>42.1%</strong> of area pay [1]. After rent, a <strong>$973</strong> food plan rises from <strong>17.7%</strong> to <strong>30.5%</strong> of cash left [1,2]. In West Fresno, <strong>$1,007</strong> rent on <strong>$3,103</strong> pay raises food costs from <strong>31.4% to 46.4%</strong> [1,2]. Across 9,033 state tracts, poverty accounts for <strong>62.2%</strong> of food-score gaps versus <strong>1.8%</strong> for store miles [3]. Clinic rent checks and poverty maps help direct food vouchers and care teams [3,4].',
     block2: {
       title: 'Income &amp; Store-Distance Checks vs. Money Left After Rent &amp; Tract Poverty',
       contextTag: 'Area Estimate of Money Left After Rent and Comparison of Food-Risk Scores in 9,033 Tracts',
@@ -524,7 +563,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Pre-Rent Share of Income for Food',
+          label: 'Estimated Pre-Rent Food Share',
           modeled: true,
           cells: [
             { val: '17.7% ($973 plan)' },
@@ -534,7 +573,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Post-Rent Share of Income for Food',
+          label: 'Estimated Post-Rent Food Share',
           modeled: true,
           highlight: true,
           cells: [
@@ -545,7 +584,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Monthly Income Left After Rent and Food',
+          label: 'Estimated Money Left After Rent &amp; Food',
           modeled: true,
           cells: [
             { val: '$2,216' },
@@ -600,7 +639,7 @@ const flagshipModules = [
           ]
         },
         {
-          label: 'Matched Clinic &amp; County Action',
+          label: 'Clinic &amp; County Options',
           policyFit: true,
           cells: [
             { headline: 'Rent Check + Produce Vouchers', detail: 'Check rent at clinic visits to offer clinic produce prescriptions and local food vouchers above 200% FPL.' },

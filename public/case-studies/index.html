@@ -81,7 +81,7 @@
     }
 
     .container-narrow {
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
       padding: 0 1.5rem;
     }
@@ -135,22 +135,22 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 0.5rem;
       flex-wrap: wrap;
     }
 
     .topic-pills {
       display: flex;
-      gap: 0.35rem;
+      gap: 0.2rem;
       flex-wrap: wrap;
     }
 
     .topic-btn {
-      padding: 0.4rem 0.85rem;
+      padding: 0.36rem 0.55rem;
       border: 1px solid transparent;
       background: transparent;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.825rem;
       font-weight: 600;
       color: var(--color-text-secondary);
       cursor: pointer;
@@ -170,7 +170,7 @@
 
     .search-minimal {
       position: relative;
-      width: 240px;
+      width: 172px;
     }
 
     .search-minimal input {
@@ -191,12 +191,12 @@
 
     /* Main Content Area */
     .main-area {
-      padding: 2.5rem 0 5rem;
+      padding: 3rem 0 5.5rem;
     }
 
-    /* Topic Group */
+    /* Type Section Group */
     .topic-section {
-      margin-bottom: 3.25rem;
+      margin-bottom: 4rem;
     }
 
     .topic-section.hidden {
@@ -204,8 +204,8 @@
     }
 
     .topic-header {
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.6rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
       border-bottom: 2px solid var(--color-text);
       display: flex;
       align-items: baseline;
@@ -216,32 +216,42 @@
 
     .topic-title {
       font-family: var(--font-heading);
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 700;
       color: var(--color-text);
       margin: 0;
     }
 
     .topic-summary {
-      font-size: 0.95rem;
+      font-size: 0.96rem;
       color: var(--color-text-secondary);
-      margin: 0.25rem 0 0 0;
+      margin: 0.3rem 0 0 0;
     }
 
     /* Minimal 2-Column Directory (Layout B) */
     .case-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem 2.5rem;
-      padding-top: 0.75rem;
+      gap: 1.75rem 2.75rem;
+      padding-top: 0.9rem;
     }
 
     .case-item {
       display: block;
       text-decoration: none;
       color: inherit;
-      padding-bottom: 1.15rem;
+      padding-bottom: 1.25rem;
       border-bottom: 1px solid #F1F5F9;
+    }
+
+    .item-meta {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      display: block;
+      margin-bottom: 0.25rem;
     }
 
     .case-item:hover .item-title {
@@ -344,7 +354,7 @@
       <div class="page-kicker">Free Guide to California Public Health Policy</div>
       <h1>California Public Health Case Studies</h1>
       <p class="page-lead">
-        Twenty-two free briefs show how state figures change when counties check local costs and needs. Each brief uses data on Medi-Cal, care workers, food costs, or county budgets to explain local choices.
+        Twenty-two open briefs grouped by what they show: recorded California data, "what-if" program cost models, and practical guides for reviewing evidence.
       </p>
     </div>
   </header>
@@ -365,7 +375,7 @@
     </div>
   </div>
 
-  <!-- Main Content (Minimal 2-Column Layout by Policy Topic) -->
+  <!-- Main Content (Grouped Into 3 Clear Brief Types) -->
   <main class="main-area" id="main-content">
     <div class="container-narrow">
 
@@ -373,154 +383,165 @@
         No case studies match that filter. <a href="#" onclick="resetAll(); return false;" style="color: var(--color-primary); font-weight: 600; text-decoration: underline;">Show all</a>
       </div>
 
-      <!-- TOPIC 1: Medi-Cal & Provider Claims -->
-      <section class="topic-section" data-section="medi-cal">
+      <!-- TYPE 1: What California Data Show -->
+      <section class="topic-section" data-section="data-briefs">
         <div class="topic-header">
           <div>
-            <h2 class="topic-title">Medi-Cal Coverage, Mail Forms &amp; Paid Claims</h2>
-            <p class="topic-summary">How counties check mail form losses, telehealth biller counts, ban lists, and call lists.</p>
+            <h2 class="topic-title">1. What California Data Show</h2>
+            <p class="topic-summary">State and county records on Medi-Cal losses, living costs, clinic fees, and county budgets.</p>
           </div>
         </div>
         <div class="case-list">
-          <a href="/case-studies/medicaid-expansion" class="case-item" data-topic="medi-cal">
-            <span class="item-title">In the Model, Most Medi-Cal Renewal Losses Come From Unreturned Mail Forms Over Work Rules</span>
-            <p class="item-contrast">Splits modeled mail-form losses from work-rule exits so staff can fill in exemptions early.</p>
+          <a href="/case-studies/p-hacking-multiple-testing" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
+            <span class="item-title">Minimum Group Sizes and Net Member Losses Help Counties Set Medi-Cal Call Lists</span>
+            <p class="item-contrast">Uses a 100-member minimum and each group's net member loss to decide whom to call first.</p>
           </a>
 
           <a href="/case-studies/before-after-trap" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
             <span class="item-title">Two-Year Telehealth Counts Include Earlier Increases in Clinic Use Over Time</span>
             <p class="item-contrast">Uses 84 months of data to compare telehealth billing counts with earlier growth and other care.</p>
           </a>
 
           <a href="/case-studies/threat-history-solutions" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
             <span class="item-title">Checking Telehealth With Other Medicaid Care Shows Distinct Growth Rates as More Adults Join</span>
             <p class="item-contrast">Checks biller counts for telehealth and other care with pre-2020 trends as more adults join.</p>
           </a>
 
-          <a href="/case-studies/measurement-error-claims" class="case-item" data-topic="medi-cal">
-            <span class="item-title">Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out</span>
-            <p class="item-contrast">Matches paid Medicaid claims with federal and state ban lists and checks 50-month waits after claims.</p>
-          </a>
-
-          <a href="/case-studies/collider-bias" class="case-item" data-topic="medi-cal">
-            <span class="item-title">Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early</span>
-            <p class="item-contrast">Compares fraud scores for all past billers with 2024 billers and adjusts alert rates to the full list.</p>
-          </a>
-
-          <a href="/case-studies/p-hacking-multiple-testing" class="case-item" data-topic="medi-cal">
-            <span class="item-title">Minimum Group Sizes and Net Member Losses Help Counties Set Medi-Cal Call Lists</span>
-            <p class="item-contrast">Uses a 100-member minimum and each group's net member loss to decide whom to call first.</p>
-          </a>
-
-          <a href="/case-studies/study-design-ladder" class="case-item" data-topic="medi-cal">
-            <span class="item-title">Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method</span>
-            <p class="item-contrast">Shows when to use matched survey records, time trends, county data, or call trials for budget choices.</p>
-          </a>
-        </div>
-      </section>
-
-      <!-- TOPIC 2: Community Health Workers -->
-      <section class="topic-section" data-section="chw">
-        <div class="topic-header">
-          <div>
-            <h2 class="topic-title">Care Workers, Clinic Fees &amp; Cash Plans</h2>
-            <p class="topic-summary">How counties compare worker costs, visit fees, cash reserves, and health gains to plan funding.</p>
-          </div>
-        </div>
-        <div class="case-list">
-          <a href="/case-studies/chw-health-outcomes" class="case-item" data-topic="chw">
-            <span class="item-title">Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs</span>
-            <p class="item-contrast">Compares fixed visit fees with savings to health plans and hospitals from fewer hospital stays.</p>
-          </a>
-
-          <a href="/case-studies/budget-impact" class="case-item" data-topic="chw">
-            <span class="item-title">Programs With Large Long-Term Health Gains Still Need Plans for Yearly Cash and Reserves</span>
-            <p class="item-contrast">Compares long-term health value, if causal, with Year-1 cash costs and EDD's 25% reserve goal.</p>
-          </a>
-
-          <a href="/case-studies/cost-effectiveness-ratio" class="case-item" data-topic="chw">
-            <span class="item-title">Five-Year Contracts Divide First-Year Care Team Setup Costs Across Five Years of Care</span>
-            <p class="item-contrast">Compares Year-1 setup costs with five-year costs for each healthy life year gained.</p>
-          </a>
-
-          <a href="/case-studies/measuring-health-common-unit" class="case-item" data-topic="chw">
-            <span class="item-title">Distinct Healthy-Year and Death-Risk Units Help Counties Compare Care and Prevention</span>
-            <p class="item-contrast">Reports healthy years gained and lower death risk, if causal, as two separate measures.</p>
-          </a>
-
-          <a href="/case-studies/classifying-causal-mechanisms" class="case-item" data-topic="chw">
-            <span class="item-title">Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays</span>
-            <p class="item-contrast">Splits pre-start health risks from post-start clinic visits that help cut hospital stays.</p>
-          </a>
-        </div>
-      </section>
-
-      <!-- TOPIC 3: Food Security & Cost of Living -->
-      <section class="topic-section" data-section="food">
-        <div class="topic-header">
-          <div>
-            <h2 class="topic-title">Food Cash, CalFresh &amp; Local Living Costs</h2>
-            <p class="topic-summary">How rent, tract poverty, clinic costs, and store lists affect access to food and care.</p>
-          </div>
-        </div>
-        <div class="case-list">
           <a href="/case-studies/food-affordability-tradeoffs" class="case-item" data-topic="food">
+            <span class="item-meta">Food &amp; Cost of Living</span>
             <span class="item-title">Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits</span>
             <p class="item-contrast">Compares CalFresh income limits before rent with food cost shares after rent in four areas.</p>
           </a>
 
           <a href="/case-studies/food-insecurity-diabetes" class="case-item" data-topic="food">
+            <span class="item-meta">Food &amp; Cost of Living</span>
             <span class="item-title">High Rent and Local Poverty Explain Food Need and Diabetes Rates Better Than Store Miles</span>
             <p class="item-contrast">Compares family food costs before and after rent with tract poverty and store miles.</p>
           </a>
 
           <a href="/case-studies/geographic-variables" class="case-item" data-topic="food">
+            <span class="item-meta">Food &amp; Cost of Living</span>
             <span class="item-title">Tract Poverty Explains Most of Santa Clara's Food-Need Score Compared With Store Miles</span>
             <p class="item-contrast">Checks how poverty and store distance relate to food-need scores in Santa Clara and three counties.</p>
           </a>
 
           <a href="/case-studies/identical-data-opposite-policies" class="case-item" data-topic="food">
+            <span class="item-meta">Food &amp; Cost of Living</span>
             <span class="item-title">Fixed Medi-Cal Visit Fees Do Not Meet City Clinic Costs While Poor Inland Areas Lack Care</span>
             <p class="item-contrast">Compares high clinic wages and rents in cities with high poverty rates in inland counties.</p>
           </a>
 
           <a href="/case-studies/threat-measurement-instrumentation" class="case-item" data-topic="food">
+            <span class="item-meta">Food &amp; Cost of Living</span>
             <span class="item-title">Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same</span>
             <p class="item-contrast">Compares map searches, SNAP store lists, and county health permits across 408 census tracts.</p>
           </a>
-        </div>
-      </section>
 
-      <!-- TOPIC 4: County Public Health Budgets -->
-      <section class="topic-section" data-section="budget">
-        <div class="topic-header">
-          <div>
-            <h2 class="topic-title">County Health Budgets and Death Rates</h2>
-            <p class="topic-summary">How counties test crisis aid apart from regular budgets, one-year death changes, and slow trends.</p>
-          </div>
-        </div>
-        <div class="case-list">
           <a href="/case-studies/reverse-causation-feedback" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
             <span class="item-title">Combining Pandemic Aid With Routine County Health Budgets Mixes Relief Grants With Pre-2020 Links</span>
             <p class="item-contrast">Tests grants sent during large death rises apart from 1-year and 13-year links before 2020.</p>
           </a>
 
           <a href="/case-studies/observational-to-experimental" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
             <span class="item-title">Routine County Health Spending Links With Lower Death Rates Outside Pandemic Grant Years</span>
             <p class="item-contrast">Tests 2020-2023 emergency grants apart from 1-year and 13-year links before 2020.</p>
           </a>
 
+          <a href="/case-studies/threat-regression-to-mean" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
+            <span class="item-title">Five-Year County Averages Separate Lasting Rural Death Risk From High One-Year Rates</span>
+            <p class="item-contrast">Uses five-year averages to base rural health grants on lasting risk rather than one-year highs.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- TYPE 2: Program Cost & Impact Models -->
+      <section class="topic-section" data-section="models">
+        <div class="topic-header">
+          <div>
+            <h2 class="topic-title">2. Program Cost &amp; Impact Models</h2>
+            <p class="topic-summary">"What-if" cost and staffing models that pair state pay and fee rules with trial results.</p>
+          </div>
+        </div>
+        <div class="case-list">
+          <a href="/case-studies/chw-health-outcomes" class="case-item" data-topic="chw">
+            <span class="item-meta">Community Health Workers</span>
+            <span class="item-title">Fixed Medi-Cal Visit Fees Pay Less Than One Tenth of County Care Worker Costs</span>
+            <p class="item-contrast">Models visit fees and Year-1 bed savings in 58 counties if one worker serves 55 to 150 people.</p>
+          </a>
+
+          <a href="/case-studies/medicaid-expansion" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
+            <span class="item-title">In the Model, Most Medi-Cal Renewal Losses Come From Unreturned Mail Forms Over Work Rules</span>
+            <p class="item-contrast">Models 2027 Medi-Cal losses for 120,239 adults if half of mailed forms go unreturned.</p>
+          </a>
+
+          <a href="/case-studies/cost-effectiveness-ratio" class="case-item" data-topic="chw">
+            <span class="item-meta">Community Health Workers</span>
+            <span class="item-title">Five-Year Contracts Divide First-Year Care Team Setup Costs Across Five Years of Care</span>
+            <p class="item-contrast">Models Year-1 setup costs versus five-year costs per healthy life year for a 10-worker team.</p>
+          </a>
+
+          <a href="/case-studies/measuring-health-common-unit" class="case-item" data-topic="chw">
+            <span class="item-meta">Community Health Workers</span>
+            <span class="item-title">Distinct Healthy-Year and Death-Risk Units Help Counties Compare Care and Prevention</span>
+            <p class="item-contrast">Reports healthy years gained and lower death risk, if causal, as two separate measures.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- TYPE 3: How to Check Policy Studies -->
+      <section class="topic-section" data-section="guides">
+        <div class="topic-header">
+          <div>
+            <h2 class="topic-title">3. How to Check Policy Studies</h2>
+            <p class="topic-summary">Simple checks for reviewing study claims, risk scores, and multi-year budget plans before funding.</p>
+          </div>
+        </div>
+        <div class="case-list">
+          <a href="/case-studies/budget-impact" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
+            <span class="item-title">Programs With Large Long-Term Health Gains Still Need Plans for Yearly Cash and Reserves</span>
+            <p class="item-contrast">Compares long-term health value, if causal, with Year-1 cash costs and EDD's 25% reserve goal.</p>
+          </a>
+
+          <a href="/case-studies/study-design-ladder" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
+            <span class="item-title">Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method</span>
+            <p class="item-contrast">Shows when to use matched survey records, time trends, county data, or call trials for budget choices.</p>
+          </a>
+
+          <a href="/case-studies/measurement-error-claims" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
+            <span class="item-title">Matching Paid Medicaid Claims With Federal and State Ban Lists Finds Providers One List Leaves Out</span>
+            <p class="item-contrast">Matches paid Medicaid claims with federal and state ban lists and checks 50-month waits after claims.</p>
+          </a>
+
+          <a href="/case-studies/collider-bias" class="case-item" data-topic="medi-cal">
+            <span class="item-meta">Medi-Cal &amp; Claims</span>
+            <span class="item-title">Testing Fraud Checks Only on Current Billers Leaves Out Banned Providers Who Stopped Early</span>
+            <p class="item-contrast">Compares fraud scores for all past billers with 2024 billers and adjusts alert rates to the full list.</p>
+          </a>
+
+          <a href="/case-studies/classifying-causal-mechanisms" class="case-item" data-topic="chw">
+            <span class="item-meta">Community Health Workers</span>
+            <span class="item-title">Controlling for Post-Start Clinic Visits Subtracts the Care Step That Reduces Hospital Stays</span>
+            <p class="item-contrast">Splits pre-start health risks from post-start clinic visits that help cut hospital stays.</p>
+          </a>
+
           <a href="/case-studies/sensitivity-analysis-cea" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
             <span class="item-title">County Health Spending Links Show Higher Value Than Cost Under Three Federal Rates If Causal</span>
             <p class="item-contrast">Compares costs per death avoided, if causal, with three federal rates and clinic pay offsets.</p>
           </a>
 
-          <a href="/case-studies/threat-regression-to-mean" class="case-item" data-topic="budget">
-            <span class="item-title">Five-Year County Averages Separate Lasting Rural Death Risk From High One-Year Rates</span>
-            <p class="item-contrast">Uses five-year averages to base rural health grants on lasting risk rather than one-year highs.</p>
-          </a>
-
           <a href="/case-studies/parallel-trends-power" class="case-item" data-topic="budget">
+            <span class="item-meta">County Health Budgets</span>
             <span class="item-title">Wide Error Ranges Before a Policy Can Miss Slow Differences in County Trends</span>
             <p class="item-contrast">Checks error widths in prior trends and trend limits after a law across county data.</p>
           </a>
@@ -607,9 +628,8 @@
       });
 
       sections.forEach(sec => {
-        const secTopic = sec.dataset.section;
         const hasVisible = Array.from(sec.querySelectorAll('.case-item')).some(i => !i.classList.contains('hidden'));
-        if (hasVisible && (activeTopic === 'all' || activeTopic === secTopic)) {
+        if (hasVisible) {
           sec.classList.remove('hidden');
         } else {
           sec.classList.add('hidden');

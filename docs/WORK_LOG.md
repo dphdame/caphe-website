@@ -1,5 +1,37 @@
 # CAPHE Website Work Log
 
+## 2026-11-27: Three-Type Epistemic Hub Grouping & Spacious 3-Beat Executive Opening Across All 24 Case Studies
+
+- **Conversation Link:** [CAPHE Case Studies Epistemic Clarity & 3-Beat Rollout (`6b755618-9257-4fa3-8968-1e4af84bdb41`)](conversation://6b755618-9257-4fa3-8968-1e4af84bdb41)
+- **Transcript Path:** `/Users/vserver/.gemini/antigravity/brain/6b755618-9257-4fa3-8968-1e4af84bdb41/.system_generated/logs/transcript.jsonl`
+
+### Completed
+- Reorganized `public/case-studies/index.html` into **3 plain-English epistemic brief types** while preserving a single-row sticky Topic filter bar (`All Topics`, `Medi-Cal & Claims`, `Community Health Workers`, `Food & Cost of Living`, `County Health Budgets`) that filters across all three sections:
+  1. **1. What California Data Show** (`11` empirical California/Medicaid data briefs)
+  2. **2. Program Cost & Impact Models** (`4` listed `"what-if"` cost and staffing models + `2` unlisted Paid Family Leave simulation models)
+  3. **3. How to Check Policy Studies** (`7` practical evidence-review guides)
+- Rolled out the spacious **3-Beat Executive Opening (`spec.openingBeats`)** and plain-English **Brief-Type Kicker (`spec.briefType`)** across **all 24 case studies** (`scripts/render_option_c.js`, `scripts/build_wave2_flagships.js`, `scripts/build_wave3_track1_track3.js`, `scripts/build_wave4a_track2.js`, `scripts/build_wave4b_track4.js`):
+  - Replaced the ~205-word 2-paragraph opening prose wall (`policySettingHtml` + `answerHtml`) with 3 airy 2-sentence beats (`107–138` words total, ~40%–45% fewer opening words, increased top white space `pb-8 mb-10` / `mb-12`, and zero defensive top boxes or dataset code lists):
+    - **Beat 1:** `In practice today:` (or `Upcoming rule in 2027:`)
+    - **Beat 2:** `What California records show:` / `What Medicaid records show:` / `What county records show:` (Type 1), `What our model estimates:` (Type 2), or `What the comparison shows:` (Type 3)
+    - **Beat 3:** `Policy option:` (non-prescriptive county, health-plan, and clinic options)
+  - Updated `formatTable1RowLabel()` in `scripts/render_option_c.js` to preserve natural plain-English row qualifiers (`Assumed ...`, `Estimated ...`, `Modeled ...`, `Projected ...`) instead of stripping `"Modeled"` into `*`, and framed Table 2 `policyFit` rows as options (`Policy & Contracting Options`, `County & State Options`, `County Budget Options`, `Audit & Calibration Options`, etc.).
+- Enforced `spec.briefType` and 3-beat `spec.openingBeats` as mandatory across all 24 modules in `scripts/render_option_c.js` and `scripts/audit_anti_cheat.js`, and verified with `npm run gate` (`validate-seo.js` 0 errors, `audit_anti_cheat.js` 24/24 PASS + `0` metaphors, `check_reading_level.js` 24/24 + hub PASS with `Mean Full FK = 7.53` and `Mean Narrative FK = 8.14`, `verify_case_study_figures.js` 0 errors, `npm test` 59/59 PASS).
+
+### Files Modified
+- `public/case-studies/index.html` and `public/case-studies/*/index.html` (all 24 case studies)
+- `scripts/render_option_c.js`
+- `scripts/audit_anti_cheat.js`
+- `scripts/check_reading_level.js`
+- `scripts/build_wave2_flagships.js`
+- `scripts/build_wave3_track1_track3.js`
+- `scripts/build_wave4a_track2.js`
+- `scripts/build_wave4b_track4.js`
+- `docs/CASE_STUDY_TEMPLATE_STANDARD.md`
+- `docs/WORK_LOG.md`
+
+---
+
 ## 2026-11-25: Codex Low-Reasoning All-Text Audit, Grade 7–8 Calibration & Zero-Metaphor Enforcement Across All 24 Case Studies + Hub
 
 - **Conversation Link:** [CAPHE Case Studies `/clear-connected-writing` & Grade 7–8 Calibration (`6b755618-9257-4fa3-8968-1e4af84bdb41`)](conversation://6b755618-9257-4fa3-8968-1e4af84bdb41)

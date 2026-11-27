@@ -97,9 +97,11 @@ function analyzeCaseStudyHtml(html) {
   const h1 = h1Match ? ensurePeriod(stripTags(h1Match[1])) : '';
   const subMatch = h.match(/<h1[\s\S]*?<\/h1>\s*<p[^>]*>([\s\S]*?)<\/p>/i);
   const subtitle = subMatch ? ensurePeriod(stripTags(subMatch[1])) : '';
-  const policySetting = [...h.matchAll(/<p class="policy-setting\b[^>]*>([\s\S]*?)<\/p>/gi)]
+  const openingBeats = [...h.matchAll(/<p class="[^"]*\bopening-beat\b[^"]*"[^>]*>([\s\S]*?)<\/p>/gi)]
     .map(m => ensurePeriod(stripTags(m[1]))).join(' ');
-  const answer = [...h.matchAll(/<p class="answer-block\b[^>]*>([\s\S]*?)<\/p>/gi)]
+  const policySetting = openingBeats ? '' : [...h.matchAll(/<p class="policy-setting\b[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map(m => ensurePeriod(stripTags(m[1]))).join(' ');
+  const answer = openingBeats || [...h.matchAll(/<p class="answer-block\b[^>]*>([\s\S]*?)<\/p>/gi)]
     .map(m => ensurePeriod(stripTags(m[1]))).join(' ');
 
   let synthesis = '';

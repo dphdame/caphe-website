@@ -118,8 +118,6 @@ function formatTable1RowLabel(rawLabel, explicitModeled, rowCells = []) {
   const mainRaw = stripVisibleModeTag(simplifyToGrade7(String(rawLabel || '').replace(/<span[\s\S]*?<\/span>/gi, '').trim()));
   const isModeled = explicitModeled === true || /^Modeled\s+/i.test(mainRaw) || /\*\s*$/.test(mainRaw);
   let cleaned = mainRaw
-    .replace(/^Modeled\s+/i, '')
-    .replace(/^Observed\s+/i, '')
     .replace(/^Cost Input:\s*/i, '')
     .replace(/\s*\((?:[^()]*(?:N\s*=|B\d{4,5}|SPA\s+\d|OLS|TWFE|2SLS|Lewbel|Δ|α|β)[^()]*)\)\s*$/gi, '')
     .replace(/\s*\*+\s*$/g, '')
@@ -128,7 +126,8 @@ function formatTable1RowLabel(rawLabel, explicitModeled, rowCells = []) {
   if (hasMo && !/\b(Monthly|Month)\b/i.test(cleaned)) {
     cleaned = `Monthly ${cleaned}`;
   }
-  const star = isModeled ? '<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>' : '';
+  const hasNaturalQualifier = /\b(Modeled|Estimated|Assumed|Projected)\b/i.test(cleaned);
+  const star = (isModeled && !hasNaturalQualifier) ? '<sup class="text-slate-500 font-bold ml-0.5" title="Modeled estimate">*</sup>' : '';
   return { html: `${cleaned}${star}`, cleanText: cleaned, isModeled };
 }
 
@@ -375,16 +374,25 @@ function renderModuleHtml(spec) {
     return out;
   };
 
-  if (!spec.policySettingHtml || !String(spec.policySettingHtml).trim()) {
-    throw new Error(`[${spec.slug}] Missing required spec.policySettingHtml (Paragraph 1 of Two-Part Executive Opening)`);
+  if (!spec.briefType || !String(spec.briefType).trim()) {
+    throw new Error(`[${spec.slug}] Missing required spec.briefType kicker`);
   }
-  const renderedPolicySettingHtml = formatAnswerWithEndnotes(spec.policySettingHtml);
-  const policySettingWords = countWords(renderedPolicySettingHtml);
-  if (policySettingWords < 20 || policySettingWords > 115) {
-    throw new Error(`[${spec.slug}] policySettingHtml word count (${policySettingWords}) out of 20-115 target window`);
+  if (!Array.isArray(spec.openingBeats) || spec.openingBeats.length !== 3) {
+    throw new Error(`[${spec.slug}] spec.openingBeats must contain exactly 3 short opening beats`);
   }
-
-  const renderedAnswerHtml = formatAnswerWithEndnotes(spec.answerHtml);
+  const beatItems = spec.openingBeats.map((b, idx) => {
+    if (!b || !String(b.lead || '').trim() || !String(b.html || '').trim()) {
+      throw new Error(`[${spec.slug}] openingBeats[${idx}] must have non-empty lead and html`);
+    }
+    const body = stripVisibleModeTag(formatAnswerWithEndnotes(b.html));
+    const cls = idx === 0 ? 'policy-setting opening-beat' : (idx === 1 ? 'answer-block opening-beat' : 'opening-beat');
+    return `        <p class="${cls}"><strong class="beat-lead">${simplifyToGrade7(b.lead)}:</strong> ${body}</p>`;
+  }).join('\n');
+  const renderedOpeningHtml = `      <!-- geo:answer:start -->\n      <div class="opening-beats">\n${beatItems}\n      </div>\n      <!-- geo:answer:end -->`;
+  const answerWords = countWords(renderedOpeningHtml);
+  if (answerWords < 55 || answerWords > 165) {
+    throw new Error(`[${spec.slug}] openingBeats word count (${answerWords}) out of 55-165 concise window`);
+  }
   // Register any remaining external links from methodologyParagraphs and block2 so all sources appear in Enumerated Endnotes
   const scanSources = [
     ...(spec.methodologyParagraphs || []),
@@ -397,11 +405,6 @@ function renderModuleHtml(spec) {
     while ((lm = linkRe.exec(String(srcHtml || ''))) !== null) {
       registerEndnote(lm[1], lm[2]);
     }
-  }
-
-  const answerWords = countWords(renderedAnswerHtml);
-  if (answerWords < 40 || answerWords > 170) {
-    throw new Error(`[${spec.slug}] answerHtml word count (${answerWords}) out of 40-170 target window`);
   }
 
   const articleLd = {
@@ -1263,7 +1266,12 @@ ${cardsHtml}
     .pb-4 { padding-bottom: 1rem; }
     .pt-3 { padding-top: 0.75rem; }
     .pt-2 { padding-top: 0.5rem; }
+    .mb-12 { margin-bottom: 3rem; }
     .mb-10 { margin-bottom: 2.5rem; }
+    .pb-8 { padding-bottom: 2rem; }
+    .opening-beats { max-width: 48rem; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.95rem; }
+    .opening-beat { font-size: 1.0625rem; line-height: 1.65; color: #334155; }
+    .beat-lead { color: #0F172A; font-weight: 700; }
     .mb-8 { margin-bottom: 2rem; }
     .mb-6 { margin-bottom: 1.5rem; }
     .mb-3 { margin-bottom: 0.75rem; }
@@ -1555,25 +1563,18 @@ ${JSON.stringify(faqLd, null, 2)}
   <!-- MAIN CONTENT -->
   <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
 
-    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER (TWO-PART OPENING) -->
-    <div class="border-b border-slate-200 pb-6 mb-8">
+    <!-- BLOCK 1: CONCISE EXECUTIVE HEADER -->
+    <div class="border-b border-slate-200 pb-8 mb-10">
       <div class="text-xs font-bold text-[#0041A5] mb-2">
-        CAPHE Case Studies &middot; ${simplifyToGrade7(spec.trackEyebrow.split('&middot;')[0].replace(/^Track\s*\d+\s*:\s*/i, '').trim())}
+        ${spec.briefType ? `${simplifyToGrade7(spec.briefType)}` : `CAPHE Case Studies &middot; ${simplifyToGrade7(spec.trackEyebrow.split('&middot;')[0].replace(/^Track\s*\d+\s*:\s*/i, '').trim())}`}
       </div>
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#003080] tracking-tight leading-tight max-w-4xl mb-2">
         ${spec.h1}
       </h1>
-      <p class="text-lg sm:text-xl text-slate-800 font-semibold tracking-tight max-w-4xl mb-3">
+      <p class="text-lg sm:text-xl text-slate-700 font-medium tracking-tight max-w-4xl mb-3">
         ${stripVisibleModeTag(simplifyToGrade7(spec.subtitle))}
       </p>
-      <p class="policy-setting text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed mb-3">
-        ${stripVisibleModeTag(renderedPolicySettingHtml)}
-      </p>
-      <!-- geo:answer:start -->
-      <p class="answer-block text-base sm:text-lg text-slate-700 max-w-4xl leading-relaxed">
-        ${stripVisibleModeTag(renderedAnswerHtml)}
-      </p>
-      <!-- geo:answer:end -->
+${renderedOpeningHtml}
     </div>
 
     <!-- BLOCK 3: TABLE 1 QUANTITATIVE MATRIX -->
@@ -1588,7 +1589,7 @@ ${JSON.stringify(faqLd, null, 2)}
       Scroll side to side to see all 4 columns &rarr;
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-12">
       <div class="overflow-x-auto">
         <table class="min-w-[860px] w-full text-left border-collapse" id="quantitativeComparisonTable">
           <caption class="sr-only">${stripVisibleModeTag(simplifyToGrade7(spec.table1.caption))}</caption>

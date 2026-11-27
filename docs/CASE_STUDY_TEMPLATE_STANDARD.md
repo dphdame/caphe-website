@@ -23,16 +23,13 @@ CAPHE Case Studies (`https://www.caphegroup.org/case-studies/{slug}`) are decisi
 Every case study compiled by `scripts/render_option_c.js` follows a 6-part vertical layout:
 
 1. **Header Block:**
-   - **Eyebrow (`.track-eyebrow`):** Track name + plain-English method tag.
-   - **Headline (`<h1>`, $\le 60$ chars `<title>`):** A complete, stat-free declarative sentence stating the policy or analytical takeaway (`Per-Visit Medi-Cal Rates Cover Only a Small Fraction of County Living-Wage CHW Salaries`). Zero digits, dollar signs, percentages, or question marks in `<h1>`.
-   - **Subtitle (`.subtitle`, `12–22` words):** One plain-English, number-free sentence stating what the case study compares.
-2. **Two-Part Executive Opening:**
-   - **Paragraph 1 — The Policy Setting (`<p class="policy-setting">`, `2–3` sentences, 0 study stats):** Plain-English introduction to the California program, statutory rule, or routine county workflow so a cold reader understands the policy context before hitting any numbers.
-   - **Paragraph 2 — Analytical Answer Block (`<p class="answer-block">`, `60–120` words, clickable `[1]..[3]` endnotes):**
-     1. *Operational Decision Hook:* The practical decision challenge on a county director's desk.
-     2. *Statewide Baseline or Structural County Test Case:* Why the 58-county baseline or specific county contrast matters.
-     3. *Parallel Metric Pairing on Identical Units:* The naive/unadjusted figure vs. the decomposed/adjusted figure in the exact same unit.
-     4. *Operational Takeaway:* What that split changes for staffing, targeting, or contracting.
+   - **Brief-Type Kicker (`spec.briefType`):** Plain-English epistemic type + topic (`California Data Brief · ...`, `Program Cost & Impact Model · ...`, or `Evidence Guide · ...`), aligned 1-to-1 with the 3 sections on `/case-studies` (`1. What California Data Show`, `2. Program Cost & Impact Models`, `3. How to Check Policy Studies`).
+   - **Headline (`<h1>`, $\le 60$ chars `<title>`):** Clear Grade 7–8 declarative sentence stating the analytical or policy takeaway without metaphors.
+   - **Subtitle (`.subtitle`):** One plain-English sentence stating what the brief compares.
+2. **Spacious Three-Beat Executive Opening (`spec.openingBeats`, `55–165` words total across 3 short 2-sentence beats, zero defensive boxes or dataset codes up top):**
+   - **Beat 1 (`In practice today:` / `Upcoming rule in 2027:`):** 2 crisp sentences stating the current statutory rule, payment rate, reporting rule, or budget limit.
+   - **Beat 2 (`What California records show:` / `What Medicaid records show:` / `What our model estimates:` / `What the comparison shows:`):** 2 crisp sentences stating the observed records, explicit `"Suppose..."` model estimate, or methodological comparison with clickable `[1]..[N]` endnotes and strict causal fencing (`if causal`, `adj. p = 0.067`).
+   - **Beat 3 (`Policy option:`):** 2 crisp non-prescriptive sentences stating how counties, health plans, or clinics can act (`Counties can...`, `Budget teams can...`).
 3. **Table 1 — Observed Baseline & Estimator Comparison (`#quantitativeComparisonTable`):**
    - Corner header: `Baseline Measure`.
    - 4 named archetype or estimator columns (`col.title` in `<thead>`; technical sample/tract details routed to collapsible `Table 1 Notes`).

@@ -39,18 +39,31 @@ const wave3Modules = [
       }
     ],
     tier: 'public',
+    briefType: 'California Data Brief &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 1: Program Impact &middot; Two-Year Counts Compared With Earlier Growth Rates',
     pageTitle: 'Two-Year Counts vs. Prior Medicaid Trends | CAPHE',
     metaDescription: 'Compare 2019 and 2023 national Medicaid telehealth-eligible biller counts with 2018-2019 growth (+6,977/yr) and other Medicaid care over 84 months.',
     h1: 'Two-Year Telehealth Counts Include Earlier Increases in Clinic Use Over Time',
     subtitle: 'Comparing pre-2020 Medicaid biller trends and other care codes with post-2020 counts over 84 months.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Medicaid reviews often subtract 2019 provider counts from 2023 counts to judge telehealth pay rules [1,3]. Yet clinics were already adding active billers each year before 2020 [1,2].'
+      },
+      {
+        lead: 'What Medicaid records show',
+        html: 'Across 84 months of federal records, monthly telehealth-code billers grew from <strong>91,399</strong> in 2019 to <strong>113,638</strong> in 2023 (<strong>+24.33%</strong>) [1]. Yet counts already grew <strong>+6,977/yr</strong> before 2020 (leaving 2023 <strong>-5,669</strong> below trend), while other Medicaid codes grew <strong>+18.71%</strong> [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Reviewers can check at least 24 pre-policy months alongside other Medicaid care codes [1,3]. Comparing both groups gives a descriptive <strong>+5.62 percentage-point</strong> difference in 2023 rather than counting routine growth [3].'
+      }
+    ],
     endnotes: [
       '<strong>Recorded National Medicaid Billing Counts (2018&ndash;2024).</strong> Monthly counts come from the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Department of Health and Human Services (HHS) Medicaid Provider Spending File</a> across 84 months (January 2018 through December 2024). Average monthly billers on telehealth-eligible codes rose from 84,422 in 2018 and 91,399 in 2019 to 113,638 in 2023. Full-year 2024 averaged 101,978, after averaging 108,781 in January&ndash;October before large November&ndash;December drops.',
       '<strong>Earlier Growth Rate Before 2020.</strong> Billers on telehealth-eligible codes rose by +6,977 per year (+8.26%) from 2018 to 2019, before 2020 telehealth pay rules began. Extending that yearly gain gives 119,307 billers in 2023 (-5,669 vs. recorded) and 126,284 in 2024 (-24,306 vs. recorded).',
       '<strong>Other Medicaid Care Codes &amp; Policy Rules.</strong> Billers on other Medicaid codes grew from 101,905 per month in 2018 and 109,087 in 2019 to 129,492 in 2023 (+18.71% from 2019 to 2023) and 116,690 in 2024. Policy background comes from <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Health Care Services (DHCS) Telehealth Policy Guidance</a>.'
     ],
-    policySettingHtml: 'Comparing one year before a policy with one year after it includes growth that had already begun. State Medicaid teams, such as the California Department of Health Care Services (DHCS), often check telehealth pay rules this way. Yet clinics were already adding active billers each year before 2020. Because biller counts were rising, a two-year subtraction counts routine clinic and member growth as a policy gain.',
-    answerHtml: 'Choosing a baseline trend changes what <strong>84 months</strong> of U.S. Department of Health and Human Services (HHS) Medicaid records show [1]. Monthly billers on telehealth-eligible codes rose from <strong>91,399</strong> in 2019 to <strong>113,638</strong> in 2023 (<strong>+22,239</strong>, or <strong>+24.33%</strong>) [1]. Yet this group already grew from <strong>84,422</strong> in 2018 to <strong>91,399</strong> in 2019, adding <strong>+6,977</strong> billers per year [1,2]. Extending that one-year gain gives <strong>119,307</strong> billers in 2023, so recorded counts are <strong>-5,669</strong> below trend [2]. Sharp late-2024 drops lowered the 2024 mean to <strong>101,978</strong> (<strong>-24,306</strong> vs. trend) [1,2]. Late claim reports or coverage checks may explain that drop [1]. Over the same years, other Medicaid codes rose <strong>+18.71%</strong> through 2023 and were <strong>-28,307</strong> below trend in 2024 [2,3]. Subtracting that <strong>+18.71%</strong> growth leaves a descriptive <strong>+5.62</strong> percentage-point (pp) difference in 2023 [3].',
     block2: {
       title: 'Two-Year Count Change Compared With Pre-2020 Straight-Line Growth',
       contextTag: 'Baseline Trend Projections on HHS Medicaid Provider Spending (84 Months)',
@@ -201,7 +214,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Review Step',
+          label: 'Review Options',
           policyFit: true,
           cells: [
             { headline: 'Check Multi-Year Pre-Trends', detail: 'Chart at least 24 pre-policy months and test more than one baseline trend first.' },
@@ -255,18 +268,31 @@ const wave3Modules = [
     slug: 'selection-into-treatment',
     unlisted: true,
     tier: 'public',
+    briefType: 'Program Cost &amp; Impact Model &middot; Paid Family Leave',
     trackEyebrow: 'Track 1: Program Impact &middot; Leave Use by Wage Group, Job Rules, and Payroll Taxes',
     pageTitle: 'Wage Replacement Rates & Paid Leave Use | CAPHE',
     metaDescription: 'Model how California SB 951 leave pay rates (90% vs. 70%), five-worker job rules, and employer pay affect 12-week Paid Family Leave costs.',
     h1: 'Higher Low-Wage Leave Pay and Small-Firm Job Rules Affect Who Uses Paid Family Leave',
     subtitle: 'Modeling how 90% low-wage leave pay, five-worker job rules, and firm pay affect leave claims.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'All <strong>18.5 million</strong> workers in California State Disability Insurance pay payroll tax on all wages, and SB 951 pays <strong>90%</strong> of wages to lower earners [1,2]. Yet state Paid Family Leave pay ends at 8 weeks while job protection lasts 12 weeks at 5+ worker firms [2].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'Suppose claimants use <strong>35%</strong> of four added weeks on average across <strong>369,600</strong> claims (<strong>+39,600</strong> added) [1,3]. Gross SDI cost reaches <strong>$623.7M/yr</strong> (<strong>1.345%</strong> tax rate) and adds <strong>$422.0M</strong> in net worker pay, with a <strong>+$19.7M</strong> net gain for the lowest wage group [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'State budget teams can plan SDI reserves on <strong>$623.7M</strong> gross cash rather than the <strong>$1,910.0M</strong> full-use limit [3]. Clinics can also add leave claim help to WIC and Medi-Cal prenatal visits [2].'
+      }
+    ],
     endnotes: [
       '<strong>California Paid Family Leave (PFL) &amp; State Disability Insurance (SDI) Baselines.</strong> Baseline figures come from the <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Employment Development Department (EDD) May 2026 Disability Insurance Fund Forecast</a> and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census ACS 2019&ndash;2023 5-Year Microdata</a>. The forecast covers 18.5 million workers, $1,371.5B in taxed wages with no wage cap, and 330,000 projected 2026 PFL claims.',
       '<strong>Senate Bill 951 Pay Rates, CFRA Job Rules &amp; Payroll Taxes.</strong> <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect;&sect; 984 &amp; 3300)</a> removed the SDI wage cap on Jan 1, 2024 and raised leave pay to 90% of wages for lower-paid workers on Jan 1, 2025. The <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Family Rights Act (CFRA, Gov. Code &sect; 12945.2)</a> protects jobs for 12 weeks at firms with 5 or more workers. Together, the model estimates a +$19.7M yearly net gain for the lowest wage group (+$23.0M across the bottom two groups).',
       '<strong>Expected Leave Use Compared With 100% Full Use.</strong> The <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a> models a 35% average share of the four added weeks used (369,600 claims, +39,600 added claims). That case costs $623.7M per year in gross SDI spending and adds $422.0M in net worker pay after a 30% private employer pay offset. Assuming 100% use of all four added weeks raises gross cost to $1,910.0M per year.'
     ],
-    policySettingHtml: 'Leave pay rates and job rules affect which workers use extra Paid Family Leave (PFL) weeks. Every worker covered by California State Disability Insurance (SDI) pays payroll tax on all covered wages. Yet hourly parents cannot afford large pay cuts or risk losing jobs at firms with fewer than five workers. By contrast, salaried workers often get extra pay from employers during leave. Because pay and job protection differ across workers, wage groups would not use a proposed 8-to-12-week leave plan equally.',
-    answerHtml: 'Who uses added leave affects both fund costs and tax fairness across <strong>18.5 million</strong> SDI-covered workers [1]. When claimants use 35% of the four added weeks on average, a 12-week PFL plan estimates <strong>369,600</strong> yearly claims (<strong>+39,600</strong> added claims) [1,3]. That case costs <strong>$623.7M</strong> in gross SDI cash per year, covered by a <strong>1.345%</strong> payroll tax rate (+0.045 percentage points, or pp) [3]. After a 30% reduction where employer paid leave replaces part of added pay, workers gain <strong>$422.0M</strong> in net pay [3]. Under Senate Bill 951\'s 90% low-wage rate and payroll tax on all wages, the lowest wage group receives a net gain of <strong>+$19.7M</strong> and the second group gains <strong>+$3.3M</strong> [2]. Middle and top groups pay <strong>-$78.2M</strong> and <strong>-$157.5M</strong> more in tax than added pay, while 100% use raises gross cost to $1,910.0M [2,3].',
     block2: {
       title: 'Full 100% Use Upper Limit Compared With Expected Use by Wage Group',
       contextTag: 'Policy Model on Employment Development Department (EDD) Baselines & Wage Groups (18.5M Workers)',
@@ -324,7 +350,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Share of Added SDI Tax*<span class="block text-xs font-normal text-slate-500">Tax on all wages (+0.045 pp to 1.345%)</span>',
+          label: 'Modeled Share of Added SDI Tax*<span class="block text-xs font-normal text-slate-500">Tax on all wages (+0.045 pp to 1.345%)</span>',
           modeled: true,
           cells: [
             { val: '7.0% (+$43.7M tax)' },
@@ -334,7 +360,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Share of Added Net PFL Pay*<span class="block text-xs font-normal text-slate-500">369,600 modeled claims (+39,600 added)</span>',
+          label: 'Modeled Share of Added Net PFL Pay*<span class="block text-xs font-normal text-slate-500">369,600 modeled claims (+39,600 added)</span>',
           modeled: true,
           cells: [
             { val: '15.4% (+$63.4M benefits)' },
@@ -344,7 +370,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Net Yearly Difference (Pay Minus Tax)*<span class="block text-xs font-normal text-slate-500">Added net leave pay minus added payroll tax</span>',
+          label: 'Modeled Net Yearly Difference*<span class="block text-xs font-normal text-slate-500">Added net leave pay minus added payroll tax</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -355,7 +381,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Main Factor Affecting Use*<span class="block text-xs font-normal text-slate-500">Key rule or pay factor in weeks 9 to 12</span>',
+          label: 'Modeled Main Factor Affecting Use*<span class="block text-xs font-normal text-slate-500">Key rule or pay factor in weeks 9 to 12</span>',
           modeled: true,
           cells: [
             { val: '90% pay + small-firm CFRA rules' },
@@ -400,7 +426,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Policy Rule',
+          label: 'Policy &amp; Tax Options',
           policyFit: true,
           cells: [
             { headline: 'Pair 90% Pay With Clinic Help', detail: 'Add PFL claim help to Women, Infants, and Children (WIC) and Medi-Cal prenatal visits.' },
@@ -492,18 +518,31 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
+    briefType: 'California Data Brief &middot; County Health Budgets',
     trackEyebrow: 'Track 1: Program Impact &middot; Small-County Rate Changes, Return Toward Average, and Five-Year Means',
     pageTitle: 'High One-Year Death Rates & Five-Year Means | CAPHE',
     metaDescription: 'Separate random yearly changes in small-county death rates (89% weight on regional averages in tiny counties) from lasting need with 5-year means.',
     h1: 'Five-Year County Averages Separate Lasting Rural Death Risk From High One-Year Rates',
     subtitle: 'Using five-year county averages and group size weights so rural health grants match lasting need.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Grant programs sometimes rank counties on one year of death rates per 100,000 residents [2]. In small rural counties, two or three extra deaths raise that rate sharply before returning toward average next year [2].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'In Alpine County (<strong>1,204</strong> residents), one death changes the yearly rate by <strong>83.06</strong> points, and picking top-10% one-year rises produces an <strong>89.4% (-20.3 per 100K)</strong> chance drop next year [2]. Across 17 pre-pandemic years, <strong>$10</strong> per resident links to <strong>-2.42</strong> deaths per 100K in counties up to 500K (<strong>-4.32</strong> over 13 years statewide, adj. <em>p</em> = 0.067) [1].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'State offices can rank rural grants on five-year averages weighted by county size (<strong>0.89</strong> weight in tiny counties) [2,3]. Pairing a base staffing grant with per-person aid keeps rural clinics funded across years [1,3].'
+      }
+    ],
     endnotes: [
       '<strong>California 57-County Public Health Study (2003&ndash;2023).</strong> Spending and death records come from the <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics</a> across 57 counties and 39,538,223 residents. Across 943 pre-COVID yearly county records, $10 more per resident is linked to -2.42 deaths per 100,000 in counties up to 500,000 residents, -2.38 statewide each year, and -4.32 over 13 years (p = 0.067 after multiple-test adjustment, above 0.05).',
       '<strong>Small Populations and Return Toward Average.</strong> Population counts come from <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>. In Alpine County (1,204 residents), one death changes the yearly rate per 100,000 by 83.06 points. In the model, 89.4% (-20.3 per 100,000) of an apparent -22.7 next-year decrease after a high one-year rate comes from random variation returning toward average.',
       '<strong>Combining Years and Population Weights.</strong> Methods for 3-to-5-year county averages and uncertainty weights come from the <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>.'
     ],
-    policySettingHtml: 'Ranking counties on one year of death rates can mistake random changes in small groups for lasting need. When a small rural county has two or three extra deaths by chance, its rate per 100,000 rises fast. The next year, that high rate is often closer to the county average on its own. Analysts call this return toward average regression to the mean. Judging grants on that drop mistakes chance for program gains.',
-    answerHtml: 'Picking small counties after a one-year death-rate rise in the top 10% produces a <strong>-20.3 per 100,000</strong> drop from chance alone [2]. That regression to the mean accounts for <strong>89.4%</strong> of an apparent <strong>-22.7 per 100,000</strong> next-year drop [2]. In Alpine County (<strong>1,204</strong> residents), one death changes the yearly rate per 100,000 by 83.06 points [2]. Group size weights combine uncertain 1-year rates with regional means [3]. Weights are <strong>89.0% pulled</strong> toward the regional mean in tiny rural counties and <strong>68.0% pulled</strong> in small rural counties [3]. Combining several years needs smaller weights: <strong>24.0% pulled</strong> in county groups and <strong>6.0% pulled</strong> statewide [3]. Across 17 pre-pandemic years (<strong>39,538,223</strong> residents), $10 per resident in health spending links to <strong>-2.42 / 100K</strong> in yearly death rates across counties &le;500K [1]. Statewide, $10 per resident links to <strong>-2.38</strong> yearly and <strong>-4.32 13-yr</strong> death-rate changes per 100,000 (adj. <em>p</em> = 0.067) [1].',
     block2: {
       title: 'One-Year Drop After a High Rate Compared With Multi-Year County Links',
       contextTag: 'Small-County Rate Variation on California Department of Finance (DOF) Counts + 57-County Study',
@@ -636,7 +675,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Rural Grant Rule',
+          label: 'Rural Grant Options',
           policyFit: true,
           cells: [
             { headline: 'Rank on 5-Year Weighted Rates', detail: 'Use 5-year county averages and uncertainty weights (0.89 in tiny counties) to rank grant need.' },
@@ -702,18 +741,31 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
+    briefType: 'California Data Brief &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 1: Program Impact &middot; Comparing Code Groups During Wider Medicaid Enrollment',
     pageTitle: 'Telehealth vs. Other Medicaid Care Growth | CAPHE',
     metaDescription: 'Compare national biller counts for telehealth-eligible (+24.33%) and other Medicaid codes (+18.71%) over 84 months (+0.78 to +5.62 pp difference).',
     h1: 'Checking Telehealth With Other Medicaid Care Shows Distinct Growth Rates as More Adults Join',
     subtitle: 'Checking telehealth biller counts with other care codes and pre-2020 trends over 84 months.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'From 2020 to 2023, federal rules paused Medicaid renewals and kept millions more adults enrolled [3]. Checking telehealth-eligible billing codes alone mixes wider enrollment growth into telehealth counts [1,3].'
+      },
+      {
+        lead: 'What Medicaid records show',
+        html: 'From 2019 to 2023, monthly telehealth-code billers rose <strong>+24.33%</strong> (<strong>91,399</strong> to <strong>113,638</strong>), while other Medicaid codes rose <strong>+18.71%</strong> (<strong>109,087</strong> to <strong>129,492</strong>) [1]. Subtracting that growth leaves a descriptive <strong>+5.62 percentage-point</strong> difference, or <strong>+0.78 pp</strong> if extending the 2018–2019 gap [1,2].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Agencies can report <strong>+0.78 pp to +5.62 pp</strong> as a descriptive range rather than a causal policy gain [1,2]. Reviewing both code groups together also shows that late-2024 declines occurred across all care [1].'
+      }
+    ],
     endnotes: [
       '<strong>National Medicaid Provider Counts for Two Code Groups (2018&ndash;2024).</strong> Monthly counts come from the <a href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Department of Health and Human Services (HHS) Medicaid Provider Spending File</a> across 84 months (Jan 2018&ndash;Dec 2024). Billers on telehealth-eligible codes grew +24.33% (91,399 to 113,638) from 2019 to 2023, while billers on other Medicaid codes grew +18.71% (109,087 to 129,492). Subtracting the two gives a descriptive +5.62 percentage-point (pp) difference through 2023 (+5.26 pp in Jan&ndash;Oct 2024, or +4.60 pp across full-year 2024).',
       '<strong>Difference in Growth Before the Policy (2018&ndash;2019).</strong> Billers on telehealth-eligible codes grew +8.26% (84,422 to 91,399) from 2018 to 2019, compared with +7.05% (101,905 to 109,087) for other Medicaid codes. That +1.21 pp yearly difference before 2020 narrows the 2019&ndash;2023 descriptive difference to +0.78 pp if extended across four years.',
       '<strong>Paused Renewals &amp; Telehealth Policy Rules.</strong> Enrollment and policy rules come from <a href="https://www.medicaid.gov/medicaid/data-systems/macbis/transformed-medicaid-statistical-information-system-t-msis/index.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CMS Transformed Medicaid Statistical Information System (T-MSIS) Analytic Files Documentation</a> and <a href="https://www.dhcs.ca.gov/provgovpart/Pages/Telehealth.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Health Care Services (DHCS) Telehealth Policy Guidance</a>.'
     ],
-    policySettingHtml: 'Checking telehealth codes next to other Medicaid codes puts biller growth in context. From 2020 to 2023, federal rules paused renewals and kept millions more adults enrolled. State offices, such as the California Department of Health Care Services (DHCS), cannot judge telehealth trends from telehealth-eligible counts alone. Subtracting growth in other codes gives a descriptive difference, not a proven policy gain. Only one pre-2020 year exists, and clinics could bill visits under either code group.',
-    answerHtml: 'Checking telehealth-eligible codes with other Medicaid care clarifies growth across <strong>84 months</strong> of U.S. Department of Health and Human Services (HHS) records [1]. From 2019 to 2023, monthly billers on telehealth codes rose <strong>+24.33%</strong>, from <strong>91,399</strong> to <strong>113,638</strong> [1]. Over those same years, billers on other Medicaid codes rose <strong>+18.71%</strong>, from <strong>109,087</strong> to <strong>129,492</strong> [1]. Subtracting that 18.71% growth leaves a recorded difference of <strong>+5.62 percentage points (+5.62 pp)</strong> through 2023 [1]. Through 2024, the recorded difference is <strong>+4.60 pp</strong> full-year, or <strong>+5.26 pp</strong> through October [1]. Yet from 2018 to 2019, telehealth counts already grew <strong>+1.21 pp</strong> faster (<strong>84,422</strong> vs. <strong>101,905</strong> in 2018) [2]. Extending that one-year difference puts the 2023 range at <strong>+0.78 pp</strong> to <strong>+5.62 pp</strong> (descriptive, not causal) [1,2]. Both counts fell in 2024, with a <strong>-0.37 pp</strong> larger drop on telehealth codes [1].',
     block2: {
       title: 'Telehealth Counts Alone Compared With Both Medicaid Code Groups',
       contextTag: 'Two-Group Check on HHS Medicaid Provider Spending (84 Months)',
@@ -854,7 +906,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Review Rule',
+          label: 'Review Options',
           policyFit: true,
           cells: [
             { headline: 'Chart Monthly Pre-2020 Counts', detail: 'Check monthly 2018-2019 differences across both code groups and check for code changes.' },
@@ -920,18 +972,31 @@ const wave3Modules = [
       }
     ],
     tier: 'public',
+    briefType: 'Evidence Guide &middot; County Health Budgets',
     trackEyebrow: 'Track 1: Program Impact &middot; Pre-Policy Error Ranges and Post-Policy Trend Limits',
     pageTitle: 'Pre-Policy Error Ranges & County Trend Tests | CAPHE',
     metaDescription: 'See why passing a pre-trend test (p = 0.9997) with wide error ranges (-1.27 to +1.16 pp) needs post-policy trend-difference bounds (0.35x limit).',
     h1: 'Wide Error Ranges Before a Policy Can Miss Slow Differences in County Trends',
     subtitle: 'Checking error ranges before a law and trend limits after it in two-group county tests.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Before citing a two-group county study, reviewers check whether pre-law differences were near zero [1,2]. Yet short three-year pre-periods often have wide error ranges that miss slow trend differences [2].'
+      },
+      {
+        lead: 'What the comparison shows',
+        html: 'In an article-reported 1,408-county study (not publicly reproduced), pre-law checks pass (<em>p</em> = 0.9997) and give a <strong>-0.47 pp</strong> estimate [1]. Yet pre-law 95% error ranges span <strong>-1.27 to +1.16 pp</strong>, and the range includes zero once post-law trends differ by <strong>0.35x</strong> of pre-law change [1,2].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Budget teams can ask for full pre-policy 95% error ranges and a <strong>1.0x</strong> trend-bound check rather than a <em>p</em>-value alone [2]. Longer panels, such as California\'s 17-year 57-county records, give firmer pre-2020 history [3].'
+      }
+    ],
     endnotes: [
       '<strong>Article-Reported 1,408-County Bank-Closure Study.</strong> Inputs come from an article-reported <a href="https://www.ers.usda.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">USDA SNAP Retailer</a> and <a href="https://www.fdic.gov/resources/resolutions/bank-failures/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">FDIC Bank-Closure County Benchmark</a> (not publicly reproduced; 1,408 counties). The main post-policy estimate is -0.47 percentage points (pp), with standard error 0.22 pp and 95% confidence range -0.91 to -0.03 pp (p = 0.036). Pre-policy yearly differences are -0.056, -0.030, and 0.000, with 95% ranges from -1.27 to +1.16 pp (joint test p = 0.9997).',
       '<strong>Pre-Test Precision &amp; Rambachan-Roth Trend Limits.</strong> Methods follow <a href="https://doi.org/10.1257/aeri.20210236" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Roth, J. (2022), <em>AER: Insights</em></a> and <a href="https://doi.org/10.1093/restud/rdad018" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Rambachan, A., &amp; Roth, J. (2023), <em>Review of Economic Studies</em></a>. On the stated 1,408-county inputs, the post-policy trend limit reaches zero at 0.35x (where the 95% range becomes [-0.96, 0.00] pp). Adding 3-year straight-line trends for each county changes the estimate to +0.003 pp.',
       '<strong>California 57-County Study Comparison (2003&ndash;2019).</strong> County records come from the <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics</a> across 943 pre-COVID yearly county records. Each $10 more per resident is linked to 2.38 fewer annual deaths per 100,000, 4.32 fewer over 13 years (p = 0.067 after multiple-test adjustment, above 0.05), and 5.31 fewer in two-stage sensitivity checks.'
     ],
-    policySettingHtml: 'Passing a pre-law trend test does not prove two county groups would have changed at the same rate. Before using a two-group county study, teams check whether county differences before the law were near zero. Yet a short three-year period before the law often leaves wide 95% error ranges. When error ranges are wide, a slow difference in county trends can pass the test.',
-    answerHtml: 'Wide pre-law error ranges can make uncertain county estimates look firm [1,2]. An article-reported 1,408-county bank-closure study (not publicly reproduced) shows why [1]. Its pre-law differences pass a joint test (<em>p</em> = 0.9997) [1]. Assuming no later trend difference gives a <strong>-0.47 percentage-point (-0.47 pp)</strong> drop (&plusmn;<strong>0.22 pp</strong> error; <strong>-0.91 to -0.03 pp</strong>) [1]. Yet pre-law 95% error ranges span <strong>-1.27 to +1.16 pp</strong>, over 2.5 times that drop [1]. Trend bounds include zero once a post-law trend difference reaches <strong>0.35x</strong> of the biggest pre-law change [2]. Adding 3-year county trend lines changes the result to <strong>+0.003 pp</strong> [2]. For longer history, California\'s 17-year, 57-county study links $10 per resident to <strong>2.38</strong> yearly and <strong>4.32</strong> 13-year fewer deaths per 100,000 (adj. <em>p</em> = 0.067) [3].',
     block2: {
       title: 'Exact Parallel-Trends Estimate Compared With the 0.35x Trend Limit',
       contextTag: 'Sensitivity Bounds on Stated 1,408-County Inputs + 57-County Study Comparison',
@@ -1063,7 +1128,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Review Rule',
+          label: 'Study Review Options',
           policyFit: true,
           cells: [
             { headline: 'Pair Estimates With Bounds', detail: 'Report pre-policy error ranges alongside every two-group county comparison estimate.' },
@@ -1148,18 +1213,31 @@ const wave3Modules = [
     slug: 'threat-maturation-solutions',
     unlisted: true,
     tier: 'public',
+    briefType: 'Program Cost &amp; Impact Model &middot; Paid Family Leave',
     trackEyebrow: 'Track 1: Program Impact &middot; Routine Payroll Growth Compared With Paid-Leave Law Costs',
     pageTitle: 'Normal Wage Growth vs. Paid-Leave Law Costs | CAPHE',
     metaDescription: 'Separate routine California payroll and claim growth (+$1.635B SDI spending) from estimated Paid Family Leave benefit costs in 2025-2030 reserves.',
     h1: 'Multi-Year Fund Models Separate Normal Payroll Growth From Paid-Leave Law Costs',
     subtitle: 'Separating routine job and wage growth from modeled 12-week Paid Family Leave costs through 2030.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Statewide Paid Family Leave laws start on one date for all <strong>18.5 million</strong> covered workers [1,2]. Even without a new law, normal job and wage growth adds <strong>+$1.635B</strong> to 2026 State Disability Insurance spending [1].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'Above routine growth (<strong>325,055</strong> to <strong>330,000</strong> claims), a modeled 12-week plan at 35% added-week use adds <strong>+39,600</strong> claims and <strong>+$623.7M/yr</strong> [1,2]. Reserves dip to <strong>10.8% ($1.96B)</strong> in 2026 before all-wage taxes raise them to <strong>30.4% ($6.37B)</strong> by 2030 [3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Budget teams can forecast routine payroll growth first before pricing added leave weeks [1,3]. Pairing six-year reserve tables with state payroll tax rules (<strong>1.345%</strong> rate) plans past Year 1 [2,3].'
+      }
+    ],
     endnotes: [
       '<strong>California EDD Paid Family Leave (PFL) &amp; State Disability Insurance (SDI) Baselines (2025&ndash;2026).</strong> Recorded and forecast figures come from the <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Employment Development Department (EDD) May 2026 Disability Insurance Fund Forecast</a>. Actual 2025 totals were 325,055 PFL claims, $1,090 weekly pay, and $15.892B in SDI spending. Baseline 2026 forecasts are 330,000 claims, $1,165 weekly pay, and $17.527B in SDI spending.',
       '<strong>Modeled Added Leave Costs Under SB 951 &amp; 12-Week Cases.</strong> Statutory rules and cost estimates come from <a href="https://leginfo.legislature.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Senate Bill 951 (UIC &sect; 3300 &amp; &sect; 984)</a> and the <a href="/tools/pfl-simulator" class="text-[#0041A5] underline">CAPHE California PFL Simulator</a>. The expected 12-week case adds +39,600 yearly claims (to 369,600) and +$623.7M/yr in gross SDI spending above routine growth.',
       '<strong>Projected Reserves Across 2025&ndash;2030.</strong> In the 35% expected-use case, 2026 SDI reserves decrease from 18.2% of annual spending ($3.19B baseline) to 10.8% ($1.96B, a -$1.23B two-year difference). Payroll taxes on all covered wages then raise reserves to 30.4% ($6.37B) by 2030, above EDD\'s 25.0% reserve planning goal.'
     ],
-    policySettingHtml: 'Statewide Paid Family Leave (PFL) laws start on one date for every covered worker. That single start date leaves no comparison counties in California. At the same time, job growth, rising wages, and payroll taxes on all wages (with no cap) raise fund totals each year. Analysts call that normal baseline growth maturation. Because payrolls grow each year, a year-to-year subtraction mixes normal payroll growth into the cost of adding leave weeks.',
-    answerHtml: 'Splitting normal growth from added leave weeks clarifies California State Disability Insurance (SDI) reserves [1,3]. Without a 12-week law, normal growth raises PFL claims from <strong>325,055</strong> in 2025 to <strong>330,000</strong> in 2026 [1]. Normal growth also adds <strong>+$1.635B</strong> in 2026 SDI spending and raises reserves from <strong>$3.19B</strong> (<strong>18.2%</strong> of spending) to $10.29B (50.7%) by 2030 [1,3]. Above that baseline, a 12-week plan at 35% added-week use adds <strong>+39,600</strong> claims (<strong>369,600</strong> total) and <strong>+$623.7M/yr</strong> [2]. That cost lowers 2026 reserves to <strong>$1.96B</strong> (<strong>10.8%</strong>), or <strong>$2.36B</strong> (<strong>13.2%</strong>) at 25% use vs. <strong>-$0.58B</strong> at 100% use [3]. Taxes on all wages then raise reserves to <strong>$6.37B</strong> (<strong>30.4%</strong>) by 2030 [2,3]. That level is above the Employment Development Department (EDD) 25.0% reserve goal (not a legal minimum) [3].',
     block2: {
       title: 'Routine Payroll Growth Compared With Added 12-Week Leave Costs',
       contextTag: '2026-2030 Multi-Year Projections on Recorded 2025 EDD Totals',
@@ -1295,7 +1373,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Forecast Rule',
+          label: 'Forecasting Options',
           policyFit: true,
           cells: [
             { headline: 'Subtract Routine Growth First', detail: 'Project +1.52% claim growth and +6.88% check growth before estimating any new leave bill.' },
@@ -1355,18 +1433,31 @@ const wave3Modules = [
       }
     ],
     tier: 'public',
+    briefType: 'Evidence Guide &middot; County Health Budgets',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; Yearly Cash Budgets and Reserves Compared With Long-Term Health Value',
     pageTitle: 'Yearly Cash Budgets vs. Long-Term Health Value | CAPHE',
     metaDescription: 'Compare multi-year California health value estimates with Year-1 cash costs, EDD\'s 25% SDI reserve goal, and enacted Medi-Cal budget lines.',
     h1: 'Programs With Large Long-Term Health Gains Still Need Plans for Yearly Cash and Reserves',
     subtitle: 'Comparing multi-year health value, if causal, with Year-1 cash costs, state reserve goals, and budget rules.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Long-term health gains do not add cash to this year\'s budget [1]. Still, funding requests often cite multi-year health value with no Year-1 cash or reserve plan [2].'
+      },
+      {
+        lead: 'What the comparison shows',
+        html: 'High long-term value still faces Year-1 cash limits [1,2]. A modeled 12-week leave plan lowers 2026 reserves to <strong>10.8% ($1.96B)</strong> vs. EDD\'s <strong>25% ($4.38B)</strong> goal, and the FY 2026–27 state budget sets <strong>$709M</strong> for county staff with <strong>$0</strong> for CBO grants [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Budget teams can check two numbers side by side [2]. Multi-year health value shows program worth, while Year-1 cash and reserve plans match the right payer [2,3].'
+      }
+    ],
     endnotes: [
       '<strong>Health Value Estimates &amp; Outreach Costs.</strong> Estimates come from the <a href="/tools/lha-calculator/methodology" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>. Pre-2020 county records link $10 per resident to 2.38 fewer yearly deaths per 100,000 (55% of the 13-year link) and 4.32 fewer over 13 years (p = 0.067 after multiple-test adjustment, above 0.05). If causal at the $13.6M federal death-risk value, those links equal $420,168 per life (32:1) and $231,481 per life (59:1). County Medi-Cal help keeps coverage for $35 to $140 per member-year.',
       '<strong>State Disability Insurance (SDI) &amp; Paid Family Leave (PFL) Cash Costs (2025&ndash;2030).</strong> Forecasts come from the <a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Employment Development Department (EDD) May 2026 Disability Insurance Fund Forecast</a>. Giving $422.0M in modeled net worker pay (after a 30% firm pay offset) under a 12-week PFL plan takes $623.7M in 2026 gross cash. That cost lowers 2026 SDI reserves to 10.8% ($1.96B). That share is below EDD\'s 25.0% ($4.38B) goal (not a legal minimum under UIC &sect; 984), before rising to 30.4% ($6.37B) by 2030.',
       '<strong>Enacted FY 2026&ndash;27 Medi-Cal Budget Rules.</strong> The <a href="https://ebudget.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance Enacted Budget Summary</a> sets $709M total ($196.8M General Fund) for county staff within $3.3B for county Medi-Cal work. State community grants ($20M AB 102 and $59.8M DHCS outreach) ended on June 30, 2025.'
     ],
-    policySettingHtml: 'Long-term resident health gains do not add cash to this year\'s agency budget. County budget offices and California Employment Development Department (EDD) staff must pay yearly cash bills, check fund reserves, and follow legal budget lines. A Budget Impact Analysis estimates yearly gross cash spending, revenue, and reserves for one payer. Without that yearly cash plan, proposals citing large multi-year health gains cannot move forward in budget review.',
-    answerHtml: 'Large long-term health value still needs a Year-1 cash and reserve plan [1,2]. Expressed as <strong>illustrative resident value if causal (not cash returns)</strong>, pre-2020 county health links equal <strong>59:1</strong> at 13 years (adj. <em>p</em> = 0.067) and <strong>32:1</strong> in Year 1 (<strong>55%</strong> of the 13-year link) [1]. Similarly, an 8-to-12-week Paid Family Leave (PFL) plan estimates <strong>$422.0M</strong> per year in added net worker pay [2]. Yet that PFL plan requires <strong>$623.7M</strong> in 2026 gross cash from the State Disability Insurance (SDI) fund [2]. That spending lowers 2026 reserves to <strong>10.8% ($1.96B)</strong>, below EDD\'s 25.0% (<strong>$4.38B</strong>) reserve planning goal (not a legal minimum) [2]. Meanwhile, the FY 2026-27 state budget provides <strong>$709M</strong> for county staff and $0 for community-based organization (CBO) outreach grants [3]. Pairing health value estimates with yearly cash plans addresses both limits [2,3].',
     block2: {
       title: 'Conditional Multi-Year Value Compared With Year-1 Cash and EDD Reserve Goals',
       contextTag: 'Cash Spending, EDD Reserve Goal & Time-Period Checks on FY 2026-27 Budgets',
@@ -1520,7 +1611,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Budget Plan',
+          label: 'Budget &amp; Reserve Options',
           policyFit: true,
           cells: [
             { headline: 'Pair Value With 6-Year Cash', detail: 'Submit the 2025-2030 SDI reserve table together with a +0.045 pp (1.345%) payroll tax rate.' },
@@ -1580,18 +1671,31 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
+    briefType: 'Program Cost &amp; Impact Model &middot; Community Health Workers',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; Healthy-Year Units and Federal Death-Risk Values',
     pageTitle: 'Healthy Years & Death-Risk Values in Budgets | CAPHE',
     metaDescription: 'Compare chronic care, mental health, and county death-rate links using separate Quality-Adjusted Life Year (QALY) and federal death-risk (VSL) units.',
     h1: 'Distinct Healthy-Year and Death-Risk Units Help Counties Compare Care and Prevention',
     subtitle: 'Checking clinic and mental health care in healthy years while keeping death-risk values apart.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Diabetes clinics track lab tests, mental health teams score mood symptoms, and counties count death rates [1,3]. Without shared units, mental health and social support often drop out of budget reviews [2].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'Suppose Community Health Workers serve <strong>750</strong> clients per year across chronic, mental, and social care [1,2]. Two-year gains reach <strong>40.04 QALYs</strong> (<strong>$4.00M</strong> at $100K/QALY; <strong>54.5%</strong> mental and social), kept separate from <strong>32:1</strong> yearly and <strong>59:1</strong> 13-year county death-risk values if causal (adj. <em>p</em> = 0.067) [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Counties can assign one main care group per client so mental and social gains count once [2]. Reporting QALYs, death-risk values (if causal), and hospital cash savings in separate rows stops double-counting [1,3].'
+      }
+    ],
     endnotes: [
       '<strong>Quality-Adjusted Life Year (QALY) Cohort Standard.</strong> Discounting rules follow <a href="https://doi.org/10.1001/jama.2016.12195" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Sanders et al. (2016), Second Panel on Cost-Effectiveness in Health and Medicine</a>. Using a 3.0% annual discount rate across an illustrative 750-client annual California Community Health Worker cohort gives 40.04 two-year QALYs, valued at $4,004,083 at $100K/QALY.',
       '<strong>One Main Care Group per Client.</strong> Assigning each client in the illustrative 750-client cohort to one primary care group gives two-year discounted totals of 18.21 QALYs ($1,821,046 at $100K/QALY) across 375 chronic-care clients (50%), 17.49 QALYs across 225 mental-health clients (30%), and 4.34 QALYs across 150 social-needs clients (20%). Mental-health and social-needs groups sum to 21.83 QALYs ($2,183,037), and all three groups sum to 40.04 cohort QALYs ($4,004,083).',
       '<strong>Federal Value of a Statistical Life (VSL) Rates (2025).</strong> Rates come from the <a href="https://aspe.hhs.gov/reports/guidelines-regulatory-impact-analysis" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. HHS ASPE 2025 VSL Schedule</a> ($6.3M Low, $13.6M Central, $20.7M High). Applied as illustrative resident value if causal to California\'s 57-county public health links, $13.6M corresponds to 32:1 yearly ($420,168 per statistical life) and 59:1 over 13 years ($231,481 per statistical life, p = 0.067 after multiple-test adjustment; kept separate from QALY ratios).'
     ],
-    policySettingHtml: 'Common health units help counties compare clinic care and mental health help fairly. Diabetes clinics check blood sugar, mental health teams score mood symptoms, and counties count death rates. Quality-Adjusted Life Years (QALYs) score health on a 0-to-1 scale, where one QALY is one year in full health. Federal death-risk rates, called the Value of a Statistical Life (VSL), value small cuts in death risk apart from QALYs. Keeping QALYs and VSL separate stops double-counting.',
-    answerHtml: 'Keeping clinic health gains and death-risk values in two separate units stops double-counting [1,3]. Across 750 yearly clients served by Community Health Workers (CHWs), two-year gains total <strong>40.04 QALYs</strong> [1]. At $100,000 per QALY, those gains equal <strong>$4,004,083</strong> vs. $1.35M-$1.41M in yearly costs [1]. The chronic-care group adds <strong>18.21</strong> QALYs (<strong>$1,821,046</strong>) [2]. The mental-health group adds <strong>17.49</strong> QALYs and social help adds <strong>4.34</strong> QALYs, or <strong>$2,183,037</strong> combined (54.5%) [2]. In a separate unit, U.S. Department of Health and Human Services (HHS) Value of a Statistical Life (VSL) rates are <strong>$6.3M</strong>, <strong>$13.6M</strong>, and <strong>$20.7M</strong> [3]. Those rates equal <strong>32:1</strong> yearly and <strong>59:1</strong> 13-year ratios on 57-county death links (adj. <em>p</em> = 0.067) [3]. Both show resident value if causal, not cash returns [3].',
     block2: {
       title: 'Daily Health Unit (QALYs) Compared With Conditional Death-Risk Value (HHS 2025 VSL)',
       contextTag: 'Two Separate Units (750-Client Cohort QALYs vs. Conditional 57-County VSL)',
@@ -1662,7 +1766,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Care Group Size or Conditional Lives*<span class="block text-xs font-normal text-slate-500">One group per client or conditional lives</span>',
+          label: 'Assumed Group Size or Conditional Lives*<span class="block text-xs font-normal text-slate-500">One group per client or conditional lives</span>',
           modeled: true,
           cells: [
             { val: '375 clients / yr (50% of cohort)' },
@@ -1672,7 +1776,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Discounted Two-Year or Study Output*<span class="block text-xs font-normal text-slate-500">2-yr QALYs (3% disc.) or conditional $/life</span>',
+          label: 'Estimated Two-Year or Study Output*<span class="block text-xs font-normal text-slate-500">2-yr QALYs (3% disc.) or conditional $/life</span>',
           modeled: true,
           cells: [
             { val: '0.0486/client (18.21 QALYs/yr)' },
@@ -1682,7 +1786,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Dollar Value in Each Unit*<span class="block text-xs font-normal text-slate-500">At $100K/QALY vs. HHS $13.6M VSL</span>',
+          label: 'Estimated Dollar Value in Each Unit*<span class="block text-xs font-normal text-slate-500">At $100K/QALY vs. HHS $13.6M VSL</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -1747,7 +1851,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Budget Use',
+          label: 'Budget &amp; Valuation Options',
           policyFit: true,
           cells: [
             { headline: 'Review Chronic Clinic Care', detail: 'Use chronic-care QALYs (18.21 QALYs across 375 clients) when reviewing clinic care-team staffing.' },
@@ -1807,18 +1911,31 @@ const wave3Modules = [
       }
     ],
     tier: 'community',
+    briefType: 'Program Cost &amp; Impact Model &middot; Community Health Workers',
     trackEyebrow: 'Track 3: Resource Allocation &amp; Economic Value &middot; Year-One Setup Costs Compared With Five-Year Cost per QALY',
     pageTitle: 'Year-1 Setup vs. Five-Year Cost per QALY | CAPHE',
     metaDescription: 'Compare 5-year Community Health Worker cost per healthy year ($36,089 operating, $37,712 with setup) and net value (+$12.80M at $100K per QALY).',
     h1: 'Five-Year Contracts Divide First-Year Care Team Setup Costs Across Five Years of Care',
     subtitle: 'Comparing Year-1 hiring and setup costs with five-year ongoing and full costs per healthy year gained.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'One-year county pilot reviews charge all first-year hiring, training, and IT setup costs to one year of patients [2]. That rule raises Year-1 cost per healthy year before caseloads reach ongoing operations [1,2].'
+      },
+      {
+        lead: 'What our model estimates',
+        html: 'Suppose a 10-worker care team serves <strong>750</strong> clients per year (<strong>$1,930,000</strong> in Year 1; <strong>$1,405,000/yr</strong> in Years 2–5) and adds <strong>40.04 QALYs/yr</strong> [1,2]. Cost drops from <strong>$48,202 / QALY</strong> in Year 1 to <strong>$37,712 / QALY</strong> over five years with setup (<strong>$36,089</strong> operating) [1,2].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Counties can write 3-to-5-year care-team contracts so startup costs divide across <strong>200.20</strong> five-year QALYs [1,2]. Budget tables can also list gross cost per QALY separately from hospital stay savings [2,3].'
+      }
+    ],
     endnotes: [
       '<strong>California 5-Year Community Health Worker (CHW) Scenario.</strong> Benefit rules follow <a href="https://www.dhcs.ca.gov/services/medi-cal/Pages/CHW-Benefit.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California DHCS SPA 22-0001</a>. An illustrative 10-CHW team serving 750 clients per year over 5 years produces 200.20 two-year-discounted Quality-Adjusted Life Years (40.04 QALYs per annual cohort across five cohorts). Five-year direct operating cost is $7,225,000 ($36,089 / QALY), and total 5-year cost including $325,000 in setup is $7,550,000 ($37,712 / QALY).',
       '<strong>Year-1 Setup Costs Compared With Years 2&ndash;5 Ongoing Care.</strong> Year-1 spending totals $1,930,000 for 40.04 QALYs ($48,202 / QALY), combining $1,825,000 in Year-1 direct operating cost with $105,000 in Year-1 setup ($50,000 one-time onboarding plus $55,000 yearly IT and training). In Years 2&ndash;5, annual spending decreases by $525,000/yr to $1,405,000/yr ($35,090 / QALY), combining $1,350,000 ($1,800/client) direct operating cost with $55,000/yr spread setup. Over 5 years, direct operating costs sum to $7,225,000 and setup costs sum to $325,000 ($7,550,000 total).',
       '<strong>Net Dollar Value &amp; Randomized Trial Results.</strong> Using <a href="https://www.icer.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Institute for Clinical and Economic Review</a> U.S. benchmarks ($50K / $100K / $150K per QALY), 5-year operating net value is +$2.79M, +$12.80M, and +$22.81M (+$2.46M, +$12.47M, and +$22.48M with setup). In the <a href="https://doi.org/10.1377/hlthaff.2019.00981" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Individualized Management for Patient-Centered Targets (IMPaCT) randomized trial (Kangovi et al., 2020)</a>, hospital savings returned $2.47 per $1 spent.'
     ],
-    policySettingHtml: 'Judging a new care team on Year 1 alone charges all first-year hiring, training, and setup costs to one year of patients. Starting a 10-worker county Community Health Worker (CHW) team costs $1,930,000 in Year 1 ($1,825,000 direct pay plus $105,000 setup). In Years 2 to 5, yearly cost falls to $1,405,000 ($1,350,000 at $1,800 per client plus $55,000 setup). Five-year contracts divide setup costs across five years of Quality-Adjusted Life Years (QALYs). One QALY equals one year in full health.',
-    answerHtml: 'Dividing first-year setup costs across five years lowers cost per healthy year gained [1,2]. Serving 750 clients per year brings <strong>40.04 QALYs</strong> per yearly group and <strong>200.20 QALYs</strong> across five groups [1]. Five-year direct cost totals <strong>$7,225,000</strong> (<strong>$36,089 / QALY</strong>) [1]. Full 5-year cost with $325,000 setup totals <strong>$7,550,000</strong> (<strong>$37,712 / QALY</strong>) [1]. Checked on Year 1 alone (<strong>$1,930,000</strong>), cost reaches <strong>$48,202 / QALY</strong> [2]. In Years 2-5, cost falls to <strong>$1,405,000</strong>/yr (<strong>$35,090 / QALY</strong>, with $55,000/yr setup) [2]. Five-year net value is +$2.46M with setup at $50,000/QALY and +$12.80M direct (+$12.47M with setup) at $100,000/QALY [3]. Moving from 5-6 CHWs to 10 CHWs costs $50,339 per added QALY [3].',
     block2: {
       title: 'Cost per Healthy Year Gained Compared With 5-Year Net Dollar Value',
       contextTag: '5-Year Cohort Totals ($36,089 Direct Operating vs. $37,712 With Setup)',
@@ -1859,7 +1976,7 @@ const wave3Modules = [
       ],
       rows: [
         {
-          label: 'Gross Program Cost<span class="block text-xs font-normal text-slate-500">Program spending before hospital savings</span>',
+          label: 'Assumed Gross Program Cost<span class="block text-xs font-normal text-slate-500">Program spending before hospital savings</span>',
           modeled: false,
           cells: [
             { val: '$1,930,000 (Yr 1)' },
@@ -1869,7 +1986,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Discounted Health Gain (QALYs)*<span class="block text-xs font-normal text-slate-500">3.0%/yr discount over 2-yr client gain</span>',
+          label: 'Estimated Health Gain (QALYs)*<span class="block text-xs font-normal text-slate-500">3.0%/yr discount over 2-yr client gain</span>',
           modeled: true,
           cells: [
             { val: '40.04 QALYs (Yr 1)' },
@@ -1879,7 +1996,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Cost per Healthy Year Gained*<span class="block text-xs font-normal text-slate-500">Gross cost divided by QALYs gained</span>',
+          label: 'Estimated Cost per Healthy Year*<span class="block text-xs font-normal text-slate-500">Gross cost divided by QALYs gained</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -1964,7 +2081,7 @@ const wave3Modules = [
           ]
         },
         {
-          label: 'Recommended Contract Rule',
+          label: 'Contracting Options',
           policyFit: true,
           cells: [
             { headline: 'Use 3-to-5-Year Contract Terms', detail: 'Divide Year-1 hiring and training costs across multi-year contracts instead of Year 1 alone.' },

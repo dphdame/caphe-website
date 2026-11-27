@@ -37,18 +37,31 @@ const modules = [
       }
     ],
     tier: 'public',
+    briefType: 'California Data Brief &middot; Food &amp; Cost of Living',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Income Before Rent vs. Food Money After Rent',
     pageTitle: 'Pre-Rent Income Limits & Post-Rent Food Costs | CAPHE',
     metaDescription: 'Compare income before rent with money left after rent in four California areas, and see what share pays for a $973 monthly food plan.',
     h1: 'Subtracting Local Rent From Pay Shows High Food Costs Above Poverty Limits',
     subtitle: 'Checking food cost shares before and after rent across four city, inland, and rural areas.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'CalFresh checks whether most working-age homes earn at or below <strong>200%</strong> of the federal poverty rule before rent counts [3]. That single pre-rent rule treats <strong>$5,507</strong> per month the same in high-rent and low-rent counties [2,3].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'In Marin\'s Canal tract (<strong>$5,507</strong> median pay, 220% FPL), subtracting <strong>$2,318</strong> median rent leaves <strong>$3,189</strong> [2]. A <strong>$973</strong> food plan then rises from <strong>17.7% to 30.5%</strong> of money left, and reaches <strong>46.4%</strong> in Central Fresno vs. <strong>17.9%</strong> in Nevada County and <strong>9.3%</strong> in Santa Clara [1,2].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Clinics in high-rent areas can pair CalFresh sign-up help with produce vouchers above 200% FPL [1,3]. Rural counties with 12-mile store trips can sign up local grocers for EBT and add delivery routes [1,2].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.fns.usda.gov/snap/fy-2024-cola" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: 2024 food benefit cost updates and the $973 monthly food plan for four people.',
       '<a href="https://api.census.gov/data/2023/acs/acs5/groups.html" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: 2019&ndash;2023 five-year survey tables for median pay (<code>B19013</code>) and median rent (<code>B25064</code>).',
       '<a href="https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines/prior-hhs-poverty-guidelines-federal-register-references/2023-poverty-guidelines-computations" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Department of Health and Human Services (HHS)</a>: 2023 poverty rules ($2,500 per month for four people; 130% = $3,250; 200% = $5,000).'
     ],
-    policySettingHtml: 'Gross income is income before taxes and other deductions, while post-rent cash is money left after rent. CalFresh is California\'s Supplemental Nutrition Assistance Program (SNAP). For most homes with working-age adults, CalFresh first checks if gross pay is at or below 200% of the Federal Poverty Level (FPL). Rent deductions apply in a later check. This study subtracts each area\'s median rent from its median pay, where a median is the middle value. These area estimates compare food cost shares across places rather than showing which homes qualify.',
-    answerHtml: 'Food takes a large share of estimated money left after rent even where median pay exceeds federal poverty limits [2,3]. In Marin\'s Canal tract (1122.03), median pay across all homes is <strong>$5,507 per month</strong> [2]. That equals <strong>220%</strong> of four-person <strong>FPL</strong>, above the 200% FPL four-person limit [2,3]. Subtracting <strong>$2,318</strong> median rent (<strong>42.1%</strong> of area pay) leaves <strong>$3,189</strong> in estimated money after rent [2]. Against those tract medians, the U.S. Department of Agriculture (USDA) <strong>$973</strong> monthly food plan for four people takes <strong>17.7%</strong> of pay before rent [1,2]. After rent, that plan takes <strong>30.5%</strong> of money left and leaves <strong>$2,216</strong> [1,2]. Post-rent food shares reach <strong>46.4%</strong> in Central Fresno versus <strong>17.9%</strong> in Nevada County and <strong>9.3%</strong> in Santa Clara [1,2]. Counties can pair these estimates with store miles to place produce vouchers, CalFresh help, and Electronic Benefit Transfer (EBT) delivery [1,3].',
     block2: {
       title: 'Food Share Before Rent vs. After Rent (Marin Canal Tract 1122.03)',
       contextTag: 'Area Median Pay and Rent From 2019-2023 Census Data',
@@ -126,7 +139,7 @@ const modules = [
           ]
         },
         {
-          label: 'Pre-Rent Share Needed for Food',
+          label: 'Estimated Pre-Rent Food Share',
           modeled: true,
           cells: [
             { val: '17.7% ($4,534 left)' },
@@ -136,7 +149,7 @@ const modules = [
           ]
         },
         {
-          label: 'Post-Rent Share Needed for Food',
+          label: 'Estimated Post-Rent Food Share',
           modeled: true,
           highlight: true,
           cells: [
@@ -184,7 +197,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended County Action',
+          label: 'County &amp; Clinic Options',
           policyFit: true,
           cells: [
             { headline: 'Produce Vouchers &amp; Clinic Aid', detail: 'Pair CalFresh eligibility checks with clinic produce prescriptions and local food vouchers not limited to 200% FPL.' },
@@ -245,18 +258,31 @@ const modules = [
       }
     ],
     tier: 'public',
+    briefType: 'California Data Brief &middot; County Health Budgets',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Routine Health Budgets vs. Emergency Aid Years',
     pageTitle: 'Routine County Health Spending & Pandemic Aid | CAPHE',
     metaDescription: 'Compare 2020-2023 pandemic aid (+2.47) with pre-2020 county health spending linked to 2.38 to 5.31 fewer deaths per 100,000 in California.',
     h1: 'Routine County Health Spending Links With Lower Death Rates Outside Pandemic Grant Years',
     subtitle: 'Testing 2020-2023 pandemic aid apart from pre-2020 county health spending across 57 counties.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'From 2020 to 2023, state and federal offices sent the largest COVID-19 grants to counties where deaths rose most [1,2]. Mixing those outbreak years with regular budgets puts the 2003–2023 link near zero (<strong>-0.25</strong>) [1,2].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'Across <strong>943</strong> pre-COVID county records (2003–2019), each <strong>$10 per person</strong> in routine health spending links to <strong>2.38</strong> fewer yearly deaths per 100,000 [1,2]. Over 13 years, the link is <strong>4.32</strong> fewer deaths (adj. <em>p</em> = 0.067, above 0.05; <strong>$32</strong> and <strong>$59 per $1</strong> if causal, not cash) [2,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'County boards can review outbreak grants apart from regular health budgets [1,2]. Reports can list <strong>2.38</strong> and <strong>4.32</strong> (adj. <em>p</em> = 0.067) as observed links and mark death-risk values as if causal [2,3].'
+      }
+    ],
     endnotes: [
       '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: County financial reports matched across 57 counties from 2003 to 2023 (943 pre-COVID and 220 COVID-19 county-years).',
       '<a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Public Health (CDPH) Vital Statistics</a>: County death records from all causes and specific causes (2003&ndash;2023) and <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Methodology</a>.',
       '<a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Brown, T. T. (2014)</a>: Study in <em>Economics &amp; Human Biology</em> (13, 34&ndash;45), and <a href="https://doi.org/10.1080/07350015.2012.643126" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Lewbel, A. (2012)</a> in <em>JBES</em> (30, 67&ndash;80).'
     ],
-    policySettingHtml: 'Routine county health budgets fund local disease control and prevention year after year. During the 2020-2023 COVID-19 pandemic, state and federal agencies sent the largest emergency grants to counties with large increases in deaths. Higher death rates can bring in more emergency aid. That reverse causation means health needs affect spending rather than spending causing more deaths. Combining pandemic years with regular years makes the combined estimate close to zero because the two periods show opposite patterns. Testing the two periods apart lets county boards see how regular health spending links with death rates.',
-    answerHtml: 'Across <strong>943</strong> yearly county records from 2003 to 2019, each extra <strong>$10 per resident</strong> in routine county health spending links to <strong>2.38 fewer deaths</strong> per 100,000 per year [1,2]. Over 13-year changes, that link is <strong>4.32 fewer deaths</strong> per 100,000 per year (unadjusted <em>p</em> = 0.0052; multiple-testing-adjusted <em>p</em> = 0.067, above 0.05) [1,2,3]. A second statistical check estimates <strong>5.31 fewer deaths</strong> per 100,000 per year [3]. Federal rules use $13.6M as the Value of a Statistical Life (VSL) to value reduced death risk. If causal, those three links imply <strong>$420,168</strong> per expected death prevented (<strong>$32 per $1</strong>), <strong>$231,481</strong> (<strong>$59 per $1</strong>), and <strong>$188,324</strong> [2,3]. Those dollar figures are <strong>illustrative valuations conditional on a causal interpretation</strong>, not cash received by counties [2]. By contrast, 2020-2023 emergency grants (220 county-years) rose 64.2% ($102.75 to $168.70) where COVID-19 deaths increased the most [1,2]. During those years, each $10 linked to <strong>+2.47</strong> more deaths, putting all 2003-2023 years near zero at -0.25 [1,2].',
     block2: {
       title: 'Pandemic Emergency Aid Years vs. Earlier County Spending Links (57 Counties)',
       contextTag: 'Observed Estimates Across 943 Pre-COVID and 220 COVID-19 Yearly County Records',
@@ -388,7 +414,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended Budget Action',
+          label: 'County Budget Options',
           policyFit: true,
           cells: [
             { headline: 'Analyze Crisis Aid Apart', detail: 'Review emergency outbreak grants on their own instead of combining them with regular budgets.' },
@@ -461,18 +487,31 @@ const modules = [
       }
     ],
     tier: 'public',
+    briefType: 'California Data Brief &middot; Food &amp; Cost of Living',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Tract Poverty vs. Store Distance',
     pageTitle: 'Tract Poverty vs. Store Miles in Food Scores | CAPHE',
     metaDescription: 'Across 408 Santa Clara census tracts, poverty accounts for 62.2% of food-need score differences, while store distance adds 0.003 pp (p = 0.827).',
     h1: 'Tract Poverty Explains Most of Santa Clara\'s Food-Need Score Compared With Store Miles',
     subtitle: 'Comparing how tract poverty and SNAP store miles relate to food-need scores in four counties.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'County food maps often sort census tracts by miles to the nearest grocery store alone [1,3]. Yet hillside zoning creates long drives in high-pay suburbs while low-pay city renters live near stores [1,2].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'Across <strong>408</strong> Santa Clara tracts, poverty explains <strong>62.2%</strong> of food-need score gaps while store miles add <strong>0.003 pp</strong> (<em>p</em> = 0.827) [1,2]. Of <strong>27</strong> tracts past 1 mile, <strong>26</strong> have under 20% poverty, while USDA rules cover <strong>30 of 225</strong> Fresno tracts (up to <strong>15.53 miles</strong>) [1,3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Suburban counties can require <strong>20%+</strong> tract poverty for mobile food vans and focus city help on CalFresh sign-ups [1,2]. Rural and valley counties can fund EBT delivery where high poverty meets 12-to-15-mile trips [1,3].'
+      }
+    ],
     endnotes: [
       '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: Five-year survey tract data on poverty, SNAP use, and car access (408 Santa Clara, 225 Fresno, and 26 Nevada County tracts).',
       '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP store locations checked for map accuracy (514 Santa Clara SNAP stores).',
       '<a href="https://www.ers.usda.gov/data-products/food-access-research-atlas/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Economic Research Service (ERS)</a>: Food Access Research Atlas low-income and long-distance tract rules (1 mile in cities and 10 miles in rural areas).'
     ],
-    policySettingHtml: 'County food teams map census tracts, which are small Census areas. Those maps help place Supplemental Nutrition Assistance Program (SNAP) staff, mobile markets, and delivery routes. Checking tracts by store miles alone treats every long drive the same. Some high-pay foothill suburbs have high car ownership and zoning that limits shops. Meanwhile, low-pay city renters often live near food stores they still cannot afford. Combining tract poverty with store distance separates trouble paying for food from long rural trips.',
-    answerHtml: 'In Santa Clara County, poverty accounts for far more food-need score differences than store miles across <strong>408 census tracts</strong> [1,2]. The five-part score weights poverty (30%), SNAP use (25%), store distance (20%), homes without cars (15%), and low density (10%) [1,2]. Adding poverty to distance explains <strong>58.1 pp</strong> (percentage points) more score differences (<strong>62.2%</strong> total, <strong>60.6%</strong> partial) [1]. County median pay is 532% of four-person Federal Poverty Level (FPL) [1]. After poverty is included, SNAP store distance adds <strong>0.003 pp</strong> (<em>p</em> = <strong>0.827</strong>, no clear link) [1,2]. In fact, <strong>93.4%</strong> of tract centers are within 1 mile of a store [1,2]. Of 27 tracts past 1 mile, 26 have under 20% poverty [1,2]. Only 1 tract (<strong>1.218 miles</strong>, <strong>3,252 residents</strong>) meets both study rules [1,2]. By contrast, U.S. Department of Agriculture (USDA) rules cover <strong>30 of 225</strong> Fresno tracts (<strong>13.3%</strong>, up to <strong>15.53 mi</strong>), and Nevada County trips average <strong>2.92 mi</strong> (<strong>12.43 mi</strong> max) [1,3].',
     block2: {
       title: 'Poverty Rate vs. Store Distance in the Five-Part Food-Need Score (408 Tracts)',
       contextTag: 'What Accounts for Differences in the Combined Food-Need Score (408 Tracts)',
@@ -602,7 +641,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended County Rule',
+          label: 'County Food Aid Options',
           policyFit: true,
           cells: [
             { headline: 'Check Cars &amp; SNAP Use Too', detail: 'Review homes without cars (52 homes) and low CalFresh use (5.3%) before choosing sites for fixed pantries.' },
@@ -662,18 +701,31 @@ const modules = [
       }
     ],
     tier: 'community',
+    briefType: 'California Data Brief &middot; Food &amp; Cost of Living',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Clinic Operating Costs vs. Local Hardship',
     pageTitle: 'City Clinic Costs vs. Inland Need in Medi-Cal | CAPHE',
     metaDescription: 'Compare Medi-Cal visit fees with clinic cost scores (1.506 in San Francisco vs. 0.900 in Imperial) and local poverty across California.',
     h1: 'Fixed Medi-Cal Visit Fees Do Not Meet City Clinic Costs While Poor Inland Areas Lack Care',
     subtitle: 'Using clinic wage and rent scores to set fees and local poverty ranks to direct grants.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'State Medi-Cal fee rules pay one fixed visit rate from San Francisco to Imperial County [1]. In state talks, city clinics cite office wage and rent scores while inland groups cite local poverty [1,2].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'Clinic cost scores reach <strong>1.506</strong> in San Francisco vs. <strong>0.900</strong> in Imperial, while hardship ranks place Imperial and Central Fresno at the <strong>85th</strong> percentile vs. the <strong>15th</strong> in San Francisco [1,2]. Medicaid billing loses <strong>17.6%</strong> of claim value to denials, and higher fees raised visit slots from <strong>58.7% to 66.4%</strong> [3].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'State pay rules can adjust fees for clinic costs in high-rent cities and cut claim denials [1,3]. Separate loan-payoff and clinic grants can help hire doctors in <strong>85th-percentile</strong> inland counties [2,3].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.cms.gov/medicare/payment/fee-schedules/physician" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Centers for Medicare &amp; Medicaid Services (CMS)</a>: 2026 doctor fee rule clinic operating-cost score (GPCI), with CAPHE three-part shares (55.6% wages, 29.7% office rent, 14.7% bought services).',
       '<a href="https://www.neighborhoodatlas.medicine.wisc.edu/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">University of Wisconsin School of Medicine and Public Health</a>: Area Deprivation Index (ADI) hardship ranks and <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Data</a>.',
       '<a href="https://www.macpac.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Medicaid and CHIP Payment and Access Commission (MACPAC, Jan 2025) &amp; Dunn et al.</a>: National Medicaid claim loss from denials and billing work (17.6% vs. 4.7% Medicare and 2.4% private) and <a href="https://doi.org/10.1056/NEJMsa1413299" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Polsky et al. (2015), <em>NEJM</em>, 372(6), 537&ndash;545</a> (10-state fee increase study).'
     ],
-    policySettingHtml: 'Medi-Cal\'s fee-for-service system pays a set fee per visit. It pays the same rate from San Francisco to Imperial County. Medi-Cal managed-care plans use doctor networks and set separate rates, yet state fees still guide pay. In state hearings, city clinics cite a clinic cost score from the Centers for Medicare &amp; Medicaid Services (CMS). Inland groups cite the Area Deprivation Index (ADI), which ranks hardship by pay, schooling, work, and housing. Using one score alone misses either clinic costs or residents\' needs.',
-    answerHtml: 'In these four areas, higher clinic-cost scores occur with lower hardship ranks. Lower cost scores occur with higher hardship ranks [1,2]. CAPHE\'s three-part CMS Geographic Practice Cost Index (GPCI) split weights staff wages (<strong>55.6%</strong>), rent (<strong>29.7%</strong>), and services (<strong>14.7%</strong>) [1]. San Francisco\'s clinic cost score is <strong>1.506</strong> (<strong>50.6%</strong> above 1.00), while Imperial is <strong>0.900</strong> (<strong>10.0%</strong> below) [1]. By contrast, ADI hardship places Imperial and Fresno Tract 2 (<strong>$3,103</strong> pay, <strong>$1,007</strong> rent) at the <strong>85th</strong> percentile [2]. San Francisco is at the <strong>15th</strong> percentile, and Santa Clara medians are <strong>$13,306</strong> pay and <strong>$2,814</strong> rent [2]. In Marin Tract 1122.03, <strong>$2,318</strong> rent equals <strong>42.1%</strong> of <strong>$5,507</strong> pay [2]. Raising Medicaid fees to Medicare levels raised visit access from <strong>58.7%</strong> to <strong>66.4%</strong> [3]. Meanwhile, Medicaid billing work loses <strong>17.6%</strong> of claim value, so pairing city fee rules with inland grants meets both needs [1,3].',
     block2: {
       title: 'Clinic Operating-Cost Index vs. Residents\' Hardship Rank',
       contextTag: 'Federal Cost Scores and Hardship Ranks Across Four California Areas',
@@ -806,7 +858,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended Two-Rule Plan',
+          label: 'State &amp; County Options',
           policyFit: true,
           cells: [
             { headline: 'Adjust Fees for Clinic Costs', detail: 'Adjust Medi-Cal visit fees upward with CMS GPCI cost scores in high-rent cities.' },
@@ -878,18 +930,31 @@ const modules = [
       }
     ],
     tier: 'community',
+    briefType: 'California Data Brief &middot; Food &amp; Cost of Living',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Data Counting Rules &amp; Changes in How Data Are Counted',
     pageTitle: 'SNAP Grocer Lists vs. Commercial Map Counts | CAPHE',
     metaDescription: 'Switching from 6,613 map food listings to 514 SNAP-confirmed EBT stores nearly doubles measured distance (+97%) without any store closing.',
     h1: 'Changes in Data Counting Rules Change Food-Access Scores Even When Store Counts Stay the Same',
     subtitle: 'Comparing map searches, SNAP store lists, county health permits, and five-year surveys across 408 tracts.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'County food reports combine commercial map searches, health permits, SNAP store lists, and five-year Census tables [1,2]. When one source changes how it counts cafes or deli counters, scores move with zero store openings or closures [1,2].'
+      },
+      {
+        lead: 'What county records show',
+        html: 'Moving from <strong>6,613</strong> map food listings to <strong>514</strong> SNAP EBT stores nearly doubles mean distance (<strong>0.29</strong> to <strong>0.573 miles</strong>), yet <strong>81.7%</strong> of top-need tracts stay in the highest fifth [1]. Merging <strong>1,220</strong> duplicate counter permits across <strong>8,555</strong> records finds <strong>755</strong> grocers at <strong>97.5%</strong> accuracy [2].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Counties can measure food-aid trips with location-checked SNAP EBT lists and merge health permits by address [1,2]. Pairing five-year Census tract maps with monthly state CalFresh rolls also tracks recent enrollment changes [3].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">USDA Food and Nutrition Service (FNS)</a>: SNAP store list with 514 confirmed Electronic Benefit Transfer (EBT) stores across 408 Santa Clara census tracts.',
       '<a href="https://deh.sccgov.org/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Santa Clara County Department of Environmental Health (DEH)</a>: Retail food permit list (8,555 raw records combined into 7,335 sites and 755 classified / 724 confirmed grocers at 97.5% accuracy).',
       '<a href="https://www.cdss.ca.gov/inforesources/research-and-data/calfresh-data-tables" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Social Services (CDSS)</a>: Monthly CalFresh enrollment records compared with <a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">U.S. Census Bureau ACS 5-Year Data</a>.'
     ],
-    policySettingHtml: 'County food reports combine store lists from map companies (via an application programming interface, or API) with health permits. They also use Supplemental Nutrition Assistance Program (SNAP) store lists. Five-year American Community Survey (ACS) tables add data across census tracts, which are small Census areas. Each source counts food stores or homes receiving food aid by its own rule. Map lists include cafes, permit logs list deli counters apart, and five-year surveys average earlier years. When a counting rule changes, numbers shift even when no stores open or close.',
-    answerHtml: 'Changing counting rules changes food-access numbers with zero change in actual stores [1,2]. Moving from <strong>6,613</strong> map food listings to <strong>514</strong> SNAP Electronic Benefit Transfer (EBT) stores nearly doubles mean distance [1]. Trips rise from <strong>0.29</strong> to <strong>0.573</strong> miles [1]. Even so, <strong>81.7%</strong> of top-need tracts stay in the highest fifth, and <strong>65.2%</strong> of all 408 tracts keep the same fifth [1,2]. In county Department of Environmental Health (DEH) files, combining <strong>1,220</strong> duplicate counter records (<strong>14.3%</strong> of <strong>8,555</strong>) leaves <strong>7,335</strong> sites [2]. That step finds <strong>755</strong> grocers (including <strong>724</strong> confirmed grocers) at <strong>97.5%</strong> accuracy in a 489-site check [2]. Pairing five-year ACS maps with monthly California Department of Social Services (CDSS) rolls also shows recent changes [3].',
     block2: {
       title: 'Unchecked Map Food Listings vs. Confirmed SNAP EBT Stores (408 Tracts)',
       contextTag: 'Check of Data Counting Rules Across 408 Santa Clara Census Tracts',
@@ -1019,7 +1084,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended Rule for Checking Data',
+          label: 'Data Review Options',
           policyFit: true,
           cells: [
             { headline: 'Check Map Lists Against Permits', detail: 'Compare map search counts against county health permits before reporting store numbers.' },
@@ -1071,19 +1136,32 @@ const modules = [
   {
     slug: 'study-design-ladder',
     tier: 'public',
+    briefType: 'Evidence Guide &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Matching Study Methods to Budget Questions',
     pageTitle: 'Matching Study Methods to Budget Questions | CAPHE',
     metaDescription: 'Match four California health budget questions with suitable methods: linked records and surveys, past trends, county data, and call trials.',
     h1: 'Planning Outreach, Costing State Laws, and Checking Budgets Each Need a Matched Study Method',
     subtitle: 'Matching linked records, trend checks, county data, and call trials to the question each method answers.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'Randomized trials can test outreach phone calls directly, yet counties cannot randomize a statewide law or 20 years of past budgets [2,3,4]. Using raw surveys or simple before-and-after counts introduces large starting errors [1,2].'
+      },
+      {
+        lead: 'What the comparison shows',
+        html: 'Linking state Medi-Cal rolls (<strong>255,601</strong> adults) with Census shares fixes a <strong>40.2%</strong> survey undercount and finds <strong>120,239</strong> work-rule adults [1]. Meanwhile, an <strong>82,695-member</strong> renewal trial shows live calls add <strong>+8% to +11%</strong> renewals, while pre-2020 county records link <strong>$10/person</strong> to <strong>2.38</strong> yearly and <strong>4.32</strong> 13-year fewer deaths (adj. <em>p</em> = 0.067) [3,4].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Agencies can match each budget question to the method built for its data [1,2]. Linked rolls set bilingual staffing, baseline forecasts price state laws, and randomized call trials test daily outreach [1,2,4].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Medi-Cal enrollment records linked with Census ACS data (255,601 state-recorded adults vs. 152,811 survey adults; 120,239 work-rule adults).',
       '<a href="https://edd.ca.gov/en/about_edd/edd_releases_and_reports/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Employment Development Department (EDD)</a>: May 2026 Paid Family Leave fund forecast (325,055 claims in 2025; 330,000 without law change vs. 369,600 modeled with 12-week leave).',
       '<a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California State Controller\'s Office</a>: 57-county health spending data (2003&ndash;2023) and <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014), <em>Economics &amp; Human Biology</em></a>.',
       '<a href="https://www.nber.org/papers/w34191" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">National Bureau of Economic Research (NBER Working Paper 34191)</a>: California Medicaid renewal trial with five groups (82,695 members) and Bronx Community Health Worker referral study (27.8% &times; 69.2% &times; 78.1% = 15.0%).'
     ],
-    policySettingHtml: 'No single study method can answer every question about public health budgets. Randomized controlled trials (RCTs) test outreach calls directly. Yet researchers cannot randomly assign a statewide law across counties. They also cannot randomize 20 years of past county budgets. American Community Survey (ACS) counts can miss enrolled adults, and simple before-and-after checks can mistake a past trend for a law\'s effect. Planning Medi-Cal staff, costing Paid Family Leave (PFL), checking county budgets, and testing calls each face different limits. Matching each question to a suitable method avoids starting count and trend errors.',
-    answerHtml: 'Matching four state health questions to suitable study methods avoids large starting errors [1,2,3,4]. First, linking Department of Health Care Services (DHCS) records (<strong>255,601</strong> adults) with ACS shares fixes a <strong>40.2%</strong> survey undercount (<strong>152,811</strong> in ACS) [1]. That link finds <strong>120,239</strong> work-rule adults, including 26,515 Limited English Proficient (LEP) adults [1]. Second, an Employment Development Department (EDD) forecast of <strong>330,000</strong> claims without the law adds <strong>+39,600</strong> modeled PFL claims (<strong>369,600</strong> total) [2]. Third, pre-COVID county data link $10 per person with <strong>2.38</strong> fewer deaths per 100,000 yearly [3]. Over 13 years, that observed link is <strong>4.32</strong> fewer deaths (<em>p</em> = 0.067 after multiple-test adjustment, above 0.05) [3]. Fourth, a five-group trial (<strong>82,695</strong> members) shows live calls raise renewals [4]. Separate Community Health Worker (CHW) steps (<strong>27.8%</strong> &times; <strong>69.2%</strong> &times; <strong>78.1%</strong> = <strong>15.0%</strong>) show which steps patients miss [4].',
     block2: {
       title: 'Simple Starting Estimates vs. Matched Study Methods Across Four Decisions',
       contextTag: 'Four Study Methods Across Medi-Cal, Paid Family Leave, County Spending & Call Trials',
@@ -1216,7 +1294,7 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended Agency Action',
+          label: 'Agency Study Options',
           policyFit: true,
           cells: [
             { headline: 'Match Surveys to State Records', detail: 'Use DHCS records for total members and apply ACS survey shares to estimate language staffing.' },
@@ -1268,18 +1346,31 @@ const modules = [
   {
     slug: 'p-hacking-multiple-testing',
     tier: 'public',
+    briefType: 'California Data Brief &middot; Medi-Cal &amp; Claims',
     trackEyebrow: 'Track 2: Checking Studies &amp; Measures &middot; Minimum Group Sizes, Multiple Tests &amp; Size of Net Losses',
     pageTitle: 'Minimum Group Sizes & Medi-Cal Loss Rankings | CAPHE',
     metaDescription: 'Compare enrollment losses across 62 Medi-Cal groups in Santa Clara County, and rank groups with 100+ members by losses past the county rate.',
     h1: 'Minimum Group Sizes and Net Member Losses Help Counties Set Medi-Cal Call Lists',
     subtitle: 'Using a 100-member minimum and net losses across 62 Medi-Cal groups to set call lists.',
+    openingBeats: [
+      {
+        lead: 'In practice today',
+        html: 'County Medi-Cal reports often sort 62 age, aid, and language groups by percent drop alone [1]. That rule puts tiny groups ahead of thousands of lost members [1].'
+      },
+      {
+        lead: 'What California records show',
+        html: 'From June 2025 to June 2026 (<strong>472,014</strong> to <strong>411,722</strong>, <strong>-12.77%</strong>), a 47-person Samoan group ranked first by percent (<strong>-34.04%</strong>, 16 people) [1]. Meanwhile, Spanish speakers made up <strong>41.27%</strong> of all county net losses (<strong>-24,880</strong> people) [1].'
+      },
+      {
+        lead: 'Policy option',
+        html: 'Counties can require at least 100 members before ranking groups and refer smaller groups to CBOs [1]. Sorting 100+ groups by losses past the county rate keeps calls on the largest drops [1,2].'
+      }
+    ],
     endnotes: [
       '<a href="https://www.dhcs.ca.gov/dataandstats/Pages/default.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">California Department of Health Care Services (DHCS)</a>: Santa Clara County Medi-Cal counts across 62 age, aid, and language groups (June 2025 to June 2026: 472,014 to 411,722 members, net change -60,292 or -12.77%).',
       '<a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">Benjamini, Y., &amp; Hochberg, Y. (1995)</a>: False discovery rate method in <em>Journal of the Royal Statistical Society: Series B</em>, 57(1), 289&ndash;300.',
       '<a href="https://data.census.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline font-semibold">U.S. Census Bureau</a>: Survey area pair tests using 80 error weights (<code>p = 0.469 to 0.730</code>), with CAPHE 16-delay Holm/FDR (<code>0.0788</code>) and 1,000 random-label (<code>0.593</code> max chance score) checks.'
     ],
-    policySettingHtml: 'County Medi-Cal teams check monthly Department of Health Care Services (DHCS) totals across 62 age, aid, and language groups. Sorting all 62 groups by percent loss alone puts very small groups first. A net loss of 13 to 17 members cuts a 50-person group by 25% to 34%. Running dozens of raw 5% tests on survey data can also mark random gaps as real. A 100-member minimum plus losses past the county rate keeps call lists on the largest declines.',
-    answerHtml: 'A 100-member minimum limits noisy percent ranks, and losses past the county rate show large drops [1,2]. From June 2025 to June 2026, Medi-Cal counts across 62 DHCS groups fell from <strong>472,014</strong> to <strong>411,722</strong> (<strong>-60,292</strong> net, or <strong>-12.77%</strong>) [1]. Percent rank puts small groups first: Samoan at <strong>-34.04%</strong> (-16), French at <strong>-25.00%</strong> (-14), and Thai at <strong>-20.75%</strong> (-11) [1]. Monthly overlapping totals cannot support a simple exit test [1]. When error is measured, multi-test rules cut false positives in survey areas (p = <strong>0.469 to 0.730</strong>), 16-delay checks (adj. p = <strong>0.0788</strong>), and 1,000 label swaps (<strong>0.593</strong> max chance score) [2,3]. Staff refer groups under 100 members to community-based organizations (CBOs) [1]. Ranking 100+ groups by losses past -12.77% puts Spanish first (<strong>-24,880</strong> net, <strong>41.27%</strong> of county loss, <strong>-7,230</strong> extra) [1]. Overlapping groups ages 19-44 follow (Hispanic <strong>-17,380</strong> or <strong>28.83%</strong>, <strong>-6,344</strong> extra; Men <strong>-15,496</strong>, <strong>-5,697</strong> extra) [1].',
     block2: {
       title: 'Percentage Loss Rank vs. 100-Member Minimum & Excess-Loss Rank (62 Groups)',
       contextTag: 'Reported 62-Group Santa Clara DHCS Medi-Cal Totals (472,014 to 411,722, -12.77%)',
@@ -1412,13 +1503,13 @@ const modules = [
           ]
         },
         {
-          label: 'Recommended Rules for County Reports',
+          label: 'County Reporting Options',
           policyFit: true,
           cells: [
-            { headline: 'Refer Under-100 Groups to CBOs', detail: 'Serve groups with under 100 members through trusted CBO partners instead of automated percent alerts.' },
-            { headline: 'Adjust When Data Support Tests', detail: 'Use survey error weights and Holm or false discovery rate (FDR) rules when testing many survey claims.' },
-            { headline: 'Rank by Extra Loss (-7,230)', detail: 'Sort 100+ member groups by losses beyond -12.77% so call priorities reflect extra members lost.' },
-            { headline: 'Prioritize Ages 19-44 Calls', detail: 'Focus outreach and contact updates on overlapping Hispanic and male adult groups ages 19-44.' }
+            { headline: 'Option: Refer Under-100 to CBOs', detail: 'Serve groups with under 100 members through trusted CBO partners instead of automated percent alerts.' },
+            { headline: 'Option: Adjust Multi-Group Tests', detail: 'Use survey error weights and Holm or false discovery rate (FDR) rules when testing many survey claims.' },
+            { headline: 'Option: Rank by Extra Loss (-7,230)', detail: 'Sort 100+ member groups by losses beyond -12.77% so call priorities reflect extra members lost.' },
+            { headline: 'Option: Prioritize Ages 19-44', detail: 'Focus outreach and contact updates on overlapping Hispanic and male adult groups ages 19-44.' }
           ]
         }
       ],

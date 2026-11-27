@@ -87,6 +87,13 @@ for (const slug of EXPECTED_SLUGS) {
 
   // 1. Required structural sections
   if (!/<h1[^>]*>[\s\S]*?<\/h1>/i.test(mainHtml)) errors.push('Missing <h1> headline');
+  const beatMatches = [...mainHtml.matchAll(/<p class="[^"]*\bopening-beat\b[^"]*"[^>]*>([\s\S]*?)<\/p>/gi)];
+  if (beatMatches.length !== 3) {
+    errors.push(`Expected 3 .opening-beat paragraphs in executive header, found ${beatMatches.length}`);
+  }
+  if (!/(?:California Data Brief|Program Cost\s*(?:&amp;|&)\s*Impact Model|Evidence Guide)/i.test(visibleMainHtml)) {
+    errors.push('Missing plain-English brief-type kicker (California Data Brief / Program Cost & Impact Model / Evidence Guide)');
+  }
   if (!/<p class="policy-setting\b[^>]*>([\s\S]*?)<\/p>/i.test(mainHtml)) {
     errors.push('Missing .policy-setting topic introduction paragraph');
   }

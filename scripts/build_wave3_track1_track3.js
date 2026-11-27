@@ -521,41 +521,41 @@ const wave3Modules = [
     briefType: 'Evidence Guide &middot; County Health Budgets',
     trackEyebrow: 'Track 1: Program Impact &middot; Small-County Rate Changes, Return Toward Average, and Five-Year Means',
     pageTitle: 'High One-Year Death Rates & Five-Year Means | CAPHE',
-    metaDescription: 'Separate random yearly changes in small-county death rates (89% weight on regional averages in tiny counties) from lasting need with 5-year means.',
+    metaDescription: 'Separate random yearly rate variation in small California counties (±92.8 to ±249.6 per 100K) from lasting need using five-year county averages.',
     h1: 'Five-Year County Averages Separate Lasting Rural Death Risk From High One-Year Rates',
     subtitle: 'Using five-year county averages and group size weights so rural health grants match lasting need.',
     openingBeats: [
       {
         lead: 'In practice today',
-        html: 'Grant programs sometimes rank counties on one year of death rates per 100,000 people [2]. In small rural counties, two or three extra deaths raise that rate sharply before returning toward average next year [2].'
+        html: 'Grant programs often rank counties on one year of death rates per 100,000 people [2]. In small rural counties, two or three extra deaths raise that rate fast before returning toward normal next year [2].'
       },
       {
         lead: 'What the comparison shows',
-        html: 'In Alpine County (<strong>1,204</strong> residents), one death changes the yearly rate by <strong>83.06</strong> points, and a count model estimates that <strong>89.4% (-20.3 per 100K)</strong> of a top-10% 1-year rise returns toward average next year [2]. Across 17 pre-COVID years of county records, <strong>$10</strong> per person links to <strong>-2.42</strong> deaths per 100K in counties up to 500K (<strong>-4.32</strong> over 13 years statewide, adj. <em>p</em> = 0.067) [1].'
+        html: 'In Alpine County (<strong>1,204</strong> people), one death changes the yearly rate by <strong>83.06</strong> points [2]. A Poisson count case (750 deaths per 100K) gives <strong>&plusmn;249.6</strong> in 1-year chance spread, while 17-year county data link <strong>$10</strong> per person to <strong>-2.42</strong> deaths per 100K in counties up to 500K (<strong>-4.32</strong> at 13 years, adj. <em>p</em> = 0.067) [1,2].'
       },
       {
         lead: 'Policy option',
-        html: 'State offices can rank rural grants on five-year averages weighted by county size (<strong>0.89</strong> weight in tiny counties) [2,3]. Pairing a base staffing grant with per-person aid keeps rural clinics funded across years [1,3].'
+        html: 'State offices can rank rural grants on five-year county means and size weights rather than 1-year highs [2,3]. Pairing a base staff grant with per-person aid keeps rural clinics funded each year [1,3].'
       }
     ],
     endnotes: [
       '<strong>California 57-County Public Health Study (2003&ndash;2023).</strong> Spending and death records come from the <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller</a> and <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Public Health (CDPH) Vital Statistics</a> across 57 counties and 39,538,223 residents. Across 943 pre-COVID yearly county records, $10 more per resident is linked to -2.42 deaths per 100,000 in counties up to 500,000 residents, -2.38 statewide each year, and -4.32 over 13 years (p = 0.067 after multiple-test adjustment, above 0.05).',
-      '<strong>Small Populations and Return Toward Average.</strong> Population counts come from <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>. In Alpine County (1,204 residents), one death changes the yearly rate per 100,000 by 83.06 points. In the model, 89.4% (-20.3 per 100,000) of an apparent -22.7 next-year decrease after a high one-year rate comes from random variation returning toward average.',
-      '<strong>Combining Years and Population Weights.</strong> Methods for 3-to-5-year county averages and uncertainty weights come from the <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>.'
+      '<strong>Small Counts and Poisson Case Spread.</strong> County headcounts come from <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>. In Alpine County (1,204 people), one death shifts the rate per 100,000 by 83.06 points (<code>100,000 &divide; 1,204</code>). At an assumed rate of 750 deaths per 100,000 (<code>p = 0.0075</code>), 1-year Poisson spread (<code>100,000 &times; &radic;[0.0075 &divide; N]</code>) is &plusmn;249.6 in Alpine and &plusmn;92.8 in Modoc (8,700 people).',
+      '<strong>Multi-Year Means and Example Size Weights.</strong> Methods for 3-to-5-year county means and example size weights come from the <a href="/tools/lha-calculator/methodology" class="text-[#0041A5] underline">CAPHE Local Health Authority (LHA) Calculator Methodology</a>.'
     ],
     block2: {
-      title: 'One-Year Drop After a High Rate Compared With Multi-Year County Links',
-      contextTag: 'Small-County Rate Variation on California Department of Finance (DOF) Counts + 57-County Study',
-      ariaLabel: 'Comparison of one-year county mortality return toward average versus 57-county multi-year spending-death links',
+      title: 'One-Year Small-County Chance Spread Compared With Multi-Year County Links',
+      contextTag: '750-per-100K Poisson Case on DOF County Counts + 57-County Study',
+      ariaLabel: 'Comparison of one-year small-county random rate spread under a 750 per 100,000 Poisson case versus 57-county multi-year spending-death links',
       ruler1: {
-        title: 'Apparent 1-Year Drop After Selecting Highest-10% Rates',
-        stat: '-22.7 / 100K (89.4% Return to Average)',
-        ariaLabel: 'Selecting small rural counties after a 90th-percentile high rate produces an apparent -22.7 per 100,000 drop with 89.4% from return to average',
+        title: '1-Year Chance Spread in Tiny Counties (Poisson Case)',
+        stat: '±92.8 to ±249.6 / 100K (83.06 Points per Death in Alpine)',
+        ariaLabel: 'At 750 per 100,000, one-year random spread spans plus or minus 92.8 to 249.6 per 100,000 in counties under 10,000 people',
         segments: [
-          { cls: 'seg-food', width: 89, label: 'Return to Average: -20.3 / 100K (89.4%)' },
+          { cls: 'seg-food', width: 89, label: '1-Yr Random SD: ±92.8 to ±249.6 / 100K' },
           { cls: 'seg-primary', width: 11, label: 'Multi-Year Link: -2.42' }
         ],
-        desc: 'Selecting small counties after a high 1-year rate produces -20.3 per 100,000 of expected return toward average.'
+        desc: 'At 750 deaths per 100K, 1-year chance spread (±92.8 to ±249.6) is far wider than 1-year program gains.'
       },
       ruler2: {
         title: 'Recorded Multi-Year County Links (2003-2019)',
@@ -573,7 +573,7 @@ const wave3Modules = [
       subtitle: 'Checking county headcounts, one-death rate changes, size weights, and 57-county death links.',
       caption: 'Table 1 compares the smallest rural counties, small rural counties, counties up to 500,000 residents, and all 57 counties on population size, random rate variation, statistical weights, and spending-death links.',
       cornerLabel: 'Rate &amp; Study Measure',
-      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Calculated Variation Estimates.</strong> One-year Poisson random variation (at an average of 750 deaths per 100,000) and regional-average weights are calculated from recorded California Department of Finance E-1 county populations (Alpine 1,204 through 57-county total 39,538,223). Spending-death links come from the 57-county CAPHE LHA study across 943 pre-COVID yearly county records: -2.42 per $10 in &le;500K counties (SE = 0.98, p = 0.0136), -2.38 statewide each year (SE = 0.78, p = 0.0022), and -4.32 over 13 years (SE = 1.54, unadjusted p = 0.0052, p = 0.067 after multiple-test adjustment, above 0.05).',
+      footnote: '<strong class="text-slate-800">Table 1 Notes &amp; * Case Calculations.</strong> One-year Poisson spread (<code>100,000 &times; &radic;[0.0075 &divide; N]</code> at 750 deaths per 100K) is calculated at DOF E-1 headcounts (Alpine 1,204; Modoc 8,700; Trinity 16,060; Colusa 22,280; 100,000 5-year small-county pool; 39,538,223 57-county total). Example weights use group spread cases in Table 2 Notes. Spending-death links come from the 57-county CAPHE LHA study (943 pre-COVID records): -2.42 per $10 in &le;500K counties (SE = 0.98, p = 0.0136), -2.38 statewide each year (SE = 0.78, p = 0.0022), and -4.32 over 13 years (SE = 1.54, unadjusted p = 0.0052, adj. p = 0.067, above 0.05).',
       columns: [
         { tag: 'Under 10K Pop', tagHighlight: true, title: 'Smallest Rural Counties', subtitle: 'Under 10,000 residents: Alpine (1,204) to Modoc (8,700).' },
         { tag: '15K-25K Pop', tagHighlight: false, title: 'Small Rural Counties', subtitle: 'Trinity (16,060) to Colusa (22,280) residents.' },
@@ -603,14 +603,14 @@ const wave3Modules = [
           label: 'Estimated 1-Year Random Variation*<span class="block text-xs font-normal text-slate-500">Poisson variation at 750 deaths per 100K</span>',
           modeled: true,
           cells: [
-            { val: '&plusmn;92.9 to &plusmn;249.6 per 100K' },
-            { val: '&plusmn;57.9 to &plusmn;68.3 per 100K' },
-            { val: '&plusmn;27.4 per 100K (multi-yr group)' },
+            { val: '&plusmn;92.8 to &plusmn;249.6 per 100K' },
+            { val: '&plusmn;58.0 to &plusmn;68.3 per 100K' },
+            { val: '&plusmn;27.4 per 100K (100K 5-yr pool)' },
             { val: '&plusmn;1.38 per 100K (state total)' }
           ]
         },
         {
-          label: 'Weight on Regional Reference Mean*<span class="block text-xs font-normal text-slate-500">Share placed on regional average vs. 1-yr rate</span>',
+          label: 'Example Regional Mean Weight*<span class="block text-xs font-normal text-slate-500">Case weight on regional mean vs. 1-yr rate</span>',
           modeled: true,
           highlight: true,
           cells: [
@@ -668,7 +668,7 @@ const wave3Modules = [
         {
           label: 'Grant Risk If Skipped',
           cells: [
-            { val: 'Selecting counties in the highest 10% of 1-year increases produces -20.3 of -22.7 per 100K (89.4%) from chance alone.' },
+            { val: 'Picking small counties after a 1-year high mistakes ±92.8 to ±249.6 per 100K of chance spread for lasting risk.' },
             { val: 'Cutting a rural team\'s grant after two or three chance deaths disrupts working clinic partnerships.' },
             { val: 'Assuming smaller counties lack usable evidence ignores the &le;500K estimate (-2.42 vs. -2.59 in &gt;500K urban).' },
             { val: 'Per-person formulas alone provide too little funding for the minimum staff small rural counties need.' }
@@ -678,26 +678,26 @@ const wave3Modules = [
           label: 'Rural Grant Options',
           policyFit: true,
           cells: [
-            { headline: 'Rank on 5-Year Weighted Rates', detail: 'Use 5-year county averages and uncertainty weights (0.89 in tiny counties) to rank grant need.' },
+            { headline: 'Rank on 5-Year Weighted Rates', detail: 'Use 5-year county means and size weights (0.89 example in tiny counties) to rank grant need.' },
             { headline: 'Compare With Similar Counties', detail: 'Review rural renewals against similar rural counties instead of 1-year decreases after high rates.' },
             { headline: 'Use &le;500K Combined Estimates', detail: 'Cite the -2.42 per 100K per $10 link across counties &le;500K when annual counts are under 11.' },
             { headline: 'Combine Base &amp; Per-Person Aid', detail: 'Pair a fixed base staffing grant for small counties with multi-year per-resident health funding.' }
           ]
         }
       ],
-      notesTitle: 'Table 2 Notes: Random Rate Variation, Statistical Weights &amp; Rural Group Estimates',
+      notesTitle: 'Table 2 Notes: Chance Spread Math, Example Weights &amp; Rural Group Links',
       notesBullets: [
-        '<strong>How Population Size Affects Random Variation.</strong> Assume an average rate of 750 deaths per 100,000 people (0.0075). A Poisson count model estimates yearly random variation as <code>100,000 &times; &radic;(0.0075 &divide; Population)</code>. That formula gives &plusmn;249.6 in Alpine (1,204), &plusmn;92.9 in Modoc (8,700), and &plusmn;68.3 in Trinity (16,060). Selecting counties in the highest 10% of 1-year random increases produces an expected -20.3 per 100,000 next-year decrease from return toward average (89.4% of an apparent -22.7 decrease).',
+        '<strong>Poisson Case Formula and Example Weights.</strong> Assume a starting rate of 750 deaths per 100,000 people (<code>p = 0.0075</code>). A Poisson count model sets 1-year chance spread at <code>s_noise = 100,000 &times; &radic;(0.0075 &divide; N)</code>. That formula gives &plusmn;249.6 in Alpine (1,204), &plusmn;92.8 in Modoc (8,700), &plusmn;68.3 in Trinity (16,060), &plusmn;58.0 in Colusa (22,280), &plusmn;27.4 across a 100,000-person 5-year pool, and &plusmn;1.38 statewide (39,538,223). Example weights in Table 1 use <code>w = s&sup2;_noise &divide; (s&sup2;_signal + s&sup2;_noise)</code>: 89.0% at s_noise = 92.8, s_signal = 32.6; 68.0% at s_noise = 58.0, s_signal = 39.8; 24.0% at s_noise = 27.4, s_signal = 48.7; and 6.0% at s_noise = 13.8, s_signal = 54.6.',
         '<strong>Smaller Rural and Urban County Results.</strong> Across 943 pre-COVID yearly county records (2003&ndash;2019), routine public health spending is linked to fewer deaths before age 75 in both smaller counties (&le;500,000 residents: <strong>-2.42</strong> per $10, p = 0.0136, 671 records) and large urban counties (&gt;500,000 residents: <strong>-2.59</strong> per $10, p &lt; 0.0001). Statewide estimates are -2.38 each year, -4.32 over 13 years (p = 0.067 after multiple-test adjustment, above 0.05), and -5.31 in two-stage sensitivity checks (F = 111.20).'
       ]
     },
     synthesis: {
       title: 'Why Five-Year Averages Improve Both Rural Grant Lists and Program Reviews',
-      p1: 'Giving short-term grants to counties with last year\'s highest death rate mistakes small population size for lasting need. Death rates report deaths for every 100,000 residents. One death in Alpine County (1,204 residents) changes its yearly rate by 83.06 points, vs. 0.01 in Los Angeles County. When a state office picks small counties after a high one-year rate, next year\'s rate is often closer to normal. That random increase is unlikely to repeat. The model assigns -20.3 of the -22.7 per 100,000 drop (89.4%) to regression to the mean.',
-      p2: 'Two simple rules keep random rural variation out of grant awards. First, 3-to-5-year means and size weights (89.0% pulled in tiny rural counties and 68.0% pulled in small rural counties) match grants to lasting need. Second, combining 17 pre-pandemic years across 57 counties (39,538,223 residents) estimates multi-year patterns. In counties with 500,000 or fewer residents, $10 per resident in routine health spending links to 2.42 fewer deaths per 100,000 each year. That figure is close to the statewide yearly (-2.38) and 13-year (-4.32, adj. p = 0.067) links.'
+      p1: 'Giving short-term grants to counties with last year\'s highest death rate mistakes small headcounts for lasting need. Death rates count deaths per 100,000 people. One death in Alpine County (1,204 people) shifts its yearly rate by 83.06 points, vs. 0.01 in Los Angeles County. At 750 deaths per 100,000, normal 1-year Poisson spread is &plusmn;92.8 to &plusmn;249.6 per 100,000 under 10,000 people. When a state office picks small counties after a high 1-year rate, next year\'s rate often moves back toward normal by chance.',
+      p2: 'Two simple rules keep random rural changes out of grant awards. First, 3-to-5-year means and example size weights (89.0% pulled in tiny rural counties and 68.0% pulled in small rural counties) match grants to lasting need. Second, combining 17 pre-COVID years across 57 counties (39,538,223 people) tests multi-year links. In counties up to 500,000 people, $10 per person in routine health spending links to 2.42 fewer deaths per 100,000 each year. That link is close to the statewide yearly (-2.38) and 13-year (-4.32, adj. p = 0.067) links.'
     },
     methodologyParagraphs: [
-      '<strong>Recorded County Data and Calculated Weights.</strong> County populations (Alpine 1,204 through 57-county total 39,538,223) and spending-death estimates come from CAPHE Local Health Authority study records. Those estimates are -2.42 in smaller counties (SE = 0.98, 671 records), -2.38 statewide each year (SE = 0.78, 943 records), and -4.32 over 13 years (SE = 1.54, unadjusted p = 0.0052, p = 0.067 after multiple-test adjustment, 57 counties). One-year Poisson variation, expected return-to-average shares, and reference weights (89.0%, 68.0%, 24.0%, 6.0%) are calculated from those population counts.',
+      '<strong>Recorded County Data and Case Math.</strong> County headcounts (Alpine 1,204 through 57-county total 39,538,223) and spending-death links come from CAPHE Local Health Authority records. Links are -2.42 in smaller counties (SE = 0.98, 671 records), -2.38 statewide each year (SE = 0.78, 943 records), and -4.32 over 13 years (SE = 1.54, unadjusted p = 0.0052, adj. p = 0.067, 57 counties). One-year Poisson spread (<code>100,000 &times; &radic;[0.0075 &divide; N]</code> at an assumed 750/100K rate) and example weights (89.0%, 68.0%, 24.0%, 6.0%) are case calculations.',
       '<strong>Main Data Sources.</strong> Records come from <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California Department of Finance (DOF) E-1 Population Estimates</a>, <a href="https://www.cdph.ca.gov/Programs/CHSI/Pages/Data-and-Statistics-.aspx" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">CDPH Vital Statistics Death Statistical Master Files (2003&ndash;2023)</a>, <a href="https://bythenumbers.sco.ca.gov/" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">California State Controller County Financial Transactions Reports</a>, and <a href="https://doi.org/10.1016/j.ehb.2013.10.001" target="_blank" rel="noopener noreferrer" class="text-[#0041A5] underline">Brown (2014, Economics &amp; Human Biology)</a>.'
     ],
     faqs: [
@@ -707,7 +707,7 @@ const wave3Modules = [
       },
       {
         question: 'How does regression to the mean create apparent program gains after a high one-year rate?',
-        answer: 'Counties picked after an unusually high Year-1 rate combine lasting health risk with random upward variation. In Year 2, that random error is unlikely to repeat. That expected return toward average produces a -20.3 per 100,000 decrease (89.4% of an apparent -22.7 drop) even if a grant had no effect.'
+        answer: 'Counties picked after a high Year-1 rate combine lasting health risk with random upward count spread (&plusmn;58.0 to &plusmn;249.6 per 100,000 in a 750-per-100K Poisson case). In Year 2, that random upward error rarely repeats. The rate then moves back toward the county mean even if a grant had zero effect.'
       },
       {
         question: 'Is routine health spending linked to lower death rates in smaller counties when several years are combined?',
